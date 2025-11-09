@@ -7,32 +7,25 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Block;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Actions\Block;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\Permission;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasPortalSql;
 
-use function array_keys;
-use function array_merge;
-use function array_search;
-use function array_slice;
-use function count;
-use function explode;
-use function microtime;
-use function round;
+use function LightPortal\app;
 
 use const LP_ACTION;
 use const LP_PAGE_URL;
@@ -44,6 +37,7 @@ class MenuButtons
 {
 	use HasCommonChecks;
 	use HasBreadcrumbs;
+	use HasPortalSql;
 
 	public function __invoke(array &$buttons): void
 	{
@@ -51,6 +45,9 @@ class MenuButtons
 			return;
 
 		app(Block::class)->show();
+
+		/* @uses template_lp_custom_above, template_lp_custom_below */
+		Utils::$context['template_layers'][] = 'lp_custom';
 
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
@@ -136,19 +133,22 @@ class MenuButtons
 
 		$buttons['moderate']['show'] = true;
 
-		$buttons['moderate']['sub_buttons'] = [
-			'lp_pages' => [
-				'title' => Lang::$txt['lp_pages_unapproved'],
-				'href'  => Config::$scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
-				'amt'   => Utils::$context['lp_quantities']['unapproved_pages'],
-				'show'  => true,
+		$buttons['moderate']['sub_buttons'] = array_merge(
+			[
+				'lp_pages' => [
+					'title' => Lang::$txt['lp_pages_unapproved'],
+					'href'  => Config::$scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
+					'amt'   => Utils::$context['lp_quantities']['unapproved_pages'],
+					'show'  => true,
+				],
 			],
-		] + $buttons['moderate']['sub_buttons'];
+			(array) $buttons['moderate']['sub_buttons']
+		);
 	}
 
 	protected function preparePageButtons(array &$buttons): void
 	{
-		if (empty(Utils::$context['lp_menu_pages'] = app(PageRepository::class)->getMenuItems()))
+		if (empty(Utils::$context['lp_menu_pages'] = app(PageRepositoryInterface::class)->getMenuItems()))
 			return;
 
 		$pageButtons = [];
@@ -156,7 +156,7 @@ class MenuButtons
 			$pageButtons['portal_page_' . $item['slug']] = [
 				'title' => (
 					$item['icon']
-						? Str::html('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])
+						? Str::html('span', ['class' => 'portal_menu_icons ' . $item['icon']]) . ' '
 						: ''
 					) . $item['title'],
 				'href'  => LP_PAGE_URL . $item['slug'],
@@ -237,32 +237,31 @@ class MenuButtons
 	protected function showDebugInfo(): void
 	{
 		if (
-			empty(Config::$modSettings['lp_show_debug_info'])
-			|| empty(Utils::$context['user']['is_admin'])
+			empty(Utils::$context['user']['is_admin'])
 			|| empty(Utils::$context['template_layers'])
 			|| $this->request()->is('devtools')
+			|| $this->request()->is('xmlhttp')
+			|| $this->request()->has('backtrace')
+			|| $this->request()->has('file')
 		) {
 			return;
 		}
 
-		Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
-			Lang::getTxt('lp_seconds_set', [
-				'seconds' => round(microtime(true) - Utils::$context['lp_load_time'], 3)
-			]),
-		]);
-
-		Theme::loadTemplate('LightPortal/ViewDebug');
-
-		if (empty($key = array_search('lp_portal', Utils::$context['template_layers'], true))) {
-			Utils::$context['template_layers'][] = 'debug';
-			return;
+		if (! empty(Config::$modSettings['lp_show_debug_info'])) {
+			Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
+				Lang::getTxt('lp_seconds_set', [
+					'seconds' => microtime(true) - Utils::$context['lp_load_time'],
+				]),
+			]);
 		}
 
-		Utils::$context['template_layers'] = array_merge(
-			array_slice(Utils::$context['template_layers'], 0, $key, true),
-			['debug'],
-			array_slice(Utils::$context['template_layers'], $key, null, true)
-		);
+		if (empty(Config::$modSettings['lp_show_portal_queries']))
+			return;
+
+		$sql = $this->getPortalSql();
+		$profiler = $sql->getAdapter()->getProfiler();
+
+		Utils::$context['lp_portal_queries'] = $profiler->getProfiles();
 	}
 
 	protected function fixCanonicalUrl(): void

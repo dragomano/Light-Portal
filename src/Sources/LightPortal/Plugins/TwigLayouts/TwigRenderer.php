@@ -8,27 +8,22 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 02.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\TwigLayouts;
+namespace LightPortal\Plugins\TwigLayouts;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\LightPortal\Renderers\AbstractRenderer;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Renderers\AbstractRenderer;
+use LightPortal\Utils\Icon;
 use Twig\Environment;
 use Twig\Error\Error;
+use Twig\Loader\ArrayLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
-
-use function ob_get_clean;
-use function ob_start;
-use function print_r;
-use function show_pagination;
-use function str_replace;
 
 class TwigRenderer extends AbstractRenderer
 {
@@ -36,39 +31,16 @@ class TwigRenderer extends AbstractRenderer
 
 	public function render(string $layout, array $params = []): string
 	{
-		if (empty($layout))
+		if (empty($layout)) {
 			return '';
+		}
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
 		ob_start();
 
 		try {
-			$loader = new FilesystemLoader($this->customDir);
-
-			$twig = new Environment($loader, [
-				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Sapi::getTempDir(),
-				'debug' => false
-			]);
-
-			$twig->addFunction(new TwigFunction('show_pagination', static function (string $position = 'top') {
-				show_pagination($position);
-			}));
-
-			$twig->addFunction(new TwigFunction('icon', static function (string $name, string $title = '') {
-				$icon = Icon::get($name);
-
-				if (empty($title)) {
-					echo $icon;
-					return;
-				}
-
-				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
-			}));
-
-			$twig->addFunction(new TwigFunction('debug', static function (mixed $data) {
-				echo BBCodeParser::load()->parse('[code]' . print_r($data, true) . '[/code]');
-			}));
+			$twig = $this->createTwigInstance();
 
 			echo $twig->render($layout, $params);
 		} catch (Error $e) {
@@ -76,5 +48,65 @@ class TwigRenderer extends AbstractRenderer
 		}
 
 		return ob_get_clean();
+	}
+
+	public function renderString(string $string, array $params = []): string
+	{
+		if (empty($string)) {
+			return '';
+		}
+
+		require_once __DIR__ . '/vendor/autoload.php';
+
+		ob_start();
+
+		try {
+			$twig = $this->createTwigInstance();
+			$twig->setLoader(new ArrayLoader());
+
+			$template = $twig->createTemplate($string);
+
+			echo $template->render($params);
+		} catch (Error $e) {
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
+
+		return ob_get_clean();
+	}
+
+	private function createTwigInstance(): Environment
+	{
+		$loader = new FilesystemLoader($this->customDir);
+
+		$twig = new Environment($loader, [
+			'cache' => empty(Config::$modSettings['cache_enable']) ? false : Sapi::getTempDir(),
+			'debug' => false,
+		]);
+
+		$this->setupFunctions($twig);
+
+		return $twig;
+	}
+
+	private function setupFunctions(Environment $twig): void
+	{
+		$twig->addFunction(new TwigFunction('show_pagination', static function (string $position = 'top') {
+			show_pagination($position);
+		}));
+
+		$twig->addFunction(new TwigFunction('icon', static function (string $name, string $title = '') {
+			$icon = Icon::get($name);
+
+			if (empty($title)) {
+				echo $icon;
+				return;
+			}
+
+			echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
+		}));
+
+		$twig->addFunction(new TwigFunction('debug', static function (mixed $data) {
+			echo BBCodeParser::load()->parse('[code]' . print_r($data, true) . '[/code]');
+		}));
 	}
 }

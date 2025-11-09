@@ -8,46 +8,48 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.03.25
+ * @version 08.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\CategoryList;
+namespace LightPortal\Plugins\CategoryList;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Category;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Actions\CategoryIndex;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
+
+use function LightPortal\app;
+
+use const LP_ACTION;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-folder')]
 class CategoryList extends Block
 {
-	public string $icon = 'fas fa-folder';
-
 	public function getData(): array
 	{
-		return app(Category::class)->getAll(0, 0, 'c.priority');
+		return app(CategoryIndex::class)->getAll(0, 0, 'c.priority');
 	}
 
 	public function prepareContent(Event $e): void
 	{
 		$categories = $this->userCache($this->name . '_addon')
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData());
+			->setFallback($this->getData(...));
 
 		if (empty($categories)) {
 			echo $this->txt['no_items'];
 			return;
 		}
 
-		$currentCat = Utils::$context['current_action'] === 'portal'
-			&& $this->request()->has('sa')
-			&& $this->request()->get('sa') === PortalSubAction::CATEGORIES->name()
-				? Typed::int($this->request()->get('id')) : false;
+		$currentCat = Utils::$context['current_action'] === LP_ACTION
+			&& $this->request()->sa(PortalSubAction::CATEGORIES->name())
+				? Str::typed('int', $this->request()->get('id')) : false;
 
 		if (isset(Utils::$context['lp_page']['category_id'])) {
 			$currentCat = Utils::$context['lp_page']['category_id'];
@@ -64,7 +66,7 @@ class CategoryList extends Block
 				$subbg->addHtml(
 					Str::html('a', ['href' => $category['link']])
 						->setHtml($category['icon'] . ' ' . $category['title'])
-				)->addHtml(' ' . Str::html('span', $category['num_pages'])
+				)->addHtml(' ' . Str::html('span', (string) $category['num_pages'])
 					->class('floatright amt')
 				);
 

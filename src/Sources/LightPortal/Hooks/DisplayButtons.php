@@ -7,17 +7,16 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\Setting;
-
-use function in_array;
+use LightPortal\Enums\FrontPageMode;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +25,7 @@ class DisplayButtons
 {
 	public function __invoke(): void
 	{
-		if (empty(User::$me->is_admin) || Setting::isFrontpageMode('chosen_topics') === false)
+		if (empty(User::$me->is_admin) || Setting::isFrontpageMode(FrontPageMode::CHOSEN_TOPICS->value) === false)
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [

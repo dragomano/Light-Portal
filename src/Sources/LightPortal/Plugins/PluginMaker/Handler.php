@@ -8,40 +8,37 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 30.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\UI\Partials\IconSelect;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasTemplate;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\Tab;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Fields\UrlField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasView;
 
-use function array_filter;
-use function array_keys;
-use function array_merge;
-use function array_unique;
-use function count;
-use function in_array;
-use function is_writable;
-use function sprintf;
+use function LightPortal\app;
 
+use const LP_ADDON_DIR;
+use const LP_ADDON_PATTERN;
 use const LP_NAME;
 
 if (! defined('LP_NAME'))
@@ -50,10 +47,12 @@ if (! defined('LP_NAME'))
 class Handler
 {
 	use HasArea;
-	use HasTemplate;
 	use HasRequest;
+	use HasView;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
+
+	public function __construct(private readonly EventDispatcherInterface $dispatcher) {}
 
 	public function add(): void
 	{
@@ -63,7 +62,7 @@ class Handler
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_plugin_maker']['add_desc']
+			'description' => Lang::$txt['lp_plugin_maker']['add_desc'],
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
@@ -85,7 +84,9 @@ class Handler
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
-		$this->useTemplate()->withSubTemplate('plugin_post');
+		$this->useCustomTemplate();
+
+		Utils::obExit();
 	}
 
 	public function prepareForumLanguages(): void
@@ -115,11 +116,13 @@ class Handler
 
 	private function validateData(): void
 	{
-		$postData = (new Validator())->validate();
+		app()->add(Validator::class)->addArguments([PortalSqlInterface::class, EventDispatcherInterface::class]);
+
+		$postData = app(Validator::class)->validate();
 
 		Utils::$context['lp_plugin'] = [
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
-			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
+			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? PluginType::BLOCK->name(),
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
 			'author'     => $postData['author']
 								?? Utils::$context['lp_plugin']['author']
@@ -131,7 +134,7 @@ class Handler
 			'site'       => $postData['site']
 								?? Utils::$context['lp_plugin']['site']
 								?? Utils::$context['lp_plugin_maker_plugin']['site']
-								?? '',
+								?? 'https://custom.simplemachines.org/index.php?mod=4244',
 			'license'    => $postData['license']
 								?? Utils::$context['lp_plugin']['license']
 								?? Utils::$context['lp_plugin_maker_plugin']['license']
@@ -142,9 +145,9 @@ class Handler
 			'options'    => Utils::$context['lp_plugin']['options'] ?? []
 		];
 
-		if (Utils::$context['lp_plugin']['type'] !== 'block' || Utils::$context['lp_plugin']['icon'] === 'undefined') {
-			Utils::$context['lp_plugin']['icon'] = '';
-		}
+		$this->prepareTypes();
+
+		$this->validateIcon();
 
 		if (! empty($postData['option_name'])) {
 			foreach ($postData['option_name'] as $id => $option) {
@@ -194,26 +197,24 @@ class Handler
 			->setTab(Tab::CONTENT)
 			->setDescription(Lang::$txt['lp_plugin_maker']['name_subtext'])
 			->required()
-			->setAttribute('maxlength', 255)
-			->setAttribute('pattern', LP_ADDON_PATTERN)
-			->setAttribute('style', 'width: 100%')
-			->setAttribute('@change', 'plugin.updateState($event.target.value, $refs)')
+			->setAttributes([
+				'maxlength' => 255,
+				'pattern'   => LP_ADDON_PATTERN,
+				'style'     => 'width: 100%',
+				'@change'   => 'plugin.updateState($event.target.value, $refs)',
+			])
 			->setValue(Utils::$context['lp_plugin']['name']);
 
-		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
+		CustomField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab(Tab::CONTENT)
-			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(
-				Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()
-			))
-			->setValue(Utils::$context['lp_plugin']['type']);
+			->setValue(static fn() => new TypeSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new IconSelect(), [
+			->setValue(static fn() => SelectFactory::icon([
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
-			]);
+			]));
 
 		$this->setTitleField();
 
@@ -350,9 +351,36 @@ class Handler
 		$this->response()->redirect('action=admin;area=lp_plugins;sa=main');
 	}
 
+	private function prepareTypes(): void
+	{
+		$types = explode(',', Utils::$context['lp_plugin']['type']);
+
+		if (in_array(PluginType::GAMES->name(), $types) || in_array(PluginType::SSI->name(), $types)) {
+			$types = array_unique(array_merge([PluginType::BLOCK->name()], $types));
+		}
+
+		Utils::$context['lp_plugin']['types'] = $types;
+	}
+
+	private function validateIcon(): void
+	{
+		$types = Utils::$context['lp_plugin']['types'];
+		$icon  = Utils::$context['lp_plugin']['icon'];
+
+		$excludes = [
+			PluginType::BLOCK->name(),
+			PluginType::GAMES->name(),
+			PluginType::SSI->name(),
+		];
+
+		if (empty(array_intersect($types, $excludes)) || $icon === 'undefined') {
+			Utils::$context['lp_plugin']['icon'] = '';
+		}
+	}
+
 	private function saveAuthorData(): void
 	{
-		app(PluginRepository::class)->changeSettings('plugin_maker', [
+		app(PluginRepositoryInterface::class)->changeSettings('plugin_maker', [
 			'author'  => Utils::$context['lp_plugin']['author'],
 			'email'   => Utils::$context['lp_plugin']['email'],
 			'site'    => Utils::$context['lp_plugin']['site'],

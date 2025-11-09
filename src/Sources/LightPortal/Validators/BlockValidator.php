@@ -7,17 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-
-use function array_keys;
-use function array_merge;
-use function filter_var_array;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventDispatcherInterface;
 
 class BlockValidator extends AbstractValidator
 {
@@ -25,34 +23,51 @@ class BlockValidator extends AbstractValidator
 		'block_id'      => FILTER_VALIDATE_INT,
 		'icon'          => FILTER_DEFAULT,
 		'type'          => FILTER_DEFAULT,
-		'note'          => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'description'   => FILTER_UNSAFE_RAW,
 		'content'       => FILTER_UNSAFE_RAW,
 		'placement'     => FILTER_DEFAULT,
 		'priority'      => FILTER_VALIDATE_INT,
 		'permissions'   => FILTER_VALIDATE_INT,
-		'areas'         => [
-			'filter'  => FILTER_VALIDATE_REGEXP,
-			'options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/'],
-		],
 		'title_class'   => FILTER_DEFAULT,
 		'content_class' => FILTER_DEFAULT,
 	];
 
 	protected array $customFilters = [
-		'hide_header'      => FILTER_VALIDATE_BOOLEAN,
-		'no_content_class' => FILTER_VALIDATE_BOOLEAN,
-		'link_in_title'    => FILTER_VALIDATE_URL,
+		'hide_header'   => FILTER_VALIDATE_BOOLEAN,
+		'link_in_title' => FILTER_VALIDATE_URL,
 	];
+
+	public function __construct(PortalSqlInterface $sql, EventDispatcherInterface $dispatcher)
+	{
+		parent::__construct($sql, $dispatcher);
+
+		$this->filters['areas'] = [
+			'filter'  => FILTER_CALLBACK,
+			'options' => $this->regexpOrEmpty('/' . LP_AREAS_PATTERN . '/'),
+		];
+	}
+
+	protected function regexpOrEmpty(string $pattern): callable
+	{
+		return static function ($value) use ($pattern) {
+			if ($value === null || $value === '') {
+				return '';
+			}
+
+			return preg_match($pattern, $value) ? $value : '';
+		};
+	}
 
 	protected function extendFilters(): void
 	{
 		$filters = [];
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::validateBlockParams,
 			[
-				'params' => &$filters,
-				'type'   => Utils::$context['lp_current_block']['type'],
+				'baseParams' => &$this->customFilters,
+				'params'     => &$filters,
+				'type'       => Utils::$context['lp_current_block']['type'],
 			]
 		);
 
@@ -72,7 +87,7 @@ class BlockValidator extends AbstractValidator
 
 		$this->checkAreas();
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::findBlockErrors,
 			[
 				'errors' => &$this->errors,
@@ -84,17 +99,13 @@ class BlockValidator extends AbstractValidator
 	protected function checkAreas(): void
 	{
 		$areasValue = $this->post()->get('areas');
-		$validatedAreas = $this->filteredData['areas'] ?? null;
+		$validated  = $this->filteredData['areas'] ?? null;
 
-		$isEmptyAreas = empty($areasValue);
-		$isInvalidAreas = ! $isEmptyAreas && $validatedAreas === false;
-
-		if ($isEmptyAreas) {
+		if (empty($areasValue)) {
 			$this->errors[] = 'no_areas';
-		}
-
-		if ($isInvalidAreas) {
+		} elseif ($validated === false) {
 			$this->errors[] = 'no_valid_areas';
+
 			$this->filteredData['areas'] = $areasValue;
 		}
 	}

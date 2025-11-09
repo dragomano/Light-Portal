@@ -8,32 +8,31 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Translator;
+namespace LightPortal\Plugins\Translator;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-language', showContentClass: false)]
 class Translator extends Block
 {
-	public string $icon = 'fas fa-language';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
-			'engine'           => 'google',
-			'widget_theme'     => 'light',
-			'auto_mode'        => false,
+			'engine'       => 'google',
+			'widget_theme' => 'light',
+			'auto_mode'    => false,
 		];
 	}
 
@@ -96,11 +95,11 @@ class Translator extends Block
 				->src('https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
 
 			echo Str::html('script')->setText('
-			    function googleTranslateElementInit() {
-			        new google.translate.TranslateElement({
-			            pageLanguage: "' . substr(Config::$language ?? '', 0, 2) . '"
-			        }, "google_translate_element' . $id . '");
-			    }
+				function googleTranslateElementInit() {
+					new google.translate.TranslateElement({
+						pageLanguage: "' . substr(Config::$language ?? '', 0, 2) . '"
+					}, "google_translate_element' . $id . '");
+				}
 			');
 		}
 	}

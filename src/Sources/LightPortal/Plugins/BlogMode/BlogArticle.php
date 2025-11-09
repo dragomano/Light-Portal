@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 23.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\BlogMode;
+namespace LightPortal\Plugins\BlogMode;
 
-use Bugo\LightPortal\Articles\PageArticle;
+use LightPortal\Articles\PageArticle;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -21,13 +21,4 @@ if (! defined('LP_NAME'))
 class BlogArticle extends PageArticle
 {
 	public const TYPE = 'blog';
-
-	public function init(): void
-	{
-		parent::init();
-
-		$this->selectedCategories = [];
-
-		$this->params['entry_type'] = self::TYPE;
-	}
 }

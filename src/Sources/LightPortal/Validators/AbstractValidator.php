@@ -7,24 +7,19 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-
-use function array_filter;
-use function filter_var_array;
-use function is_array;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Utils\Traits\HasRequest;
 
 abstract class AbstractValidator implements ValidatorInterface
 {
-	use HasEvents;
 	use HasRequest;
 
 	protected array $filters = [];
@@ -33,11 +28,11 @@ abstract class AbstractValidator implements ValidatorInterface
 
 	protected array $errors = [];
 
-	public function __construct()
+	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
 	{
-		$this->filters['titles'] = [
+		$this->filters['title'] = [
 			'filter'  => FILTER_CALLBACK,
-			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_NOQUOTES),
+			'options' => fn($title) => Utils::htmlspecialchars(strip_tags($title), ENT_NOQUOTES),
 		];
 	}
 
@@ -61,17 +56,17 @@ abstract class AbstractValidator implements ValidatorInterface
 
 	protected function modifyData(): void {}
 
+	protected function extendErrors(): void {}
+
 	protected function checkErrors(): void
 	{
-		if (empty($this->filteredData['titles'][Language::getCurrent()])) {
+		if (empty($this->filteredData['title'])) {
 			$this->errors[] = 'no_title';
 		}
 
 		$this->extendErrors();
 		$this->handleErrors();
 	}
-
-	protected function extendErrors(): void	{}
 
 	protected function handleErrors(): void
 	{
@@ -87,6 +82,26 @@ abstract class AbstractValidator implements ValidatorInterface
 		}
 	}
 
+	protected function checkSlug(): void
+	{
+		$rawSlug   = $this->post()->get('slug');
+		$validated = $this->filteredData['slug'] ?? null;
+
+		if ($rawSlug === null || $rawSlug === '') {
+			$this->errors[] = 'no_slug';
+		}
+
+		if ($validated === false) {
+			$this->errors[] = 'no_valid_slug';
+
+			$this->filteredData['slug'] = $rawSlug;
+		}
+
+		if (! $this->isUnique()) {
+			$this->errors[] = 'no_unique_slug';
+		}
+	}
+
 	protected function isUnique(): bool
 	{
 		return true;
@@ -94,14 +109,12 @@ abstract class AbstractValidator implements ValidatorInterface
 
 	private function recursiveArrayFilter($array): array
 	{
-		$filteredArray = array_filter($array, fn($value) => $value !== null);
-
-		foreach ($filteredArray as $key => $value) {
+		foreach ($array as $key => $value) {
 			if (is_array($value)) {
-				$filteredArray[$key] = $this->recursiveArrayFilter($value);
+				$array[$key] = $this->recursiveArrayFilter($value);
 			}
 		}
 
-		return $filteredArray;
+		return array_filter($array, static fn($v) => $v !== null);
 	}
 }

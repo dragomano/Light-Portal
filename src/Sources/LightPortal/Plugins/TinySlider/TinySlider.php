@@ -8,31 +8,35 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinySlider;
+namespace LightPortal\Plugins\TinySlider;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\AssetBuilder;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-images')]
 class TinySlider extends Block
 {
-	public string $icon = 'far fa-images';
+	use HasView;
 
 	private array $params = [
 		'axis'               => 'horizontal',
@@ -109,7 +113,7 @@ class TinySlider extends Block
 
 		CustomField::make('images', $this->txt['images'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('tiny_slider_images', $options));
+			->setValue($this->view(params: ['options' => $options]));
 
 		RadioField::make('axis', $this->txt['axis'])
 			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
@@ -178,10 +182,11 @@ class TinySlider extends Block
 			->setValue($options['mouse_drag']);
 	}
 
-	public function getData(int $id, ParamWrapper $parameters): array
+	public function getData(int $id, NamedParameterMap $parameters): array
 	{
-		if (empty($parameters['images']))
+		if (empty($parameters['images'])) {
 			return [];
+		}
 
 		$tinySlider = Str::html('div', ['id' => $this->name . $id]);
 
@@ -262,8 +267,10 @@ class TinySlider extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+		$builder = new AssetBuilder($this);
+		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
+		$builder->css()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
+		$builder->appendTo($e->args->assets);
 	}
 
 	public function prepareContent(Event $e): void

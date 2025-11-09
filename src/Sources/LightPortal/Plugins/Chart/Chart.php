@@ -8,27 +8,31 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 29.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Chart;
+namespace LightPortal\Plugins\Chart;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\AssetBuilder;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-chart-simple')]
 class Chart extends Block
 {
-	public string $icon = 'fas fa-chart-simple';
+	use HasView;
 
 	private array $params = [
 		'chart_title'     => '',
@@ -96,7 +100,7 @@ class Chart extends Block
 
 		CustomField::make($this->name, $this->txt['datasets'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('chart_template', $options));
+			->setValue($this->view(params: ['options' => $options]));
 
 		TextField::make('labels', $this->txt['labels'])
 			->setTab(Tab::CONTENT)
@@ -118,7 +122,9 @@ class Chart extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
+		$builder = new AssetBuilder($this);
+		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js');
+		$builder->appendTo($e->args->assets);
 	}
 
 	public function prepareContent(Event $e): void

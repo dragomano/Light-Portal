@@ -12,11 +12,11 @@ We will not describe in detail each of the available settings, we will only ment
 
 ## General settings
 
-In this section, you can fully customize the portal frontpage, enable standalone mode, and change user permissions to access portal items.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Settings for the frontpage and articles
+### Settings for the front page and articles
 
-To change the content of the portal home page, select the appropriate "the portal frontpage" mode:
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Disabled
 - Specified page (only the selected page will be displayed)
@@ -51,7 +51,7 @@ In this section, you can change various auxiliary settings of the portal, which 
 ### Compatibility mode
 
 - The value of the **action** parameter of the portal - you can change this setting to use the Light Portal in conjunction with other similar modifications. Then the home page will open at the specified address.
-- The **page** parameter for portal pages - see above. Similarly, for portal pages - change the parameter and they will open with different URls.
+- The **page** parameter for portal pages - see above. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Maintenance
 

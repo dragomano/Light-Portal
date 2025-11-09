@@ -8,51 +8,49 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\ArticleList;
+namespace LightPortal\Plugins\ArticleList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\ContentClassSelect;
-use Bugo\LightPortal\UI\Partials\PageSelect;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\ForumPermissions;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasTranslationJoins;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-file-alt', showContentClass: false)]
 class ArticleList extends Block
 {
-	public string $icon = 'far fa-file-alt';
+	use HasTranslationJoins;
 
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
-			'body_class'       => 'descbox',
-			'display_type'     => 0,
-			'include_topics'   => '',
-			'include_pages'    => '',
-			'seek_images'      => false,
+			'body_class'     => 'descbox',
+			'display_type'   => 0,
+			'include_topics' => '',
+			'include_pages'  => '',
+			'seek_images'    => false,
 		];
 	}
 
@@ -73,147 +71,41 @@ class ArticleList extends Block
 
 		CustomField::make('body_class', $this->txt['body_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new ContentClassSelect(), [
+			->setValue(static fn() => SelectFactory::contentClass([
 				'id'    => 'body_class',
 				'value' => $options['body_class'],
-			]);
+			]));
 
 		RadioField::make('display_type', $this->txt['display_type'])
 			->setTab(Tab::CONTENT)
 			->setOptions($this->txt['display_type_set'])
-			->setValue($options['display_type']);
+			->setValue(Str::typed('int', $options['display_type']));
 
 		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new TopicSelect(), [
+			->setValue(fn() => SelectFactory::topic([
 				'id'    => 'include_topics',
 				'hint'  => $this->txt['include_topics_select'],
 				'value' => $options['include_topics'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_pages', $this->txt['include_pages'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new PageSelect(), [
+			->setValue(fn() => SelectFactory::page([
 				'id'    => 'include_pages',
 				'hint'  => $this->txt['include_pages_select'],
 				'value' => $options['include_pages'] ?? '',
-			]);
+			]));
 
 		CheckboxField::make('seek_images', $this->txt['seek_images'])
 			->setValue($options['seek_images']);
-	}
-
-	public function getTopics(ParamWrapper $parameters): array
-	{
-		if (empty($parameters['include_topics']))
-			return [];
-
-		$result = Db::$db->query('', '
-			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
-				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
-			WHERE t.id_topic IN ({array_int:topics})
-				AND {query_wanna_see_board}
-				AND t.approved = {int:is_approved}
-				AND m.approved = {int:is_approved}
-			ORDER BY t.id_last_msg DESC',
-			[
-				'topics'      => explode(',', (string) $parameters['include_topics']),
-				'is_approved' => 1,
-			]
-		);
-
-		$topics = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			Lang::censorText($row['subject']);
-			Lang::censorText($row['body']);
-
-			$value = null;
-			$image = empty($parameters['seek_images'])
-				? ''
-				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
-			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
-
-			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
-
-			$topics[$row['id_topic']] = [
-				'id'          => $row['id_topic'],
-				'title'       => $row['subject'],
-				'description' => Str::getTeaser($body),
-				'image'       => $image,
-			];
-		}
-
-		Db::$db->free_result($result);
-
-		return $topics;
-	}
-
-	public function getPages(ParamWrapper $parameters): array
-	{
-		if (empty($parameters['include_pages']))
-			return [];
-
-		$result = Db::$db->query('', '
-			SELECT
-				p.page_id, p.slug, p.content, p.description, p.type,
-				(
-					SELECT value
-					FROM {db_prefix}lp_titles
-					WHERE item_id = p.page_id
-						AND type = {literal:page}
-						AND lang IN ({string:lang}, {string:fallback_lang})
-					ORDER BY lang = {string:lang} DESC
-					LIMIT 1
-				) AS page_title
-			FROM {db_prefix}lp_pages AS p
-			WHERE p.status = {int:status}
-				AND p.entry_type = {string:entry_type}
-				AND p.deleted_at = 0
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id IN ({array_int:pages})
-			ORDER BY p.page_id DESC',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'entry_type'    => EntryType::DEFAULT->name(),
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'pages'         => explode(',', (string) $parameters['include_pages']),
-			]
-		);
-
-		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			if (Setting::isFrontpage($row['slug']))
-				continue;
-
-			$row['content'] = Content::parse($row['content'], $row['type']);
-
-			$image = empty($parameters['seek_images']) ? '' : Str::getImageFromText($row['content']);
-
-			$pages[$row['page_id']] = [
-				'id'          => $row['page_id'],
-				'title'       => $row['page_title'],
-				'slug'        => $row['slug'],
-				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
-				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
-			];
-		}
-
-		Db::$db->free_result($result);
-
-		return $pages;
 	}
 
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
 
-		$type = Typed::int($parameters['display_type']);
+		$type = Str::typed('int', $parameters['display_type']);
 
 		$articles = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
@@ -221,7 +113,7 @@ class ArticleList extends Block
 
 		if ($articles) {
 			$articleList = Str::html('div')->class($this->name);
-			$bodyClass = Typed::string($parameters['body_class']);
+			$bodyClass = Str::typed('string', $parameters['body_class']);
 
 			if ($type === 0) {
 				foreach ($articles as $topic) {
@@ -283,5 +175,105 @@ class ArticleList extends Block
 			echo Str::html('div', $this->txt['no_items'])
 				->class('errorbox');
 		}
+	}
+
+	public function getTopics(NamedParameterMap $parameters): array
+	{
+		if (empty($parameters['include_topics'])) {
+			return [];
+		}
+
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns([])
+			->join(
+				['m' => 'messages'],
+				't.id_first_msg = m.id_msg',
+				['id_topic', 'id_msg', 'subject', 'body', 'smileys_enabled']
+			)
+			->join(['b' => 'boards'], 't.id_board = b.id_board', [])
+			->where(['t.id_topic' => explode(',', (string) $parameters['include_topics'])])
+			->where(['t.approved' => 1, 'm.approved' => 1]);
+
+		if (ForumPermissions::shouldApplyBoardPermissionCheck()) {
+			$select->where(ForumPermissions::canSeeBoard());
+		}
+
+		$select->order('t.id_last_msg DESC');
+
+		$result = $this->sql->execute($select);
+
+		$topics = [];
+		foreach ($result as $row) {
+			Lang::censorText($row['subject']);
+			Lang::censorText($row['body']);
+
+			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
+
+			$topics[$row['id_topic']] = [
+				'id'          => $row['id_topic'],
+				'title'       => $row['subject'],
+				'description' => Str::getTeaser($body),
+				'image'       => $this->getImage($row['body'], ! empty($parameters['seek_images'])),
+			];
+		}
+
+		return $topics;
+	}
+
+	public function getPages(NamedParameterMap $parameters): array
+	{
+		if (empty($parameters['include_pages'])) {
+			return [];
+		}
+
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns(['page_id', 'slug', 'type'])
+			->where([
+				'p.status'          => Status::ACTIVE->value,
+				'p.entry_type'      => EntryType::DEFAULT->name(),
+				'p.deleted_at'      => 0,
+				'p.created_at <= ?' => time(),
+			])
+			->where(['p.permissions' => Permission::all()])
+			->where(['p.page_id' => explode(',', (string) $parameters['include_pages'])])
+			->order('p.page_id DESC');
+
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+
+		$result = $this->sql->execute($select);
+
+		$pages = [];
+		foreach ($result as $row) {
+			if (Setting::isFrontpage($row['slug']))
+				continue;
+
+			Lang::censorText($row['title']);
+			Lang::censorText($row['content']);
+			Lang::censorText($row['description']);
+
+			$row['content'] = Content::parse($row['content'], $row['type']);
+
+			$image = empty($parameters['seek_images']) ? '' : Str::getImageFromText($row['content']);
+
+			$pages[$row['page_id']] = [
+				'id'          => $row['page_id'],
+				'slug'        => $row['slug'],
+				'image'       => $image,
+				'title'       => Str::decodeHtmlEntities($row['title']),
+				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
+			];
+		}
+
+		return $pages;
+	}
+
+	private function getImage(mixed $body, bool $seekImages = true)
+	{
+		$value = null;
+		$image = $seekImages ? preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $body, $value) : '';
+
+		return $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 	}
 }

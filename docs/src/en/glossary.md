@@ -20,7 +20,7 @@ The locomotive of the portal. Ability to customize interaction with third-party 
 
 ## article
 
-Cards on the frontpage that display the content set in the settings: forum boards or topics, pages, images, etc.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## category
 

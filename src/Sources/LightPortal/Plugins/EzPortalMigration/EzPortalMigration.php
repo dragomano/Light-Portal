@@ -8,28 +8,31 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\EzPortalMigration;
+namespace LightPortal\Plugins\EzPortalMigration;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\Icon;
+
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::IMPEX)]
 class EzPortalMigration extends Plugin
 {
-	public string $type = 'impex';
-
 	private const AREA = 'import_from_ez';
 
-	public function updateAdminAreas(Event $e): void
+	public function extendAdminAreas(Event $e): void
 	{
 		$areas = &$e->args->areas;
 
@@ -44,42 +47,19 @@ class EzPortalMigration extends Plugin
 		}
 	}
 
-	public function updateBlockAreas(Event $e): void
+	public function extendBlockAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new BlockImport(), 'main'];
+		app()->add(BlockImport::class)
+			->addArguments([PortalSqlInterface::class, ErrorHandlerInterface::class]);
+
+		$e->args->areas[self::AREA] = [app(BlockImport::class), 'main'];
 	}
 
-	public function updatePageAreas(Event $e): void
+	public function extendPageAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new PageImport(), 'main'];
-	}
+		app()->add(PageImport::class)
+			->addArguments([PortalSqlInterface::class, ErrorHandlerInterface::class]);
 
-	public function importPages(Event $e): void
-	{
-		if ($this->request()->get('sa') !== self::AREA)
-			return;
-
-		$items  = &$e->args->items;
-		$titles = &$e->args->titles;
-
-		foreach ($items as $pageId => $item) {
-			$titles[] = [
-				'item_id' => $pageId,
-				'type'    => 'page',
-				'lang'    => Config::$language,
-				'title'   => $item['subject'],
-			];
-
-			if (Config::$language !== Language::getFallbackValue() && ! empty(Config::$modSettings['userLanguage'])) {
-				$titles[] = [
-					'item_id' => $pageId,
-					'type'    => 'page',
-					'lang'    => Language::getFallbackValue(),
-					'title'   => $item['subject'],
-				];
-			}
-
-			unset($items[$pageId]['subject']);
-		}
+		$e->args->areas[self::AREA] = [app(PageImport::class), 'main'];
 	}
 }

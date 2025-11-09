@@ -7,198 +7,115 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Enums\Status;
+use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\Utils\Traits\HasSession;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class SessionManager
+final readonly class SessionManager
 {
 	use HasSession;
 
+	public function __construct(
+		private BlockRepositoryInterface $blockRepository,
+		private PageRepositoryInterface $pageRepository,
+		private CategoryRepositoryInterface $categoryRepository,
+		private TagRepositoryInterface $tagRepository
+	) {}
+
 	public function __invoke(): array
 	{
+		$result = [];
+
+		foreach ($this->getCountConfig() as $key => $config) {
+			$result[$key] = $this->getCount($key);
+		}
+
+		return $result;
+	}
+
+	private function getCountConfig(): array
+	{
+		$userKey = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
+
+		$activePagesConditions = [
+			'status'     => Status::ACTIVE->value,
+			'deleted_at' => 0,
+		];
+
+		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
+			$activePagesConditions['author_id'] = User::$me->id;
+		}
+
 		return [
-			'active_blocks'     => $this->getActiveBlocksCount(),
-			'active_pages'      => $this->getActivePagesCount(),
-			'my_pages'          => $this->getMyPagesCount(),
-			'unapproved_pages'  => $this->getUnapprovedPagesCount(),
-			'deleted_pages'     => $this->getDeletedPagesCount(),
-			'active_categories' => $this->getActiveCategoriesCount(),
-			'active_tags'       => $this->getActiveTagsCount(),
+			'active_blocks' => [
+				'repository' => $this->blockRepository,
+				'conditions' => ['status' => Status::ACTIVE->value]
+			],
+			'active_pages' => [
+				'cache_key' => 'active_pages' . $userKey,
+				'repository' => $this->pageRepository,
+				'conditions' => $activePagesConditions
+			],
+			'my_pages' => [
+				'cache_key' => 'my_pages' . $userKey,
+				'repository' => $this->pageRepository,
+				'conditions' => [
+					'author_id'  => User::$me->id,
+					'deleted_at' => 0,
+				]
+			],
+			'unapproved_pages' => [
+				'repository' => $this->pageRepository,
+				'conditions' => [
+					'status'     => Status::UNAPPROVED->value,
+					'deleted_at' => 0,
+				]
+			],
+			'deleted_pages' => [
+				'repository' => $this->pageRepository,
+				'conditions' => ['deleted_at != ?' => 0]
+			],
+			'active_categories' => [
+				'repository' => $this->categoryRepository,
+				'conditions' => ['status' => Status::ACTIVE->value]
+			],
+			'active_tags' => [
+				'repository' => $this->tagRepository,
+				'conditions' => ['status' => Status::ACTIVE->value]
+			],
 		];
 	}
 
-	private function getActiveBlocksCount(): int
+	private function getCount(string $type): int
 	{
-		if ($this->session('lp')->get('active_blocks') === null) {
-			$result = Db::$db->query('', '
-				SELECT COUNT(block_id)
-				FROM {db_prefix}lp_blocks
-				WHERE status = {int:status}',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
+		$config = $this->getCountConfig()[$type];
 
-			[$count] = Db::$db->fetch_row($result);
+		$cacheKey = $config['cache_key'] ?? $type;
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_blocks', (int) $count);
-		}
-
-		return $this->session('lp')->get('active_blocks') ?? 0;
+		return $this->getCachedCount($cacheKey, $config['repository'], $config['conditions']);
 	}
 
-	private function getActivePagesCount(): int
+	private function getCachedCount(string $cacheKey, object $repository, array|callable $conditions = []): int
 	{
-		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
+		if ($this->session('lp')->get($cacheKey) === null) {
+			$whereConditions = is_callable($conditions) ? $conditions() : $conditions;
 
-		if ($this->session('lp')->get('active_pages' . $key) === null) {
-			$result = Db::$db->query('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}
-					AND deleted_at = 0
-					AND entry_type = {string:entry_type}' . (User::$me->allowedTo('light_portal_manage_pages_any') ? '' : '
-					AND author_id = {int:author}'),
-				[
-					'status'     => Status::ACTIVE->value,
-					'entry_type' => EntryType::DEFAULT->name(),
-					'author'     => User::$me->id,
-				]
-			);
-
-			[$count] = Db::$db->fetch_row($result);
-
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_pages' . $key, (int) $count);
+			$count = $repository->getTotalCount('', $whereConditions);
+			$this->session('lp')->put($cacheKey, $count);
 		}
 
-		return $this->session('lp')->get('active_pages' . $key) ?? 0;
-	}
-
-	private function getMyPagesCount(): int
-	{
-		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
-
-		if ($this->session('lp')->get('my_pages' . $key) === null) {
-			$result = Db::$db->query('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE author_id = {int:author}
-					AND deleted_at = 0
-					AND entry_type = {string:entry_type}',
-				[
-					'author'     => User::$me->id,
-					'entry_type' => EntryType::DEFAULT->name(),
-				]
-			);
-
-			[$count] = Db::$db->fetch_row($result);
-
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('my_pages' . $key, (int) $count);
-		}
-
-		return $this->session('lp')->get('my_pages' . $key) ?? 0;
-	}
-
-	private function getUnapprovedPagesCount(): int
-	{
-		if ($this->session('lp')->get('unapproved_pages') === null) {
-			$result = Db::$db->query('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}
-					AND deleted_at = 0',
-				[
-					'status' => Status::UNAPPROVED->value,
-				]
-			);
-
-			[$count] = Db::$db->fetch_row($result);
-
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('unapproved_pages', (int) $count);
-		}
-
-		return $this->session('lp')->get('unapproved_pages') ?? 0;
-	}
-
-	private function getDeletedPagesCount(): int
-	{
-		if ($this->session('lp')->get('deleted_pages') === null) {
-			$result = Db::$db->query('', /** @lang text */ '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE deleted_at <> 0',
-			);
-
-			[$count] = Db::$db->fetch_row($result);
-
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('deleted_pages', (int) $count);
-		}
-
-		return $this->session('lp')->get('deleted_pages') ?? 0;
-	}
-
-	private function getActiveCategoriesCount(): int
-	{
-		if ($this->session('lp')->get('active_categories') === null) {
-			$result = Db::$db->query('', '
-				SELECT COUNT(category_id)
-				FROM {db_prefix}lp_categories
-				WHERE status = {int:status}',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
-
-			[$count] = Db::$db->fetch_row($result);
-
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_categories', (int) $count);
-		}
-
-		return $this->session('lp')->get('active_categories') ?? 0;
-	}
-
-	private function getActiveTagsCount(): int
-	{
-		if ($this->session('lp')->get('active_tags') === null) {
-			$result = Db::$db->query('', '
-				SELECT COUNT(tag_id)
-				FROM {db_prefix}lp_tags
-				WHERE status = {int:status}',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
-
-			[$count] = Db::$db->fetch_row($result);
-
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_tags', (int) $count);
-		}
-
-		return $this->session('lp')->get('active_tags') ?? 0;
+		return $this->session('lp')->get($cacheKey) ?? 0;
 	}
 }

@@ -8,40 +8,39 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\PageList;
+namespace LightPortal\Plugins\PageList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\VirtualSelectField;
-use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
-use Bugo\LightPortal\UI\Partials\CategorySelect;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Tab;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\VirtualSelectField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+
+use Ramsey\Collection\Map\NamedParameterMap;
+
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-file-alt')]
 class PageList extends Block
 {
-	public string $icon = 'far fa-file-alt';
-
 	private const SORTING_SET = [
 		'page_id', 'author_name', 'title', 'slug', 'type', 'num_views', 'created_at', 'updated_at'
 	];
@@ -72,18 +71,18 @@ class PageList extends Block
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new CategorySelect(), [
+			->setValue(fn() => SelectFactory::category([
 				'id'    => 'categories',
 				'hint'  => $this->txt['categories_select'],
 				'value' => $options['categories'] ?? '',
-			]);
+			]));
 
 		CustomField::make('types', Lang::$txt['lp_page_type'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new EntryTypeSelect(), [
+			->setValue(static fn() => SelectFactory::entryType([
 				'id'    => 'types',
 				'value' => $options['types'] ?? '',
-			]);
+			]));
 
 		VirtualSelectField::make('sort', $this->txt['sort'])
 			->setOptions(array_combine(self::SORTING_SET, $this->txt['sort_set']))
@@ -96,33 +95,27 @@ class PageList extends Block
 			->setValue($options['num_pages']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
 		$allCategories = app(CategoryList::class)();
 
-		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
-		$sort = Typed::string($parameters['sort'], default: 'page_id');
-		$numPages = Typed::int($parameters['num_pages'], default: 10);
-		$type = Typed::string($parameters['types'], default: EntryType::DEFAULT->name());
+		$categories = explode(',', $parameters['categories']);
+		$sort = $parameters->get('sort', 'page_id');
+		$numPages = $parameters->get('num_pages', 10);
+		$type = $parameters->get('types', EntryType::DEFAULT->name());
 
-		$queryString = '
-	        AND p.status = {int:status}
-	        AND p.deleted_at = 0
-	        AND p.entry_type = {string:entry_type}
-	        AND p.created_at <= {int:current_time}
-	        AND p.permissions IN ({array_int:permissions})' . ($categories ? '
-	        AND p.category_id IN ({array_int:categories})' : '');
+		$whereConditions = ['p.entry_type = ?' => $type];
 
-		$queryParams = [
-			'status'       => Status::ACTIVE->value,
-			'entry_type'   => $type,
-			'current_time' => time(),
-			'permissions'  => Permission::all(),
-			'categories'   => $categories,
-		];
+		if ($categories && $categories[0] !== '') {
+			$whereConditions['p.category_id'] = $categories;
+		}
 
-		$items = app(PageRepository::class)->getAll(
-			0, $numPages, $sort . ' DESC', $queryString, $queryParams
+		$items = app(PageRepositoryInterface::class)->getAll(
+			0,
+			$numPages,
+			$sort . ' DESC',
+			'list',
+			$whereConditions
 		);
 
 		$pages = [];
@@ -136,7 +129,7 @@ class PageList extends Block
 				'category_id'   => $row['category_id'],
 				'category_name' => $allCategories[$row['category_id']]['title'],
 				'category_link' => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
-				'title'         => $row['title'],
+				'title'         => Str::decodeHtmlEntities($row['title']),
 				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],
 				'slug'          => $row['slug'],

@@ -7,31 +7,31 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\ServerSideIncludes;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasTemplate;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSession;
-use Bugo\LightPortal\Utils\Traits\HasForumHooks;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasForumHooks;
+use LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSession;
+use ReflectionClass;
 use Stringable;
 
-use function basename;
-use function dirname;
-use function sprintf;
-use function str_replace;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -41,16 +41,12 @@ abstract class Plugin implements PluginInterface, Stringable
 	use HasBreadcrumbs;
 	use HasCache;
 	use HasForumHooks;
+	use HasPortalSql;
 	use HasRequest;
 	use HasResponse;
 	use HasSession;
-	use HasTemplate;
 
-	public string $type;
-
-	public string $icon = 'fas fa-puzzle-piece';
-
-	public bool $saveable = true;
+	protected PortalSqlInterface $sql;
 
 	protected string $name;
 
@@ -58,9 +54,18 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	protected array $txt;
 
-	public function __construct()
+	public function __construct(
+		public string $type = 'other',
+		public string $icon = 'fas fa-puzzle-piece',
+		public bool $showSaveButton = true,
+	)
 	{
 		$this->name = $this->getSnakeName();
+		$this->type = $this->getPluginType();
+		$this->icon = $this->getPluginIcon();
+		$this->showSaveButton = $this->isPluginHasSaveButton();
+
+		$this->sql = $this->getPortalSql();
 
 		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
 
@@ -82,29 +87,51 @@ abstract class Plugin implements PluginInterface, Stringable
 		return Str::getSnakeName($this->getCamelName());
 	}
 
-	public function getFromSSI(string $function, ...$params)
+	public function getPluginType(): string
 	{
-		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
+		$pluginAttr = $this->getPluginAttribute();
 
-		return ServerSideIncludes::{$function}(...$params);
+		$type = $pluginAttr->type ?? $this->type;
+
+		if (is_array($type)) {
+			return implode(' ', array_map(fn(PluginType $t) => $t->name(), $type));
+		}
+
+		return $type instanceof PluginType ? $type->name() : $type;
+	}
+
+	public function getPluginIcon(): string
+	{
+		$pluginAttr = $this->getPluginAttribute();
+
+		return $pluginAttr->icon ?? $this->icon;
+	}
+
+	public function isPluginHasSaveButton(): bool
+	{
+		$pluginAttr = $this->getPluginAttribute();
+
+		return $pluginAttr->showSaveButton ?? $this->showSaveButton;
+	}
+
+	public function isEnabled(): bool
+	{
+		return in_array($this->getCamelName(), Setting::getEnabledPlugins());
 	}
 
 	public function addDefaultValues(array $values): void
 	{
-		$settings = [];
-		foreach ($values as $option => $value) {
-			if (! isset($this->context[$option])) {
-				$settings[] = [
-					'name'   => $this->name,
-					'option' => $option,
-					'value'  => $value,
-				];
-
-				$this->context[$option] = $value;
+		$new = [];
+		foreach ($values as $config => $value) {
+			if (! isset($this->context[$config])) {
+				$new[$config] = $value;
+				$this->context[$config] = $value;
 			}
 		}
 
-		app(PluginRepository::class)->addSettings($settings);
+		if ($new) {
+			app(PluginRepositoryInterface::class)->changeSettings($this->name, $new);
+		}
 	}
 
 	public function loadExternalResources(array $resources): void
@@ -119,5 +146,47 @@ abstract class Plugin implements PluginInterface, Stringable
 				default => ErrorHandler::log('[LP] ' . sprintf(Lang::$txt['lp_unsupported_resource_type'], $type)),
 			};
 		}
+	}
+
+	private function getPluginAttribute(): PluginAttribute
+	{
+		$reflection = new ReflectionClass($this);
+		$inheritedType = null;
+		$inheritedIcon = null;
+		$inheritedShowSaveButton = null;
+
+		$classes = [];
+		do {
+			$classes[] = $reflection;
+			$reflection = $reflection->getParentClass();
+		} while ($reflection);
+
+		$classes = array_reverse($classes);
+		foreach ($classes as $classReflection) {
+			$pluginAttrs = $classReflection->getAttributes(PluginAttribute::class);
+
+			if (empty($pluginAttrs))
+				continue;
+
+			$attr = $pluginAttrs[0]->newInstance();
+
+			if ($attr->type !== null) {
+				$inheritedType = $attr->type;
+			}
+
+			if ($attr->icon !== null) {
+				$inheritedIcon = $attr->icon;
+			}
+
+			if ($attr->showSaveButton !== null) {
+				$inheritedShowSaveButton = $attr->showSaveButton;
+			}
+		}
+
+		return new PluginAttribute(
+			type: $inheritedType,
+			icon: $inheritedIcon,
+			showSaveButton: $inheritedShowSaveButton
+		);
 	}
 }

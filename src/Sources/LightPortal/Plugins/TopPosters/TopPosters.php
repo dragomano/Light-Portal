@@ -8,31 +8,29 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\TopPosters;
+namespace LightPortal\Plugins\TopPosters;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\Str;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-users')]
 class TopPosters extends Block
 {
-	public string $icon = 'fas fa-users';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -66,23 +64,20 @@ class TopPosters extends Block
 			->setValue($options['show_numbers_only']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$numPosters = Typed::int($parameters['num_posters'], default: 10);
+		$numPosters = $parameters->get('num_posters', 10);
 
-		$result = Db::$db->query('', '
-			SELECT id_member, real_name, posts
-			FROM {db_prefix}members
-			WHERE posts > {int:num_posts}
-			ORDER BY posts DESC
-			LIMIT {int:num_posters}',
-			[
-				'num_posts'   => 0,
-				'num_posters' => $numPosters,
-			]
-		);
+		$select = $this->sql->select()
+			->from('members')
+			->columns(['id_member', 'real_name', 'posts'])
+			->where('posts > 0')
+			->order('posts DESC')
+			->limit($numPosters);
 
-		$members = Db::$db->fetch_all($result);
+		$result = $this->sql->execute($select);
+
+		$members = iterator_to_array($result);
 
 		if (empty($members))
 			return [];
@@ -102,8 +97,6 @@ class TopPosters extends Block
 				]
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style'])) {
 			$posters = Avatar::getWithItems($posters, 'poster');
@@ -150,7 +143,7 @@ class TopPosters extends Block
 				? $poster['posts']
 				: Lang::getTxt($this->txt['posts'], ['posts' => $poster['posts']]);
 
-			$dd->addHtml(Str::html('span', $postCount));
+			$dd->addHtml(Str::html('span', (string) $postCount));
 			$dl->addHtml($dt);
 			$dl->addHtml($dd);
 		}

@@ -8,45 +8,39 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 05.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\SiteList;
+namespace LightPortal\Plugins\SiteList;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\VarType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
+use LightPortal\Utils\Traits\HasView;
+
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::FRONTPAGE)]
 class SiteList extends Plugin
 {
-	public string $type = 'frontpage';
+	use HasView;
 
 	private string $mode = 'site_list_addon_mode';
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['callback', 'urls', $this->showList()];
-	}
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->custom('urls', $this->view())
+			->toArray();
 
-	public function showList(): bool|string
-	{
-		$this->useTemplate();
-
-		$urls = Utils::jsonDecode($this->context['urls'] ?? '', true);
-
-		Theme::addInlineJavaScript($this->getFromTemplate('site_list_handle_func', $urls ?? []));
-
-		ob_start();
-
-		callback_site_list_table();
-
-		return ob_get_clean();
+		$this->prepareUrls();
 	}
 
 	public function saveSettings(Event $e): void
@@ -59,7 +53,7 @@ class SiteList extends Plugin
 		if ($this->request()->has('url')) {
 			foreach ($this->request()->get('url') as $key => $value) {
 				$sites[VarType::URL->filter($value)] = [
-					VarType::URL->filter($this->request()->get('image')[$key]),
+					(string) VarType::URL->filter($this->request()->get('image')[$key]),
 					$this->request()->get('title')[$key],
 					$this->request()->get('desc')[$key],
 				];
@@ -73,6 +67,25 @@ class SiteList extends Plugin
 	{
 		$e->args->modes[$this->mode] = SiteArticle::class;
 
-		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
+		app()->add(SiteArticle::class);
+
+		$e->args->currentMode = $this->mode;
+	}
+
+	private function prepareUrls(): void
+	{
+		$urls = Utils::jsonDecode($this->context['urls'] ?? '', true);
+
+		$sites = [];
+		foreach ($urls as $url => $data) {
+			$sites[] = [
+				'url'   => $url,
+				'image' => $data[0],
+				'title' => $data[1],
+				'desc'  => $data[2],
+			];
+		}
+
+		Utils::$context['insert_after_template'] .= $this->view('handle_sites', ['sites' => json_encode($sites)]);
 	}
 }

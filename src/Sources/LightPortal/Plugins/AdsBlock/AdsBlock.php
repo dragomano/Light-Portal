@@ -8,54 +8,76 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 02.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock;
+namespace LightPortal\Plugins\AdsBlock;
 
+use Bugo\Bricks\Forms\FormBuilder;
+use Bugo\Bricks\Forms\FormPresenter;
+use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\Hook;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\DisplayButtons;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MessageindexButtons;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextareaField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\UI\Partials\PageSelect;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\Compat\Utils;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
+use LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
+use LightPortal\Plugins\SettingsFactory;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextareaField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Content;
 
-use function date;
-use function function_exists;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-ad')]
 class AdsBlock extends Block
 {
-	public string $icon = 'fas fa-ad';
+	use HasMagicThings;
 
 	public function init(): void
 	{
-		if (! function_exists('lp_show_blocks')) {
-			Theme::loadTemplate('LightPortal/ViewBlocks');
-		}
+		Utils::$context['lp_block_placements']['ads'] = Lang::$txt['lp_ads_block']['ads_type'];
 
-		$this->applyHook(Hook::menuButtons, MenuButtons::class);
-		$this->applyHook(Hook::messageindexButtons, MessageIndexButtons::class);
-		$this->applyHook(Hook::displayButtons, DisplayButtons::class);
-		$this->applyHook(Hook::prepareDisplayContext, PrepareDisplayContext::class);
+		$this->applyHook(ForumHook::menuButtons, MenuButtons::class);
+		$this->applyHook(ForumHook::prepareDisplayContext, PrepareDisplayContext::class);
+	}
+
+	public function extendBlockAreas(): void
+	{
+		$form = FormBuilder::make('ads_block_form')
+			->setAction(Config::$scripturl . '?action=admin;area=lp_blocks;sa=add')
+			->setStyle('display: none')
+			->setScript('
+				const addButton = document.querySelector(\'h3 a[href$="placement=ads"]\');
+				if (addButton) {
+					addButton.removeAttribute("href");
+					addButton.addEventListener("click", () => document.forms.ads_block_form.submit());
+				}'
+			)
+			->addHiddenFields([
+				'add_block' => 'ads_block',
+				'placement' => 'ads',
+			]);
+
+		ob_start();
+
+		app(FormPresenter::class)->show($form);
+
+		Utils::$context['insert_after_template'] .= ob_get_clean();
 	}
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['range', 'min_replies'];
+		$e->args->settings[$this->name] = SettingsFactory::make()->range('min_replies')->toArray();
 	}
 
 	public function prepareBlockParams(Event $e): void
@@ -108,34 +130,33 @@ class AdsBlock extends Block
 
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PlacementSelect(), [
-				'data'  => Placement::all(),
-				'value' => $options['ads_placement'],
-			]);
+			->setValue(static fn() => new PlacementSelect([
+				'placements' => $options['ads_placement'],
+			]));
 
 		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['include_boards_select'],
 				'value' => $options['include_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new TopicSelect(), [
-				'id'    => 'include_pages',
+			->setValue(fn() => SelectFactory::topic([
+				'id'    => 'include_topics',
 				'hint'  => $this->txt['include_topics_select'],
-				'value' => $options['include_pages'] ?? '',
-			]);
+				'value' => $options['include_topics'] ?? '',
+			]));
 
 		CustomField::make('include_pages', $this->txt['include_pages'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PageSelect(), [
+			->setValue(fn() => SelectFactory::page([
 				'id'    => 'include_pages',
 				'hint'  => $this->txt['include_pages_select'],
 				'value' => $options['include_pages'] ?? '',
-			]);
+			]));
 
 		CustomField::make('end_date', $this->txt['end_date'])
 			->setValue('
@@ -155,7 +176,7 @@ class AdsBlock extends Block
 
 		Lang::$txt['lp_post_error_no_ads_placement'] = $this->txt['no_ads_placement'];
 
-		if (empty($e->args->data['parameters']['ads_placement'])) {
+		if (empty($e->args->data['options']['ads_placement'])) {
 			$e->args->errors[] = 'no_ads_placement';
 		}
 	}
@@ -165,8 +186,36 @@ class AdsBlock extends Block
 		$e->args->content = Content::parse($e->args->content, 'html');
 	}
 
-	public function preparePageData(): void
+	public function addLayerAbove(): void
 	{
-		$this->useTemplate()->withLayer('ads_placement_page');
+		$this->addLayer([
+			'lp_page'       => Placement::PAGE_TOP,
+			'current_board' => Placement::BOARD_TOP,
+			'current_topic' => Placement::TOPIC_TOP,
+		]);
+	}
+
+	public function addLayerBelow(): void
+	{
+		$this->addLayer([
+			'lp_page'       => Placement::PAGE_BOTTOM,
+			'current_board' => Placement::BOARD_BOTTOM,
+			'current_topic' => Placement::TOPIC_BOTTOM,
+		]);
+	}
+
+	private function addLayer(array $placements): void
+	{
+		foreach ($placements as $contextKey => $placement) {
+			if (! empty(Utils::$context[$contextKey])) {
+				if ($contextKey === 'current_topic' && $this->isRepliesBelowMinimum()) {
+					continue;
+				}
+
+				$this->showBlocks($placement->name());
+
+				return;
+			}
+		}
 	}
 }

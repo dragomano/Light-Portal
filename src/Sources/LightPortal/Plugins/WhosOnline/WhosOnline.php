@@ -8,31 +8,28 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\WhosOnline;
+namespace LightPortal\Plugins\WhosOnline;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class WhosOnline extends Block
+#[PluginAttribute(icon: 'far fa-eye')]
+class WhosOnline extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'far fa-eye';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -72,7 +69,7 @@ class WhosOnline extends Block
 		$parameters = $e->args->parameters;
 
 		$whoIsOnline = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getFromSSI('whosOnline', 'array'));
 
 		if (empty($whoIsOnline))

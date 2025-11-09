@@ -7,46 +7,46 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
-
-use Bugo\LightPortal\Utils\Str;
-use stdClass;
-
-use function get_object_vars;
-use function lcfirst;
-use function str_replace;
-use function ucwords;
+namespace LightPortal\Models;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractModel extends stdClass implements ModelInterface
+abstract class AbstractModel implements ModelInterface
 {
-	public function __set(string $name, mixed $value)
-	{
-		$camelCaseName = $this->underscoreToCamelCase($name);
+	protected array $fields = [];
 
-		$this->$camelCaseName = $value;
+	protected array $extraFields = [];
+
+	protected array $aliases = [];
+
+	private array $data = [];
+
+	public function __construct(array $data = [])
+	{
+		$this->hydrate($data);
+	}
+
+	protected function hydrate(array $data): void
+	{
+		foreach ($this->aliases as $alias => $property) {
+			if (isset($data[$alias])) {
+				$data[$property] = $data[$alias];
+				unset($data[$alias]);
+			}
+		}
+
+		$allowedKeys  = array_merge(array_keys($this->fields), array_keys($this->extraFields));
+		$filteredData = array_intersect_key($data, array_flip($allowedKeys));
+
+		$this->data = array_merge($this->fields, $this->extraFields, $filteredData);
 	}
 
 	public function toArray(): array
 	{
-		$vars = get_object_vars($this);
-
-		$result = [];
-		foreach ($vars as $key => $value) {
-			$snakeName = Str::getSnakeName($key);
-			$result[$snakeName] = $value;
-		}
-
-		return $result;
-	}
-
-	private function underscoreToCamelCase(string $source): string
-	{
-		return lcfirst(str_replace('_', '', ucwords($source, '_')));
+		return $this->data;
 	}
 }

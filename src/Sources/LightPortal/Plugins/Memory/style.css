@@ -1,0 +1,16 @@
+.memory_game {
+  display: flex;
+  justify-content: center;
+}
+
+[data-panel="left"],
+[data-panel="right"] {
+  .memory_game .game-info {
+    flex-direction: column;
+    padding: 0 !important;
+  }
+
+  .memory_game .board {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

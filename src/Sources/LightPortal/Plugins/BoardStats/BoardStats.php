@@ -8,32 +8,29 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\BoardStats;
+namespace LightPortal\Plugins\BoardStats;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\Utils\Str;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BoardStats extends Block
+#[PluginAttribute(icon: 'fas fa-chart-pie')]
+class BoardStats extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'fas fa-chart-pie';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -82,7 +79,7 @@ class BoardStats extends Block
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
 		if (
 			empty($parameters['show_latest_member'])
@@ -110,7 +107,7 @@ class BoardStats extends Block
 		$parameters = $e->args->parameters;
 
 		$boardStats = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($boardStats))

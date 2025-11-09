@@ -7,18 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-
-use function array_keys;
-use function array_merge;
-use function filter_var_array;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Utils\Language;
+use Laminas\Db\Sql\Expression;
 
 class PageValidator extends AbstractValidator
 {
@@ -30,7 +27,7 @@ class PageValidator extends AbstractValidator
 			'filter'  => FILTER_VALIDATE_REGEXP,
 			'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/'],
 		],
-		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'description' => FILTER_UNSAFE_RAW,
 		'content'     => FILTER_UNSAFE_RAW,
 		'type'        => FILTER_DEFAULT,
 		'entry_type'  => FILTER_DEFAULT,
@@ -54,7 +51,7 @@ class PageValidator extends AbstractValidator
 	{
 		$filters = [];
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::validatePageParams,
 			[
 				'params' => &$filters,
@@ -74,13 +71,13 @@ class PageValidator extends AbstractValidator
 
 	protected function extendErrors(): void
 	{
-		if (empty($this->filteredData['content'])) {
+		if (Language::isDefault() && empty($this->filteredData['content'])) {
 			$this->errors[] = 'no_content';
 		}
 
 		$this->checkSlug();
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::findPageErrors,
 			[
 				'errors' => &$this->errors,
@@ -89,46 +86,17 @@ class PageValidator extends AbstractValidator
 		);
 	}
 
-	protected function checkSlug(): void
-	{
-		$rawSlug = $this->post()->get('slug');
-		$validatedSlug = $this->filteredData['slug'] ?? null;
-
-		$isEmptySlug = empty($rawSlug);
-		$isInvalidSlug = ! $isEmptySlug && $validatedSlug === false;
-		$isNonUniqueSlug = ! $isEmptySlug && $validatedSlug !== false && ! $this->isUnique();
-
-		if ($isEmptySlug) {
-			$this->errors[] = 'no_slug';
-		}
-
-		if ($isInvalidSlug) {
-			$this->errors[] = 'no_valid_slug';
-			$this->filteredData['slug'] = $rawSlug;
-		}
-
-		if ($isNonUniqueSlug) {
-			$this->errors[] = 'no_unique_slug';
-		}
-	}
-
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('', '
-			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages
-			WHERE slug = {string:slug}
-				AND page_id != {int:item}',
-			[
-				'slug' => $this->filteredData['slug'],
-				'item' => $this->filteredData['page_id'],
-			]
-		);
+		$select = $this->sql->select('lp_pages')
+			->columns(['count' => new Expression('COUNT(page_id)')])
+			->where([
+				'slug = ?' => $this->filteredData['slug'],
+				'page_id != ?' => $this->filteredData['page_id'],
+			]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return $count == 0;
+		return (int) $result['count'] === 0;
 	}
 }

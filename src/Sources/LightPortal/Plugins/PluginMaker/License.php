@@ -11,7 +11,7 @@
  * @version 09.01.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 enum License: string
 {

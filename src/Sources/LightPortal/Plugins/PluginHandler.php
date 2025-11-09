@@ -7,36 +7,34 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManager;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManager;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use Ramsey\Collection\Collection;
+use Throwable;
 
-use function array_map;
-use function array_merge;
-use function class_exists;
-use function get_object_vars;
-
-use const DIRECTORY_SEPARATOR;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-final class PluginHandler
+final readonly class PluginHandler
 {
-	private readonly AssetHandler $assetHandler;
+	private AssetHandler $assetHandler;
 
-	private readonly ConfigHandler $configHandler;
+	private ConfigHandler $configHandler;
 
-	private readonly LangHandler $langHandler;
+	private LangHandler $langHandler;
 
-	private readonly EventManager $manager;
+	private EventManager $manager;
 
 	public function __construct(array $plugins = [])
 	{
@@ -58,13 +56,24 @@ final class PluginHandler
 			return [];
 		}
 
-		$plugins = array_map(function (PluginInterface $plugin) {
+		$warehouse = [];
+
+		try {
+			$warehouse = app()->get('plugins');
+		} catch (Throwable $e) {
+			ErrorHandler::log('[LP] pluginHandler: ' . $e->getMessage(), file: $e->getFile(), line: $e->getLine());
+		}
+
+		$pluginsCollection = new Collection(PluginInterface::class, $warehouse);
+
+		$processed = $pluginsCollection->map(function (PluginInterface $plugin) {
 			$data = get_object_vars($plugin);
 			$data['name'] = $plugin->getCamelName();
-			return [$plugin->getSnakeName() => $data];
-		}, app()->get('plugins'));
 
-		return array_merge(...$plugins);
+			return [$plugin->getSnakeName() => $data];
+		});
+
+		return array_merge(...$processed->toArray());
 	}
 
 	public function getManager(): EventManager
@@ -98,7 +107,7 @@ final class PluginHandler
 
 			app()->add($className)->addTag('plugins');
 
-			$this->manager->addHookListener(PortalHook::cases(), app($className));
+			$this->manager->addHookListener(app($className));
 		}
 	}
 

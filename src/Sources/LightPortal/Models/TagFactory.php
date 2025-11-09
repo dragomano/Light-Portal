@@ -7,12 +7,24 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
+
+use LightPortal\Enums\Status;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class TagFactory extends AbstractFactory
 {
 	protected string $modelClass = TagModel::class;
+
+	protected function populate(array $data): array
+	{
+		$data['status'] ??= Status::ACTIVE->value;
+
+		return $data;
+	}
 }

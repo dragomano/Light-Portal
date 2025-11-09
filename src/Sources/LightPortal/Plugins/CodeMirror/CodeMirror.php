@@ -8,39 +8,40 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 29.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\CodeMirror;
+namespace LightPortal\Plugins\CodeMirror;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Editor;
+use LightPortal\Plugins\SettingsFactory;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CodeMirror extends Plugin
+class CodeMirror extends Editor
 {
-	public string $type = 'editor';
-
 	private array $modes = [
-		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'
+		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig',
 	];
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['multiselect', 'modes', $this->modes];
-		$e->args->settings[$this->name][] = ['desc', 'small_hint'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->multiselect('modes', $this->modes)
+			->desc('small_hint')
+			->toArray();
 	}
 
 	public function prepareEditor(Event $e): void
 	{
 		$object = $e->args->object;
 
-		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
+		if (! $this->isContentSupported($object))
 			return;
 
 		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
@@ -271,5 +272,10 @@ class CodeMirror extends Plugin
 				'link' => 'https://github.com/codemirror/codemirror5?tab=MIT-1-ov-file'
 			]
 		];
+	}
+
+	protected function getSupportedContentTypes(): array
+	{
+		return array_keys($this->modes);
 	}
 }

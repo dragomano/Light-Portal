@@ -8,23 +8,25 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 22.12.24
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Markdown;
+namespace LightPortal\Plugins\Markdown;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\HeadingRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\ImageRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\LinkRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\ListBlockRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\ListItemRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\TableRenderer;
-use Bugo\LightPortal\Plugins\Markdown\SMF\TableRowRenderer;
-use Bugo\LightPortal\Plugins\Plugin;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
+use LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
+use LightPortal\Plugins\Markdown\SMF\HeadingRenderer;
+use LightPortal\Plugins\Markdown\SMF\ImageRenderer;
+use LightPortal\Plugins\Markdown\SMF\LinkRenderer;
+use LightPortal\Plugins\Markdown\SMF\ListBlockRenderer;
+use LightPortal\Plugins\Markdown\SMF\ListItemRenderer;
+use LightPortal\Plugins\Markdown\SMF\TableRenderer;
+use LightPortal\Plugins\Markdown\SMF\TableRowRenderer;
+use LightPortal\Plugins\Plugin;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -44,12 +46,9 @@ use Zoon\CommonMark\Ext\YouTubeIframe\YouTubeIframeExtension;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::PARSER, icon: 'fab fa-markdown')]
 class Markdown extends Plugin
 {
-	public string $icon = 'fab fa-markdown';
-
-	public string $type = 'parser';
-
 	public function init(): void
 	{
 		Utils::$context['lp_content_types'][$this->name] = 'Markdown';

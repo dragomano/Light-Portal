@@ -13,6 +13,7 @@
 				@unless (empty($firstArticle['image']))
 					<img
 						class="lazy"
+						src=""
 						data-src="{{ $firstArticle['image'] }}"
 						alt="{{ $firstArticle['title'] }}"
 					/>
@@ -39,6 +40,7 @@
 				@unless (empty($article['image']))
 					<img
 						class="lazy"
+						src=""
 						data-src="{{ $article['image'] }}"
 						alt="{{ $article['title'] }}"
 					/>

@@ -41,6 +41,9 @@ function addPrefixToLinks(obj) {
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   ...shared,
+  vite: {
+    builder: 'rolldown'
+  },
   locales: {
     root: { label: 'English', ...en },
     ...Object.fromEntries(

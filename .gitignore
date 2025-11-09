@@ -4,10 +4,17 @@
 **/composer.lock
 **/output/
 node_modules/
+coverage/
+coverage-report/
+coverage.xml
 src/Sources/LightPortal/Libs/*
 src/Sources/LightPortal/packages/*
 src/Sources/index.php
 composer.lock
+run_tests.bat
+tests/Other/demo.sqlite
+tests/Other/RealDatabaseOperationsTest.php
+tests/test_databases.php
 
 src/Themes/default/languages/LightPortal/*
 !src/Themes/default/languages/LightPortal/index.php
@@ -34,6 +41,15 @@ src/Themes/default/scripts/light_portal/*
 !**/Plugins/**/index.php
 !**/Plugins/**/langs
 !**/Plugins/**/langs/english.php
+
+src/Sources/LightPortal/Plugins/ChessBoard/images/markers.svg
+src/Sources/LightPortal/Plugins/ChessBoard/images/standard.svg
+src/Sources/LightPortal/Plugins/ChessBoard/images/staunty.svg
+src/Sources/LightPortal/Plugins/ChessBoard/stockfish/stockfish-17.1-lite-single-03e3232.js
+src/Sources/LightPortal/Plugins/ChessBoard/stockfish/stockfish-17.1-lite-single-03e3232.wasm
+src/Sources/LightPortal/Plugins/ChessBoard/chessboard.css
+src/Sources/LightPortal/Plugins/ChessBoard/chessboard.js
+src/Sources/LightPortal/Plugins/Memory/memory.js
 
 *.zip
 *.tgz

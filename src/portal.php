@@ -7,13 +7,20 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Actions\FrontPage;
+use LightPortal\Actions\FrontPage;
 
-require_once __DIR__ . '/SSI.php';
+use function LightPortal\app;
+
+$ssi = __DIR__ . DIRECTORY_SEPARATOR . 'SSI.php';
+if (! file_exists($ssi)) {
+	die('No SSI file found');
+}
+
+require_once $ssi;
 
 if (empty(Config::$sourcedir)) {
 	die('<strong>' . Lang::$txt['error_occured'] . '</strong> ' . Lang::$txt['lp_standalone_mode_error']);

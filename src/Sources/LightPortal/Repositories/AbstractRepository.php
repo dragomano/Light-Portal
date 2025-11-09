@@ -7,36 +7,53 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
-use Bugo\Compat\Db;
+use Bugo\Compat\Config;
 use Bugo\Compat\Msg;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Traits\HasSession;
-
-use function implode;
-use function is_array;
+use Laminas\Db\Sql\Predicate\Expression;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\PortalTransactionInterface;
+use LightPortal\Enums\ContentType;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasParamJoins;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSession;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractRepository
+abstract class AbstractRepository implements RepositoryInterface
 {
+	use HasCache;
+	use HasParamJoins;
+	use HasRequest;
+	use HasResponse;
 	use HasSession;
+	use HasTranslationJoins;
 
 	protected string $entity;
 
-	abstract public function getData(int $item): array;
+	protected PortalTransactionInterface $transaction;
 
-	abstract public function setData(int $item = 0);
-
-	abstract public function remove(array $items): void;
-
-	public function toggleStatus(array $items = []): void
+	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
 	{
+		$this->transaction = $this->sql->getTransaction();
+	}
+
+	public function toggleStatus(mixed $items = []): void
+	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -45,21 +62,22 @@ abstract class AbstractRepository
 			default    => $this->entity . 's',
 		};
 
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_' . $table . '
-			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 ELSE status END
-			WHERE ' . $this->entity . '_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$tableName = 'lp_' . $table;
+
+		$caseExpression = "CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 ELSE status END";
+
+		$update = $this->sql->update($tableName);
+		$update->set(['status' => new Expression($caseExpression)]);
+		$update->where->in($this->entity . '_id', $items);
+
+		$this->sql->execute($update);
 
 		$this->session('lp')->free('active_' . $table);
 	}
 
 	protected function prepareBbcContent(array &$entity): void
 	{
-		if ($entity['type'] !== 'bbc')
+		if ($entity['type'] !== ContentType::BBC->name())
 			return;
 
 		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
@@ -67,72 +85,72 @@ abstract class AbstractRepository
 		Msg::preparseCode($entity['content']);
 	}
 
-	protected function saveTitles(int $item, string $method = ''): void
+	protected function saveTranslations(array $data, bool $replace = false): void
 	{
-		if (empty(Utils::$context['lp_' . $this->entity]['titles']))
-			return;
+		$values = [
+			'item_id'     => $data['id'],
+			'type'        => $this->entity,
+			'lang'        => User::$me->language,
+			'title'       => $data['title'] ?? '',
+			'content'     => $data['content'] ?? '',
+			'description' => Utils::htmlspecialchars($data['description'] ?? ''),
+		];
 
-		$titles = [];
-		foreach (Utils::$context['lp_' . $this->entity]['titles'] as $lang => $title) {
-			$title = Utils::$smcFunc['htmltrim']($title);
+		$sqlObject = $replace
+			? $this->sql->replace('lp_translations')->setConflictKeys(['item_id', 'type', 'lang'])->values($values)
+			: $this->sql->insert('lp_translations')->values($values);
 
-			if ($method === '' && $title === '')
-				continue;
+		if (! Language::isDefault()) {
+			$default = $this->getDefaultTranslations($data['id']);
 
-			$titles[] = [
-				'item_id' => $item,
-				'type'    => $this->entity,
-				'lang'    => $lang,
-				'title'   => $title,
-			];
+			foreach (['title', 'content', 'description'] as $field) {
+				if ($values[$field] === $default[$field]) {
+					unset($values[$field]);
+				}
+			}
 		}
 
-		if ($titles === [])
-			return;
-
-		Db::$db->insert($method,
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'value'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
+		$this->sql->execute($sqlObject);
 	}
 
-	protected function saveOptions(int $item, string $method = ''): void
+	protected function saveOptions(array $data, bool $replace = false): void
 	{
-		if (empty(Utils::$context['lp_' . $this->entity]['options']))
+		if (empty($data['options']))
 			return;
 
-		$params = [];
-		foreach (Utils::$context['lp_' . $this->entity]['options'] as $name => $value) {
+		$rows = [];
+		foreach ($data['options'] as $name => $value) {
 			$value = is_array($value) ? implode(',', $value) : $value;
-
-			$params[] = [
-				'item_id' => $item,
+			$rows[] = [
+				'item_id' => $data['id'],
 				'type'    => $this->entity,
 				'name'    => $name,
 				'value'   => $value,
 			];
 		}
 
-		if ($params === [])
+		if ($rows === [])
 			return;
 
-		Db::$db->insert($method,
-			'{db_prefix}lp_params',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'name'    => 'string',
-				'value'   => 'string',
-			],
-			$params,
-			['item_id', 'type', 'name'],
-		);
+		$sqlObject = $replace
+			? $this->sql->replace('lp_params')->setConflictKeys(['item_id', 'type'])->batch($rows)
+			: $this->sql->insert('lp_params')->batch($rows);
+
+		$this->sql->execute($sqlObject);
+	}
+
+	private function getDefaultTranslations(int $item): array
+	{
+		$select = $this->sql->select('lp_translations')
+			->columns(['title', 'content', 'description'])
+			->where([
+				'item_id = ?' => $item,
+				'type = ?'    => $this->entity,
+				'lang = ?'    => Config::$language,
+			]);
+
+		$result = $this->sql->execute($select)->current();
+
+		return $result ?: ['title' => null, 'content' => null, 'description' => null];
 	}
 }

@@ -7,210 +7,64 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Security;
-use Bugo\Compat\Theme;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Models\TagFactory;
-use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Partials\IconSelect;
-use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
-use Bugo\LightPortal\UI\Tables\IconColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\StatusColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Validators\TagValidator;
-use WPLake\Typed\Typed;
-
-use function array_merge;
-
-use const LP_NAME;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Models\TagFactory;
+use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\UI\Tables\ContextMenuColumn;
+use LightPortal\UI\Tables\IconColumn;
+use LightPortal\UI\Tables\StatusColumn;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Validators\TagValidator;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagArea
+final class TagArea extends AbstractArea
 {
-	use HasArea;
-
-	public function __construct(private readonly TagRepository $repository) {}
-
-	public function main(): void
+	public function __construct(TagRepositoryInterface $repository, EventDispatcherInterface $dispatcher)
 	{
-		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tags_manage'];
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_tags';
+		parent::__construct($repository, $dispatcher);
+	}
 
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tags_manage_description'],
+	protected function getEntityName(): string
+	{
+		return 'tag';
+	}
+
+	protected function getEntityNamePlural(): string
+	{
+		return 'tags';
+	}
+
+	protected function getCustomActionHandlers(): array
+	{
+		return [];
+	}
+
+	protected function getTableColumns(): array
+	{
+		return [
+			IdColumn::make()->setSort($this->getEntityName() . '_id'),
+			IconColumn::make(),
+			TitleColumn::make(entity: $this->getEntityNamePlural()),
+			StatusColumn::make(),
+			ContextMenuColumn::make(),
 		];
-
-		$this->doActions();
-
-		$builder = PortalTableBuilder::make('lp_tags', Lang::$txt['lp_tags'])
-			->setDefaultSortColumn('title')
-			->setScript('const entity = new Tag();')
-			->withCreateButton('tags')
-			->setItems($this->repository->getAll(...))
-			->setCount($this->repository->getTotalCount(...))
-			->addColumns([
-				IdColumn::make()->setSort('tag_id'),
-				IconColumn::make(),
-				TitleColumn::make(entity: 'tags')->setSort('t.value'),
-				StatusColumn::make(),
-				ContextMenuColumn::make()
-			]);
-
-		app(TablePresenter::class)->show($builder);
 	}
 
-	public function add(): void
+	protected function getValidatorClass(): string
 	{
-		Theme::loadTemplate('LightPortal/ManageTags');
-
-		Utils::$context['sub_template'] = 'tag_post';
-
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tags_add_title'];
-
-		Utils::$context['page_area_title'] = Lang::$txt['lp_tags_add_title'];
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_tags;sa=add';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tags_add_description'],
-		];
-
-		Utils::$context['lp_current_tag'] ??= [];
-
-		Language::prepareList();
-
-		$this->validateData();
-		$this->prepareFormFields();
-		$this->preparePreview();
-
-		$this->repository->setData();
+		return TagValidator::class;
 	}
 
-	public function edit(): void
+	protected function getFactoryClass(): string
 	{
-		$item = Typed::int($this->request()->get('tag_id') ?: $this->request()->get('id'));
-
-		Theme::loadTemplate('LightPortal/ManageTags');
-
-		Utils::$context['sub_template'] = 'tag_post';
-
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tags_edit_title'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_tags_edit_title'];
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tags_edit_description'],
-		];
-
-		Utils::$context['lp_current_tag'] = $this->repository->getData($item);
-
-		if (empty(Utils::$context['lp_current_tag'])) {
-			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
-		}
-
-		Language::prepareList();
-
-		if ($this->request()->has('remove')) {
-			$this->repository->remove([$item]);
-
-			$this->cache()->flush();
-
-			$this->response()->redirect('action=admin;area=lp_tags');
-		}
-
-		$this->validateData();
-
-		$tagTitle = Utils::$context['lp_tag']['titles'][Utils::$context['user']['language']] ?? '';
-		Utils::$context['page_area_title'] = Lang::$txt['lp_tags_edit_title'] . ($tagTitle ? ' - ' . $tagTitle : '');
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_tags;sa=edit;id=' . Utils::$context['lp_tag']['id'];
-
-		$this->prepareFormFields();
-		$this->preparePreview();
-
-		$this->repository->setData(Utils::$context['lp_tag']['id']);
-	}
-
-	private function doActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		$data = $this->request()->json();
-
-		match (true) {
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
-			default => null,
-		};
-
-		$this->cache()->flush();
-
-		exit;
-	}
-
-	private function validateData(): void
-	{
-		$validatedData = app(TagValidator::class)->validate();
-
-		$tag = app(TagFactory::class)->create(
-			array_merge(Utils::$context['lp_current_tag'], $validatedData)
-		);
-
-		Utils::$context['lp_tag'] = $tag->toArray();
-	}
-
-	private function prepareFormFields(): void
-	{
-		$this->prepareTitleFields('tag');
-
-		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new IconSelect(), [
-				'icon' => Utils::$context['lp_tag']['icon'],
-			]);
-
-		$this->preparePostFields();
-	}
-
-	private function preparePreview(): void
-	{
-		if ($this->request()->hasNot('preview'))
-			return;
-
-		Security::checkSubmitOnce('free');
-
-		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Language::getCurrent()] ?? '';
-
-		Str::cleanBbcode(Utils::$context['preview_title']);
-
-		Lang::censorText(Utils::$context['preview_title']);
-
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (
-			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
-		);
-
-		Utils::$context['preview_title'] = Icon::parse(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
+		return TagFactory::class;
 	}
 }

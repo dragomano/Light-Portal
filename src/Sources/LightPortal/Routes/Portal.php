@@ -7,20 +7,17 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Routes;
+namespace LightPortal\Routes;
 
 use Bugo\Compat\Routable;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\CacheInterface;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Utils\CacheInterface;
+use Throwable;
 
-use function array_search;
-use function array_shift;
-use function count;
-use function in_array;
-use function is_numeric;
+use function LightPortal\app;
 
 use const LP_ACTION;
 
@@ -28,7 +25,11 @@ class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
 	{
-		return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
+		try {
+			return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
+		} catch (Throwable) {
+			return [];
+		}
 	}
 
 	public static function getCachedName(string $id, string $type = 'categories'): string

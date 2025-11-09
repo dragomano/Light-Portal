@@ -7,29 +7,31 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\File;
-use Bugo\LightPortal\Utils\Post;
-use Bugo\LightPortal\Utils\Request;
+use LightPortal\Utils\FileInterface;
+use LightPortal\Utils\PostInterface;
+use LightPortal\Utils\RequestInterface;
+
+use function LightPortal\app;
 
 trait HasRequest
 {
-	public function request(): Request
+	public function request(): RequestInterface
 	{
-		return app(Request::class);
+		return app(RequestInterface::class);
 	}
 
-	public function post(): Post
+	public function post(): PostInterface
 	{
-		return app(Post::class);
+		return app(PostInterface::class);
 	}
 
-	public function files(): File
+	public function files(): FileInterface
 	{
-		return app(File::class);
+		return app(FileInterface::class);
 	}
 }

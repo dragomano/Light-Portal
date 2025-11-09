@@ -7,10 +7,10 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
@@ -18,50 +18,50 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\FrontPageMode;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\TemplateLoader;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSorting;
 use SimpleSEF;
 
-use function array_column;
-use function array_search;
-use function class_exists;
-use function date;
-use function explode;
-use function implode;
-use function time;
+use function LightPortal\app;
 
+use const LP_ACTION;
 use const LP_PAGE_PARAM;
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Page implements ActionInterface
+final readonly class Page implements ActionInterface
 {
 	use HasCache;
 	use HasBreadcrumbs;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
-	use HasSession;
+	use HasSorting;
 
-	public function __construct(private readonly PageRepository $repository) {}
+	public function __construct(
+		private PageRepositoryInterface $repository,
+		private EventDispatcherInterface $dispatcher
+	) {}
 
 	public function show(): void
 	{
 		User::$me->isAllowedTo('light_portal_view');
+
+		$this->prepareSorting('frontpage_sorting');
 
 		$slug = $this->request()->get(LP_PAGE_PARAM);
 
@@ -97,10 +97,6 @@ final class Page implements ActionInterface
 			$this->request()->has(LP_PAGE_PARAM) ? ';' : '?'
 		);
 
-		Theme::loadTemplate('LightPortal/ViewPage');
-
-		Utils::$context['sub_template'] = 'show_page';
-
 		$this->handlePromoteAction();
 		$this->prepareMetadata();
 		$this->prepareNavigationLinks();
@@ -108,16 +104,16 @@ final class Page implements ActionInterface
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
+		TemplateLoader::fromFile('page_view');
 	}
 
 	public function getDataBySlug(string $slug): array
 	{
-		if (empty($slug))
+		if (empty($slug)) {
 			return [];
+		}
 
-		$data = $this->cache('page_' . $slug)
-			->setFallback(fn() => app(PageRepository::class)->getData($slug));
+		$data = $this->langCache('page_' . $slug)->setFallback(fn() => $this->repository->getData($slug));
 
 		$this->repository->prepareData($data);
 
@@ -126,7 +122,10 @@ final class Page implements ActionInterface
 
 	private function handleEmptySlug(): void
 	{
-		if (Setting::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
+		if (
+			Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value)
+			&& isset(Config::$modSettings['lp_frontpage_chosen_page'])
+		) {
 			Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
 		} else {
 			Config::updateModSettings(['lp_frontpage_mode' => 0]);
@@ -173,24 +172,21 @@ final class Page implements ActionInterface
 	private function setPageTitleAndCanonicalUrl(?string $slug): void
 	{
 		if (empty($slug)) {
-			Utils::$context['page_title'] = Str::getTranslatedTitle(
-				Utils::$context['lp_page']['titles']
-			) ?: Lang::$txt['lp_portal'];
+			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: Lang::$txt['lp_portal'];
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
 
 			$this->breadcrumbs()->add(Lang::$txt['lp_portal']);
 		} else {
-			Utils::$context['page_title'] = Str::getTranslatedTitle(
-				Utils::$context['lp_page']['titles']
-			) ?: Lang::$txt['lp_post_error_no_title'];
+			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: Lang::$txt['lp_post_error_no_title'];
 
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
-			if (isset(Utils::$context['lp_page']['category'])) {
+			if (! empty(Utils::$context['lp_page']['cat_title'])) {
 				$this->breadcrumbs()->add(
-					Utils::$context['lp_page']['category'],
-					PortalSubAction::CATEGORIES->url() . ';id=' . Utils::$context['lp_page']['category_id']
+					Utils::$context['lp_page']['cat_title'],
+					PortalSubAction::CATEGORIES->url() . ';id=' . Utils::$context['lp_page']['category_id'],
+					Utils::$context['lp_page']['cat_icon']
 				);
 			}
 
@@ -277,11 +273,11 @@ final class Page implements ActionInterface
 			];
 		}
 
-		if (isset(Utils::$context['lp_page']['category'])) {
+		if (! empty(Utils::$context['lp_page']['cat_title'])) {
 			Utils::$context['meta_tags'][] = [
 				'prefix'   => 'article: https://ogp.me/ns/article#',
 				'property' => 'article:section',
-				'content'  => Utils::$context['lp_page']['category'],
+				'content'  => Utils::$context['lp_page']['cat_title'],
 			];
 		}
 
@@ -303,18 +299,27 @@ final class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->repository->getPrevNextLinks($page);
+		$withinCategory = str_contains(
+			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '',
+			'action=' . LP_ACTION . ';sa=' . PortalSubAction::CATEGORIES->name() . ';id'
+		);
+		$withinCategory = $this->request()->has('from_category') ? true : $withinCategory;
+
+		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->langCache('page_' . $page['slug'] . '_prev_next')
+			->setFallback(fn() => $this->repository->getPrevNextLinks($page, $withinCategory));
+
+		$suffix = $withinCategory ? ';from_category' : '';
 
 		if (! empty($prevSlug)) {
 			Utils::$context['lp_page']['prev'] = [
-				'link'  => LP_PAGE_URL . $prevSlug,
+				'link'  => LP_PAGE_URL . $prevSlug . $suffix,
 				'title' => $prevTitle,
 			];
 		}
 
 		if (! empty($nextSlug)) {
 			Utils::$context['lp_page']['next'] = [
-				'link'  => LP_PAGE_URL . $nextSlug,
+				'link'  => LP_PAGE_URL . $nextSlug . $suffix,
 				'title' => $nextTitle,
 			];
 		}
@@ -328,7 +333,8 @@ final class Page implements ActionInterface
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
 			return;
 
-		Utils::$context['lp_page']['related_pages'] = $this->repository->getRelatedPages($page);
+		Utils::$context['lp_page']['related_pages'] = $this->langCache('page_' . $page['slug'] . '_related')
+			->setFallback(fn() => $this->repository->getRelatedPages($page));
 	}
 
 	private function prepareComments(): void
@@ -341,7 +347,7 @@ final class Page implements ActionInterface
 
 		Lang::load('Editor');
 
-		$this->events()->dispatch(PortalHook::comments);
+		$this->dispatcher->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;
@@ -353,9 +359,8 @@ final class Page implements ActionInterface
 
 	private function handleApi(): void
 	{
-		if ($this->request()->hasNot('fetch_data')) {
+		if ($this->request()->hasNot('fetch_data'))
 			return;
-		}
 
 		$this->response()->exit($this->preparedData());
 	}
@@ -383,11 +388,12 @@ final class Page implements ActionInterface
 			'image'         => Lang::$editortxt['insert_image'],
 			'list'          => Lang::$editortxt['bullet_list'],
 			'task_list'     => Lang::$txt['lp_task_list'],
+			'updated'       => Lang::$txt['lp_updated'],
 		];
 
 		$pageUrl = Utils::$context['lp_page']['url'];
 
-		if (class_exists(SimpleSEF::class, false)) {
+		if (class_exists('\SimpleSEF', false)) {
 			$pageUrl = (new SimpleSEF())->getSefUrl($pageUrl);
 		}
 

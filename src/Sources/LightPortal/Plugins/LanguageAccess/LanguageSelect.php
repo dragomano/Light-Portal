@@ -8,54 +8,40 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\LanguageAccess;
+namespace LightPortal\Plugins\LanguageAccess;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use LightPortal\UI\Partials\AbstractSelect;
 
-final class LanguageSelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class LanguageSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$currentLanguages = $params['allowed_languages'];
-		$currentLanguages = is_array($currentLanguages)
-			? $currentLanguages
-			: explode(',', (string) $currentLanguages);
-
-		$data = $items = [];
-
+		$data = [];
 		foreach (Utils::$context['lp_languages'] as $lang) {
-			$data[] = '{label: "' . $lang['name'] . '", value: "' . $lang['filename'] . '"}';
-
-			if (in_array($lang['filename'], $currentLanguages)) {
-				$items[] = Utils::escapeJavaScript($lang['filename']);
-			}
+			$data[] = [
+				'label' => $lang['name'],
+				'value' => $lang['filename'],
+			];
 		}
 
-		return /** @lang text */ '
-		<div id="allowed_languages" name="allowed_languages"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#allowed_languages",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				maxWidth: "100%",
-				showValueAsTags: true,
-				placeholder: "' . Lang::$txt['lp_language_access']['allowed_languages_subtext'] . '",
-				clearButtonText: "' . Lang::$txt['remove'] . '",
-				selectAllText: "' . Lang::$txt['check_all'] . '",
-				multiple: true,
-				search: false,
-				options: [' . implode(',', $data) . '],
-				selectedValue: [' . implode(',', $items) . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'allowed_languages',
+			'multiple' => true,
+			'hint'     => Lang::$txt['lp_language_access']['allowed_languages_subtext'],
+			'value'    => $this->normalizeValue($this->params['allowed_languages']),
+		];
 	}
 }

@@ -7,15 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Session extends GlobalArray
+class Session extends GlobalArray implements SessionInterface
 {
 	public function __construct(?string $key = null)
 	{

@@ -7,46 +7,12 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
-
-use Bugo\LightPortal\Utils\Setting;
+namespace LightPortal\Articles;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class ChosenTopicArticle extends TopicArticle
-{
-	private array $selectedTopics = [];
-
-	public function init(): void
-	{
-		parent::init();
-
-		$this->selectedBoards = [];
-
-		$this->selectedTopics = Setting::get('lp_frontpage_topics', 'array', []);
-
-		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
-
-		$this->params['selected_topics'] = $this->selectedTopics;
-	}
-
-	public function getData(int $start, int $limit): array
-	{
-		if (empty($this->selectedTopics))
-			return [];
-
-		return parent::getData($start, $limit);
-	}
-
-	public function getTotalCount(): int
-	{
-		if (empty($this->selectedTopics))
-			return 0;
-
-		return parent::getTotalCount();
-	}
-}
+class ChosenTopicArticle extends TopicArticle {}

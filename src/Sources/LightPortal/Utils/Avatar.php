@@ -7,16 +7,13 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
-
-use function array_map;
-use function in_array;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -48,7 +45,7 @@ class Avatar
 				'height'  => 100,
 				'src'     => Config::$modSettings['avatar_url'] . '/default.png',
 				'loading' => 'lazy',
-				'alt'     => $data['name'],
+				'alt'     => $data['name'] ?? '',
 			])->toHtml();
 	}
 

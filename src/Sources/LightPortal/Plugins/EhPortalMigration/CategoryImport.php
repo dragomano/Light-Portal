@@ -8,135 +8,107 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 08.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\EhPortalMigration;
+namespace LightPortal\Plugins\EhPortalMigration;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-
-use const LP_NAME;
+use Laminas\Db\Sql\Expression;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseCategoryImport;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\TitleColumn;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CategoryImport extends AbstractCustomCategoryImport
+class CategoryImport extends AbstractDatabaseCategoryImport
 {
-	public function main(): void
+	protected string $langKey = 'lp_eh_portal_migration';
+
+	protected string $formAction = 'import_from_ep';
+
+	protected string $uiTableId = 'ep_categories';
+
+	protected function defineUiColumns(): array
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_eh_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_categories;sa=import_from_ep';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_eh_portal_migration']['category_import_desc'],
+		return [
+			TitleColumn::make()
+				->setData('title', 'word_break'),
+			Column::make('status', Lang::$txt['status'])
+				->setData('status', 'centertext')
+				->setSort('status DESC', 'status'),
+			CheckboxColumn::make(entity: 'categories'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('ep_categories', Lang::$txt['lp_categories_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'title'
-				)
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('title DESC', 'title'),
-					Column::make('status', Lang::$txt['status'])
-						->setData('status', 'centertext')
-						->setSort('status DESC', 'status'),
-					CheckboxColumn::make(entity: 'categories'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_category'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_categories')))
+		if (! $this->sql->tableExists('sp_categories')) {
 			return [];
+		}
 
-		$result = Db::$db->query('', '
-			SELECT id_category, name AS title, publish AS status
-			FROM {db_prefix}sp_categories
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('sp_categories')
+			->columns(['id_category', 'title' => 'name', 'publish'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_category']] = [
 				'id'     => $row['id_category'],
 				'title'  => $row['title'],
-				'status' => $row['status'],
+				'status' => $row['publish'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_categories')))
+		if (! $this->sql->tableExists('sp_categories')) {
 			return 0;
+		}
 
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT COUNT(*)
-			FROM {db_prefix}sp_categories',
-		);
+		$select = $this->sql->select()
+			->from('sp_categories')
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return (int) $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT id_category, name AS title, publish AS status
-			FROM {db_prefix}sp_categories' . (empty($ids) ? '' : '
-			WHERE id_category IN ({array_int:categories})'),
-			[
-				'categories' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('sp_categories')
+			->columns(['id_category', 'title' => 'name', 'publish']);
+
+		if ($ids !== []) {
+			$select->where->in('id_category', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_category']] = [
 				'title'       => $row['title'],
+				'parent_id'   => 0,
+				'slug'        => $this->generateSlug(['english' => $row['title']]),
 				'icon'        => '',
 				'description' => '',
 				'priority'    => 0,
-				'status'      => (int) $row['status'],
+				'status'      => $row['publish'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}

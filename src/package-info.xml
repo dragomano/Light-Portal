@@ -3,21 +3,20 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>2.9.5</version>
+	<version>3.0 beta 1</version>
 	<type>modification</type>
 
-	<upgrade from="2.8.*, 2.9.*" for="2.1.*, 3.0.*">
-		<require-dir name="Sources/LightPortal" destination="$sourcedir" />
+	<upgrade from="2.9.*" for="2.1.*, 3.0.*">
+		<database>upgrade.php</database>
 		<require-dir name="Themes/default" destination="$themes_dir" />
 		<require-file name="portal.php" destination="$boarddir" />
 		<code type="inline"><![CDATA[<?php
-			updateSettings(['lp_enabled_plugins' => '']);
+			updateSettings(['lp_enabled_plugins' => '', 'lp_frontpage_article_sorting' => 'created;desc']);
 		?>]]></code>
 	</upgrade>
 
 	<install for="2.1.*, 3.0.*">
-		<database>database.php</database>
-		<require-dir name="Sources/LightPortal" destination="$sourcedir" />
+		<database>install.php</database>
 		<require-dir name="Themes/default" destination="$themes_dir" />
 		<require-file name="portal.php" destination="$boarddir" />
 		<hook hook="integrate_pre_include" function="$sourcedir/LightPortal/app.php" />
@@ -26,12 +25,10 @@
 
 	<uninstall for="2.1.*, 3.0.*">
 		<hook hook="integrate_pre_include" function="$sourcedir/LightPortal/app.php" reverse="true" />
-		<code>uninstall.php</code>
-		<database>uninstall-optional.php</database>
+		<database>uninstall.php</database>
 		<remove-dir name="$themedir/LightPortal" />
 		<remove-dir name="$themedir/css/light_portal" />
 		<remove-dir name="$themedir/scripts/light_portal" />
-		<remove-dir name="$sourcedir/LightPortal" />
 		<remove-dir name="$themedir/languages/LightPortal" />
 		<remove-file name="$boarddir/portal.php" />
 	</uninstall>

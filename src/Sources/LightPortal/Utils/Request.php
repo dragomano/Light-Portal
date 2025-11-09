@@ -7,18 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
-
-use function file_get_contents;
-use function json_decode;
+namespace LightPortal\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Request extends GlobalArray
+class Request extends GlobalArray implements RequestInterface
 {
 	public function __construct()
 	{
@@ -33,6 +30,11 @@ final class Request extends GlobalArray
 	public function isNot(string $action, string $type = 'action'): bool
 	{
 		return empty($this->is($action, $type));
+	}
+
+	public function sa(string $action): bool
+	{
+		return $this->is($action, 'sa');
 	}
 
 	public function json(?string $key = null, mixed $default = null): mixed

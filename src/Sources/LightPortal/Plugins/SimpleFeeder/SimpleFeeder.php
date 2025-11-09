@@ -8,31 +8,27 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.01.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SimpleFeeder;
+namespace LightPortal\Plugins\SimpleFeeder;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Str;
-
-use function file_get_contents;
-use function simplexml_load_string;
-use function strtotime;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\UrlField;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-rss')]
 class SimpleFeeder extends Block
 {
-	public string $icon = 'fas fa-rss';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [

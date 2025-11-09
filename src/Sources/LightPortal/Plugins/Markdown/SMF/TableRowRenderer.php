@@ -11,7 +11,7 @@
  * @version 31.03.24
  */
 
-namespace Bugo\LightPortal\Plugins\Markdown\SMF;
+namespace LightPortal\Plugins\Markdown\SMF;
 
 use League\CommonMark\Extension\Table\TableRow;
 use League\CommonMark\Node\Node;

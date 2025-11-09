@@ -7,14 +7,12 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Routes;
+namespace LightPortal\Routes;
 
 use Bugo\Compat\Routable;
-
-use function array_shift;
 
 class Forum implements Routable
 {

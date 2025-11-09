@@ -7,17 +7,17 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Bricks\Tables\RowPosition;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 
 class PageSearchRow extends Row
 {

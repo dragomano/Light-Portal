@@ -7,24 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Nette\Utils\Html;
-
-use function html_entity_decode;
-use function preg_match;
-use function preg_replace;
-use function str_contains;
-use function str_replace;
-use function strip_tags;
-use function strtolower;
-use function ucwords;
+use WPLake\Typed\Typed;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -54,25 +45,28 @@ class Str
 		return Utils::shorten(strip_tags((string) $text), $length) ?: '...';
 	}
 
-	public static function getTranslatedTitle(array $titles): string
-	{
-		return $titles[User::$me->language] ?? $titles[Config::$language] ?? '';
-	}
-
 	public static function getImageFromText(string $text): string
 	{
-		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
+		preg_match('/<img[^>]+src="([^"]+)"/i', $text, $m);
+		$src = $m[1] ?? '';
 
-		$result = $value['src'] ??= '';
+		return (! $src || str_contains($src, (string) Config::$modSettings['smileys_url']))
+			? (Config::$modSettings['lp_image_placeholder'] ?? '')
+			: $src;
+	}
 
-		if (empty($result) || str_contains($result, (string) Config::$modSettings['smileys_url']))
-			return '';
-
-		return $result;
+	public static function decodeHtmlEntities(string $string): string
+	{
+		return html_entity_decode($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 	}
 
 	public static function html(?string $name = null, array|string|null $params = null): Html
 	{
 		return Html::el($name, $params);
+	}
+
+	public static function typed(string $type, ...$args): mixed
+	{
+		return Typed::$type(...$args);
 	}
 }

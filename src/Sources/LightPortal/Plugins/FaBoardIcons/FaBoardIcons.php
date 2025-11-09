@@ -8,23 +8,24 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\FaBoardIcons;
+namespace LightPortal\Plugins\FaBoardIcons;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::ARTICLE)]
 class FaBoardIcons extends Plugin
 {
-	public string $type = 'article';
-
 	public function frontBoards(Event $e): void
 	{
 		if (! $this->isBaseModInstalled())

@@ -7,25 +7,21 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
-use Bugo\FontAwesome\Enums\Icon as IconEnum;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Icon;
-
-use function array_map;
+use Bugo\FontAwesome\Icon as FontAwesome;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class IconList implements ListInterface
+class IconList implements ListInterface
 {
-	use HasEvents;
-
 	private string $prefix = 'fa-solid fa-';
 
 	private array $set = [
@@ -42,7 +38,7 @@ final class IconList implements ListInterface
 		'close'         => 'xmark',
 		'code'          => 'code',
 		'cog_spin'      => 'cog fa-spin',
-		'comments'      => 'comments fa-fw',
+		'comments'      => 'comments',
 		'content'       => 'newspaper fa-2x',
 		'copyright'     => 'copyright',
 		'date'          => 'clock',
@@ -53,7 +49,7 @@ final class IconList implements ListInterface
 		'edit'          => 'pen-to-square',
 		'ellipsis'      => 'ellipsis',
 		'export'        => 'file-export',
-		'gear'          => '2x fa-gear',
+		'gear'          => 'gear fa-2x',
 		'home'          => 'house',
 		'image'         => 'image',
 		'import'        => 'file-import',
@@ -66,6 +62,7 @@ final class IconList implements ListInterface
 		'meteor'        => 'meteor',
 		'pager'         => 'pager',
 		'panels'        => 'table-columns',
+		'pencil'        => 'pencil',
 		'plus_circle'   => 'circle-plus',
 		'plus'          => 'plus fa-beat',
 		'preview'       => 'eye',
@@ -78,14 +75,14 @@ final class IconList implements ListInterface
 		'sections'      => 'folder',
 		'sign_in_alt'   => 'right-to-bracket',
 		'sign_out_alt'  => 'right-from-bracket',
-		'simple'        => 'table-list fa-2x',
+		'simple'        => 'bars fa-2x',
 		'sort'          => 'sort',
 		'spider'        => 'spider',
 		'submit'        => 'paper-plane',
 		'tag'           => 'tag',
-		'tags'          => 'tags fa-fw',
+		'tags'          => 'tags',
 		'task'          => 'list-check',
-		'tile'          => 'border-all fa-2x',
+		'tile'          => 'columns fa-2x',
 		'tools'         => 'sliders',
 		'undo'          => 'rotate-left',
 		'unlike'        => 'heart-crack',
@@ -94,6 +91,8 @@ final class IconList implements ListInterface
 		'users'         => 'users',
 		'views'         => 'eye',
 	];
+
+	public function __construct(protected ?EventDispatcherInterface $dispatcher = null) {}
 
 	public function __invoke(): array
 	{
@@ -104,14 +103,13 @@ final class IconList implements ListInterface
 		$set['save']      = 'fa-regular fa-floppy-disk';
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
-		// Plugin authors can extend the icon set
-		$this->events()->dispatch(PortalHook::changeIconSet, ['set' => &$set]);
+		$this->dispatcher->dispatch(PortalHook::changeIconSet, ['set' => &$set]);
 
-		return array_map(static fn($icon): string => Icon::parse($icon), $set);
+		return array_map(Icon::parse(...), $set);
 	}
 
 	public function getList(): array
 	{
-		return IconEnum::V5->collection();
+		return FontAwesome::collection(useOldStyle: true);
 	}
 }

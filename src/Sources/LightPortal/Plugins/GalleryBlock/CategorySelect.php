@@ -8,81 +8,64 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 15.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\GalleryBlock;
+namespace LightPortal\Plugins\GalleryBlock;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\UI\Partials\AbstractSelect;
+use LightPortal\Utils\Traits\HasCache;
 
-final class CategorySelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class CategorySelect extends AbstractSelect
 {
 	use HasCache;
 
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$categories = $this->getGalleryCategories();
-
 		$data = [];
-		foreach ($categories as $id => $title) {
+		foreach ($this->params['data'] as $id => $title) {
 			$data[] = [
 				'label' => $title,
 				'value' => $id,
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="categories" name="categories"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#categories",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				multiple: true,
-				search: true,
-				markSearchResults: true,
-				placeholder: "' . Lang::$txt['lp_gallery_block']['categories_select'] . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
-				showValueAsTags: true,
-				maxWidth: "100%",
-				options: ' . json_encode($data) . ',
-				selectedValue: [' . $params['categories'] . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'categories',
+			'multiple' => true,
+			'hint'     => Lang::$txt['lp_gallery_block']['categories_select'],
+			'data'     => $this->getGalleryCategories(),
+			'value'    => $this->normalizeValue($this->params['categories']),
+		];
 	}
 
 	private function getGalleryCategories(): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'gallery_cat')))
+		if (! $this->sql->tableExists('gallery_cat'))
 			return [];
 
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
-			$result = Db::$db->query('', '
-				SELECT id_cat, title
-				FROM {db_prefix}gallery_cat
-				WHERE redirect = {int:redirect}
-				ORDER BY roworder',
-				[
-					'redirect' => 0,
-				]
-			);
+			$select = $this->sql->select()
+				->from('gallery_cat')
+				->columns(['id_cat', 'title'])
+				->where(['redirect' => 0])
+				->order('roworder');
+
+			$result = $this->sql->execute($select);
 
 			$categories = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
+			foreach ($result as $row) {
 				$categories[$row['id_cat']] = $row['title'];
 			}
-
-			Db::$db->free_result($result);
 
 			$this->cache()->put('smf_gallery_categories', $categories);
 		}

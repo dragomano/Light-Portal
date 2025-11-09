@@ -7,16 +7,18 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\ParamWrapper;
+use LightPortal\Renderers\RendererInterface;
+use Ramsey\Collection\Map\MapInterface;
 
 enum PortalHook
 {
+	case addLayerAbove;
+	case addLayerBelow;
 	case addSettings;
 	case afterPageContent;
 	case beforePageContent;
@@ -25,7 +27,13 @@ enum PortalHook
 	case comments;
 	case credits;
 	case downloadRequest;
+	case extendAdminAreas;
 	case extendBasicConfig;
+	case extendBlockAreas;
+	case extendCategoryAreas;
+	case extendPageAreas;
+	case extendPluginAreas;
+	case extendTagAreas;
 	case findBlockErrors;
 	case findPageErrors;
 	case frontAssets;
@@ -37,13 +45,11 @@ enum PortalHook
 	case frontPagesRow;
 	case frontTopics;
 	case frontTopicsRow;
-	case importBlocks;
-	case importCategories;
-	case importPages;
 	case init;
 	case layoutExtensions;
 	case onBlockRemoving;
 	case onBlockSaving;
+	case onCustomPageImport;
 	case onPageRemoving;
 	case onPageSaving;
 	case parseContent;
@@ -59,12 +65,6 @@ enum PortalHook
 	case preparePageFields;
 	case preparePageParams;
 	case saveSettings;
-	case updateAdminAreas;
-	case updateBlockAreas;
-	case updateCategoryAreas;
-	case updatePageAreas;
-	case updatePluginAreas;
-	case updateTagAreas;
 	case validateBlockParams;
 	case validatePageParams;
 
@@ -90,6 +90,14 @@ enum PortalHook
 			self::extendBasicConfig => new class(...$data) {
 				public function __construct(public array &$configVars) {}
 			},
+			self::extendAdminAreas,
+			self::extendBlockAreas,
+			self::extendPageAreas,
+			self::extendCategoryAreas,
+			self::extendTagAreas,
+			self::extendPluginAreas => new class(...$data) {
+				public function __construct(public array &$areas) {}
+			},
 			self::findBlockErrors,
 			self::findPageErrors => new class(...$data) {
 				public function __construct(public array &$errors, public readonly array $data) {}
@@ -99,7 +107,7 @@ enum PortalHook
 			self::frontTopics => new class(...$data) {
 				public function __construct(
 					public array &$columns,
-					public array &$tables,
+					public array &$joins,
 					public array &$params,
 					public array &$wheres,
 					public array &$orders
@@ -118,22 +126,17 @@ enum PortalHook
 				) {}
 			},
 			self::frontModes => new class(...$data) {
-				public function __construct(public array &$modes) {}
-			},
-			self::importBlocks,
-			self::importCategories => new class(...$data) {
-				public function __construct(public array &$items, public array &$titles) {}
-			},
-			self::importPages => new class(...$data) {
-				public function __construct(
-					public array &$items,
-					public array &$titles,
-					public array &$params,
-					public array &$comments
-				) {}
+				public function __construct(public array &$modes, public string &$currentMode) {}
 			},
 			self::layoutExtensions => new class(...$data) {
 				public function __construct(public array &$extensions) {}
+			},
+			self::onCustomPageImport => new class(...$data) {
+				public function __construct(
+					public array &$items,
+					public array &$params,
+					public array &$comments
+				) {}
 			},
 			self::onBlockRemoving,
 			self::onPageRemoving => new class(...$data) {
@@ -157,17 +160,19 @@ enum PortalHook
 				public function __construct(public readonly array $options, public readonly string $type) {}
 			},
 			self::prepareBlockParams,
-			self::preparePageParams,
-			self::validateBlockParams,
-			self::validatePageParams => new class(...$data) {
-				public function __construct(public array &$params, public readonly string $type) {}
+			self::validateBlockParams => new class(...$data) {
+				public function __construct(
+					public array &$baseParams,
+					public array &$params,
+					public readonly string $type
+				) {}
 			},
 			self::prepareContent => new class(...$data) {
 				public function __construct(
 					public readonly string $type,
 					public readonly int $id,
 					public readonly int $cacheTime,
-					public readonly ParamWrapper $parameters
+					public readonly MapInterface $parameters
 				) {}
 			},
 			self::prepareEditor => new class(...$data) {
@@ -182,13 +187,9 @@ enum PortalHook
 			self::preparePageData => new class(...$data) {
 				public function __construct(public array &$data, public readonly bool $isAuthor) {}
 			},
-			self::updateAdminAreas,
-			self::updateBlockAreas,
-			self::updatePageAreas,
-			self::updateCategoryAreas,
-			self::updateTagAreas,
-			self::updatePluginAreas => new class(...$data) {
-				public function __construct(public array &$areas) {}
+			self::preparePageParams,
+			self::validatePageParams => new class(...$data) {
+				public function __construct(public array &$params, public readonly string $type) {}
 			},
 			default => new class {},
 		};

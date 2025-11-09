@@ -8,182 +8,142 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 08.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PageSlugColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\DateTime;
-
-use const LP_NAME;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabasePageImport;
+use LightPortal\Enums\EntryType;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\PageSlugColumn;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\DateTime;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class PageImport extends AbstractCustomPageImport
+class PageImport extends AbstractDatabasePageImport
 {
-	public function main(): void
+	protected string $langKey = 'lp_tiny_portal_migration';
+
+	protected string $formAction = 'import_from_tp';
+
+	protected string $uiTableId = 'tp_pages';
+
+	protected function defineUiColumns(): array
 	{
-		User::$me->isAllowedTo('admin_forum');
-
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tiny_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_tp';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tiny_portal_migration']['page_import_desc'],
+		return [
+			IdColumn::make()->setSort('id'),
+			PageSlugColumn::make()->setSort('shortname DESC', 'shortname'),
+			TitleColumn::make()
+				->setData('title', 'word_break')
+				->setSort('subject', 'subject DESC'),
+			CheckboxColumn::make(entity: 'pages'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('tp_pages', Lang::$txt['lp_pages_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'id'
-				)
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					IdColumn::make()->setSort('id'),
-					PageSlugColumn::make()->setSort('shortname DESC', 'shortname'),
-					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('subject DESC', 'subject'),
-					CheckboxColumn::make(entity: 'pages'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_articles')))
+		if (! $this->sql->tableExists('tp_articles')) {
 			return [];
+		}
 
-		$result = Db::$db->query('', '
-			SELECT id, date, subject, author_id, off, views, shortname, type
-			FROM {db_prefix}tp_articles
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_articles')
+			->columns(['id', 'date', 'subject', 'author_id', 'off', 'views', 'shortname', 'type'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'id'         => $row['id'],
-				'slug'       => $row['shortname'],
+				'slug'       => $row['shortname'] ?: $this->generateSlug(['english' => $row['subject']]),
 				'type'       => $row['type'],
-				'status'     => (int) empty($row['off']),
+				'status'     => empty($row['off']),
 				'num_views'  => $row['views'],
 				'author_id'  => $row['author_id'],
-				'created_at' => DateTime::relative((int) $row['date']),
+				'created_at' => DateTime::relative($row['date']),
 				'title'      => $row['subject'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix. 'tp_articles')))
+		if (! $this->sql->tableExists('tp_articles')) {
 			return 0;
+		}
 
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT COUNT(*)
-			FROM {db_prefix}tp_articles',
-		);
+		$select = $this->sql->select()
+			->from('tp_articles')
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return (int) $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', '
-			SELECT
-				a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views,
-				a.shortname, a.type, a.pub_start, a.pub_end, v.value3
-			FROM {db_prefix}tp_articles AS a
-				LEFT JOIN {db_prefix}tp_variables AS v ON (
-					a.category = v.id AND v.type = {string:type}
-				)' . (empty($ids) ? '' : '
-			WHERE a.id IN ({array_int:pages})'),
-			[
-				'type'  => 'category',
-				'pages' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['a' => 'tp_articles'])
+			->columns([
+				'id', 'date', 'body', 'intro', 'subject', 'author_id', 'off', 'options',
+				'comments', 'views', 'shortname', 'type', 'pub_start', 'pub_end',
+			])
+			->join(
+				['v' => 'tp_variables'],
+				new Expression('a.category = v.id AND v.type = ?', ['category']),
+				['value3'],
+				Select::JOIN_LEFT
+			);
 
-		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-
-
-			$items[$row['id']] = [
-				'page_id'      => $row['id'],
-				'author_id'    => $row['author_id'],
-				'slug'         => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
-				'content'      => $row['body'],
-				'type'         => $row['type'],
-				'permissions'  => $this->getPagePermission($row),
-				'status'       => (int) empty($row['off']),
-				'num_views'    => $row['views'],
-				'num_comments' => 0,
-				'created_at'   => $row['date'],
-				'updated_at'   => 0,
-				'subject'      => $row['subject'],
-				'options'      => explode(',', (string) $row['options']),
-			];
+		if ($ids !== []) {
+			$select->where->in('a.id', $ids);
 		}
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select);
+
+		$items = [];
+		foreach ($result as $row) {
+			$items[$row['id']] = [
+				'page_id'         => $row['id'],
+				'category_id'     => 0,
+				'author_id'       => $row['author_id'],
+				'slug'            => $row['shortname'] ?: $this->generateSlug(['english' => $row['subject']]),
+				'description'     => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
+				'content'         => $row['body'],
+				'type'            => $row['type'],
+				'entry_type'      => EntryType::DEFAULT->name(),
+				'permissions'     => $this->getPermission($row),
+				'status'          => empty($row['off']),
+				'num_views'       => $row['views'],
+				'num_comments'    => $row['comments'],
+				'created_at'      => $row['date'],
+				'updated_at'      => 0,
+				'deleted_at'      => 0,
+				'last_comment_id' => 0,
+				'title'           => $row['subject'],
+				'options'         => explode(',', (string) $row['options']),
+			];
+		}
 
 		return $items;
 	}
 
-	private function getPagePermission(array $row): int
+	protected function extractPermissions(array $row): int|array
 	{
-		$permissions = explode(',', (string) $row['value3']);
-
-		$perm = Permission::ADMIN->value;
-		if (count($permissions) == 1 && $permissions[0] == -1) {
-			$perm = Permission::GUEST->value;
-		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-			$perm = Permission::MEMBER->value;
-		} elseif (in_array(-1, $permissions)) {
-			$perm = Permission::ALL->value;
-		} elseif (in_array(0, $permissions)) {
-			$perm = Permission::ALL->value;
-		}
-
-		return $perm;
+		return array_map(intval(...), explode(',', (string) $row['value3']));
 	}
 }

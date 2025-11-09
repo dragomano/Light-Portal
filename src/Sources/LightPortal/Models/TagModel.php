@@ -7,28 +7,28 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
 
-use Bugo\LightPortal\Enums\Status;
+if (! defined('SMF'))
+	die('No direct access...');
 
 class TagModel extends AbstractModel
 {
-	public int $id;
+	protected array $fields = [
+		'id'     => 0,
+		'slug'   => '',
+		'icon'   => '',
+		'status' => 0,
+	];
 
-	public string $icon;
+	protected array $extraFields = [
+		'title' => '',
+	];
 
-	public int $status;
-
-	public array $titles = [];
-
-	public function __construct(array $data)
-	{
-		$this->id     = $data['tag_id'] ?? $data['id'] ?? 0;
-		$this->icon   = $data['icon'] ?? '';
-		$this->status = $data['status'] ?? Status::ACTIVE->value;
-		$this->titles = $data['titles'] ?? [];
-	}
+	protected array $aliases = [
+		'tag_id' => 'id',
+	];
 }

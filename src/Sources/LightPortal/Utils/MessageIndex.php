@@ -7,19 +7,17 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Actions\MessageIndex as BaseMessageIndex;
-
-use function array_merge;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class MessageIndex extends BaseMessageIndex
+class MessageIndex extends BaseMessageIndex
 {
 	public static function getBoardList(array $boardListOptions = []): array
 	{
@@ -32,10 +30,8 @@ final class MessageIndex extends BaseMessageIndex
 			'excluded_boards' => $recycleBoard === null ? null : [$recycleBoard],
 		];
 
-		if (isset($boardListOptions['included_boards'])) {
-			unset($defaultOptions['excluded_boards']);
-		}
+		$options = array_merge($defaultOptions, $boardListOptions);
 
-		return parent::getBoardList(array_merge($defaultOptions, $boardListOptions));
+		return parent::getBoardList($options);
 	}
 }

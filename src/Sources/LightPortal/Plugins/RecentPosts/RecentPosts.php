@@ -8,40 +8,39 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\RecentPosts;
+namespace LightPortal\Plugins\RecentPosts;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RecentPosts extends Block
+#[PluginAttribute(icon: 'far fa-comment-alt', showContentClass: false)]
+class RecentPosts extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'far fa-comment-alt';
+	use HasView;
 
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=recent',
 			'exclude_boards'   => '',
 			'include_boards'   => '',
@@ -80,35 +79,35 @@ class RecentPosts extends Block
 
 		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['exclude_boards_select'],
 				'value' => $options['exclude_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['include_boards_select'],
 				'value' => $options['include_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('exclude_topics', $this->txt['exclude_topics'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new TopicSelect(), [
+			->setValue(fn() => SelectFactory::topic([
 				'id'    => 'exclude_topics',
 				'hint'  => $this->txt['exclude_topics_select'],
 				'value' => $options['exclude_topics'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new TopicSelect(), [
+			->setValue(fn() => SelectFactory::topic([
 				'id'    => 'include_topics',
 				'hint'  => $this->txt['include_topics_select'],
 				'value' => $options['include_topics'] ?? '',
-			]);
+			]));
 
 		CheckboxField::make('use_simple_style', $this->txt['use_simple_style'])
 			->setTab(Tab::APPEARANCE)
@@ -141,14 +140,14 @@ class RecentPosts extends Block
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', (string) $parameters['include_boards']);
-		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', (string) $parameters['exclude_topics']);
-		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', (string) $parameters['include_topics']);
+		$excludeBoards = array_filter(explode(',', $parameters['exclude_boards'] ?? ''));
+		$includeBoards = array_filter(explode(',', $parameters['include_boards'] ?? ''));
+		$excludeTopics = array_filter(explode(',', $parameters['exclude_topics'] ?? ''));
+		$includeTopics = array_filter(explode(',', $parameters['include_topics'] ?? ''));
 
-		$numPosts = Typed::int($parameters['num_posts'], default: 10);
+		$numPosts = $parameters->get('num_posts', 10);
 
 		$minMessageId = Config::$modSettings['maxMsgID'] - (
 			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']
@@ -179,11 +178,12 @@ class RecentPosts extends Block
 			$numPosts,
 			'm.id_msg DESC',
 			'array',
-			Typed::boolExtended($parameters['limit_body'])
+			Str::typed('boolExtended', $parameters['limit_body'])
 		);
 
-		if (empty($posts))
+		if (empty($posts)) {
 			return [];
+		}
 
 		array_walk($posts,
 			static fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp'])
@@ -201,14 +201,16 @@ class RecentPosts extends Block
 		$parameters = $e->args->parameters;
 
 		$recentPosts = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentPosts))
 			return;
 
-		$this->useTemplate();
-
-		show_posts($recentPosts, $parameters, $this->isInSidebar($e->args->id) === false);
+		echo $this->view(params: [
+			'posts'       => $recentPosts,
+			'parameters'  => $parameters,
+			'isInSidebar' => $this->isInSidebar($e->args->id) === false
+		]);
 	}
 }

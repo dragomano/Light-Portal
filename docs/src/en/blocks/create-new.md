@@ -9,6 +9,28 @@ To add a block, simply click on it. Initially, you can create blocks of three ty
 
 Depending on the type of block, various settings will be available, spread across different tabs.
 
+## Block types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based blocks
+
+Blocks from plugins extend functionality. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **ArticleList**: Displays articles from topics/pages with customizable display options
+- **Calculator**: Interactive calculator widget
+- **BoardStats**: Forum board statistics
+- **News**: Latest announcements
+- **Polls**: Active forum polls
+- **RecentPosts**: Recent forum activity
+- **UserInfo**: Current user details
+- **WhosOnline**: Online users list
+
 ## Content tab
 
 Here you can configure:

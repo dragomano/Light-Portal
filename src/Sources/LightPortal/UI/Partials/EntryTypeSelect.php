@@ -7,32 +7,28 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
+use LightPortal\Enums\EntryType;
 
-use function func_get_args;
-use function json_encode;
+if (! defined('SMF'))
+	die('No direct access...');
 
-final class EntryTypeSelect extends AbstractPartial
+final class EntryTypeSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$params['id'] ??= 'entry_type';
-		$params['data'] ??= Utils::$context['lp_page_types'] ?? [];
-		$params['value'] ??= Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->name();
+		$pageTypes = Utils::$context['lp_page_types'] ?? [];
 
 		$data = [];
-		foreach ($params['data'] as $value => $label) {
-			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->name())
+		foreach ($pageTypes as $value => $label) {
+			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->name()) {
 				continue;
+			}
 
 			$data[] = [
 				'label' => $label,
@@ -40,18 +36,18 @@ final class EntryTypeSelect extends AbstractPartial
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",
-				hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				markSearchResults: true,
-				options: ' . json_encode($data) . ',
-				selectedValue: "' . $params['value'] . '"
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'entry_type',
+			'multiple' => false,
+			'search'   => false,
+			'wide'     => false,
+			'hint'     => '',
+			'value'    => Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->name(),
+		];
 	}
 }

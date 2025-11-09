@@ -2,7 +2,7 @@
 @use "_functions";
 
 /* Layouts */
-@use "layout_switcher";
+@use "frontpage_toolbar";
 @use "frontpage_default";
 @use "frontpage_featured_grid";
 @use "frontpage_alt";
@@ -14,11 +14,14 @@
 @use "frontpage_simple3";
 @use "frontpage_flarum";
 @use "frontpage_spectre";
+@use "frontpage_modern";
+@use "frontpage_discourse";
 
-/* Menu, main layout */
+/* Other */
 @use "menu";
 @use "layout";
 @use "badges";
+@use "debug";
 
 /* Page template */
 @use "page";

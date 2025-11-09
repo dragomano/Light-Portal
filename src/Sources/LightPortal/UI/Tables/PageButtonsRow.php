@@ -7,26 +7,31 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Utils\Request;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\FrontPageMode;
+use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+
+use function LightPortal\app;
 
 class PageButtonsRow extends Row
 {
 	public static function make(string $value = '', ?string $class = null): static
 	{
-		$text = Lang::$txt[app(Request::class)->has('deleted') ? 'lp_action_remove_permanently' : 'remove'];
+		$request = app(RequestInterface::class);
+
+		$text = Lang::$txt[$request->has('deleted') ? 'lp_action_remove_permanently' : 'remove'];
 
 		$delete = Str::html('option', [
-			'value' => app(Request::class)->has('deleted') ? 'delete_forever' : 'delete'
+			'value' => $request->has('deleted') ? 'delete_forever' : 'delete'
 		]);
 
 		$toggle = User::$me->allowedTo('light_portal_approve_pages')
@@ -34,12 +39,12 @@ class PageButtonsRow extends Row
 				->setText(Lang::$txt['lp_action_toggle'])
 			: '';
 
-		$promoteUp = Setting::isFrontpageMode('chosen_pages')
+		$promoteUp = Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)
 			? Str::html('option', ['value' => 'promote_up'])
 				->setText(Lang::$txt['lp_promote_to_fp'])
 			: '';
 
-		$promoteDown = Setting::isFrontpageMode('chosen_pages')
+		$promoteDown = Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)
 			? Str::html('option', ['value' => 'promote_down'])
 				->setText(Lang::$txt['lp_remove_from_fp'])
 			: '';

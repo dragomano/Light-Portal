@@ -7,18 +7,17 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Utils\Language;
+use LightPortal\Utils\Language;
 
-use function array_merge;
-use function array_unique;
-use function is_file;
+if (! defined('LP_NAME'))
+	die('No direct access...');
 
 class LangHandler
 {
@@ -28,6 +27,10 @@ class LangHandler
 	{
 		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
 			return;
+
+		if (! isset(User::$me)) {
+			User::load();
+		}
 
 		$userLang  = Language::getNameFromLocale(User::$me->language);
 		$languages = array_unique([Language::FALLBACK, $userLang]);

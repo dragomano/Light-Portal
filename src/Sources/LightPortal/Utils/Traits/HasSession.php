@@ -7,19 +7,21 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\Session;
+use LightPortal\Utils\SessionInterface;
+
+use function LightPortal\app;
 
 trait HasSession
 {
-	public function session(?string $key = null): Session
+	public function session(?string $key = null): SessionInterface
 	{
 		return $key === null
-			? app(Session::class)
-			: app(Session::class)->withKey($key);
+			? app(SessionInterface::class)
+			: app(SessionInterface::class)->withKey($key);
 	}
 }

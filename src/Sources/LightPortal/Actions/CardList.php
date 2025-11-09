@@ -7,36 +7,35 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
-use Bugo\Bricks\Tables\Column;
-use Bugo\Bricks\Tables\DateColumn;
-use Bugo\Bricks\Tables\Interfaces\TableBuilderInterface;
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Weaver;
-use WPLake\Typed\Typed;
+use LightPortal\Articles\PageArticle;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasSorting;
+
+use function LightPortal\app;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class CardList implements CardListInterface
 {
 	use HasRequest;
+	use HasSorting;
 
 	public function show(PageListInterface $entity): void
 	{
-		if (empty(Config::$modSettings['lp_show_items_as_articles']))
-			return;
+		$this->prepareSortingOptions(app(PageArticle::class));
+		$this->prepareSorting('card_list_sorting');
 
-		$start = Typed::int($this->request()->get('start'));
+		$start = Str::typed('int', $this->request()->get('start'));
 		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$itemsCount = $entity->getTotalPages();
@@ -44,7 +43,7 @@ class CardList implements CardListInterface
 		$front = app(FrontPage::class);
 		$front->updateStart($itemsCount, $start, $limit);
 
-		$articles = app(Weaver::class)(fn() => $entity->getPages($start, $limit, $this->getOrderBy()));
+		$articles = $entity->getPages($start, $limit, Utils::$context['lp_current_sorting']);
 
 		Utils::$context['page_index'] = new PageIndex(
 			Utils::$context['canonical_url'], $start, $itemsCount, $limit
@@ -55,56 +54,11 @@ class CardList implements CardListInterface
 		Utils::$context['lp_frontpage_articles']    = $articles;
 		Utils::$context['lp_frontpage_num_columns'] = $front->getNumColumns();
 
-		Utils::$context['template_layers'][] = 'sorting';
+		/* @uses template_lp_list_above, template_lp_list_below */
+		Utils::$context['template_layers'][] = 'lp_list';
 
 		$front->prepareTemplates();
 
 		Utils::obExit();
-	}
-
-	public function getOrderBy(): string
-	{
-		$sortingTypes = [
-			'title;desc'       => 't.value DESC',
-			'title'            => 't.value',
-			'created;desc'     => 'p.created_at DESC',
-			'created'          => 'p.created_at',
-			'updated;desc'     => 'p.updated_at DESC',
-			'updated'          => 'p.updated_at',
-			'author_name;desc' => 'author_name DESC',
-			'author_name'      => 'author_name',
-			'num_views;desc'   => 'p.num_views DESC',
-			'num_views'        => 'p.num_views',
-		];
-
-		Utils::$context['current_sorting'] = $this->request()->get('sort') ?? 'created;desc';
-
-		return $sortingTypes[Utils::$context['current_sorting']];
-	}
-
-	public function getBuilder(string $id): TableBuilderInterface
-	{
-		return PortalTableBuilder::make($id, Utils::$context['page_title'])
-			->withParams(
-				Setting::get('defaultMaxListItems', 'int', 50),
-				defaultSortColumn: 'date'
-			)
-			->addColumns([
-				DateColumn::make(title: Lang::$txt['date'])
-					->setSort('p.created_at DESC, p.updated_at DESC', 'p.created_at, p.updated_at'),
-				TitleColumn::make()
-					->setData(static fn($entry) => Str::html('a', $entry['title'])
-						->class('bbc_link' . ($entry['is_front'] ? ' new_posts' : ''))
-						->href($entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug'])), 'centertext'),
-				Column::make('author', Lang::$txt['author'])
-					->setData(static fn($entry) => empty($entry['author']['name'])
-						? Lang::$txt['guest_title']
-						: Str::html('a', $entry['author']['name'])
-							->href($entry['author']['link']), 'centertext')
-					->setSort('author_name DESC', 'author_name'),
-				Column::make('num_views', Lang::$txt['views'])
-					->setData(static fn($entry) => $entry['views']['num'], 'centertext')
-					->setSort('p.num_views DESC', 'p.num_views'),
-			]);
 	}
 }

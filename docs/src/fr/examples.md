@@ -6,8 +6,4 @@ subtitle: Sites utilisant le Portail Lumière
 lead: Si vous souhaitez ajouter votre site à cette liste, il suffit de m'envoyer un message via <em>Admin -> Portail -> Paramètres -> Réaction</em> dans votre forum.
 ---
 
-<script setup>
-import ExampleArea from './ExampleArea.vue'
-</script>
-
 <ExampleArea />

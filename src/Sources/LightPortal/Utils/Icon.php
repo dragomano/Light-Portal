@@ -7,22 +7,23 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\FontAwesome\IconBuilder;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
-use Bugo\LightPortal\Lists\IconList;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManagerFactory;
+use LightPortal\Lists\IconList;
+use InvalidArgumentException;
 
-use function str_replace;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Icon
+class Icon
 {
 	public static function get(string $name, string $title = '', string $prefix = ''): string
 	{
@@ -37,10 +38,15 @@ final class Icon
 
 	public static function parse(?string $icon = ''): string
 	{
-		if (empty($icon))
+		if (empty($icon)) {
 			return '';
+		}
 
-		$template = (new IconBuilder($icon, ['aria-hidden' => true]))->html() . ' ';
+		try {
+			$template = IconBuilder::make($icon)->ariaHidden()->html() . ' ';
+		} catch (InvalidArgumentException) {
+			$template = Str::html('i', ['aria-hidden' => 'true'])->class($icon)->toHtml();
+		}
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareIconTemplate,

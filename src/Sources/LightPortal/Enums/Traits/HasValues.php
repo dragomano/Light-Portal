@@ -7,17 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums\Traits;
-
-use function array_map;
+namespace LightPortal\Enums\Traits;
 
 trait HasValues
 {
 	public static function values(): array
 	{
-		return array_map(fn($item) => $item->value, self::cases());
+		return array_column(self::cases(), 'value');
 	}
 }

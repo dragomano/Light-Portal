@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\IconColumn as BaseIconColumn;
 use Bugo\Compat\Lang;

@@ -6,8 +6,4 @@ subtitle: Strony korzystające z Light Portal
 lead: Jeśli chcesz dodać swoją witrynę do tej listy, po prostu wyślij mi wiadomość za pośrednictwem obszaru <em>Administrator -> Portal -> Ustawienia -> Opinie</em> na swoim forum.
 ---
 
-<script setup>
-import ExampleArea from './ExampleArea.vue'
-</script>
-
 <ExampleArea />

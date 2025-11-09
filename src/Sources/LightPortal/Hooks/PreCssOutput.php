@@ -7,24 +7,21 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PreCssOutput
+class PreCssOutput extends AbstractHook
 {
-	use HasEvents;
-
 	public function __invoke(): void
 	{
 		if (isset(Utils::$context['uninstalling']))
@@ -43,10 +40,10 @@ class PreCssOutput
 		$styles = [];
 
 		if (empty(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
-			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
+			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/css/all.min.css';
 		}
 
-		$this->events()->dispatch(PortalHook::preloadStyles, ['styles' => &$styles]);
+		$this->dispatcher->dispatch(PortalHook::preloadStyles, ['styles' => &$styles]);
 
 		foreach ($styles as $style) {
 			echo "\n\t" . Str::html('link', [

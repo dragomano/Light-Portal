@@ -8,28 +8,30 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 29.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\FacebookComments;
+namespace LightPortal\Plugins\FacebookComments;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasThemes;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasThemes;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::COMMENT)]
 class FacebookComments extends Plugin
 {
 	use HasThemes;
-
-	public string $type = 'comment';
 
 	private array $sortOrder = ['reverse-time', 'time'];
 
@@ -46,20 +48,12 @@ class FacebookComments extends Plugin
 			'comment_order_by'  => 'reverse-time',
 		]);
 
-		$settings = &$e->args->settings;
-
-		$settings[$this->name][] = [
-			'text',
-			'app_id',
-			'subtext' => $this->txt['app_id_subtext']
-		];
-		$settings[$this->name][] = ['int', 'comments_per_page'];
-		$settings[$this->name][] = [
-			'select',
-			'comment_order_by',
-			array_combine($this->sortOrder, $this->txt['comment_order_by_set'])
-		];
-		$settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('app_id', ['subtext' => $this->txt['app_id_subtext']])
+			->int('comments_per_page')
+			->select('comment_order_by', array_combine($this->sortOrder, $this->txt['comment_order_by_set']))
+			->multiselect('dark_themes', $this->getForumThemes())
+			->toArray();
 	}
 
 	public function comments(): void

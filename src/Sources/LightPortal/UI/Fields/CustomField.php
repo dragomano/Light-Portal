@@ -7,13 +7,13 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Fields;
+namespace LightPortal\UI\Fields;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -34,9 +34,14 @@ class CustomField extends AbstractField
 				->setText($label);
 		}
 
+		$value = $this->attributes['value'] ?? '';
+		if (is_callable($value)) {
+			$value = $value();
+		}
+
 		Utils::$context['posting_fields'][$this->name]['label']['html']  = $label;
 		Utils::$context['posting_fields'][$this->name]['label']['after'] = $this->after;
-		Utils::$context['posting_fields'][$this->name]['input']['html']  = $this->attributes['value'] ?? '';
+		Utils::$context['posting_fields'][$this->name]['input']['html']  = $value;
 		Utils::$context['posting_fields'][$this->name]['input']['after'] = $this->description;
 		Utils::$context['posting_fields'][$this->name]['input']['tab']   = $this->tab;
 	}

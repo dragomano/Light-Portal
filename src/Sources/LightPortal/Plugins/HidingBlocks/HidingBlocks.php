@@ -8,24 +8,25 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\HidingBlocks;
+namespace LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\UI\Fields\CustomField;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CustomField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::BLOCK_OPTIONS)]
 class HidingBlocks extends Plugin
 {
-	public string $type = 'block_options';
-
 	private const PARAM = 'hidden_breakpoints';
 
 	private array $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
@@ -39,8 +40,9 @@ class HidingBlocks extends Plugin
 			$breakpoints = array_flip(explode(',', (string) $block['parameters'][self::PARAM]));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
-					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class']))
+					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class'])) {
 						Utils::$context['lp_active_blocks'][$id]['custom_class'] = '';
+					}
 
 					Utils::$context['lp_active_blocks'][$id]['custom_class'] .= ' hidden-' . $class;
 				}
@@ -50,20 +52,21 @@ class HidingBlocks extends Plugin
 
 	public function prepareBlockParams(Event $e): void
 	{
-		$e->args->params[self::PARAM] = [];
+		$e->args->baseParams[self::PARAM] = [];
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		$e->args->params[self::PARAM] = FILTER_DEFAULT;
+		$e->args->baseParams[self::PARAM] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(Event $e): void
 	{
 		CustomField::make(self::PARAM, $this->txt[self::PARAM])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new BreakpointSelect(), [
+			->setValue(fn() => new BreakpointSelect([
+				'classes'   => $this->classes,
 				self::PARAM => $e->args->options[self::PARAM] ?? [],
-			]);
+			]));
 	}
 }

@@ -8,30 +8,30 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
+namespace LightPortal\Plugins\ThemeSwitcher;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\Hook;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasThemes;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasThemes;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-desktop')]
 class ThemeSwitcher extends Block
 {
 	use HasThemes;
 
-	public string $icon = 'fas fa-desktop';
-
 	public function init(): void
 	{
-		$this->applyHook(Hook::manageThemes);
+		$this->applyHook(ForumHook::manageThemes);
 	}
 
 	public function manageThemes(): void

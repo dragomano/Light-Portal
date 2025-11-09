@@ -7,18 +7,16 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-
-use function in_array;
+use LightPortal\Enums\Action;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasRequest;
 
 use const LP_ACTION;
 use const LP_PAGE_PARAM;

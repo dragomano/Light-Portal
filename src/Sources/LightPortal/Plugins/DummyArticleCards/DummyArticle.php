@@ -8,71 +8,56 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.03.25
+ * @version 26.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\DummyArticleCards;
+namespace LightPortal\Plugins\DummyArticleCards;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\AbstractArticle;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\Articles\ArticleInterface;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Utils\Traits\HasCache;
 use DateTime;
 use Exception;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class DummyArticle extends AbstractArticle
+class DummyArticle implements ArticleInterface
 {
 	use HasCache;
 
-	private readonly string $limit;
-
-	public function __construct()
-	{
-		$this->limit = Setting::get('lp_num_items_per_page', 'int', 6);
-	}
-
 	public function init(): void {}
+
+	public function getSortingOptions(): array
+	{
+		return [];
+	}
 
 	/**
 	 * @throws Exception
 	 */
-	public function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit, string $sortType = null): iterable
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(fn() => $this->getProducts());
+			->setFallback($this->getProducts(...));
 
 		$users = $this->cache('active_layout_addon_demo_users')
 			->setLifeTime(21600)
-			->setFallback(fn() => $this->getUsers());
+			->setFallback($this->getUsers(...));
 
 		$demoArticles = [];
 
-		$keywords = empty(Utils::$context['lp_dummy_article_cards_plugin']['keywords'])
-			? '' : (Utils::$context['lp_dummy_article_cards_plugin']['keywords'] . '/all');
-
 		foreach ($products as $id => $article) {
-			if (empty(Utils::$context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
-				$section = $article['brand'];
-				$title   = $article['title'];
-				$image   = $article['thumbnail'];
-				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $article['description'];
-				$tag     = $article['category'];
-			} else {
-				$section = Utils::shorten(Lorem::ipsum(1), 20);
-				$title   = Utils::shorten(Lorem::ipsum(1), 40);
-				$image   = 'https://loremflickr.com/470/235/' . $keywords . '?random=' . $article['id'];
-				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : Str::getTeaser(Lorem::ipsum(4));
-				$tag     = Utils::shorten(Lorem::ipsum(1), 10);
-			}
+			$section = $article['brand'];
+			$title   = $article['title'];
+			$image   = $article['thumbnail'];
+			$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $article['description'];
+			$tag     = $article['category'];
 
 			$demoArticles[$article['id']] = [
 				'id'        => $article['id'],
@@ -92,11 +77,13 @@ class DummyArticle extends AbstractArticle
 				'is_new'    => random_int(0, 1),
 				'views'     => [
 					'num'   => random_int(0, 9999),
-					'title' => Lang::$txt['lp_views']
+					'title' => Lang::$txt['lp_views'],
+					'after' => '',
 				],
 				'replies'   => [
 					'num'   => random_int(0, 9999),
-					'title' => Lang::$txt['lp_replies']
+					'title' => Lang::$txt['lp_replies'],
+					'after' => '',
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => $image,
@@ -113,28 +100,30 @@ class DummyArticle extends AbstractArticle
 		$dates = array_column($demoArticles, 'date');
 		array_multisort($dates, SORT_DESC, $demoArticles);
 
-		return $demoArticles;
+		foreach ($demoArticles as $id => $article) {
+			yield $id => $article;
+		}
 	}
 
 	public function getTotalCount(): int
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(fn() => $this->getProducts());
+			->setFallback($this->getProducts(...));
 
 		return count($products);
 	}
 
 	public function getProducts(): array
 	{
-		$data = file_get_contents('https://dummyjson.com/products?limit=' . $this->limit);
+		$data = file_get_contents(__DIR__ . '/products.json');
 
 		return Utils::jsonDecode($data, true)['products'] ?? [];
 	}
 
 	public function getUsers(): array
 	{
-		$data = file_get_contents('https://dummyjson.com/users?limit=' . $this->limit);
+		$data = file_get_contents(__DIR__ . '/users.json');
 
 		return Utils::jsonDecode($data, true)['users'] ?? [];
 	}

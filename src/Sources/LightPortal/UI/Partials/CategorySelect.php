@@ -7,63 +7,49 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Lists\CategoryList;
 
-use function count;
-use function func_get_args;
-use function json_encode;
+if (! defined('SMF'))
+	die('No direct access...');
 
-final class CategorySelect extends AbstractPartial
+final class CategorySelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function __construct(private readonly CategoryList $categoryList, protected array $params = [])
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
+		parent::__construct($params);
+	}
 
-		$params['id'] ??= 'lp_frontpage_categories';
-		$params['multiple'] ??= true;
-		$params['wide'] ??= true;
-		$params['hint'] ??= Lang::$txt['lp_frontpage_categories_select'];
-		$params['data'] ??= app(CategoryList::class)();
-		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
+	public function getData(): array
+	{
+		$list = ($this->categoryList)();
 
 		$data = [];
-		foreach ($params['data'] as $id => $cat) {
+		foreach ($list as $id => $cat) {
 			$data[] = [
-				'label' => Icon::parse($cat['icon']) . $cat['title'],
+				'label' => $cat['icon'] . $cat['title'],
 				'value' => $id,
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				multiple: '. ($params['multiple'] ? 'true' : 'false') . ',
-				search: true,' . (count($params['data']) < 2 ? '
-				disabled: true,' : '') . '
-				markSearchResults: true,
-				placeholder: "' . $params['hint'] . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",' . ($params['multiple'] ? '
-				showValueAsTags: true,' : '') . ($params['wide'] ? '
-				maxWidth: "100%",' : '') . '
-				options: ' . json_encode($data) . ',
-				selectedValue: [' . $params['value'] . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'lp_frontpage_categories',
+			'disabled' => count($this->getData()) < 2,
+			'multiple' => true,
+			'wide'     => true,
+			'hint'     => Lang::$txt['lp_frontpage_categories_select'],
+			'value'    => $this->normalizeValue(Config::$modSettings['lp_frontpage_categories'] ?? ''),
+		];
 	}
 }

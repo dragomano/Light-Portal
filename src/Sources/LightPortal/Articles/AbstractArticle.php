@@ -7,33 +7,37 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
+namespace LightPortal\Articles;
 
-use Bugo\LightPortal\Events\HasEvents;
+use LightPortal\Articles\Services\ArticleServiceInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractArticle implements ArticleInterface
 {
-	use HasEvents;
+	public function __construct(protected ArticleServiceInterface $service) {}
 
-	protected array $columns = [];
+	public function init(): void
+	{
+		$this->service->init();
+	}
 
-	protected array $tables  = [];
+	public function getSortingOptions(): array
+	{
+		return $this->service->getSortingOptions();
+	}
 
-	protected array $wheres  = [];
+	public function getData(int $start, int $limit, ?string $sortType): iterable
+	{
+		return $this->service->getData($start, $limit, $sortType);
+	}
 
-	protected array $params  = [];
-
-	protected array $orders  = [];
-
-	abstract public function init(): void;
-
-	abstract public function getData(int $start, int $limit): array;
-
-	abstract public function getTotalCount(): int;
+	public function getTotalCount(): int
+	{
+		return $this->service->getTotalCount();
+	}
 }

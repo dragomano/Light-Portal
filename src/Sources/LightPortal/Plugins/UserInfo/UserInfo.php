@@ -8,24 +8,24 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.03.25
+ * @version 05.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\UserInfo;
+namespace LightPortal\Plugins\UserInfo;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-
-use function show_user_info;
-use function show_user_info_for_guests;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-user')]
 class UserInfo extends Block
 {
-	public string $icon = 'fas fa-user';
+	use HasView;
 
 	public function getData(): array
 	{
@@ -36,17 +36,16 @@ class UserInfo extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		$this->useTemplate();
-
 		if (User::$me->is_guest) {
-			show_user_info_for_guests();
+			echo $this->view('guest');
+
 			return;
 		}
 
 		$userData = $this->userCache($this->name . '_addon')
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData());
+			->setFallback($this->getData(...));
 
-		show_user_info($userData);
+		echo $this->view(params: ['user' => $userData]);
 	}
 }

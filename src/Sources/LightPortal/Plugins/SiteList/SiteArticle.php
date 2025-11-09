@@ -5,23 +5,23 @@
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021-2025 Bugo
- * @license Individual (for sponsors)
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.03.25
+ * @version 26.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SiteList;
+namespace LightPortal\Plugins\SiteList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\AbstractArticle;
+use LightPortal\Articles\ArticleInterface;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class SiteArticle extends AbstractArticle
+class SiteArticle implements ArticleInterface
 {
 	private array $sites = [];
 
@@ -30,25 +30,26 @@ class SiteArticle extends AbstractArticle
 		$this->sites = Utils::jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '', true);
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getSortingOptions(): array
 	{
-		if (empty($this->sites))
-			return [];
+		return [];
+	}
 
-		$items = [];
+	public function getData(int $start, int $limit, ?string $sortType): iterable
+	{
 		foreach ($this->sites as $url => $data) {
-			$items[] = [
+			$item = [
 				'title'     => $data[1] ?: $url,
 				'is_new'    => false,
 				'edit_link' => Config::$scripturl . '?action=admin;area=lp_plugins',
 				'can_edit'  => User::$me->is_admin,
 				'link'      => $url,
 				'teaser'    => $data[2] ?? '',
-				'image'     => $data[0] ?: ('https://mini.s-shot.ru/?' . urlencode($url))
+				'image'     => $data[0] ?: ('https://image.thum.io/get/' . $url)
 			];
-		}
 
-		return $items;
+			yield $url => $item;
+		}
 	}
 
 	public function getTotalCount(): int

@@ -8,31 +8,29 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.03.25
+ * @version 26.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\CurrentMonth;
+namespace LightPortal\Plugins\CurrentMonth;
 
+use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\Compat\Actions\Calendar;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-calendar-check', showContentClass: false)]
 class CurrentMonth extends Block
 {
-	public string $icon = 'fas fa-calendar-check';
-
-	public function prepareBlockParams(Event $e): void
-	{
-		$e->args->params['no_content_class'] = true;
-	}
+	use HasView;
 
 	public function getData(): array
 	{
@@ -66,7 +64,7 @@ class CurrentMonth extends Block
 
 		$calendarData = $this->userCache($this->name . '_addon')
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData());
+			->setFallback($this->getData(...));
 
 		if ($calendarData) {
 			$calendarData['block_id'] = $id;
@@ -83,9 +81,7 @@ class CurrentMonth extends Block
 				Utils::$context['lp_active_blocks'][$id]['titles'][User::$me->language] = $title;
 			}
 
-			$this->useTemplate();
-
-			show_current_month_grid($calendarData);
+			echo $this->view(params: ['data' => $calendarData]);
 		}
 	}
 }

@@ -8,29 +8,26 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TopBoards;
+namespace LightPortal\Plugins\TopBoards;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class TopBoards extends Block
+#[PluginAttribute(icon: 'fas fa-balance-scale-left')]
+class TopBoards extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'fas fa-balance-scale-left';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -69,7 +66,7 @@ class TopBoards extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$numBoards = Typed::int($parameters['num_boards'], default: 10);
+		$numBoards = Str::typed('int', $parameters['num_boards'], default: 10);
 
 		$topBoards = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)

@@ -7,19 +7,16 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\AlertAction;
-use Bugo\LightPortal\Utils\Str;
-
-use function in_array;
-use function strtr;
+use LightPortal\Enums\AlertAction;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');

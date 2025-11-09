@@ -8,15 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.02.25
+ * @version 25.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Validators\AbstractValidator;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Lists\PluginList;
+use LightPortal\Validators\AbstractValidator;
+
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -57,15 +61,22 @@ class Validator extends AbstractValidator
 		'smf_hooks'  => FILTER_VALIDATE_BOOLEAN,
 		'smf_ssi'    => FILTER_VALIDATE_BOOLEAN,
 		'components' => FILTER_VALIDATE_BOOLEAN,
-		'titles' => [
-			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		],
-		'descriptions' => [
-			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		]
 	];
+
+	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
+	{
+		parent::__construct($sql, $dispatcher);
+
+		$this->filters['titles'] = [
+			'filter'  => FILTER_CALLBACK,
+			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_QUOTES),
+		];
+
+		$this->filters['descriptions'] = [
+			'filter'  => FILTER_CALLBACK,
+			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_QUOTES),
+		];
+	}
 
 	public function validate(): array
 	{
@@ -92,11 +103,11 @@ class Validator extends AbstractValidator
 
 	protected function checkName(): void
 	{
-		$nameValue = $this->post()->get('name');
+		$nameValue     = $this->post()->get('name');
 		$validatedName = $this->filteredData['name'] ?? null;
 
-		$isEmptyName = empty($nameValue);
-		$isInvalidName = ! $isEmptyName && $validatedName === false;
+		$isEmptyName     = empty($nameValue);
+		$isInvalidName   = ! $isEmptyName && $validatedName === false;
 		$isNonUniqueName = ! $isEmptyName && $validatedName !== false && ! $this->isUnique();
 
 		if ($isEmptyName) {

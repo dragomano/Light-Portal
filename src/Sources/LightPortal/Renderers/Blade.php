@@ -7,25 +7,26 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Renderers;
+namespace LightPortal\Renderers;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use eftec\bladeone\BladeOne;
 use Exception;
+use LightPortal\Enums\Tab;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 
-use function count;
-use function is_array;
-use function ob_get_clean;
-use function ob_start;
-use function str_replace;
-use function strstr;
+if (! defined('SMF'))
+	die('No direct access...');
 
-final class Blade extends AbstractRenderer
+class Blade extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.blade.php';
 
@@ -33,32 +34,18 @@ final class Blade extends AbstractRenderer
 
 	public function render(string $layout, array $params = []): string
 	{
-		if (empty($layout))
+		if (empty($layout)) {
 			return '';
+		}
 
 		ob_start();
 
 		try {
-			$blade = new BladeOne([$this->templateDir, $this->customDir], Sapi::getTempDir());
+			$blade = $this->createBladeInstance();
 
-			$blade->directiveRT('icon', static function (array|string $expression) {
-				if (is_array($expression)) {
-					[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
-				} else {
-					$name = $expression;
-				}
-
-				$icon = Icon::get($name);
-
-				if (empty($title)) {
-					echo $icon;
-					return;
-				}
-
-				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
-			});
-
-			$layout = strstr($layout, '.', true) ?: $layout;
+			if (str_ends_with($layout, self::DEFAULT_EXTENSION)) {
+				$layout = substr($layout, 0, -strlen(self::DEFAULT_EXTENSION));
+			}
 
 			echo $blade->run($layout, $params);
 		} catch (Exception $e) {
@@ -66,5 +53,94 @@ final class Blade extends AbstractRenderer
 		}
 
 		return ob_get_clean();
+	}
+
+	public function renderString(string $string, array $params = []): string
+	{
+		if (empty($string)) {
+			return '';
+		}
+
+		ob_start();
+
+		try {
+			$blade = $this->createBladeInstance();
+
+			echo $blade->runString($string, $params);
+		} catch (Exception $e) {
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
+
+		return ob_get_clean();
+	}
+
+	private function createBladeInstance(): BladeOne
+	{
+		$blade = new BladeOne([$this->templateDir, $this->customDir], Sapi::getTempDir());
+		$blade->setBaseUrl(Theme::$current->settings['default_theme_url'] . '/scripts/light_portal');
+		$blade->setCanFunction(fn(string $permission): bool => User::$me->allowedTo($permission));
+
+		$this->setupDirectives($blade);
+
+		return $blade;
+	}
+
+	private function setupDirectives(BladeOne $blade): void
+	{
+		$blade->directiveRT('icon', static function (mixed $name, string $title = '') {
+			if (is_array($name)) {
+				[$n, $t] = count($name) > 1 ? $name : [$name[0], ''];
+				$name = $n;
+				$title = $t;
+			}
+
+			$icon = Icon::get($name);
+
+			if (empty($title)) {
+				echo $icon;
+				return;
+			}
+
+			echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
+		});
+
+		$blade->directiveRT('postErrors', static function () {
+			if (empty(Utils::$context['post_errors'])) {
+				return;
+			}
+
+			$div = Str::html('div')->class('errorbox');
+			$ul  = Str::html('ul');
+
+			foreach (Utils::$context['post_errors'] as $error) {
+				$ul->addHtml(Str::html('li')->addHtml($error));
+			}
+
+			echo $div->addHtml($ul);
+		});
+
+		$blade->directiveRT('portalTab', static function (array $fields, Tab|string $tab = 'content') {
+			$fields['subject'] = ['no'];
+
+			$tabName = is_string($tab) ? $tab : $tab->name();
+
+			foreach ($fields as $pfid => $pf) {
+				if (empty($pf['input']['tab'])) {
+					$pf['input']['tab'] = Tab::TUNING->name();
+				}
+
+				if ($pf['input']['tab'] != $tabName) {
+					$fields[$pfid] = ['no'];
+				}
+			}
+
+			Utils::$context['posting_fields'] = $fields;
+
+			Theme::loadTemplate('Post');
+
+			ob_start();
+			template_post_header();
+			echo ob_get_clean();
+		});
 	}
 }

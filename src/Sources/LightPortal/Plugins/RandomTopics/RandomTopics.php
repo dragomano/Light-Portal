@@ -8,34 +8,34 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\RandomTopics;
+namespace LightPortal\Plugins\RandomTopics;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-random')]
 class RandomTopics extends Block
 {
-	public string $icon = 'fas fa-random';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -62,19 +62,19 @@ class RandomTopics extends Block
 
 		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['exclude_boards_select'],
 				'value' => $options['exclude_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['include_boards_select'],
 				'value' => $options['include_boards'] ?? '',
-			]);
+			]));
 
 		NumberField::make('num_topics', $this->txt['num_topics'])
 			->setAttribute('min', 1)
@@ -84,140 +84,99 @@ class RandomTopics extends Block
 			->setValue($options['show_num_views']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
-		$topicsCount   = Typed::int($parameters['num_topics']);
+		$excludeBoards = array_filter(array_map(intval(...), explode(',', $parameters['exclude_boards'] ?? '')));
+		$includeBoards = array_filter(array_map(intval(...), explode(',', $parameters['include_boards'] ?? '')));
 
-		if (empty($topicsCount))
+		$topicsCount = Str::typed('int', $parameters['num_topics']);
+		if (empty($topicsCount)) {
 			return [];
-
-		if (Config::$db_type === 'postgresql') {
-			$result = Db::$db->query('', '
-				WITH RECURSIVE r AS (
-					WITH b AS (
-						SELECT min(t.id_topic), (
-							SELECT t.id_topic FROM {db_prefix}topics AS t
-							WHERE {query_wanna_see_topic_board}
-								AND t.approved = {int:is_approved}' . ($excludeBoards ? '
-								AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
-								AND t.id_board IN ({array_int:include_boards})' : '') . '
-							ORDER BY t.id_topic DESC
-							LIMIT 1 OFFSET {int:limit} - 1
-						) max
-						FROM {db_prefix}topics AS t
-						WHERE {query_wanna_see_topic_board}
-							AND t.approved = {int:is_approved}' . ($excludeBoards ? '
-							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
-							AND t.id_board IN ({array_int:include_boards})' : '') . '
-					)
-					(
-						SELECT t.id_topic, min, max, array[]::integer[] || t.id_topic AS a, 0 AS n
-						FROM {db_prefix}topics AS t, b
-						WHERE {query_wanna_see_topic_board}
-							AND t.id_topic >= min + ((max - min) * random())::int
-							AND	t.approved = {int:is_approved}' . ($excludeBoards ? '
-							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
-							AND t.id_board IN ({array_int:include_boards})' : '') . '
-						LIMIT 1
-					) UNION ALL (
-						SELECT t.id_topic, min, max, a || t.id_topic, r.n + 1 AS n
-						FROM {db_prefix}topics AS t, r
-						WHERE {query_wanna_see_topic_board}
-							AND t.id_topic >= min + ((max - min) * random())::int
-							AND t.id_topic <> all(a)
-							AND r.n + 1 < {int:limit}
-							AND t.approved = {int:is_approved}' . ($excludeBoards ? '
-							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
-							AND t.id_board IN ({array_int:include_boards})' : '') . '
-						LIMIT 1
-					)
-				)
-				SELECT t.id_topic
-				FROM {db_prefix}topics AS t, r
-				WHERE r.id_topic = t.id_topic',
-				[
-					'is_approved'    => 1,
-					'exclude_boards' => $excludeBoards,
-					'include_boards' => $includeBoards,
-					'limit'          => $topicsCount,
-				]
-			);
-
-			$topicIds = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				$topicIds[] = $row['id_topic'];
-			}
-
-			Db::$db->free_result($result);
-
-			if (empty($topicIds)) {
-				$parameters['num_topics'] = $topicsCount - 1;
-
-				return $this->getData($parameters);
-			}
-
-			$result = Db::$db->query('', '
-				SELECT
-					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$me->is_guest ? '1 AS is_read' : '
-					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
-				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$me->is_guest ? '' : '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
-				WHERE {query_wanna_see_topic_board}
-					AND t.id_topic IN ({array_int:topic_ids})',
-				[
-					'current_member' => User::$me->id,
-					'topic_ids'      => $topicIds,
-				]
-			);
-		} else {
-			$result = Db::$db->query('', '
-				SELECT
-					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$me->is_guest ? '1 AS is_read' : '
-					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', t.num_views
-				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$me->is_guest ? '' : '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
-				WHERE {query_wanna_see_topic_board}
-					AND t.approved = {int:is_approved}' . ($excludeBoards ? '
-					AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
-					AND t.id_board IN ({array_int:include_boards})' : '') . '
-				ORDER BY RAND()
-				LIMIT {int:limit}',
-				[
-					'current_member' => User::$me->id,
-					'is_approved'    => 1,
-					'exclude_boards' => $excludeBoards,
-					'include_boards' => $includeBoards,
-					'limit'          => $topicsCount,
-				]
-			);
 		}
 
+		$selectTopics = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns(['id_topic'])
+			->where(['t.approved' => 1, 't.id_redirect_topic' => 0])
+			->order(new Expression("MD5(CONCAT(t.id_topic, CURRENT_TIMESTAMP))"))
+			->limit($topicsCount);
+
+		if (! empty($excludeBoards)) {
+			$selectTopics->where->notIn('t.id_board', $excludeBoards);
+		}
+
+		if (! empty($includeBoards)) {
+			$selectTopics->where->in('t.id_board', $includeBoards);
+		}
+
+		$result = $this->sql->execute($selectTopics);
+
+		$topicIds = [];
+		foreach ($result as $row) {
+			$topicIds[] = $row['id_topic'];
+		}
+
+		if (empty($topicIds)) {
+			$parameters['num_topics'] = $topicsCount - 1;
+
+			return $this->getData($parameters);
+		}
+
+		$columns = ['num_views'];
+
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->join(
+				['ml' => 'messages'],
+				't.id_last_msg = ml.id_msg', ['id_topic', 'id_msg', 'id_msg_modified']
+			)
+			->join(
+				['mf' => 'messages'],
+				't.id_first_msg = mf.id_msg',
+				['poster_time', 'subject', 'id_member', 'icon']
+			)
+			->join(
+				['mem' => 'members'],
+				'mf.id_member = mem.id_member',
+				['poster_name' => new Expression('COALESCE(mem.real_name, mf.poster_name)')]
+			);
+
+		if (User::$me->is_guest) {
+			$columns['is_read'] = new Expression('"1"');
+		} else {
+			$select->join(
+				['lt' => 'log_topics'],
+				new Expression('t.id_topic = lt.id_topic AND lt.id_member = ?', [User::$me->id]),
+				[],
+				Select::JOIN_LEFT
+			);
+			$select->join(
+				['lmr' => 'log_mark_read'],
+				new Expression('t.id_board = lmr.id_board AND lmr.id_member = ?', [User::$me->id]),
+				[],
+				Select::JOIN_LEFT
+			);
+			$columns['is_read'] = new Expression('COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified');
+		}
+
+		$select->columns($columns);
+		$select->where->in('t.id_topic', $topicIds);
+
+		$result = $this->sql->execute($select);
+
 		$topics = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$topics[] = [
-				'author_id'   => (int) $row['id_member'],
+				'author_id'   => $row['id_member'],
 				'author_name' => $row['poster_name'],
-				'time'        => (int) $row['poster_time'],
-				'num_views'   => (int) $row['num_views'],
+				'time'        => $row['poster_time'],
+				'num_views'   => $row['num_views'],
 				'href'        => Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new',
 				'title'       => $row['subject'],
 				'is_new'      => empty($row['is_read']),
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $topics;
 	}

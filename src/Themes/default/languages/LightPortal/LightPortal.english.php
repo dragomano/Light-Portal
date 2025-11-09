@@ -13,7 +13,6 @@ $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
 $txt['lp_caution'] = 'Caution';
 $txt['lp_my_pages'] = 'My pages';
-$txt['lp_page_moderation'] = 'Page moderation';
 $txt['lp_views'] = 'Views';
 $txt['lp_replies'] = 'Replies';
 $txt['lp_default'] = 'Default';
@@ -28,11 +27,13 @@ $txt['lp_remove_from_fp'] = 'Remove from the front page';
 $txt['lp_task_list'] = 'Task list';
 $txt['lp_new_version'] = 'Your version of the portal is outdated. A new version is available — {0}, released on {1}.';
 $txt['lp_plugin_outdated'] = 'An outdated version of the plugin is being used. Please update!';
+$txt['lp_slug'] = 'Slug';
+$txt['lp_slug_subtext'] = 'The slug must begin with a Latin letter and consist of lowercase Latin letters, numbers or dashes.';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'The front page';
-$txt['lp_base_info'] = 'The mod version: <strong>{0}</strong>, PHP version: <strong>{1}</strong>, {2} version: <strong>{3}</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
+$txt['lp_base_info'] = 'The mod version: <strong>{0}</strong>, PHP version: <strong>{1}</strong>, {2} version: <strong>{3}</strong>.<br>You can discuss portal bugs and features at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
 
 $txt['lp_frontpage_title'] = 'The front page title';
 $txt['lp_frontpage_mode'] = 'The portal front page';
@@ -48,11 +49,10 @@ $txt['lp_frontpage_pages_no_items'] = 'There are no active pages';
 $txt['lp_frontpage_topics'] = 'Topics - sources of articles for the front page';
 $txt['lp_frontpage_topics_select'] = 'Select the desired topics';
 $txt['lp_frontpage_topics_no_items'] = 'There are no approved topics';
-$txt['lp_frontpage_order_by_replies'] = 'Display articles with the highest number of comments first';
 $txt['lp_frontpage_article_sorting'] = 'Sort articles';
-$txt['lp_frontpage_article_sorting_set'] = ['By last comment', 'By posting date (new first)', 'By posting date (old first)', 'By last update (fresh first)'];
-$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
+$txt['lp_frontpage_article_sorting_set'] = ['last_comment;desc' => 'By last comment', 'created;desc' => 'By posting date (new first)', 'updated;desc' => 'By last update (fresh first)', 'title;desc' => 'By title', 'author_name;desc' => 'By author name'];
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
+$txt['lp_show_sort_dropdown'] = 'Show sort dropdown';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = '{columns, plural,
 	one {# column}
@@ -100,7 +100,6 @@ $txt['lp_comment_block_set'] = ['None', 'Integrated'];
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
 $txt['lp_comment_sorting'] = 'Sort comments by default';
-$txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_maximum_tags'] = 'The maximum number of tags that can be added to a page';
 $txt['lp_permissions_default'] = 'Default permissions for pages and blocks';
 $txt['lp_hide_blocks_in_acp'] = 'Hide active blocks in the admin area';
@@ -135,6 +134,7 @@ $txt['lp_misc_info'] = 'There are additional portal settings that will be useful
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
 $txt['lp_show_debug_info'] = 'Show the portal\'s loading time';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
+$txt['lp_show_portal_queries'] = 'Show the portal\'s queries';
 $txt['lp_cache_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
 $txt['lp_portal_action'] = 'The value of the <strong>action</strong> parameter of the portal';
@@ -156,7 +156,7 @@ $txt['lp_action_remove_permanently'] = 'Remove permanently';
 $txt['lp_action_clone'] = 'Clone';
 $txt['lp_action_move'] = 'Move';
 $txt['lp_read_more'] = 'Read more...';
-$txt['lp_save_and_exit'] = 'Save and Exit';
+$txt['lp_save_and_exit'] = 'Save and exit';
 
 // Blocks
 $txt['lp_blocks'] = 'Blocks';
@@ -178,18 +178,18 @@ $txt['lp_block_placement_set'] = ['Header', 'Center (top)', 'Left side', 'Right 
 $txt['lp_block_areas'] = 'Display areas';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in';
 $txt['lp_block_areas_th'] = 'Custom areas';
-$txt['lp_block_areas_values'][0] = 'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%s</em>)';
-$txt['lp_block_areas_values'][1] = 'everywhere, except <strong>custom_action</strong> (used as an exception, in addition to the preset areas)';
-$txt['lp_block_areas_values'][2] = 'on page <em>index.php?page</em>=<strong>slug</strong>';
-$txt['lp_block_areas_values'][3] = 'only inside the board with identifier <strong>id</strong> (including all topics inside the board)';
-$txt['lp_block_areas_values'][4] = 'in boards with identifiers 1, 2, 3';
-$txt['lp_block_areas_values'][5] = 'in boards with identifiers 3, and 7';
-$txt['lp_block_areas_values'][6] = 'only inside the topic with identifier <strong>id</strong>';
-$txt['lp_block_areas_values'][7] = 'in topics with identifiers 1, 2, 3';
-$txt['lp_block_areas_values'][8] = 'in topics with identifiers 3, and 7';
+$txt['lp_block_areas_values']['custom_action'] = 'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%s</em>)';
+$txt['lp_block_areas_values']['custom_action_except'] = 'everywhere, except <strong>custom_action</strong> (used as an exception, in addition to the preset areas)';
+$txt['lp_block_areas_values']['page_slug'] = 'on page <em>index.php?page</em>=<strong>slug</strong>';
+$txt['lp_block_areas_values']['board_id'] = 'only inside the board with identifier <strong>id</strong> (including all topics inside the board)';
+$txt['lp_block_areas_values']['board_range'] = 'in boards with identifiers 1, 2, 3';
+$txt['lp_block_areas_values']['board_set'] = 'in boards with identifiers 3, and 7';
+$txt['lp_block_areas_values']['topic_id'] = 'only inside the topic with identifier <strong>id</strong>';
+$txt['lp_block_areas_values']['topic_range'] = 'in topics with identifiers 1, 2, 3';
+$txt['lp_block_areas_values']['topic_set'] = 'in topics with identifiers 3, and 7';
 $txt['lp_block_areas_set']['all'] = 'Everywhere';
 $txt['lp_block_areas_set']['home'] = 'Main page of the portal';
-$txt['lp_block_areas_set']['portal'] = 'Portal area (action=portal)';
+$txt['lp_block_areas_set']['portal'] = 'Portal area (action=%s)';
 $txt['lp_block_areas_set']['forum'] = 'Main page of the forum';
 $txt['lp_block_areas_set']['pages'] = 'All portal pages';
 $txt['lp_block_areas_set']['boards'] = 'All forum boards';
@@ -227,8 +227,6 @@ $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
 $txt['lp_pages_search'] = 'Slug or title';
-$txt['lp_page_slug'] = 'Slug';
-$txt['lp_page_slug_subtext'] = 'The page slug must begin with a Latin letter and consist of lowercase Latin letters, numbers or dashes.';
 $txt['lp_page_type'] = 'Type';
 $txt['lp_page_type_set'] = ['Default', 'Internal', 'Draft'];
 $txt['lp_page_description'] = 'Description';
@@ -255,8 +253,8 @@ $txt['lp_category_description'] = 'Description';
 $txt['lp_category'] = 'Category';
 $txt['lp_no_category'] = 'Uncategorized';
 $txt['lp_all_categories'] = 'All categories of the portal';
-$txt['lp_all_pages_with_category'] = 'All pages in category "%s"';
-$txt['lp_all_pages_without_category'] = 'All pages without category';
+$txt['lp_all_pages_with_category'] = 'All pages in the "%s" category';
+$txt['lp_all_pages_without_category'] = 'All pages without a category';
 $txt['lp_category_not_found'] = 'The specified category was not found.';
 $txt['lp_no_categories'] = 'There are no categories yet.';
 $txt['lp_total_pages_column'] = 'Total pages';
@@ -270,7 +268,7 @@ $txt['lp_tags_add_title'] = 'Adding a tag';
 $txt['lp_tags_add_description'] = 'Tags are useful for grouping content into different topics.';
 $txt['lp_tags_edit_title'] = 'Editing tag';
 $txt['lp_tags_edit_description'] = 'Make the necessary changes.';
-$txt['lp_all_page_tags'] = 'All portal page tags';
+$txt['lp_all_page_tags'] = 'All tags of the portal';
 $txt['lp_all_tags_by_key'] = 'All pages with the "%s" tag';
 $txt['lp_tag_not_found'] = 'The specified tag was not found.';
 $txt['lp_no_tags'] = 'There are no tags yet.';
@@ -289,6 +287,14 @@ $txt['lp_sort_by_author_desc'] = 'Author name (desc)';
 $txt['lp_sort_by_author'] = 'Author name (asc)';
 $txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
 $txt['lp_sort_by_num_views'] = 'Number of views (asc)';
+$txt['lp_sort_by_num_replies_desc'] = 'Number of replies (desc)';
+$txt['lp_sort_by_num_replies'] = 'Number of replies (asc)';
+$txt['lp_sort_by_num_comments_desc'] = 'Number of comments (desc)';
+$txt['lp_sort_by_num_comments'] = 'Number of comments (asc)';
+$txt['lp_sort_by_last_reply_desc'] = 'Last reply date (desc)';
+$txt['lp_sort_by_last_reply'] = 'Last reply date (asc)';
+$txt['lp_sort_by_last_comment_desc'] = 'Last comment date (desc)';
+$txt['lp_sort_by_last_comment'] = 'Last comment date (asc)';
 
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';
@@ -341,19 +347,20 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed below. You can always create a new one using <a class="bbc_link" href="%s" target="_blank" rel="noopener">the instructions</a>.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_types'][0] = 'Block';
-$txt['lp_plugins_types'][1] = 'SSI';
-$txt['lp_plugins_types'][2] = 'Editor';
-$txt['lp_plugins_types'][3] = 'Comment widget';
-$txt['lp_plugins_types'][4] = 'Content parser';
-$txt['lp_plugins_types'][5] = 'Processing articles';
-$txt['lp_plugins_types'][6] = 'The layout of the front page';
-$txt['lp_plugins_types'][7] = 'Import and export';
-$txt['lp_plugins_types'][8] = 'Block options';
-$txt['lp_plugins_types'][9] = 'Page options';
-$txt['lp_plugins_types'][10] = 'Icons';
-$txt['lp_plugins_types'][11] = 'SEO';
-$txt['lp_plugins_types'][12] = 'Other';
+$txt['lp_plugins_types']['article'] = 'Processing articles';
+$txt['lp_plugins_types']['block'] = 'Block';
+$txt['lp_plugins_types']['block_options'] = 'Block options';
+$txt['lp_plugins_types']['comment'] = 'Comment widget';
+$txt['lp_plugins_types']['editor'] = 'Editor';
+$txt['lp_plugins_types']['frontpage'] = 'Front page';
+$txt['lp_plugins_types']['games'] = 'Games';
+$txt['lp_plugins_types']['icons'] = 'Icons';
+$txt['lp_plugins_types']['impex'] = 'Import and export';
+$txt['lp_plugins_types']['other'] = 'Other';
+$txt['lp_plugins_types']['page_options'] = 'Page options';
+$txt['lp_plugins_types']['parser'] = 'Content parser';
+$txt['lp_plugins_types']['seo'] = 'SEO';
+$txt['lp_plugins_types']['ssi'] = 'SSI';
 $txt['lp_plugins_select'] = 'Make a choice';
 $txt['lp_plugins_no_options'] = 'No options';
 
@@ -368,6 +375,7 @@ $txt['lp_comments_title'] = '{count, plural,
 	other {# comments}
 }';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
+$txt['lp_updated'] = 'Updated';
 
 // Alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';
@@ -381,6 +389,12 @@ $txt['alert_new_reply_page_comment_reply'] = '{gender, select,
 	female {{member_link} left a reply to your comment {content_subject}}
 	male {{member_link} left a reply to your comment {content_subject}}
 	other {{member_link} left a reply to your comment {content_subject}}
+}';
+$txt['alert_page_comment_mention'] = 'When my @name is mentioned in comments';
+$txt['alert_new_mention_page_comment_mention'] = '{gender, select,
+	female {{member_link} mentioned you in comment {content_subject}}
+	male {{member_link} mentioned you in comment {content_subject}}
+	other {{member_link} mentioned you in comment {content_subject}}
 }';
 $txt['alert_page_unapproved'] = 'When a new unapproved page appears';
 $txt['alert_new_page_page_unapproved'] = '{gender, select,
@@ -408,7 +422,7 @@ $txt['lp_block_not_found'] = 'Block not found!';
 $txt['lp_post_error_no_title'] = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_slug'] = 'The <strong>slug</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_slug'] = 'The specified slug is not correct!';
-$txt['lp_post_error_no_unique_slug'] = 'A page with this slug already exists!';
+$txt['lp_post_error_no_unique_slug'] = 'This slug is already being used!';
 $txt['lp_post_error_no_content'] = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas'] = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_areas'] = 'The <strong>areas</strong> field was set incorrectly!';
@@ -490,13 +504,21 @@ $txt['lp_articles_set'] = '{articles, plural,
 }';
 
 // Other units
+$txt['lp_blocks_set'] = '{blocks, plural,
+	one {# block}
+	other {# blocks}
+}';
+$txt['lp_categories_set'] = '{categories, plural,
+	one {# category}
+	other {# categories}
+}';
 $txt['lp_pages_set'] = '{pages, plural,
 	one {# page}
 	other {# pages}
 }';
-$txt['lp_blocks_set'] = '{blocks, plural,
-	one {# block}
-	other {# blocks}
+$txt['lp_tags_set'] = '{tags, plural,
+	one {# tag}
+	other {# tags}
 }';
 $txt['lp_users_set'] = '{users, plural,
 	one {# user}

@@ -7,225 +7,123 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Models\CategoryFactory;
-use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextareaField;
-use Bugo\LightPortal\UI\Partials\IconSelect;
-use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
-use Bugo\LightPortal\UI\Tables\IconColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\StatusColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Validators\CategoryValidator;
-use WPLake\Typed\Typed;
-
-use function array_merge;
-
-use const LP_NAME;
+use LightPortal\Enums\Tab;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Models\CategoryFactory;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\UI\Fields\TextareaField;
+use LightPortal\UI\Tables\ContextMenuColumn;
+use LightPortal\UI\Tables\IconColumn;
+use LightPortal\UI\Tables\StatusColumn;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
+use LightPortal\Validators\CategoryValidator;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryArea
+final class CategoryArea extends AbstractArea
 {
-	use HasArea;
-
-	public function __construct(private readonly CategoryRepository $repository) {}
-
-	public function main(): void
+	public function __construct(CategoryRepositoryInterface $repository, EventDispatcherInterface $dispatcher)
 	{
-		Theme::loadTemplate('LightPortal/ManageCategories');
+		parent::__construct($repository, $dispatcher);
+	}
 
-		Utils::$context['template_layers'][] = 'manage_categories';
+	protected function getEntityName(): string
+	{
+		return 'category';
+	}
 
-		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_manage'];
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_categories';
+	protected function getEntityNamePlural(): string
+	{
+		return 'categories';
+	}
 
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_categories_manage_description'],
+	protected function getCustomActionHandlers(): array
+	{
+		return [
+			'update_priority' => fn($data) => $this->getRepository()->updatePriority($data['update_priority']),
 		];
-
-		$this->doActions();
-
-		$builder = PortalTableBuilder::make('lp_categories', Lang::$txt['lp_categories'])
-			->setDefaultSortColumn('priority')
-			->setScript('const entity = new Category();')
-			->withCreateButton('categories')
-			->setItems($this->repository->getAll(...))
-			->setCount($this->repository->getTotalCount(...))
-			->addColumns([
-				IdColumn::make()->setSort('category_id'),
-				IconColumn::make(),
-				TitleColumn::make(entity: 'categories')->setSort('title DESC', 'title'),
-				Column::make('priority', Lang::$txt['lp_block_priority'])
-					->setStyle('width: 12%')
-					->setData(static fn($entry) => Str::html('div')->data('id', $entry['id'])
-						->setHtml($entry['priority'] . ' ' .
-							Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ')), 'centertext')
-					->setSort('priority'),
-				StatusColumn::make(),
-				ContextMenuColumn::make()
-			]);
-
-		app(TablePresenter::class)->show($builder);
 	}
 
-	public function add(): void
+	protected function getDefaultSortColumn(): string
 	{
-		Theme::loadTemplate('LightPortal/ManageCategories');
+		return 'priority';
+	}
 
-		Utils::$context['sub_template'] = 'category_post';
+	protected function getTableScript(): string
+	{
+		Theme::loadJavaScriptFile('light_portal/Sortable.min.js');
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_add_title'];
+		return <<<JS
+			const entity = new Category();
+			new window['Sortable'](document.querySelector("#lp_categories tbody"), {
+			    handle: ".handle",
+			    animation: 150,
+			    onSort: e => entity.updatePriority(e)
+			});
+		JS;
+	}
 
-		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_add_title'];
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=add';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_categories_add_description'],
+	protected function getTableColumns(): array
+	{
+		return [
+			IdColumn::make()->setSort($this->getEntityName() . '_id'),
+			IconColumn::make(),
+			TitleColumn::make(entity: $this->getEntityNamePlural()),
+			Column::make('priority', Lang::$txt['lp_block_priority'])
+				->setStyle('width: 12%')
+				->setData(static fn($entry) => Str::html('div')->data('id', $entry['id'])
+					->setHtml($entry['priority'] . ' ' .
+						Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ')), 'centertext')
+				->setSort('priority'),
+			StatusColumn::make(),
+			ContextMenuColumn::make()
 		];
-
-		Utils::$context['lp_current_category'] ??= [];
-
-		Language::prepareList();
-
-		$this->validateData();
-		$this->prepareFormFields();
-		$this->preparePreview();
-
-		$this->repository->setData();
 	}
 
-	public function edit(): void
+	protected function getValidatorClass(): string
 	{
-		$item = Typed::int($this->request()->get('category_id') ?: $this->request()->get('id'));
-
-		Theme::loadTemplate('LightPortal/ManageCategories');
-
-		Utils::$context['sub_template'] = 'category_post';
-
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_edit_title'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_edit_title'];
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_categories_edit_description'],
-		];
-
-		Utils::$context['lp_current_category'] = $this->repository->getData($item);
-
-		if (empty(Utils::$context['lp_current_category'])) {
-			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
-		}
-
-		Language::prepareList();
-
-		if ($this->request()->has('remove')) {
-			$this->repository->remove([$item]);
-			$this->cache()->forget('all_categories');
-			$this->response()->redirect('action=admin;area=lp_categories');
-		}
-
-		$this->validateData();
-
-		$categoryTitle = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']] ?? '';
-		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_edit_title'] . ($categoryTitle ? ' - ' . $categoryTitle : '');
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . Utils::$context['lp_category']['id'];
-
-		$this->prepareFormFields();
-		$this->preparePreview();
-
-		$this->repository->setData(Utils::$context['lp_category']['id']);
+		return CategoryValidator::class;
 	}
 
-	private function doActions(): void
+	protected function getFactoryClass(): string
 	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		$data = $this->request()->json();
-
-		match (true) {
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
-			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority']),
-			default => null,
-		};
-
-		$this->cache()->flush();
-
-		exit;
+		return CategoryFactory::class;
 	}
 
-	private function validateData(): void
+	protected function prepareSpecificFields(): void
 	{
-		$validatedData = app(CategoryValidator::class)->validate();
-
-		$category = app(CategoryFactory::class)->create(
-			array_merge(Utils::$context['lp_current_category'], $validatedData)
-		);
-
-		Utils::$context['lp_category'] = $category->toArray();
-	}
-
-	private function prepareFormFields(): void
-	{
-		$this->prepareTitleFields('category');
-
-		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new IconSelect(), [
-				'icon' => Utils::$context['lp_category']['icon'],
-			]);
-
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
-			->setTab(Tab::CONTENT)
+			->setTab(Tab::SEO)
 			->setAttribute('maxlength', 255)
-			->setValue(Utils::$context['lp_category']['description']);
-
-		$this->preparePostFields();
+			->setValue($this->getContextEntity()['description'] ?? '');
 	}
 
-	private function preparePreview(): void
+	protected function finalizePreviewTitle(array $entity): void
 	{
-		if ($this->request()->hasNot('preview'))
-			return;
+		Utils::$context['preview_title'] = $this->getPreviewTitle(
+			Icon::parse($entity['icon'] ?? '')
+		);
+	}
 
-		Security::checkSubmitOnce('free');
+	private function getRepository(): CategoryRepositoryInterface
+	{
+		$repository = $this->repository;
 
-		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Language::getCurrent()] ?? '';
-		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
+		assert($repository instanceof CategoryRepositoryInterface);
 
-		Str::cleanBbcode(Utils::$context['preview_title']);
-
-		Lang::censorText(Utils::$context['preview_title']);
-		Lang::censorText(Utils::$context['preview_content']);
-
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
-		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_category']['icon']));
+		return $repository;
 	}
 }

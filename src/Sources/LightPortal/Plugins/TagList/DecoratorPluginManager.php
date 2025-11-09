@@ -8,36 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.02.25
+ * @version 23.04.25
  */
 
-namespace Bugo\LightPortal\Plugins\TagList;
+namespace LightPortal\Plugins\TagList;
 
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\Tag\Cloud\Decorator\DecoratorInterface;
-use Laminas\Tag\Cloud\Decorator\HtmlCloud;
-use Laminas\Tag\Cloud\Decorator\HtmlTag;
-use Psr\Container\ContainerExceptionInterface;
-use RuntimeException;
 
 class DecoratorPluginManager extends AbstractPluginManager
 {
-	protected array $aliases = [
-		'htmlcloud' => HtmlCloud::class,
-		'htmlCloud' => HtmlCloud::class,
-		'Htmlcloud' => HtmlCloud::class,
-		'HtmlCloud' => HtmlCloud::class,
-		'htmltag'   => HtmlTag::class,
-		'htmlTag'   => HtmlTag::class,
-		'Htmltag'   => HtmlTag::class,
-		'HtmlTag'   => HtmlTag::class,
-		'tag'       => HtmlTag::class,
-		'Tag'       => HtmlTag::class,
-	];
-
-	protected array $factories = [];
-
 	protected string $instanceOf = DecoratorInterface::class;
 
 	public function validate(mixed $instance): void
@@ -49,16 +30,6 @@ class DecoratorPluginManager extends AbstractPluginManager
 				$this->instanceOf,
 				get_debug_type($instance)
 			));
-		}
-	}
-
-	public function validatePlugin(mixed $instance): void
-	{
-		try {
-			$this->validate($instance);
-		} catch (InvalidServiceException $e) {
-			throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
-		} catch (ContainerExceptionInterface) {
 		}
 	}
 }

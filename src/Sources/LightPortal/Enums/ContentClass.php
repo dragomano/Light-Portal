@@ -7,13 +7,13 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasHtml;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Traits\HasHtml;
+use LightPortal\Utils\Str;
 
 enum ContentClass: string
 {

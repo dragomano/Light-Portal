@@ -1,0 +1,110 @@
+@use "functions";
+
+$index_color: #495057;
+$index_background: #e9ecef;
+$time_color: #dc3545;
+$location_color: #6c757d;
+$location_background: #f8f9fa;
+$sql_background: #f8f9fa;
+$sql_border_left: #007bff;
+
+.debug-queries-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-bottom: 1em;
+	padding: 1rem;
+
+	.query-item {
+		@include functions.bradius(.375rem);
+		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		padding: 1rem;
+
+		.query-header {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: .5rem;
+			justify-content: space-between;
+			margin-bottom: .75rem;
+
+			.query-index {
+				@include functions.bradius(.25rem);
+				background: $index_background;
+				color: $index_color;
+				font-size: .875rem;
+				font-weight: bold;
+				padding: .25rem 0.5rem;
+			}
+
+			.query-time {
+				color: $time_color;
+				font-weight: 500;
+				font-size: .875rem;
+			}
+
+			.query-location {
+				@include functions.bradius(.25rem);
+				background: $location_background;
+				color: $location_color;
+				color: $location_color;
+				font-family: monospace;
+				font-size: .875rem;
+				padding: .25rem 0.5rem;
+			}
+		}
+
+		.query-sql {
+			@include functions.bradius(.375rem);
+			background: $sql_background;
+			border-left: 4px solid $sql_border_left;
+			font-family: monospace;
+			font-size: .875rem;
+			line-height: 1.5;
+			overflow-x: auto;
+			padding: 1rem;
+			white-space: pre-wrap;
+			word-break: break-all;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.debug-queries-container {
+		padding: .5rem;
+		gap: .75rem;
+	}
+
+	.query-item {
+		padding: .75rem;
+	}
+
+	.query-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: .25rem;
+	}
+
+	.query-sql {
+		padding: .75rem;
+		font-size: .8125rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.query-header {
+		font-size: .875rem;
+	}
+
+	.query-index {
+		font-size: .8125rem;
+	}
+
+	.query-time {
+		font-size: .8125rem;
+	}
+
+	.query-location {
+		font-size: .8125rem;
+	}
+}

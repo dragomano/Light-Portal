@@ -7,33 +7,31 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\SessionManager;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Lists\BlockList;
+use LightPortal\Utils\SessionManager;
+
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class LoadTheme
+class LoadTheme extends AbstractHook
 {
 	use HasCommonChecks;
-	use HasEvents;
-	use HasRequest;
 
 	public function __invoke(): void
 	{
@@ -44,15 +42,16 @@ class LoadTheme
 
 		$this->defineVars();
 		$this->loadAssets();
+		$this->injectPortalLayer();
 
 		// Run all init methods for active plugins
-		$this->events()->dispatch(PortalHook::init);
+		$this->dispatcher->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
 	{
 		Utils::$context['lp_quantities']    = app(SessionManager::class)();
-		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
+		Utils::$context['lp_active_blocks'] = app(BlockList::class)();
 
 		Utils::$context['lp_block_placements'] = Placement::all();
 		Utils::$context['lp_plugin_types']     = PluginType::all();
@@ -68,7 +67,25 @@ class LoadTheme
 		Theme::loadCSSFile('light_portal/portal.css');
 		Theme::loadCSSFile('light_portal/plugins.css');
 		Theme::loadCSSFile('portal_custom.css');
+		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 		Theme::loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+	}
+
+	protected function injectPortalLayer(): void
+	{
+		$layers = Utils::$context['template_layers'];
+		$pos = array_search('body', $layers, true);
+
+		if ($pos === false) {
+			return;
+		}
+
+		/* @uses template_lp_portal_above, template_lp_portal_below */
+		Utils::$context['template_layers'] = array_merge(
+			array_slice($layers, 0, $pos + 1, true),
+			['lp_portal'],
+			array_slice($layers, $pos + 1, null, true)
+		);
 	}
 
 	protected function loadFontAwesome(): void

@@ -6,8 +6,4 @@ subtitle: Sites utilisant Light Portal
 lead: Si quieres añadir tu sitio a esta lista, simplemente envíame un mensaje a través de <em>Admin -> Portal -> Configuración -> Comentarios</em> área en tu foro.
 ---
 
-<script setup>
-import ExampleArea from './ExampleArea.vue'
-</script>
-
 <ExampleArea />

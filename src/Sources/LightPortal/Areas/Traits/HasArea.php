@@ -7,32 +7,28 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Traits;
+namespace LightPortal\Areas\Traits;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\Utils\Editor;
-use Bugo\LightPortal\Utils\Str;
-
-use function array_keys;
-use function array_unique;
-use function count;
-use function in_array;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\Tab;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Editor;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasTablePresenter;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 trait HasArea
 {
+	use HasTablePresenter;
 	use HasQuery;
 
 	public function createBbcEditor(string $content = ''): void
@@ -56,67 +52,25 @@ trait HasArea
 		return $object['content'];
 	}
 
-	public function prepareTitleFields(string $entity = 'page', bool $required = true): void
+	public function prepareTitleFields(bool $required = true): void
 	{
 		Security::checkSubmitOnce('register');
 
 		$this->prepareIconList();
 		$this->prepareTopicList();
 
-		$languages = empty(Config::$modSettings['userLanguage'])
-			? [Config::$language]
-			: array_unique([Utils::$context['user']['language'], Config::$language]);
-
-		$value = Str::html('div');
-
-		if (count(Utils::$context['lp_languages']) > 1) {
-			$nav = Str::html('nav');
-			if (! Utils::$context['right_to_left']) {
-				$nav->class('floatleft');
-			}
-
-			foreach (Utils::$context['lp_languages'] as $key => $lang) {
-				$link = Str::html('a')
-					->class('button floatnone')
-					->setText($lang['name'])
-					->setAttribute(':class', "{ 'active': tab === '$key' }")
-					->setAttribute('data-name', "title_$key")
-					->setAttribute('x-on:click.prevent', implode('; ', [
-						"tab = '$key'",
-						"window.location.hash = '$key'",
-						"\$nextTick(() => {
-							setTimeout(() => { document.querySelector('input[name=\"titles[$key]\"]').focus() }, 50);
-						})"
-					]));
-
-				$nav->addHtml($link);
-			}
-
-			$value->addHtml($nav);
-		}
-
-		foreach (array_keys(Utils::$context['lp_languages']) as $key) {
-			$inputDiv = Str::html('div')
-				->setAttribute('x-show', "tab === '$key'");
-
-			$input = Str::html('input')
-				->setAttribute('type', 'text')
-				->setAttribute('name', "titles[$key]")
-				->setAttribute('x-model', "title_$key")
-				->setAttribute('value', Utils::$context['lp_' . $entity]['titles'][$key] ?? '');
-
-			if (in_array($key, $languages) && $required) {
-				$input->setAttribute('required', 'required');
-			}
-
-			$inputDiv->addHtml($input);
-			$value->addHtml($inputDiv);
-		}
-
-		CustomField::make('title', Lang::$txt['lp_title'])
+		$title = TextField::make('title', Lang::$txt['lp_title'])
 			->setTab(Tab::CONTENT)
-			->setValue($value);
+			->setAttribute('x-model', 'title');
+
+		if (Language::isDefault() && $required) {
+			$title->required();
+		}
 	}
+
+	protected function prepareContentFields(): void {}
+
+	protected function dispatchFieldsEvent(): void {}
 
 	public function preparePostFields(): void
 	{
@@ -134,8 +88,6 @@ trait HasArea
 				->class('roundframe smalltext')
 				->setHtml($data['input']['after']);
 		}
-
-		Theme::loadTemplate('LightPortal/ManageSettings');
 	}
 
 	public function getPreviewTitle(string $prefix = ''): string

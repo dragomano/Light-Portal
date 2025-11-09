@@ -7,34 +7,29 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
+use Bugo\Compat\Config;
+use Bugo\Compat\Mentions;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\AlertAction;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\CommentRepository;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Notify;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use WPLake\Typed\Typed;
-
-use function array_map;
-use function array_slice;
-use function count;
-use function date;
-use function http_response_code;
-use function trim;
+use LightPortal\Enums\AlertAction;
+use LightPortal\Enums\NotifyType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\VarType;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Repositories\CommentRepositoryInterface;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\NotifierInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 
 use const LP_BASE_URL;
 
@@ -44,13 +39,16 @@ if (! defined('SMF'))
 final class Comment implements ActionInterface
 {
 	use HasCache;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
 
 	private string $pageSlug;
 
-	public function __construct(private readonly CommentRepository $repository)
+	public function __construct(
+		private readonly CommentRepositoryInterface $repository,
+		private readonly EventDispatcherInterface $dispatcher,
+		private readonly NotifierInterface $notifier
+	)
 	{
 		$this->setPageSlug(Utils::$context['lp_page']['slug']);
 	}
@@ -77,16 +75,18 @@ final class Comment implements ActionInterface
 
 	private function get(): never
 	{
-		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
-			->setFallback(fn() => app(CommentRepository::class)->getByPageId(Utils::$context['lp_page']['id']));
+		$rawComments = $this->langCache('page_' . $this->pageSlug . '_comments')
+			->setFallback(fn() => $this->repository->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
 			$comment['published_at']  = date('Y-m-d', $comment['created_at']);
+			$comment['human_update']  = DateTime::relative($comment['updated_at']);
+			$comment['updated_at']    = date('Y-m-d', $comment['updated_at']);
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			$this->events()->dispatch(
+			$this->dispatcher->dispatch(
 				PortalHook::commentButtons,
 				[
 					'comment' => $comment,
@@ -95,7 +95,7 @@ final class Comment implements ActionInterface
 			);
 
 			return $comment;
-		}, $comments);
+		}, $rawComments);
 
 		$start = (int) $this->request()->get('start');
 		$limit = Setting::get('lp_num_comments_per_page', 'int', 10);
@@ -107,7 +107,7 @@ final class Comment implements ActionInterface
 			$this->getPageIndexUrl(), $start, $parentsCount, $limit
 		);
 
-		$start = Typed::int($this->request()->get('start'));
+		$start = Str::typed('int', $this->request()->get('start'));
 
 		http_response_code(200);
 
@@ -134,14 +134,18 @@ final class Comment implements ActionInterface
 		}
 
 		$parentId = VarType::INTEGER->filter($data['parent_id']);
-		$message  = Utils::htmlspecialchars($data['message']);
 		$author   = VarType::INTEGER->filter($data['author']);
+		$message  = Utils::htmlspecialchars($data['message']);
 		$pageId   = Utils::$context['lp_page']['id'];
 		$pageUrl  = Utils::$context['canonical_url'];
 
 		if (empty($pageId) || empty($message)) {
 			$this->response()->exit($result);
 		}
+
+		$verifiedMembers = $this->getMembersToMention($message);
+
+		$message = $this->replaceMemberTagsToMarkdown($message);
 
 		$item = $this->repository->save([
 			'parent_id'  => $parentId,
@@ -154,21 +158,6 @@ final class Comment implements ActionInterface
 		if ($item) {
 			$this->repository->updateLastCommentId($item, $pageId);
 
-			$result = [
-				'id'           => $item,
-				'parent_id'    => $parentId,
-				'message'      => $message,
-				'created_at'   => $time,
-				'published_at' => date('Y-m-d', $time),
-				'human_date'   => DateTime::relative($time),
-				'can_edit'     => true,
-				'poster'       => [
-					'id'     => User::$me->id,
-					'name'   => User::$me->name,
-					'avatar' => Avatar::get(User::$me->id),
-				],
-			];
-
 			$options = [
 				'item'      => $item,
 				'time'      => $time,
@@ -177,16 +166,63 @@ final class Comment implements ActionInterface
 				'url'       => $pageUrl . '#comment=' . $item,
 			];
 
-			empty($parentId)
-				? Notify::send('new_comment', AlertAction::PAGE_COMMENT->name(), $options)
-				: Notify::send('new_reply', AlertAction::PAGE_COMMENT_REPLY->name(), $options);
+			$this->mentionMembers($verifiedMembers, $options);
 
-			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
+			[$type, $action] = match (empty($parentId)) {
+				true  => [NotifyType::NEW_COMMENT, AlertAction::PAGE_COMMENT],
+				false => [NotifyType::NEW_REPLY, AlertAction::PAGE_COMMENT_REPLY],
+			};
+
+			$this->notifier->notify($type->name(), $action->name(), $options);
+
+			$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 		}
 
 		http_response_code(201);
 
-		$this->response()->exit($result);
+		$this->response()->exit($this->repository->getData($item));
+	}
+
+	private function getMembersToMention(string &$message): array
+	{
+		if (! Setting::canMention()) {
+			return [];
+		}
+
+		$members = Mentions::getMentionedMembers($message);
+		$message = Mentions::getBody($message, $members);
+
+		return Mentions::verifyMentionedMembers($message, $members);
+	}
+
+	private function replaceMemberTagsToMarkdown(string $text): string
+	{
+		return preg_replace_callback(
+			'/\[member=(\d+)](.*?)\[\/member]/',
+			function (array $matches) {
+				$id   = $matches[1];
+				$name = $matches[2];
+
+				return "[@$name](" . Config::$scripturl . '?action=profile;u=' . $id . ")";
+			},
+			$text
+		);
+	}
+
+	private function mentionMembers(array $verifiedMembers, array $options): void
+	{
+		if (! Setting::canMention() || empty($verifiedMembers))
+			return;
+
+		foreach ($verifiedMembers as $member) {
+			$options['author_id'] = (int) $member['id'];
+
+			$this->notifier->notify(
+				NotifyType::NEW_MENTION->name(),
+				AlertAction::PAGE_COMMENT_MENTION->name(),
+				$options
+			);
+		}
 	}
 
 	private function update(): never
@@ -220,12 +256,12 @@ final class Comment implements ActionInterface
 			'message' => $message,
 		];
 
-		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
+		$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 
 		$this->response()->exit($result);
 	}
 
-	private function remove(): never
+	private function remove(): void
 	{
 		$item = (int) $this->request()->json('comment_id');
 
@@ -233,11 +269,9 @@ final class Comment implements ActionInterface
 			$this->response()->exit(['success' => false]);
 		}
 
-		$items = $this->repository->remove($item, $this->pageSlug);
+		$this->repository->remove($item);
 
-		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
-
-		$this->response()->exit(['success' => true, 'items' => $items]);
+		$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 	}
 
 	private function getTree(array $data): array

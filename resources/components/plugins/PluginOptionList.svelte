@@ -17,8 +17,8 @@
   const { sessionId, sessionVar } = appState;
   const { postUrl } = contextState;
 
-  const blockId = $derived(`${item.snake_name}_${sessionId}_settings`);
-  const formId = $derived(`${item.snake_name}_form_${sessionId}`);
+  const blockId = $derived(`${item.snakeName}_${sessionId}_settings`);
+  const formId = $derived(`${item.snakeName}_form_${sessionId}`);
 
   const saveSettings = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -32,13 +32,13 @@
 
     if (data.success) {
       success = true;
-      setTimeout(() => success = false, 2000);
+      setTimeout(() => (success = false), 2000);
     }
   };
 
   const onclick = (e: MouseEvent) => {
     (e.target as HTMLElement).blur();
-  }
+  };
 </script>
 
 <div class="roundframe" id={blockId} transition:slide>
@@ -48,11 +48,11 @@
 
   <div class="noticebox">
     <form bind:this={form} class="form_settings" id={formId} onsubmit={saveSettings}>
-      <input type="hidden" name="plugin_name" value={item.snake_name} />
+      <input type="hidden" name="plugin_name" value={item.snakeName} />
       <input type="hidden" name={sessionVar} value={sessionId} />
 
       {#each item.settings as option (option[1])}
-        <PluginOptionItem {option} plugin={item.snake_name} />
+        <PluginOptionItem {option} plugin={item.snakeName} />
       {/each}
     </form>
   </div>
@@ -62,7 +62,7 @@
       {$_('settings_saved')}
     </span>
 
-    {#if item.saveable}
+    {#if item.showSaveButton}
       <Button icon="save" form={formId} type="submit" {onclick}>
         {$_('save')}
       </Button>

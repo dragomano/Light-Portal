@@ -8,31 +8,26 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.12.24
+ * @version 05.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\LatteLayouts;
+namespace LightPortal\Plugins\LatteLayouts;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Str;
-
-use function basename;
-use function glob;
-use function sprintf;
-use function str_contains;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::FRONTPAGE, showSaveButton: false)]
 class LatteLayouts extends Plugin
 {
-	public string $type = 'frontpage';
-
-	public bool $saveable = false;
-
 	private string $extension = '.latte';
 
 	public function addSettings(Event $e): void
@@ -43,9 +38,11 @@ class LatteLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$e->args->settings[$this->name][] = ['desc', 'note'];
-		$e->args->settings[$this->name][] = ['title', 'example'];
-		$e->args->settings[$this->name][] = ['callback', '_', $this->showExamples()];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->desc('note')
+			->title('example')
+			->custom('_', $this->showExamples())
+			->toArray();
 	}
 
 	public function frontLayouts(Event $e): void

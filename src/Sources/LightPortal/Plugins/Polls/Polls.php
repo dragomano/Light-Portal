@@ -8,32 +8,28 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.01.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Polls;
+namespace LightPortal\Plugins\Polls;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\InputField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\InputField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class Polls extends Block
+#[PluginAttribute(icon: 'fas fa-poll')]
+class Polls extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'fas fa-poll';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params['selected_item'] = 0;
@@ -64,7 +60,11 @@ class Polls extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		$poll = $this->getFromSSI('showPoll', Typed::int($e->args->parameters['selected_item']), 'array');
+		$poll = $this->getFromSSI(
+			'showPoll',
+			Str::typed('int', $e->args->parameters['selected_item']),
+			'array'
+		);
 
 		if (! $poll) {
 			echo $this->txt['no_items'];
@@ -150,24 +150,19 @@ class Polls extends Block
 
 	private function getAll(): array
 	{
-		$result = Db::$db->query('', '
-			SELECT t.id_topic, p.question
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}polls AS p ON (p.id_poll = t.id_poll)
-				INNER JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
-			WHERE {query_see_board}
-				AND t.approved = {int:is_approved}',
-			[
-				'is_approved' => 1
-			]
-		);
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns(['id_topic'])
+			->join(['p' => 'polls'], 'p.id_poll = t.id_poll', ['question'])
+			->join(['b' => 'boards'], 'b.id_board = t.id_board')
+			->where(['t.approved' => 1]);
+
+		$result = $this->sql->execute($select);
 
 		$polls = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$polls[$row['id_topic']] = $row['question'];
 		}
-
-		Db::$db->free_result($result);
 
 		return $polls;
 	}

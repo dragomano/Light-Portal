@@ -7,13 +7,12 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal;
+namespace LightPortal;
 
-use Bugo\LightPortal\Areas\ConfigArea;
-use Bugo\LightPortal\Areas\CreditArea;
+use LightPortal\Hooks\Integration;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +25,5 @@ final class PortalApp
 			return;
 
 		app(Integration::class)();
-		app(ConfigArea::class)();
-		app(CreditArea::class)();
 	}
 }

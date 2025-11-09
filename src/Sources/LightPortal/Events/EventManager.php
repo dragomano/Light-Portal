@@ -7,21 +7,19 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Events;
+namespace LightPortal\Events;
 
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
-use function array_filter;
-use function array_map;
-use function in_array;
-use function method_exists;
+if (! defined('SMF'))
+	die('No direct access...');
 
 class EventManager
 {
@@ -32,7 +30,12 @@ class EventManager
 		PortalHook::validateBlockParams,
 		PortalHook::prepareBlockFields,
 		PortalHook::parseContent,
-		PortalHook::prepareContent
+		PortalHook::prepareContent,
+	];
+
+	private array $layerHooks = [
+		PortalHook::addLayerAbove,
+		PortalHook::addLayerBelow,
 	];
 
 	public function __construct()
@@ -40,9 +43,9 @@ class EventManager
 		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addHookListener(array $hooks, PluginInterface $listener): void
+	public function addHookListener(PluginInterface $listener): void
 	{
-		$hooks = array_map(fn($item) => $item->name, $hooks);
+		$hooks = array_map(fn($item) => $item->name, PortalHook::cases());
 		$hooks = array_filter($hooks, fn($item) => method_exists($listener, $item));
 
 		$this->eventManager->addEventListener($hooks, $listener);
@@ -62,6 +65,10 @@ class EventManager
 				if ($args->type !== $listener->getSnakeName()) {
 					continue;
 				}
+			}
+
+			if (in_array($hook, $this->layerHooks) && ! $listener->isEnabled()) {
+				continue;
 			}
 
 			$event = new Event($args);

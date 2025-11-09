@@ -7,17 +7,17 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Utils;
 
-use function header;
-use function json_encode;
+if (! defined('SMF'))
+	die('No direct access...');
 
-class Response
+class Response implements ResponseInterface
 {
 	public function json(mixed $data, int $flags = 0): false|string
 	{

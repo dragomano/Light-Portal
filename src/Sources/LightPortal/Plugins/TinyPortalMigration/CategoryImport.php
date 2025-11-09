@@ -8,133 +8,104 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 08.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Bricks\Presenters\TablePresenter;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-
-use const LP_NAME;
+use Laminas\Db\Sql\Expression;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseCategoryImport;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\TitleColumn;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CategoryImport extends AbstractCustomCategoryImport
+class CategoryImport extends AbstractDatabaseCategoryImport
 {
-	public function main(): void
+	protected string $langKey = 'lp_tiny_portal_migration';
+
+	protected string $formAction = 'import_from_tp';
+
+	protected string $uiTableId = 'tp_categories';
+
+	protected function defineUiColumns(): array
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tiny_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_categories;sa=import_from_tp';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tiny_portal_migration']['category_import_desc'],
+		return [
+			TitleColumn::make()
+				->setData('title', 'word_break'),
+			CheckboxColumn::make(entity: 'categories'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('tp_categories', Lang::$txt['lp_categories_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'title'
-				)
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('title DESC', 'title'),
-					CheckboxColumn::make(entity: 'categories'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
+		if (! $this->sql->tableExists('tp_variables')) {
 			return [];
+		}
 
-		$result = Db::$db->query('', '
-			SELECT id, value1 AS title
-			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_variables')
+			->columns(['id', 'title' => 'value1'])
+			->where(['type' => 'category'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'id'    => $row['id'],
 				'title' => $row['title'],
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
+		if (! $this->sql->tableExists('tp_variables')) {
 			return 0;
+		}
 
-		$result = Db::$db->query('', '
-			SELECT COUNT(*)
-			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}',
-		);
+		$select = $this->sql->select()
+			->from('tp_variables')
+			->columns(['count' => new Expression('COUNT(*)')])
+			->where(['type' => 'category']);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return (int) $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', '
-			SELECT id, value1 AS title
-			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}' . (empty($ids) ? '' : '
-				AND id IN ({array_int:categories})'),
-			[
-				'categories' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_variables')
+			->columns(['id', 'title' => 'value1'])
+			->where(['type' => 'category']);
+
+		if ($ids !== []) {
+			$select->where->in('id', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'title'       => $row['title'],
+				'parent_id'   => 0,
+				'slug'        => $this->generateSlug(['english' => $row['title']]),
 				'icon'        => '',
 				'description' => '',
 				'priority'    => 0,
 				'status'      => 1,
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}

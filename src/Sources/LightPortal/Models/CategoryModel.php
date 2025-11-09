@@ -7,34 +7,30 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
 
-use Bugo\LightPortal\Enums\Status;
+if (! defined('SMF'))
+	die('No direct access...');
 
 class CategoryModel extends AbstractModel
 {
-	public int $id;
+	protected array $fields = [
+		'id'       => 0,
+		'slug'     => '',
+		'icon'     => '',
+		'priority' => 0,
+		'status'   => 0,
+	];
 
-	public string $icon;
+	protected array $extraFields = [
+		'title'       => '',
+		'description' => '',
+	];
 
-	public string $description;
-
-	public int $priority;
-
-	public int $status;
-
-	public array $titles = [];
-
-	public function __construct(array $data)
-	{
-		$this->id          = $data['category_id'] ?? $data['id'] ?? 0;
-		$this->icon        = $data['icon'] ?? '';
-		$this->description = $data['description'] ?? '';
-		$this->priority    = $data['priority'] ?? 0;
-		$this->status      = $data['status'] ?? Status::ACTIVE->value;
-		$this->titles      = $data['titles'] ?? [];
-	}
+	protected array $aliases = [
+		'category_id' => 'id',
+	];
 }

@@ -7,134 +7,189 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\Status;
+use LightPortal\Lists\PluginList;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 
-use function array_filter;
-use function array_flip;
-use function array_keys;
-use function array_merge;
-use function explode;
-use function in_array;
-use function sprintf;
-use function str_replace;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BlockRepository extends AbstractRepository
+final class BlockRepository extends AbstractRepository implements BlockRepositoryInterface
 {
-	use HasCache;
-	use HasEvents;
-	use HasRequest;
-	use HasResponse;
-
 	protected string $entity = 'block';
 
-	public function getAll(): array
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $filter = '',
+		array $whereConditions = []
+	): array
 	{
-		$result = Db::$db->query('', '
-			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas,
-				bt.lang, bt.value AS title
-			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
-			ORDER BY b.placement DESC, b.priority',
-		);
+		$grouped = $filter !== 'list';
 
-		$currentBlocks = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$currentBlocks[$row['placement']][$row['block_id']] ??= [
-				'icon'        => Icon::parse($row['icon']),
-				'type'        => $row['type'],
-				'note'        => $row['note'],
-				'priority'    => $row['priority'],
-				'permissions' => $row['permissions'],
-				'status'      => $row['status'],
-				'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
-			];
+		$columns = ['title', 'content'];
 
-			if (! empty($row['lang'])) {
-				$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
-			}
-
-			$this->prepareMissingBlockTypes($row['type']);
+		if ($grouped) {
+			$columns[] = 'description';
 		}
 
-		Db::$db->free_result($result);
+		$select = $this->sql->select()->from(['b' => 'lp_blocks']);
 
-		return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
+		$this->addTranslationJoins($select, [
+			'primary' => 'b.block_id',
+			'entity'  => $this->entity,
+			'fields'  => $columns,
+		]);
+
+		if ($filter === 'list') {
+			$select->where(['status = ?' => Status::ACTIVE->value]);
+
+			$this->addParamJoins($select, [
+				'primary' => 'b.block_id',
+				'entity'  => $this->entity,
+			]);
+		}
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		if ($limit > 0) {
+			$select->limit($limit)->offset($start);
+		}
+
+		$select->order($sort ?: 'placement DESC, priority');
+
+		$result = $this->sql->execute($select);
+
+		$currentBlocks = [];
+		foreach ($result as $row) {
+			Lang::censorText($row['title']);
+
+			if ($grouped) {
+				Lang::censorText($row['description']);
+			}
+
+			if ($grouped) {
+				$currentBlocks[$row['placement']][$row['block_id']] ??= [
+					'icon'        => Icon::parse($row['icon']),
+					'type'        => $row['type'],
+					'priority'    => $row['priority'],
+					'permissions' => $row['permissions'],
+					'status'      => $row['status'],
+					'areas'       => str_replace(',', PHP_EOL, $row['areas']),
+					'title'       => $row['title'],
+					'description' => $row['description'],
+				];
+
+				if (! empty($row['name'])) {
+					$currentBlocks[$row['placement']][$row['block_id']]['parameters'][$row['name']] = $row['value'];
+				}
+
+				$this->prepareMissingBlockTypes($row['type']);
+			} else {
+				$currentBlocks[$row['block_id']] ??= [
+					'id'            => $row['block_id'],
+					'icon'          => $row['icon'],
+					'type'          => $row['type'],
+					'placement'     => $row['placement'],
+					'priority'      => $row['priority'],
+					'permissions'   => $row['permissions'],
+					'areas'         => explode(',', $row['areas']),
+					'title_class'   => $row['title_class'],
+					'content_class' => $row['content_class'],
+					'title'         => $row['title'],
+					'content'       => $row['content'],
+				];
+
+				if (! empty($row['name'])) {
+					$currentBlocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+				}
+			}
+		}
+
+		if ($grouped) {
+			return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
+		}
+
+		return $currentBlocks;
+	}
+
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int
+	{
+		$select = $this->sql->select('lp_blocks')
+			->columns(['count' => new Expression('COUNT(block_id)')]);
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		$result = $this->sql->execute($select)->current();
+
+		return (int) $result['count'];
 	}
 
 	public function getData(int $item): array
 	{
-		if ($item === 0)
+		if ($item === 0) {
 			return [];
-
-		$result = Db::$db->query('', '
-			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority,
-				b.permissions, b.status, b.areas, b.title_class, b.content_class,
-				bt.lang, bt.value AS title, bp.name, bp.value
-			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-			WHERE b.block_id = {int:item}',
-			[
-				'item' => $item,
-			]
-		);
-
-		if (empty(Db::$db->num_rows($result))) {
-			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_blocks';
-
-			ErrorHandler::fatalLang('lp_block_not_found', false, status: 404);
 		}
 
-		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($row['type'] === 'bbc') {
-				$row['content'] = Msg::un_preparsecode($row['content']);
+		$select = $this->sql->select()
+			->from(['b' => 'lp_blocks'])
+			->where(['b.block_id = ?' => $item]);
+
+		$this->addParamJoins($select, [
+			'primary' => 'b.block_id',
+			'entity'  => $this->entity,
+		]);
+
+		$this->addTranslationJoins($select, [
+			'primary' => 'b.block_id',
+			'entity'  => $this->entity,
+			'fields'  => ['title', 'content', 'description'],
+		]);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
+			if ($row['type'] === ContentType::BBC->name()) {
+				$row['content'] = Msg::un_preparsecode($row['content'] ?? '');
 			}
 
-			Lang::censorText($row['content']);
-
 			$data ??= [
-				'id'            => (int) $row['block_id'],
+				'id'            => $row['block_id'],
 				'icon'          => $row['icon'],
 				'type'          => $row['type'],
-				'note'          => $row['note'],
-				'content'       => $row['content'],
 				'placement'     => $row['placement'],
-				'priority'      => (int) $row['priority'],
-				'permissions'   => (int) $row['permissions'],
-				'status'        => (int) $row['status'],
+				'priority'      => $row['priority'],
+				'permissions'   => $row['permissions'],
+				'status'        => $row['status'],
 				'areas'         => $row['areas'],
 				'title_class'   => $row['title_class'],
 				'content_class' => $row['content_class'],
+				'title'         => $row['title'] ?? '',
+				'content'       => $row['content'] ?? '',
+				'description'   => $row['description'] ?? '',
 			];
-
-			if (! empty($row['lang'])) {
-				$data['titles'][$row['lang']] = $row['title'];
-			}
 
 			if (! empty($row['name'])) {
 				$data['options'][$row['name']] = $row['value'];
@@ -143,33 +198,27 @@ final class BlockRepository extends AbstractRepository
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		Db::$db->free_result($result);
-
 		return $data ?? [];
 	}
 
-	/**
-	 * @return int|void
-	 */
-	public function setData(int $item = 0)
+	public function setData(int $item = 0): void
 	{
 		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit', 'clone'])) {
-			return 0;
+			return;
 		}
 
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_block']);
 
-		if (empty($item)) {
-			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);
-			$item = $this->addData();
-		} else {
-			$this->updateData($item);
-		}
+		empty($item)
+			? $item = $this->addData(Utils::$context['lp_block'])
+			: $this->updateData($item, Utils::$context['lp_block']);
 
-		if ($this->request()->isNotEmpty('clone'))
-			return $item;
+		if ($this->request()->isNotEmpty('clone')) {
+			Utils::$context['lp_block']['id'] = $item;
+			return;
+		}
 
 		$this->cache()->flush();
 
@@ -184,38 +233,28 @@ final class BlockRepository extends AbstractRepository
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
-		$this->events()->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
+		$this->dispatcher->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_blocks
-			WHERE block_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$delete = $this->sql->delete('lp_blocks');
+		$delete->where->in('block_id', $items);
+		$this->sql->execute($delete);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:block}',
-			[
-				'items' => $items,
-			]
-		);
+		$deleteTranslations = $this->sql->delete('lp_translations');
+		$deleteTranslations->where->in('item_id', $items);
+		$deleteTranslations->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteTranslations);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:block}',
-			[
-				'items' => $items,
-			]
-		);
+		$deleteParams = $this->sql->delete('lp_params');
+		$deleteParams->where->in('item_id', $items);
+		$deleteParams->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteParams);
 
 		$this->session('lp')->free('active_blocks');
 	}
@@ -225,171 +264,106 @@ final class BlockRepository extends AbstractRepository
 		if ($blocks === [])
 			return;
 
-		$conditions = '';
+		$caseConditions = [];
+		$ids = [];
 		foreach ($blocks as $priority => $item) {
-			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
+			$caseConditions[] = 'WHEN block_id = ? THEN ?';
+			$ids[] = $item;
+			$ids[] = $priority;
 		}
 
-		if ($conditions === '')
-			return;
+		$caseSql = implode(' ', $caseConditions);
 
-		Db::$db->query('', /** @lang text */ '
-			UPDATE {db_prefix}lp_blocks
-			SET priority = CASE ' . $conditions . ' ELSE priority END
-			WHERE block_id IN ({array_int:blocks})',
-			[
-				'blocks' => $blocks,
-			]
-		);
+		$update = $this->sql->update('lp_blocks');
+		$update->set(['priority' => new Expression('CASE ' . $caseSql . ' ELSE priority END', $ids)]);
+		$update->where->in('block_id', array_values($blocks));
+		$this->sql->execute($update);
 
 		if ($placement) {
-			Db::$db->query('', '
-				UPDATE {db_prefix}lp_blocks
-				SET placement = {string:placement}
-				WHERE block_id IN ({array_int:blocks})',
-				[
-					'placement' => $placement,
-					'blocks'    => $blocks,
-				]
-			);
+			$updatePlacement = $this->sql->update('lp_blocks');
+			$updatePlacement->set(['placement' => $placement]);
+			$updatePlacement->where->in('block_id', array_values($blocks));
+			$this->sql->execute($updatePlacement);
 		}
 	}
 
-	public function getActive(): array
+	private function addData(array $data): int
 	{
-		if (Setting::hideBlocksInACP())
-			return [];
+		try {
+			$this->transaction->begin();
 
-		if (($blocks = $this->cache()->get('active_blocks')) === null) {
-			$result = Db::$db->query('', '
-				SELECT
-					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
-					b.permissions, b.areas, b.title_class, b.content_class,
-					bt.lang, bt.value AS title, bp.name, bp.value
-				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-				WHERE b.status = {int:status}
-				ORDER BY b.placement, b.priority',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
+			$insert = $this->sql->insert('lp_blocks', 'block_id')
+				->values([
+					'icon'          => $data['icon'],
+					'type'          => $data['type'],
+					'placement'     => $data['placement'],
+					'priority'      => $this->getPriority($data['placement']),
+					'permissions'   => $data['permissions'],
+					'status'        => $data['status'],
+					'areas'         => $data['areas'],
+					'title_class'   => $data['title_class'],
+					'content_class' => $data['content_class'],
+				]);
 
-			$blocks = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				Lang::censorText($row['content']);
+			$result = $this->sql->execute($insert);
 
-				$blocks[$row['block_id']] ??= [
-					'id'            => (int) $row['block_id'],
-					'icon'          => $row['icon'],
-					'type'          => $row['type'],
-					'content'       => $row['content'],
-					'placement'     => $row['placement'],
-					'priority'      => (int) $row['priority'],
-					'permissions'   => (int) $row['permissions'],
-					'areas'         => explode(',', (string) $row['areas']),
-					'title_class'   => $row['title_class'],
-					'content_class' => $row['content_class'],
-				];
+			$item = (int) $result->getGeneratedValue('block_id');
 
-				$blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
-				$blocks[$row['block_id']]['titles'] = array_filter($blocks[$row['block_id']]['titles']);
+			if (empty($item)) {
+				$this->transaction->rollback();
 
-				if ($row['name']) {
-					$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
-				}
+				return 0;
 			}
 
-			Db::$db->free_result($result);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
-			$this->cache()->put('active_blocks', $blocks);
-		}
+			$data['id'] = $item;
 
-		return $blocks;
-	}
+			$this->saveTranslations($data);
+			$this->saveOptions($data);
 
-	private function addData(): int
-	{
-		Db::$db->transaction('begin');
+			$this->transaction->commit();
 
-		$item = (int) Db::$db->insert('',
-			'{db_prefix}lp_blocks',
-			[
-				'icon'          => 'string',
-				'type'          => 'string',
-				'note'          => 'string',
-				'content'       => 'string-65534',
-				'placement'     => 'string-10',
-				'priority'      => 'int',
-				'permissions'   => 'int',
-				'status'        => 'int',
-				'areas'         => 'string',
-				'title_class'   => 'string',
-				'content_class' => 'string',
-			],
-			[
-				Utils::$context['lp_block']['icon'],
-				Utils::$context['lp_block']['type'],
-				Utils::$context['lp_block']['note'],
-				Utils::$context['lp_block']['content'],
-				Utils::$context['lp_block']['placement'],
-				$this->getPriority(),
-				Utils::$context['lp_block']['permissions'],
-				Utils::$context['lp_block']['status'],
-				Utils::$context['lp_block']['areas'],
-				Utils::$context['lp_block']['title_class'],
-				Utils::$context['lp_block']['content_class'],
-			],
-			['block_id'],
-			1
-		);
+			return $item;
+		} catch (Exception $e) {
+			$this->transaction->rollback();
 
-		if (empty($item)) {
-			Db::$db->transaction('rollback');
+			ErrorHandler::fatal($e->getMessage(), false);
+
 			return 0;
 		}
-
-		$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
-
-		$this->saveTitles($item);
-		$this->saveOptions($item);
-
-		Db::$db->transaction();
-
-		return $item;
 	}
 
-	private function updateData(int $item): void
+	private function updateData(int $item, array $data): void
 	{
-		Db::$db->transaction('begin');
+		try {
+			$this->transaction->begin();
 
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_blocks
-			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content},
-				placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas},
-				title_class = {string:title_class}, content_class = {string:content_class}
-			WHERE block_id = {int:block_id}',
-			[
-				'icon'          => Utils::$context['lp_block']['icon'],
-				'type'          => Utils::$context['lp_block']['type'],
-				'note'          => Utils::$context['lp_block']['note'],
-				'content'       => Utils::$context['lp_block']['content'],
-				'placement'     => Utils::$context['lp_block']['placement'],
-				'permissions'   => Utils::$context['lp_block']['permissions'],
-				'areas'         => Utils::$context['lp_block']['areas'],
-				'title_class'   => Utils::$context['lp_block']['title_class'],
-				'content_class' => Utils::$context['lp_block']['content_class'],
-				'block_id'      => $item,
-			]
-		);
+			$update = $this->sql->update('lp_blocks')
+				->set([
+					'icon'          => $data['icon'],
+					'type'          => $data['type'],
+					'placement'     => $data['placement'],
+					'permissions'   => $data['permissions'],
+					'areas'         => $data['areas'],
+					'title_class'   => $data['title_class'],
+					'content_class' => $data['content_class'],
+				])
+				->where(['block_id = ?' => $item]);
 
-		$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->sql->execute($update);
 
-		$this->saveTitles($item, 'replace');
-		$this->saveOptions($item, 'replace');
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
-		Db::$db->transaction();
+			$this->saveTranslations($data, true);
+			$this->saveOptions($data, true);
+
+			$this->transaction->commit();
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
 	}
 
 	private function prepareMissingBlockTypes(string $type): void
@@ -407,24 +381,18 @@ final class BlockRepository extends AbstractRepository
 			->setText(sprintf($message, $plugin));
 	}
 
-	private function getPriority(): int
+	private function getPriority(string $placement): int
 	{
-		if (empty(Utils::$context['lp_block']['placement']))
+		if (empty($placement)) {
 			return 0;
+		}
 
-		$result = Db::$db->query('', '
-			SELECT MAX(priority) + 1
-			FROM {db_prefix}lp_blocks
-			WHERE placement = {string:placement}',
-			[
-				'placement' => Utils::$context['lp_block']['placement'],
-			]
-		);
+		$select = $this->sql->select('lp_blocks')
+			->columns(['priority' => new Expression('MAX(priority) + 1')])
+			->where(['placement = ?' => $placement]);
 
-		[$priority] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $priority;
+		return $result['priority'] ?? 1;
 	}
 }

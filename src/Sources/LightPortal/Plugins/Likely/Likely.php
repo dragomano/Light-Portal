@@ -8,28 +8,29 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 29.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Likely;
+namespace LightPortal\Plugins\Likely;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\AssetBuilder;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-share-square')]
 class Likely extends Block
 {
-	public string $icon = 'far fa-share-square';
-
 	private array $buttons = [
 		'facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit',
 		'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp',
@@ -59,12 +60,10 @@ class Likely extends Block
 
 		CustomField::make('buttons', $this->txt['buttons'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new ButtonSelect(), [
-				'data'  => $this->buttons,
-				'value' => is_array($options['buttons'])
-					? $options['buttons']
-					: explode(',', (string) $options['buttons'])
-			]);
+			->setValue(fn() => new ButtonSelect([
+				'data'    => $this->buttons,
+				'buttons' => $options['buttons'] ?? [],
+			]));
 
 		RadioField::make('size', $this->txt['size'])
 			->setOptions($this->txt['size_set'])
@@ -76,8 +75,10 @@ class Likely extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
-		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
+		$builder = new AssetBuilder($this);
+		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js');
+		$builder->css()->add('https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css');
+		$builder->appendTo($e->args->assets);
 	}
 
 	public function prepareContent(Event $e): void
@@ -104,9 +105,9 @@ class Likely extends Block
 				continue;
 
 			$button = Str::html('div', [
-				'class' => $service,
-				'tabindex' => '0',
-				'role' => 'link',
+				'class'      => $service,
+				'tabindex'   => '0',
+				'role'       => 'link',
 				'aria-label' => $this->txt['buttons_set'][$service],
 			]);
 

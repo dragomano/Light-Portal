@@ -7,27 +7,21 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-
-use function array_filter;
-use function explode;
-use function filter_var;
-
-use const FILTER_VALIDATE_BOOLEAN;
-use const FILTER_VALIDATE_FLOAT;
-use const FILTER_VALIDATE_INT;
+use LightPortal\Enums\FrontPageMode;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class Setting
+class Setting implements SettingInterface
 {
 	public static function get(
 		string $key,
@@ -59,7 +53,7 @@ class Setting
 			return false;
 		}
 
-		return self::isFrontpageMode('chosen_page') && $chosenPage === $slug;
+		return self::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value) && $chosenPage === $slug;
 	}
 
 	public static function isFrontpageMode(string $mode): bool
@@ -122,6 +116,14 @@ class Setting
 		return self::get('lp_right_panel_width', 'array', ['lg' => 3, 'xl' => 2], 'json');
 	}
 
+	public static function getColumnWidth(string $size): int
+	{
+		$leftWidth  = empty(Utils::$context['lp_blocks']['left'])  ? 0 : self::getLeftPanelWidth()[$size];
+		$rightWidth = empty(Utils::$context['lp_blocks']['right']) ? 0 : self::getRightPanelWidth()[$size];
+
+		return 12 - ($leftWidth + $rightWidth);
+	}
+
 	public static function getPanelDirection(string $panel): string
 	{
 		$directions = self::get('lp_panel_direction', 'array', [], 'json');
@@ -141,7 +143,9 @@ class Setting
 	{
 		$hideBlocks = self::get('lp_hide_blocks_in_acp', 'bool', false);
 
-		return $hideBlocks && app(Request::class)->is('admin');
+		$admin = isset(Utils::$context['current_action']) && Utils::$context['current_action'] === 'admin';
+
+		return $hideBlocks && $admin;
 	}
 
 	public static function getDisabledActions(): array
@@ -149,8 +153,19 @@ class Setting
 		return self::get('lp_disabled_actions', 'array', []);
 	}
 
+	public static function canMention(): bool
+	{
+		return self::get('enable_mentions', 'bool', false) || ! User::$me->allowedTo('mention');
+	}
+
 	protected static function transformArray(string $value, string $from): array
 	{
-		return $from === 'json' ? Utils::jsonDecode($value, true) : array_filter(explode(',', $value));
+		if ($from === 'json') {
+			return Utils::jsonDecode($value, true);
+		}
+
+		$array = explode(',', $value);
+
+		return array_filter($array, fn($v) => $v !== '');
 	}
 }

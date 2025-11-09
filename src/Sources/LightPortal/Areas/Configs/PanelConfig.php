@@ -7,42 +7,33 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Bricks\Settings\CallbackConfig;
 use Bugo\Bricks\Settings\CheckConfig;
 use Bugo\Bricks\Settings\ConfigBuilder;
+use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
-use Bugo\Compat\Actions\Admin\ACP;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasSession;
-
-use function json_encode;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PanelConfig extends AbstractConfig
 {
-	use HasRequest;
-	use HasSession;
-
 	public function show(): void
 	{
-		Theme::loadTemplate('LightPortal/ManagePanels');
+		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_panels'];
+		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
 		Theme::addInlineCss('
 		dl.settings {
 			overflow: hidden;
 		}');
-
-		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_panels'];
-		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
 		$this->addDefaultValues([
 			'lp_header_panel_width' => 12,
@@ -53,14 +44,16 @@ final class PanelConfig extends AbstractConfig
 			'lp_right_panel_sticky' => 1,
 		]);
 
-		Utils::$context['lp_left_right_width_values']    = [2, 3, 4];
+		Utils::$context['lp_left_right_width_values'] = [2, 3, 4];
 		Utils::$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
 
 		$vars = ConfigBuilder::make()->addVars([
 			CheckConfig::make('lp_swap_header_footer'),
 			CheckConfig::make('lp_swap_left_right'),
 			CheckConfig::make('lp_swap_top_bottom'),
+			/* @uses template_callback_panel_layout */
 			CallbackConfig::make('panel_layout'),
+			/* @uses template_callback_panel_direction */
 			CallbackConfig::make('panel_direction'),
 		]);
 

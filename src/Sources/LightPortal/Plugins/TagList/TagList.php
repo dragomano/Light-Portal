@@ -8,35 +8,32 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 26.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TagList;
+namespace LightPortal\Plugins\TagList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Actions\Tag;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Actions\TagIndex;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
 
-use function array_combine;
-use function array_map;
-use function class_exists;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-tags')]
 class TagList extends Block
 {
-	public string $icon = 'fas fa-tags';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -86,27 +83,27 @@ class TagList extends Block
 		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			return [];
 
-		$result = Db::$db->query('', '
-			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
-			FROM {db_prefix}optimus_keywords AS ok
-				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
-			GROUP BY ok.id, ok.name
-			ORDER BY {raw:sort}',
-			[
-				'sort' => $sort,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['ok' => 'optimus_keywords'])
+			->columns([
+				'id',
+				'name',
+				'frequency' => new Expression('COUNT(olk.keyword_id)')
+			])
+			->join(['olk' => 'optimus_log_keywords'], 'ok.id = olk.keyword_id')
+			->group(['ok.id', 'ok.name'])
+			->order($sort);
+
+		$result = $this->sql->execute($select);
 
 		$keywords = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$keywords[] = [
 				'title'     => $row['name'],
 				'link'      => Config::$scripturl . '?action=keywords;id=' . $row['id'],
 				'frequency' => $row['frequency'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $keywords;
 	}
@@ -115,47 +112,50 @@ class TagList extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$source = Typed::string($parameters['source'], default: 'lp_tags');
-		$sorting = Typed::string($parameters['sorting'], default: 'name');
-		$asCloud = Typed::boolExtended($parameters['as_cloud']);
+		$source  = Str::typed('string', $parameters['source'], default: 'lp_tags');
+		$sorting = Str::typed('string', $parameters['sorting'], default: 'name');
+		$asCloud = Str::typed('boolExtended', $parameters['as_cloud']);
 
-		if ($source) {
+		if ($source === 'lp_tags') {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)
-				->setFallback(fn() => app(Tag::class)->getAll(0, 0, $sorting === 'name' ? 'title' : 'frequency DESC'));
+				->setFallback(fn() => app(TagIndex::class)->getAll(sort: $sorting === 'name' ? 'title' : 'frequency DESC'));
 		} else {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)
 				->setFallback(fn() => $this->getAllTopicKeywords($sorting === 'name' ? 'ok.name' : 'frequency DESC'));
 		}
 
-		if ($tagList) {
-			if ($asCloud) {
-				require_once __DIR__ . '/vendor/autoload.php';
-
-				$cloud = new TagCloud([
-					'tags' => array_map(fn($item) => [
-						'title'  => $item['title'],
-						'params' => ['url' => $item['link']],
-						'weight' => $item['frequency'],
-					], $tagList),
-				]);
-
-				echo $cloud;
-
-				return;
-			}
-
-			foreach ($tagList as $tag) {
-				echo Str::html('a', ['href' => $tag['link'], 'class' => 'button'])
-					->setHtml(
-						($tag['icon'] ?? '') .
-						$tag['title'] .	' ' .
-						Str::html('span', ['class' => 'amt'])->setText($tag['frequency'])
-					);
-			}
-		} else {
+		if (! $tagList) {
 			echo Lang::$txt['lp_no_tags'];
+
+			return;
+		}
+
+		if ($asCloud) {
+			require_once __DIR__ . '/vendor/autoload.php';
+
+			$cloud = new TagCloud([
+				'tags' => array_map(fn($item) => [
+					'title'  => $item['title'],
+					'params' => ['url' => $item['link']],
+					'weight' => $item['frequency'],
+				], $tagList),
+			]);
+
+			echo $cloud;
+
+			return;
+		}
+
+		foreach ($tagList as $tag) {
+			echo Str::html('a', ['href' => $tag['link'], 'class' => 'button'])
+				->setHtml(
+					($tag['icon'] ?? '') .
+					$tag['title'] .	' ' .
+					Str::html('span', ['class' => 'amt'])
+						->setText($tag['frequency'])
+				);
 		}
 	}
 

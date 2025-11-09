@@ -7,22 +7,20 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Bricks\Settings\CheckConfig;
 use Bugo\Bricks\Settings\ConfigBuilder;
 use Bugo\Bricks\Settings\IntConfig;
 use Bugo\Bricks\Settings\TextConfig;
 use Bugo\Bricks\Settings\TitleConfig;
-use Bugo\Compat\{Config, Db, Lang};
+use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
-use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Tasks\Maintainer;
 
 use const LP_ACTION;
 use const LP_CACHE_TIME;
@@ -33,9 +31,6 @@ if (! defined('SMF'))
 
 final class MiscConfig extends AbstractConfig
 {
-	use HasRequest;
-	use HasSession;
-
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Lang::$txt['lp_misc'];
@@ -50,6 +45,8 @@ final class MiscConfig extends AbstractConfig
 		$vars = ConfigBuilder::make()->addVars([
 			TitleConfig::make('lp_debug_and_caching'),
 			CheckConfig::make('lp_show_debug_info')
+				->setHelp('lp_show_debug_info_help'),
+			CheckConfig::make('lp_show_portal_queries')
 				->setHelp('lp_show_debug_info_help'),
 			IntConfig::make('lp_cache_interval')
 				->setPostInput(Lang::$txt['seconds']),
@@ -69,21 +66,19 @@ final class MiscConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}background_tasks
-				WHERE task_file LIKE {string:task_file}',
-				[
-					'task_file' => '%$sourcedir/LightPortal%'
-				]
-			);
+			$delete = $this->getPortalSql()->delete('background_tasks');
+			$delete->where->like('task_file', '%$sourcedir/LightPortal%');
+			$this->getPortalSql()->execute($delete);
 
 			if ($this->request()->has('lp_weekly_cleaning')) {
-				Db::$db->insert('insert',
-					'{db_prefix}background_tasks',
-					['task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'],
-					['$sourcedir/LightPortal/Tasks/Maintainer.php', '\\' . Maintainer::class, ''],
-					['id_task']
-				);
+				$insert = $this->getPortalSql()->insert('background_tasks')
+					->values([
+						'task_file'    => '$sourcedir/LightPortal/Tasks/Maintainer.php',
+						'task_class'   => '\\' . Maintainer::class,
+						'task_data'    => '',
+					]);
+
+				$this->getPortalSql()->execute($insert);
 			}
 
 			$saveVars = $configVars;

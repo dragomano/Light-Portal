@@ -9,16 +9,11 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
-use function array_map;
-use function basename;
-use function glob;
-
-use const GLOB_ONLYDIR;
 use const LP_ADDON_DIR;
 
 if (! defined('SMF'))
@@ -28,9 +23,10 @@ class PluginList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
+		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR))) {
 			return [];
+		}
 
-		return array_map(static fn($item): string => basename($item), $dirs);
+		return array_map(basename(...), $dirs);
 	}
 }

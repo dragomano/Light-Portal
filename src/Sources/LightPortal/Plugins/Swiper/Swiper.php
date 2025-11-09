@@ -8,31 +8,34 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\Swiper;
+namespace LightPortal\Plugins\Swiper;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-images')]
 class Swiper extends Block
 {
-	public string $icon = 'far fa-images';
+	use HasView;
 
 	private array $effects = ['slide', 'fade', 'cube', 'coverflow', 'flip', 'cards', 'creative'];
 
@@ -87,7 +90,7 @@ class Swiper extends Block
 
 		CustomField::make('images', $this->txt['images'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('swiper_images', $options));
+			->setValue($this->view(params: ['options' => $options]));
 
 		RadioField::make('direction', $this->txt['direction'])
 			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
@@ -115,10 +118,11 @@ class Swiper extends Block
 			->setValue($options['show_scrollbar']);
 	}
 
-	public function getData(int|string $id, ParamWrapper $parameters): array
+	public function getData(int|string $id, NamedParameterMap $parameters): array
 	{
-		if (empty($parameters['images']))
+		if (empty($parameters['images'])) {
 			return [];
+		}
 
 		$swiper = Str::html('div', [
 			'id'    => 'swiper' . $id,

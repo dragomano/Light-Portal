@@ -8,16 +8,17 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 24.12.24
+ * @version 02.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\LatteLayouts;
+namespace LightPortal\Plugins\LatteLayouts;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Renderers\AbstractRenderer;
-use Bugo\LightPortal\Utils\Icon;
+use Latte\Loaders\StringLoader;
+use LightPortal\Renderers\AbstractRenderer;
+use LightPortal\Utils\Icon;
 use Exception;
 use Latte\Engine;
 use Latte\Essential\RawPhpExtension;
@@ -25,50 +26,83 @@ use Latte\Loaders\FileLoader;
 use Latte\Runtime\Html;
 use Latte\RuntimeException;
 
-use function ob_get_clean;
-use function ob_start;
-use function str_replace;
-
 class LatteRenderer extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.latte';
 
 	public function render(string $layout, array $params = []): string
 	{
-		if (empty($layout))
+		if (empty($layout)) {
 			return '';
+		}
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
 		ob_start();
 
 		try {
-			$latte = new Engine;
-			$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir());
-			$latte->setLoader(new FileLoader($this->customDir));
-			$latte->addExtension(new RawPhpExtension());
-
-			$latte->addFunction('teaser', static function (string $text, int $length = 150) use ($latte): string {
-				$text = $latte->invokeFilter('stripHtml', [$text]);
-
-				return $latte->invokeFilter('truncate', [$text, $length]);
-			});
-
-			$latte->addFunction('icon', static function (string $name, string $title = ''): Html {
-				$icon = Icon::get($name);
-
-				if (empty($title)) {
-					return new Html($icon);
-				}
-
-				return new Html(str_replace(' class=', ' title="' . $title . '" class=', $icon));
-			});
-
+			$latte = $this->createLatteInstance();
 			$latte->render($layout, $params);
 		} catch (RuntimeException | Exception $e) {
 			ErrorHandler::fatal($e->getMessage(), false);
 		}
 
 		return ob_get_clean();
+	}
+
+	public function renderString(string $string, array $params = []): string
+	{
+		if (empty($string)) {
+			return '';
+		}
+
+		require_once __DIR__ . '/vendor/autoload.php';
+
+		ob_start();
+
+		try {
+			$loader = new StringLoader([
+				'inline_template' => $string,
+			]);
+
+			$latte = $this->createLatteInstance();
+			$latte->setLoader($loader);
+			$latte->renderToString('inline_template', $params);
+		} catch (RuntimeException | Exception $e) {
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
+
+		return ob_get_clean();
+	}
+
+	private function createLatteInstance(): Engine
+	{
+		$latte = new Engine;
+		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir());
+		$latte->setLoader(new FileLoader($this->customDir));
+		$latte->addExtension(new RawPhpExtension());
+
+		$this->setupFunctions($latte);
+
+		return $latte;
+	}
+
+	private function setupFunctions(Engine $latte): void
+	{
+		$latte->addFunction('teaser', static function (string $text, int $length = 150) use ($latte): string {
+			$text = $latte->invokeFilter('stripHtml', [$text]);
+
+			return $latte->invokeFilter('truncate', [$text, $length]);
+		});
+
+		$latte->addFunction('icon', static function (string $name, string $title = ''): Html {
+			$icon = Icon::get($name);
+
+			if (empty($title)) {
+				return new Html($icon);
+			}
+
+			return new Html(str_replace(' class=', ' title="' . $title . '" class=', $icon));
+		});
 	}
 }

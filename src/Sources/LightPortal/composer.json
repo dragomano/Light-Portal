@@ -1,21 +1,24 @@
 {
   "require": {
-    "php": "~8.1",
+    "php": "~8.2",
     "ext-dom": "*",
     "ext-intl": "*",
+    "ext-pdo": "*",
     "ext-simplexml": "*",
     "ext-zip": "*",
-    "bugo/fa-php-helper": "^0.5",
-    "bugo/smf-bricks": "^0.5",
-    "bugo/smf-compat": "^0.3",
+    "bugo/fa-icon-builder": "^0.2",
+    "bugo/smf-bricks": "^0.8",
+    "bugo/smf-compat": "dev-main",
     "doctrine/event-manager": "^2.0",
-    "eftec/bladeone": "^4.13",
-    "league/container": "^5.0",
-    "wplake/typed": "^1.1"
+    "eftec/bladeone": "^4.18",
+    "laminas/laminas-db": "^2.18",
+    "league/container": "^5.1",
+    "ramsey/collection": "^2.1",
+    "wplake/typed": "^1.2"
   },
   "autoload": {
     "psr-4": {
-      "Bugo\\LightPortal\\": ""
+      "LightPortal\\": ""
     },
     "exclude-from-classmap": [
       "Plugins"
@@ -27,7 +30,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "8.1"
+      "php": "8.2"
     }
   },
   "scripts": {

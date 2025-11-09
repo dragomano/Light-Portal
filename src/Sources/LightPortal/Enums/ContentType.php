@@ -7,18 +7,14 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasNames;
-
-use function array_keys;
-use function array_reduce;
-use function array_slice;
+use LightPortal\Enums\Traits\HasNames;
 
 enum ContentType
 {
@@ -53,10 +49,11 @@ enum ContentType
 	{
 		$types = self::all();
 
-		return array_reduce(array_keys($types), function($carry, $type) use ($types) {
+		return array_reduce(array_keys($types), function($carry, $type) {
 			$carry[$type] = [
 				'icon' => self::icon($type),
 			];
+
 			return $carry;
 		}, []);
 	}

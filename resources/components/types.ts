@@ -10,12 +10,14 @@ export interface Comment {
   created_at: number;
   extra_buttons: string[];
   human_date: string;
+  human_update: string;
   id: number;
   message: string;
   page_id: number;
   parent_id: number;
   poster: Poster;
   published_at: string;
+  updated_at: string;
   replies: Comment[];
 }
 
@@ -57,13 +59,13 @@ export interface Plugin {
   name?: string;
   version?: string;
   outdated?: string;
-  snake_name?: string;
+  snakeName?: string;
   desc?: string;
   status?: string;
   types?: string[];
   special?: string;
   settings?: string[];
-  saveable?: boolean;
+  showSaveButton?: boolean;
 }
 
 export interface DonateInfo {

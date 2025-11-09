@@ -7,14 +7,16 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Renderers;
+namespace LightPortal\Renderers;
 
 interface RendererInterface
 {
-	public function getLayouts(): array;
-
 	public function render(string $layout, array $params = []): string;
+
+	public function renderString(string $string, array $params = []): string;
+
+	public function getLayouts(): array;
 }

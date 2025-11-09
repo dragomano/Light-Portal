@@ -7,117 +7,115 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
+use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagRepository extends AbstractRepository
+final class TagRepository extends AbstractRepository implements TagRepositoryInterface
 {
-	use HasCache;
-	use HasRequest;
-	use HasResponse;
-
 	protected string $entity = 'tag';
 
-	public function getAll(int $start, int $limit, string $sort): array
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $filter = '',
+		array $whereConditions = []
+	): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.value, tf.value) AS title
-			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
-					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
-					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'sort'          => $sort,
-				'start'         => $start,
-				'limit'         => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['tag' => 'lp_tags'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
 
-		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$items[$row['tag_id']] = [
-				'id'     => (int) $row['tag_id'],
-				'icon'   => Icon::parse($row['icon']),
-				'status' => (int) $row['status'],
-				'title'  => $row['title'],
-			];
+		$this->addTranslationJoins($select, [
+			'primary' => 'tag.tag_id',
+			'entity'  => $this->entity,
+		]);
+
+		if ($filter === 'list') {
+			$select
+				->where(['tag.status = ?' => Status::ACTIVE->value])
+				->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'));
 		}
 
-		Db::$db->free_result($result);
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		$result = $this->sql->execute($select);
+
+		$items = [];
+		foreach ($result as $row) {
+			Lang::censorText($row['title']);
+
+			$items[$row['tag_id']] = [
+				'id'     => $row['tag_id'],
+				'slug'   => $row['slug'],
+				'icon'   => Icon::parse($row['icon']),
+				'status' => $row['status'],
+				'title'  => Str::decodeHtmlEntities($row['title']),
+			];
+		}
 
 		return $items;
 	}
 
-	public function getTotalCount(): int
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT COUNT(tag_id)
-			FROM {db_prefix}lp_tags',
-		);
+		$select = $this->sql->select('lp_tags')
+			->columns(['count' => new Expression('COUNT(tag_id)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select)->current();
 
-		return (int) $count;
+		return (int) $result['count'];
 	}
 
 	public function getData(int $item): array
 	{
-		if ($item === 0)
+		if ($item === 0) {
 			return [];
-
-		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, tag.status, t.lang, t.value AS title
-			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_titles AS t ON (tag.tag_id = t.item_id AND t.type = {literal:tag})
-			WHERE tag.tag_id = {int:item}',
-			[
-				'item' => $item,
-			]
-		);
-
-		if (empty(Db::$db->num_rows($result))) {
-			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_tags';
-
-			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		$select = $this->sql->select()
+			->from(['tag' => 'lp_tags'])
+			->where(['tag.tag_id = ?' => $item]);
+
+		$this->addTranslationJoins($select, [
+			'primary' => 'tag.tag_id',
+			'entity'  => $this->entity,
+		]);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
 			$data ??= [
-				'id'     => (int) $row['tag_id'],
+				'id'     => $row['tag_id'],
+				'slug'   => $row['slug'],
 				'icon'   => $row['icon'],
-				'status' => (int) $row['status'],
+				'status' => $row['status'],
+				'title'  => $row['title'],
 			];
-
-			if (! empty($row['lang']))
-				$data['titles'][$row['lang']] = $row['title'];
 		}
-
-		Db::$db->free_result($result);
 
 		return $data ?? [];
 	}
@@ -130,12 +128,9 @@ final class TagRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
-		if (empty($item)) {
-			Utils::$context['lp_tag']['titles'] = array_filter(Utils::$context['lp_tag']['titles']);
-			$item = $this->addData();
-		} else {
-			$this->updateData($item);
-		}
+		empty($item)
+			? $item = $this->addData(Utils::$context['lp_tag'])
+			: $this->updateData($item, Utils::$context['lp_tag']);
 
 		$this->cache()->flush();
 
@@ -150,88 +145,91 @@ final class TagRepository extends AbstractRepository
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_tags
-			WHERE tag_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$delete = $this->sql->delete('lp_tags');
+		$delete->where->in('tag_id', $items);
+		$this->sql->execute($delete);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:tag}',
-			[
-				'items' => $items,
-			]
-		);
+		$deleteTranslations = $this->sql->delete('lp_translations');
+		$deleteTranslations->where->in('item_id', $items);
+		$deleteTranslations->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteTranslations);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tag
-			WHERE tag_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$deletePageTag = $this->sql->delete('lp_page_tag');
+		$deletePageTag->where->in('tag_id', $items);
+		$this->sql->execute($deletePageTag);
 
 		$this->cache()->flush();
 
 		$this->session('lp')->free('active_tags');
 	}
 
-	private function addData(): int
+	private function addData(array $data): int
 	{
-		Db::$db->transaction('begin');
+		try {
+			$this->transaction->begin();
 
-		$item = (int) Db::$db->insert('',
-			'{db_prefix}lp_tags',
-			[
-				'icon'   => 'string-60',
-				'status' => 'int',
-			],
-			[
-				Utils::$context['lp_tag']['icon'],
-				Utils::$context['lp_tag']['status'],
-			],
-			['tag_id'],
-			1
-		);
+			$insert = $this->sql->insert('lp_tags', 'tag_id')
+				->values([
+					'slug'   => $data['slug'],
+					'icon'   => $data['icon'],
+					'status' => $data['status'],
+				]);
 
-		if (empty($item)) {
-			Db::$db->transaction('rollback');
+			$result = $this->sql->execute($insert);
+
+			$item = (int) $result->getGeneratedValue('tag_id');
+
+			if (empty($item)) {
+				$this->transaction->rollback();
+
+				return 0;
+			}
+
+			$data['id'] = $item;
+
+			$this->saveTranslations($data);
+
+			$this->transaction->commit();
+
+			return $item;
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+
 			return 0;
 		}
-
-		$this->saveTitles($item);
-
-		Db::$db->transaction();
-
-		return $item;
 	}
 
-	private function updateData(int $item): void
+	private function updateData(int $item, array $data): void
 	{
-		Db::$db->transaction('begin');
+		try {
+			$this->transaction->begin();
 
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_tags
-			SET icon = {string:icon}, status = {int:status}
-			WHERE tag_id = {int:tag_id}',
-			[
-				'icon'   => Utils::$context['lp_tag']['icon'],
-				'status' => Utils::$context['lp_tag']['status'],
-				'tag_id' => $item,
-			]
-		);
+			$update = $this->sql->update('lp_tags')
+				->set([
+					'slug'   => $data['slug'],
+					'icon'   => $data['icon'],
+					'status' => $data['status'],
+				])
+				->where(['tag_id = ?' => $item]);
 
-		$this->saveTitles($item, 'replace');
+			$this->sql->execute($update);
 
-		Db::$db->transaction();
+			$this->saveTranslations($data, true);
+
+			$this->transaction->commit();
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
 	}
 }

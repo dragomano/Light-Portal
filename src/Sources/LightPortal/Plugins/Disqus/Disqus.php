@@ -8,26 +8,28 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 29.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Disqus;
+namespace LightPortal\Plugins\Disqus;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::COMMENT)]
 class Disqus extends Plugin
 {
-	public string $type = 'comment';
-
 	public function init(): void
 	{
 		Lang::$txt['lp_comment_block_set'][$this->name] = 'Disqus';
@@ -35,12 +37,12 @@ class Disqus extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = [
-			'text',
-			'shortname',
-			'subtext' => $this->txt['shortname_subtext'],
-			'required' => true
-		];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('shortname', [
+				'subtext'  => $this->txt['shortname_subtext'],
+				'required' => true,
+			])
+			->toArray();
 	}
 
 	public function comments(): void

@@ -8,29 +8,32 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 18.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\Icon;
+
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::IMPEX)]
 class TinyPortalMigration extends Plugin
 {
-	public string $type = 'impex';
-
 	private const AREA = 'import_from_tp';
 
-	public function updateAdminAreas(Event $e): void
+	public function extendAdminAreas(Event $e): void
 	{
 		$areas = &$e->args->areas;
 
@@ -49,55 +52,40 @@ class TinyPortalMigration extends Plugin
 		}
 	}
 
-	public function updateBlockAreas(Event $e): void
+	public function extendBlockAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new BlockImport(), 'main'];
+		app()->add(BlockImport::class)
+			->addArguments([PortalSqlInterface::class, ErrorHandlerInterface::class]);
+
+		$e->args->areas[self::AREA] = [app(BlockImport::class), 'main'];
 	}
 
-	public function updatePageAreas(Event $e): void
+	public function extendPageAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new PageImport(), 'main'];
+		app()->add(PageImport::class)
+			->addArguments([PortalSqlInterface::class, ErrorHandlerInterface::class]);
+
+		$e->args->areas[self::AREA] = [app(PageImport::class), 'main'];
 	}
 
-	public function updateCategoryAreas(Event $e): void
+	public function extendCategoryAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new CategoryImport(), 'main'];
+		app()->add(CategoryImport::class)
+			->addArguments([PortalSqlInterface::class, ErrorHandlerInterface::class]);
+
+		$e->args->areas[self::AREA] = [app(CategoryImport::class), 'main'];
 	}
 
-	public function importPages(Event $e): void
+	public function onCustomPageImport(Event $e): void
 	{
 		if ($this->request()->get('sa') !== self::AREA)
 			return;
 
 		$items = &$e->args->items;
-		$titles = &$e->args->titles;
 		$params = &$e->args->params;
-		$comments = &$e->args->comments;
-
-		$comments = $this->getComments(array_keys($items));
 
 		foreach ($items as $pageId => $item) {
-			$items[$pageId]['num_comments'] = empty($comments[$pageId]) ? 0 : sizeof($comments[$pageId]);
-
-			$titles[] = [
-				'item_id' => $pageId,
-				'type'    => 'page',
-				'lang'    => Config::$language,
-				'title'   => $item['subject'],
-			];
-
-			if (Config::$language !== Language::getFallbackValue() && ! empty(Config::$modSettings['userLanguage'])) {
-				$titles[] = [
-					'item_id' => $pageId,
-					'type'    => 'page',
-					'lang'    => Language::getFallbackValue(),
-					'title'   => $item['subject'],
-				];
-			}
-
-			unset($items[$pageId]['subject']);
-
-			if (in_array('author', $items[$pageId]['options']) || in_array('date', $items[$pageId]['options']))
+			if (in_array('author', $item['options']) || in_array('date', $item['options']))
 				$params[] = [
 					'item_id' => $pageId,
 					'type'    => 'page',
@@ -105,48 +93,48 @@ class TinyPortalMigration extends Plugin
 					'value'   => 1,
 				];
 
-			if (in_array('commentallow', $items[$pageId]['options']))
+			if (in_array('commentallow', $item['options'])) {
 				$params[] = [
 					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'allow_comments',
 					'value'   => 1,
 				];
+			}
 
 			unset($items[$pageId]['options']);
 		}
+
+		$e->args->comments = $this->getComments(array_keys($items));
 	}
 
 	private function getComments(array $pages): array
 	{
-		$result = Db::$db->query('', '
-			SELECT *
-			FROM {db_prefix}tp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
-			WHERE com.item_type = {string:type}' . ($pages === [] ? '' : '
-				AND com.item_id IN ({array_int:pages})'),
-			[
-				'type'  => 'article_comment',
-				'pages' => $pages,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['com' => 'tp_comments'])
+			->join(['mem' => 'members'], 'com.member_id = mem.id_member')
+			->where(['item_type' => 'article_comment']);
+
+		if ($pages !== []) {
+			$select->where->in('item_id', $pages);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			if ($row['item_id'] < 0 || empty($row['comment']))
 				continue;
 
-			$comments[$row['item_id']][] = [
+			$comments[] = [
 				'id'         => $row['id'],
 				'parent_id'  => 0,
 				'page_id'    => $row['item_id'],
 				'author_id'  => $row['member_id'],
-				'message'    => $row['comment'],
+				'messages'   => [Config::$language => $row['comment']],
 				'created_at' => $row['datetime'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $comments;
 	}

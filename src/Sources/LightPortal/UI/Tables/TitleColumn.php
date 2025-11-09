@@ -7,14 +7,14 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 class TitleColumn extends Column
 {
@@ -26,6 +26,6 @@ class TitleColumn extends Column
 					->href(LP_BASE_URL . ";sa=$entity;id=" . $entry['id'])
 					->setText($entry['title'])
 				: $entry['title'], 'word_break')
-			->setSort('t.value DESC', 't.value');
+			->setSort('title', 'title DESC');
 	}
 }

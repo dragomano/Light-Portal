@@ -8,31 +8,36 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TopicRatingBar;
+namespace LightPortal\Plugins\TopicRatingBar;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::ARTICLE)]
 class TopicRatingBar extends Plugin
 {
-	public string $type = 'article';
-
 	public function frontTopics(Event $e): void
 	{
 		if (! class_exists('TopicRatingBar'))
 			return;
 
-		$e->args->columns[] = 'tr.total_votes, tr.total_value';
-
-		$e->args->tables[] = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+		$e->args->joins[] = fn(Select $select) => $select->join(
+			['tr' => 'topic_ratings'],
+			't.id_topic = tr.id',
+			['total_votes', 'total_value'],
+			Select::JOIN_LEFT
+		);
 	}
 
 	public function frontTopicsRow(Event $e): void

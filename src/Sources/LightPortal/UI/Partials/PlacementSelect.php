@@ -7,27 +7,21 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-use function func_get_args;
-use function json_encode;
+if (! defined('SMF'))
+	die('No direct access...');
 
-final class PlacementSelect extends AbstractPartial
+final class PlacementSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$params['id'] ??= 'placement';
-		$params['value'] ??= Utils::$context['lp_block']['placement'];
-
 		$data = [];
 		foreach (Utils::$context['lp_block_placements'] as $level => $title) {
 			$data[] = [
@@ -36,18 +30,18 @@ final class PlacementSelect extends AbstractPartial
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",
-				hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				placeholder: "' . Lang::$txt['lp_block_placement_select'] . '",
-				options: ' . json_encode($data) . ',
-				selectedValue: "' . $params['value'] . '"
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'placement',
+			'multiple' => false,
+			'search'   => false,
+			'wide'     => false,
+			'hint'     => Lang::$txt['lp_block_placement_select'],
+			'value'    => Utils::$context['lp_block']['placement'] ?? '',
+		];
 	}
 }

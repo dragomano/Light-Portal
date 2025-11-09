@@ -7,22 +7,17 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-
-use function array_flip;
-use function array_key_exists;
-use function array_keys;
-use function defined;
+use LightPortal\Enums\Action;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -38,6 +33,7 @@ trait HasCommonChecks
 			! defined('LP_NAME')
 			|| isset(Utils::$context['uninstalling'])
 			|| $this->request()->is('printpage')
+			|| $this->request()->sa('uninstall2')
 		) {
 			Config::$modSettings['minimize_files'] = 0;
 			return false;

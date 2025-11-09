@@ -7,17 +7,14 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Fields;
+namespace LightPortal\UI\Fields;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-
-use function is_callable;
-use function is_object;
-use function is_string;
+use LightPortal\Enums\Tab;
+use LightPortal\UI\Partials\SelectInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -79,8 +76,16 @@ abstract class AbstractField
 
 	public function setValue(mixed $value, ...$params): self
 	{
-		if (is_callable($value) && is_object($value)) {
-			$this->setAttribute('value', $value()(...$params));
+		if ($value instanceof SelectInterface) {
+			$this->setAttribute('value', (string) $value);
+		} elseif (is_callable($value) && ! is_string($value)) {
+			$result = $value(...$params);
+
+			if ($result instanceof SelectInterface) {
+				$this->setAttribute('value', (string) $result);
+			} else {
+				$this->setAttribute('value', $result);
+			}
 		} else {
 			$this->setAttribute('value', $value);
 		}
@@ -129,3 +134,4 @@ abstract class AbstractField
 		];
 	}
 }
+

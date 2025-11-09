@@ -9,44 +9,28 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Repositories\PageRepository;
-
-use function time;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageList implements ListInterface
+readonly class PageList implements ListInterface
 {
-	public function __construct(private readonly PageRepository $repository) {}
+	use HasCache;
+
+	public function __construct(private PageRepositoryInterface $repository) {}
 
 	public function __invoke(): array
 	{
-		return $this->repository->getAll(
-			0,
-			$this->repository->getTotalCount(),
-			'page_title',
-			'
-				AND p.status = {int:status}
-				AND entry_type = {string:entry_type}
-				AND deleted_at = 0
-				AND created_at <= {int:current_time}
-				AND permissions IN ({array_int:permissions})
-			',
-			[
-				'status'       => Status::ACTIVE->value,
-				'entry_type'   => EntryType::DEFAULT->name(),
-				'current_time' => time(),
-				'permissions'  => Permission::all()
-			]
-		);
+		return $this->langCache('active_pages')
+			->setFallback(
+				fn() => $this->repository->getAll(0, $this->repository->getTotalCount(), 'title', 'list')
+			);
 	}
 }

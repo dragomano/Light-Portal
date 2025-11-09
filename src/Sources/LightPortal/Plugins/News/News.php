@@ -8,28 +8,26 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\News;
+namespace LightPortal\Plugins\News;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class News extends Block
+#[PluginAttribute(icon: 'far fa-newspaper')]
+class News extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'far fa-newspaper';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params['selected_item'] = 0;
@@ -65,6 +63,6 @@ class News extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		echo $this->getData(Typed::int($e->args->parameters['selected_item'])) ?: $this->txt['no_items'];
+		echo $this->getData(Str::typed('int', $e->args->parameters['selected_item'])) ?: $this->txt['no_items'];
 	}
 }

@@ -7,16 +7,13 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-
-use function array_merge;
-use function array_slice;
 
 if (! defined('SMF'))
 	die('No direct access...');

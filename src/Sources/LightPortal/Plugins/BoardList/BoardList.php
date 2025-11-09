@@ -8,39 +8,36 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 26.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\BoardList;
+namespace LightPortal\Plugins\BoardList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Partials\ContentClassSelect;
-use Bugo\LightPortal\UI\Partials\TitleClassSelect;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\MessageIndex;
-use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\Tab;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\MessageIndex;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-list-alt', showContentClass: false)]
 class BoardList extends Block
 {
-	public string $icon = 'far fa-list-alt';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
-			'category_class'   => TitleClass::TITLE_BAR->value,
-			'board_class'      => ContentClass::ROUNDFRAME->value,
+			'category_class' => TitleClass::TITLE_BAR->value,
+			'board_class'    => ContentClass::ROUNDFRAME->value,
 		];
 	}
 
@@ -58,25 +55,25 @@ class BoardList extends Block
 
 		CustomField::make('category_class', $this->txt['category_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new TitleClassSelect(), [
+			->setValue(fn() => SelectFactory::titleClass([
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
-				'value' => $options['category_class']
-			]);
+				'value' => $options['category_class'],
+			]));
 
 		CustomField::make('board_class', $this->txt['board_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new ContentClassSelect(), [
+			->setValue(static fn() => SelectFactory::contentClass([
 				'id'    => 'board_class',
 				'value' => $options['board_class'],
-			]);
+			]));
 	}
 
 	public function prepareContent(Event $e): void
 	{
 		$boardList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => MessageIndex::getBoardList());
+			->setFallback(MessageIndex::getBoardList(...));
 
 		if (empty($boardList))
 			return;
@@ -85,8 +82,8 @@ class BoardList extends Block
 
 		$parameters = $e->args->parameters;
 
-		$categoryClass = Typed::string($parameters['category_class']);
-		$boardClass = Typed::string($parameters['board_class']);
+		$categoryClass = Str::typed('string', $parameters['category_class']);
+		$boardClass = Str::typed('string', $parameters['board_class']);
 
 		foreach ($boardList as $category) {
 			if ($categoryClass) {

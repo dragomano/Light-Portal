@@ -7,80 +7,83 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\ArticleInterface;
-use Bugo\LightPortal\Articles\BoardArticle;
-use Bugo\LightPortal\Articles\ChosenPageArticle;
-use Bugo\LightPortal\Articles\ChosenTopicArticle;
-use Bugo\LightPortal\Articles\PageArticle;
-use Bugo\LightPortal\Articles\TopicArticle;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSession;
-use Bugo\LightPortal\Utils\Weaver;
-use WPLake\Typed\Typed;
+use LightPortal\Articles\ArticleInterface;
+use LightPortal\Enums\FrontPageMode;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Renderers\RendererInterface;
+use LightPortal\UI\TemplateLoader;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSorting;
+use Ramsey\Collection\Collection;
+use Ramsey\Collection\CollectionInterface;
 
-use function abs;
-use function array_column;
-use function array_key_exists;
-use function array_map;
-use function date;
-use function floor;
-use function ltrim;
-use function number_format;
-use function sprintf;
+use function LightPortal\app;
 
 use const LP_BASE_URL;
 
-final class FrontPage implements ActionInterface
+if (! defined('SMF'))
+	die('No direct access...');
+
+class FrontPage implements ActionInterface
 {
 	use HasCache;
 	use HasBreadcrumbs;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
-	use HasSession;
+	use HasSorting;
 
-	private array $modes = [
-		'all_pages'     => PageArticle::class,
-		'all_topics'    => TopicArticle::class,
-		'chosen_boards' => BoardArticle::class,
-		'chosen_pages'  => ChosenPageArticle::class,
-		'chosen_topics' => ChosenTopicArticle::class,
-	];
+	private ArticleInterface $article;
 
-	public function __construct(private RendererInterface $renderer) {}
+	private array $modes = [];
+
+	public function __construct(
+		private RendererInterface $renderer,
+		private readonly EventDispatcherInterface $dispatcher
+	)
+	{
+		foreach (FrontPageMode::cases() as $case) {
+			if ($class = $case->getArticleClass()) {
+				$this->modes[$case->value] = $class;
+			}
+		}
+
+		$currentMode = Setting::get('lp_frontpage_mode', 'string', '');
+
+		$this->dispatcher->dispatch(
+			PortalHook::frontModes,
+			[
+				'modes'       => &$this->modes,
+				'currentMode' => &$currentMode,
+			]
+		);
+
+		$this->article = array_key_exists($currentMode, $this->modes)
+			? app($this->modes[$currentMode])
+			: app($this->modes[FrontPageMode::ALL_PAGES->value]);
+	}
 
 	public function show(): void
 	{
 		User::$me->isAllowedTo('light_portal_view');
 
-		$this->events()->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
-
-		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
-			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
-		} elseif (Setting::isFrontpageMode('chosen_page')) {
-			app(Page::class)->show();
-			return;
-		}
+		$this->prepareArticles();
 
 		Utils::$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -100,38 +103,40 @@ final class FrontPage implements ActionInterface
 		$this->prepareTemplates();
 	}
 
-	public function prepare(ArticleInterface $article): void
+	public function prepareArticles(): void
 	{
-		$start = Typed::int($this->request()->get('start'));
+		$start = Str::typed('int', $this->request()->get('start'));
 		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
-		$article->init();
+		$this->article->init();
 
-		$key = "articles_{$start}_$limit";
+		$this->prepareSortingOptions($this->article);
+		$this->prepareSorting('frontpage_sorting');
+
+		$key = "articles_{$start}_{$limit}_" . Utils::$context['lp_current_sorting'];
 		$key = ltrim(($this->request()->get('action') ?? '') . '_' . $key, '_');
 
 		$data = $this->langCache($key)
-			->setFallback(function () use ($article, $start, $limit) {
-				$total = $article->getTotalCount();
+			->setFallback(function () use ($start, $limit) {
+				$total = $this->article->getTotalCount();
 
 				$this->updateStart($total, $start, $limit);
 
-				$articles = app(Weaver::class)(static fn() => $article->getData($start, $limit));
+				$articles = $this->article->getData($start, $limit, Utils::$context['lp_current_sorting']);
+				$articles = iterator_to_array($articles);
 
 				return ['total' => $total, 'articles' => $articles];
 			});
 
-		[$articles, $itemsCount] = [$data['articles'], $data['total']];
+		[$articlesData, $itemsCount] = [$data['articles'], $data['total']];
+
+		$articles = new Collection('array', $articlesData);
 
 		Utils::$context['total_articles'] = $itemsCount;
 
-		$articles = $this->postProcess($article, $articles);
-
 		$this->preLoadImages($articles);
 
-		Utils::$context['page_index'] = new PageIndex(
-			LP_BASE_URL, $start, $itemsCount, $limit
-		);
+		Utils::$context['page_index'] = new PageIndex(LP_BASE_URL, $start, $itemsCount, $limit);
 
 		Utils::$context['start'] = $this->request()->get('start');
 
@@ -145,24 +150,16 @@ final class FrontPage implements ActionInterface
 			? LP_BASE_URL . ';start=' . ($start + $limit)
 			: '';
 
-		Utils::$context['lp_frontpage_articles'] = $articles;
+		Utils::$context['lp_frontpage_articles'] = $articles->toArray();
 
-		$this->events()->dispatch(PortalHook::frontAssets);
+		$this->dispatcher->dispatch(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
 	{
-		if (empty(Utils::$context['lp_frontpage_articles'])) {
-			Utils::$context['sub_template'] = 'empty';
-		} else {
-			Utils::$context['sub_template'] = empty(Config::$modSettings['lp_frontpage_layout'])
-				? 'wrong_template'
-				: 'layout';
-		}
-
 		Utils::$context['lp_frontpage_layouts'] = $this->renderer->getLayouts();
 
-		$this->prepareLayoutSwitcher();
+		$this->prepareToolbar();
 
 		$currentLayout = Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
 
@@ -172,8 +169,7 @@ final class FrontPage implements ActionInterface
 			'modSettings' => Config::$modSettings,
 		];
 
-		// You can add your own logic here
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::frontLayouts,
 			[
 				'renderer' => &$this->renderer,
@@ -182,27 +178,9 @@ final class FrontPage implements ActionInterface
 			]
 		);
 
-		Utils::$context['lp_layout_content'] = $this->renderer->render($currentLayout, $params);
-	}
+		$content = $this->renderer->render($currentLayout, $params);
 
-	public function prepareLayoutSwitcher(): void
-	{
-		if (empty(Config::$modSettings['lp_show_layout_switcher']))
-			return;
-
-		Utils::$context['template_layers'][] = 'layout_switcher';
-
-		if ($this->session('lp')->isEmpty('frontpage_layout')) {
-			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
-				?? Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
-		} else {
-			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
-				?? $this->session('lp')->get('frontpage_layout');
-		}
-
-		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
-
-		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
+		TemplateLoader::fromFile($this->getCurrentTemplate(), compact('content'));
 	}
 
 	public function getNumColumns(): int
@@ -233,35 +211,36 @@ final class FrontPage implements ActionInterface
 		$start = (int) abs($start);
 	}
 
-	private function postProcess(ArticleInterface $article, array $articles): array
+	private function prepareToolbar(): void
 	{
-		return array_map(function ($item) use ($article) {
-			if (Utils::$context['user']['is_guest']) {
-				$item['is_new'] = false;
-				$item['views']['num'] = 0;
-			}
+		/* @uses template_lp_home_toolbar_above, template_lp_home_toolbar_below */
+		Utils::$context['template_layers'][] = 'lp_home_toolbar';
 
-			if (isset($item['date'])) {
-				$item['datetime'] = date('Y-m-d', $item['date']);
-				$item['raw_date'] = $item['date'];
-				$item['date']     = DateTime::relative($item['date']);
-			}
+		if ($this->session('lp')->isEmpty('frontpage_layout')) {
+			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
+				?? Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
+		} else {
+			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
+				?? $this->session('lp')->get('frontpage_layout');
+		}
 
-			if (empty($item['image'])) {
-				$item['image'] = Setting::get('lp_image_placeholder', 'string', '');
-			}
+		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
 
-			if (! empty($item['views']['num'])) {
-				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
-			}
-
-			return $item;
-		}, $articles);
+		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
 	}
 
-	private function preLoadImages(array $articles): void
+	private function getCurrentTemplate(): string
 	{
-		$images = array_column($articles, 'image');
+		return match (true) {
+			empty(Utils::$context['lp_frontpage_articles']) => 'empty',
+			empty(Config::$modSettings['lp_frontpage_layout']) => 'wrong',
+			default => 'home',
+		};
+	}
+
+	private function preLoadImages(CollectionInterface $articles): void
+	{
+		$images = array_filter($articles->column('image'));
 
 		foreach ($images as $image) {
 			Utils::$context['html_headers'] .= "\n\t" . Str::html('link', [
@@ -270,24 +249,6 @@ final class FrontPage implements ActionInterface
 				'href' => $image,
 			]);
 		}
-	}
-
-	private function getFriendlyNumber(int $value = 0): string
-	{
-		if ($value < 10000)
-			return (string) $value;
-
-		$k   = 10 ** 3;
-		$mil = 10 ** 6;
-		$bil = 10 ** 9;
-
-		if ($value >= $bil) {
-			return number_format($value / $bil, 1) . 'B';
-		} elseif ($value >= $mil) {
-			return number_format($value / $mil, 1) . 'M';
-		}
-
-		return number_format($value / $k, 1) . 'K';
 	}
 
 	private function simplePaginate(string $url, int $total, int $limit): string

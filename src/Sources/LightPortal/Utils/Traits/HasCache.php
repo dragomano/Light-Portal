@@ -7,13 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\CacheInterface;
+
+use function LightPortal\app;
 
 trait HasCache
 {
@@ -34,20 +36,12 @@ trait HasCache
 
 	protected function appendUserSuffix(?string $key): ?string
 	{
-		if ($key) {
-			$key .= $this->getUserSuffix();
-		}
-
-		return $key;
+		return $key ? $key . $this->getUserSuffix() : null;
 	}
 
 	protected function appendLangSuffix(?string $key): ?string
 	{
-		if ($key) {
-			$key .= $this->getLangSuffix();
-		}
-
-		return $key;
+		return $key ? $key . $this->getLangSuffix() : null;
 	}
 
 	protected function getUserSuffix(): string
@@ -62,8 +56,8 @@ trait HasCache
 
 	protected function getCacheInstance(?string $key = null): CacheInterface
 	{
-		return $key === null 
-			? app(CacheInterface::class) 
+		return $key === null
+			? app(CacheInterface::class)
 			: app(CacheInterface::class)->withKey($key);
 	}
 }

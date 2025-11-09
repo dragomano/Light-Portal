@@ -7,19 +7,18 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
-
-if (! defined('SMF'))
-	die('No direct access...');
+namespace LightPortal\Articles;
 
 interface ArticleInterface
 {
 	public function init(): void;
 
-	public function getData(int $start, int $limit): array;
+	public function getSortingOptions(): array;
+
+	public function getData(int $start, int $limit, ?string $sortType): iterable;
 
 	public function getTotalCount(): int;
 }

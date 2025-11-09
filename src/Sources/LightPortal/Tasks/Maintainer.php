@@ -7,22 +7,36 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Tasks;
+namespace LightPortal\Tasks;
 
 use Bugo\Compat\Tasks\BackgroundTask;
-use Bugo\Compat\Db;
-use Bugo\LightPortal\Repositories\CommentRepository;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Repositories\CommentRepositoryInterface;
 
-use function array_keys;
-use function array_map;
-use function ini_set;
-use function time;
+use function LightPortal\app;
 
 final class Maintainer extends BackgroundTask
 {
+	private readonly PortalSqlInterface $sql;
+
+	private readonly CommentRepositoryInterface $commentRepository;
+
+	public function __construct(array $details)
+	{
+		parent::__construct($details);
+
+		$this->sql = app(PortalSqlInterface::class);
+
+		$this->commentRepository = app(CommentRepositoryInterface::class);
+	}
+
 	public function execute(): bool
 	{
 		@ini_set('opcache.enable', '0');
@@ -32,137 +46,126 @@ final class Maintainer extends BackgroundTask
 		$this->updateLastCommentIds();
 		$this->optimizeTables();
 
-		return (bool) Db::$db->insert('insert',
-			'{db_prefix}background_tasks',
-			[
-				'task_file'    => 'string-255',
-				'task_class'   => 'string-255',
-				'task_data'    => 'string',
-				'claimed_time' => 'int',
-			],
-			[
-				'$sourcedir/LightPortal/Tasks/Maintainer.php',
-				'\\' . self::class,
-				'',
-				time() + (7 * 24 * 60 * 60)
-			],
-			['id_task'],
-			1
-		);
+		$insert = $this->sql->insert('background_tasks')
+			->values([
+				'task_file'    => '$sourcedir/LightPortal/Tasks/Maintainer.php',
+				'task_class'   => '\\' . self::class,
+				'task_data'    => '',
+				'claimed_time' => time() + (7 * 24 * 60 * 60),
+			]);
+
+		$this->sql->execute($insert);
+
+		return true;
 	}
 
 	private function removeRedundantValues(): void
 	{
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE value = {string:empty_value}',
-			[
-				'empty_value' => '',
-			]
-		);
+		$deleteEmptyParams = $this->sql->delete('lp_params')->where(['value = ?' => '']);
+		$this->sql->execute($deleteEmptyParams);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE value = {string:empty_value}',
-			[
-				'empty_value' => '',
-			]
-		);
+		$select = $this->sql->select()
+			->from(['c1' => 'lp_comments'])
+			->columns(['id'])
+			->join(['c2' => 'lp_comments'], 'c1.parent_id = c2.id', [], Select::JOIN_LEFT)
+			->where(function (Where $where) {
+				$where->notEqualTo('c1.parent_id', 0)
+					->and->isNull('c2.id');
+			});
 
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT id FROM {db_prefix}lp_comments
-			WHERE parent_id <> 0
-				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
-		);
+		$result = $this->sql->execute($select);
 
-		app(CommentRepository::class)->removeFromResult($result);
+		$commentIds = [];
+		foreach ($result as $row) {
+			$commentIds[] = $row['id'];
+		}
+
+		$this->commentRepository->remove($commentIds);
 	}
 
 	private function updateNumComments(): void
 	{
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT p.page_id, COUNT(c.id) AS amount
-			FROM {db_prefix}lp_pages p
-				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
-			GROUP BY p.page_id
-			ORDER BY p.page_id',
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns(['page_id', 'amount' => new Expression('COUNT(c.id)')])
+			->join(['c' => 'lp_comments'], 'c.page_id = p.page_id', [], Select::JOIN_LEFT)
+			->group('p.page_id')
+			->order('p.page_id');
+
+		$result = $this->sql->execute($select);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$pages[$row['page_id']] = $row['amount'];
 		}
-
-		Db::$db->free_result($result);
 
 		if (empty($pages))
 			return;
 
-		$line = '';
+		$caseParts = [];
 		foreach ($pages as $pageId => $commentsCount) {
-			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $commentsCount;
+			$caseParts[] = "WHEN page_id = $pageId THEN $commentsCount";
 		}
 
-		Db::$db->query('', /** @lang text */ '
-			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE ' . $line . ' ELSE num_comments	END
-			WHERE page_id IN ({array_int:pages})',
-			[
-				'pages' => array_keys($pages),
-			]
-		);
+		$caseExpression = 'CASE ' . implode(' ', $caseParts) . ' ELSE num_comments END';
+
+		$update = $this->sql->update('lp_pages')
+			->set(['num_comments' => new Expression($caseExpression)])
+			->where('page_id', array_keys($pages));
+
+		$this->sql->execute($update);
 	}
 
 	private function updateLastCommentIds(): void
 	{
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT p.page_id, MAX(c.id) AS last_comment_id
-			FROM {db_prefix}lp_pages p
-				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
-			GROUP BY p.page_id
-			ORDER BY p.page_id',
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns(['page_id', 'last_comment_id' => new Expression('MAX(c.id)')])
+			->join(['c' => 'lp_comments'], 'c.page_id = p.page_id', [], Select::JOIN_LEFT)
+			->group('p.page_id')
+			->order('p.page_id');
+
+		$result = $this->sql->execute($select);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$pages[$row['page_id']] = $row['last_comment_id'] ?? 0;
 		}
-
-		Db::$db->free_result($result);
 
 		if (empty($pages))
 			return;
 
-		$line = '';
+		$caseParts = [];
 		foreach ($pages as $pageId => $lastCommentId) {
-			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $lastCommentId;
+			$caseParts[] = "WHEN page_id = $pageId THEN $lastCommentId";
 		}
 
-		Db::$db->query('', /** @lang text */ '
-			UPDATE {db_prefix}lp_pages
-			SET last_comment_id = CASE ' . $line . ' ELSE last_comment_id END
-			WHERE page_id IN ({array_int:pages})',
-			[
-				'pages' => array_keys($pages),
-			]
-		);
+		$caseExpression = 'CASE ' . implode(' ', $caseParts) . ' ELSE last_comment_id END';
+
+		$update = $this->sql->update('lp_pages')
+			->set(['last_comment_id' => new Expression($caseExpression)])
+			->where('page_id', array_keys($pages));
+
+		$this->sql->execute($update);
 	}
 
 	private function optimizeTables(): void
 	{
-		array_map(
-			static fn($table) => Db::$db->optimize_table('{db_prefix}' . $table),
-			[
-				'lp_blocks',
-				'lp_categories',
-				'lp_comments',
-				'lp_page_tag',
-				'lp_pages',
-				'lp_params',
-				'lp_plugins',
-				'lp_tags',
-				'lp_titles',
-			]
-		);
+		$tables = [
+			'lp_blocks',
+			'lp_categories',
+			'lp_comments',
+			'lp_page_tag',
+			'lp_pages',
+			'lp_params',
+			'lp_plugins',
+			'lp_tags',
+			'lp_translations',
+		];
+
+		foreach ($tables as $table) {
+			$sql = sprintf('OPTIMIZE TABLE `%s%s`', $this->sql->getPrefix(), $table);
+			$this->sql->getAdapter()->query($sql, Adapter::QUERY_MODE_EXECUTE);
+		}
 	}
 }

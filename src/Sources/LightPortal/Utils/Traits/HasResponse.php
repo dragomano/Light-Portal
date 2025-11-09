@@ -7,17 +7,19 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\Response;
+use LightPortal\Utils\ResponseInterface;
+
+use function LightPortal\app;
 
 trait HasResponse
 {
-	public function response(): Response
+	public function response(): ResponseInterface
 	{
-		return app(Response::class);
+		return app(ResponseInterface::class);
 	}
 }

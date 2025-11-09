@@ -7,15 +7,10 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
-
-use function array_diff_key;
-use function array_flip;
-use function array_intersect_key;
-use function array_reduce;
+namespace LightPortal\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');

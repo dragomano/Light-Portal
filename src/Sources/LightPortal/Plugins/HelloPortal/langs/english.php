@@ -13,7 +13,6 @@ return [
 	'basic_settings_tour' => [
 		'This page contains the basic portal settings.',
 		'Here you can change the front page of the portal.',
-		'Let the most popular articles be displayed first!',
 		'Or maybe you want to direct the front page to a custom CMS?',
 		'Do not forget to configure permissions.',
 	],

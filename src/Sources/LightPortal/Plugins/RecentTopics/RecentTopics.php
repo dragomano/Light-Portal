@@ -8,38 +8,38 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\RecentTopics;
+namespace LightPortal\Plugins\RecentTopics;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use WPLake\Typed\Typed;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RecentTopics extends Block
+#[PluginAttribute(icon: 'fas fa-book-open', showContentClass: false)]
+class RecentTopics extends SsiBlock
 {
-	public string $type = 'block ssi';
-
-	public string $icon = 'fas fa-book-open';
+	use HasView;
 
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=unread',
 			'exclude_boards'   => '',
 			'include_boards'   => '',
@@ -72,19 +72,19 @@ class RecentTopics extends Block
 
 		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['exclude_boards_select'],
 				'value' => $options['exclude_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['include_boards_select'],
 				'value' => $options['include_boards'] ?? '',
-			]);
+			]));
 
 		CheckboxField::make('use_simple_style', $this->txt['use_simple_style'])
 			->setTab(Tab::APPEARANCE)
@@ -118,21 +118,22 @@ class RecentTopics extends Block
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
+		$excludeBoards = array_filter(explode(',', $parameters['exclude_boards'] ?? ''));
+		$includeBoards = array_filter(explode(',', $parameters['include_boards'] ?? ''));
 
 		$topics = $this->getFromSSI(
 			'recentTopics',
-			Typed::int($parameters['num_topics'], default: 10),
+			Str::typed('int', $parameters['num_topics'], default: 10),
 			$excludeBoards,
 			$includeBoards,
 			'array'
 		);
 
-		if (empty($topics))
+		if (empty($topics)) {
 			return [];
+		}
 
 		array_walk($topics,
 			static fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp'])
@@ -150,14 +151,16 @@ class RecentTopics extends Block
 		$parameters = $e->args->parameters;
 
 		$recentTopics = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentTopics))
 			return;
 
-		$this->useTemplate();
-
-		show_topics($recentTopics, $parameters, $this->isInSidebar($e->args->id) === false);
+		echo $this->view(params: [
+			'topics'      => $recentTopics,
+			'parameters'  => $parameters,
+			'isInSidebar' => $this->isInSidebar($e->args->id) === false
+		]);
 	}
 }

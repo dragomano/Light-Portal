@@ -7,19 +7,15 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-
-use function array_flip;
-use function array_merge;
-use function str_starts_with;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -45,6 +41,11 @@ final class Language
 	public static function getCurrent(): string
 	{
 		return empty(Config::$modSettings['userLanguage']) ? Config::$language : User::$me->language;
+	}
+
+	public static function isDefault(): bool
+	{
+		return Config::$language === User::$me->language;
 	}
 
 	public static function prepareList(): void

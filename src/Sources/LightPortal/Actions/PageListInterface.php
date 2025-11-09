@@ -7,15 +7,13 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 interface PageListInterface extends ActionInterface
 {
-	public function showAll();
-
 	public function getPages(int $start, int $limit, string $sort): array;
 
 	public function getTotalPages(): int;

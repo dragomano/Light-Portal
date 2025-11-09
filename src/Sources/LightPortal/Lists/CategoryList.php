@@ -7,61 +7,55 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Status;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryList implements ListInterface
+readonly class CategoryList implements ListInterface
 {
+	use HasCache;
+
+	public function __construct(private CategoryRepositoryInterface $repository) {}
+
 	public function __invoke(): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.value, tf.value) AS title
-			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
-					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
-					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE c.status = {int:status}
-			ORDER BY c.priority',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-			]
-		);
+		return $this->langCache('active_categories')
+			->setFallback(function () {
+				$items = $this->repository->getAll(
+					0,
+					$this->repository->getTotalCount(),
+					'priority',
+					'list'
+				);
 
-		$items = [
-			0 => [
-				'icon'  => '',
-				'title' => Lang::$txt['lp_no_category'],
-			]
-		];
+				$processedItems = [[
+					'slug'     => 'uncategorized',
+					'icon'     => Icon::parse('fas folder-open'),
+					'priority' => 0,
+					'title'    => Lang::$txt['lp_no_category'],
+				]];
 
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$items[$row['category_id']] = [
-				'id'          => (int) $row['category_id'],
-				'icon'        => $row['icon'],
-				'title'       => $row['title'],
-				'description' => $row['description'],
-				'priority'    => (int) $row['priority'],
-			];
-		}
+				foreach ($items as $id => $item) {
+					$processedItems[$id] = [
+						'id'          => $item['id'],
+						'slug'        => $item['slug'],
+						'icon'        => $item['icon'],
+						'priority'    => $item['priority'],
+						'title'       => $item['title'],
+						'description' => $item['description'],
+					];
+				}
 
-		Db::$db->free_result($result);
-
-		return $items;
+				return $processedItems;
+			});
 	}
 }

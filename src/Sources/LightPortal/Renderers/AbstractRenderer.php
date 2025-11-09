@@ -7,46 +7,59 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Renderers;
+namespace LightPortal\Renderers;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventDispatcherInterface;
 
-use function array_combine;
-use function array_merge;
-use function basename;
-use function glob;
-use function str_replace;
-use function strstr;
-use function ucfirst;
+use function LightPortal\app;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 abstract class AbstractRenderer implements RendererInterface
 {
-	use HasEvents;
-
 	protected string $templateDir;
 
 	protected string $customDir;
 
-	public function __construct()
+	public function __construct(protected ?EventDispatcherInterface $dispatcher = null)
 	{
 		Theme::loadEssential();
 
+		$this->dispatcher = $dispatcher ?: app(EventDispatcherInterface::class);
+
 		$path = Theme::$current->settings['default_theme_dir'];
 
-		$this->templateDir = $path . '/LightPortal/layouts';
-		$this->customDir   = $path . '/portal_layouts';
+		$this->setTemplateDir($path . '/LightPortal/layouts');
+		$this->setCustomDir($path . '/portal_layouts');
+	}
+
+	abstract public function render(string $layout, array $params = []): string;
+
+	abstract public function renderString(string $string, array $params = []): string;
+
+	public function setTemplateDir(string $dir): static
+	{
+		$this->templateDir = $dir;
+
+		return $this;
+	}
+
+	public function setCustomDir(string $dir): static
+	{
+		$this->customDir = $dir;
+
+		return $this;
 	}
 
 	public function getLayouts(): array
 	{
-		Theme::loadTemplate('LightPortal/ViewFrontPage');
-
 		$layouts = $this->collectLayouts();
 
 		$default = $layouts[static::DEFAULT_TEMPLATE];
@@ -61,8 +74,7 @@ abstract class AbstractRenderer implements RendererInterface
 
 		$extensions = [static::DEFAULT_EXTENSION];
 
-		// You can add custom extensions for layouts
-		$this->events()->dispatch(PortalHook::layoutExtensions, ['extensions' => &$extensions]);
+		$this->dispatcher->dispatch(PortalHook::layoutExtensions, ['extensions' => &$extensions]);
 
 		foreach ($extensions as $extension) {
 			$layouts = array_merge(

@@ -8,24 +8,26 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 29.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\VkComments;
+namespace LightPortal\Plugins\VkComments;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
+use LightPortal\Utils\Setting;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::COMMENT)]
 class VkComments extends Plugin
 {
-	public string $type = 'comment';
-
 	public function init(): void
 	{
 		Lang::$txt['lp_comment_block_set']['vk'] = 'VKontakte';
@@ -33,21 +35,17 @@ class VkComments extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$this->addDefaultValues([
-			'comments_per_page' => 10,
-		]);
+		$this->addDefaultValues(['comments_per_page' => 10]);
 
-		$settings = &$e->args->settings;
-
-		$settings['vk_comments'][] = [
-			'text',
-			'api_id',
-			'subtext' => $this->txt['api_id_subtext'],
-			'required' => true
-		];
-		$settings['vk_comments'][] = ['int', 'comments_per_page'];
-		$settings['vk_comments'][] = ['check', 'allow_attachments'];
-		$settings['vk_comments'][] = ['check', 'auto_publish'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('api_id', [
+				'subtext'  => $this->txt['api_id_subtext'],
+				'required' => true,
+			])
+			->int('comments_per_page')
+			->check('allow_attachments')
+			->check('auto_publish')
+			->toArray();
 	}
 
 	public function comments(): void

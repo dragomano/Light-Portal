@@ -8,38 +8,33 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 06.11.25
  */
 
-namespace Bugo\LightPortal\Plugins\TopPages;
+namespace LightPortal\Plugins\TopPages;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-
-use WPLake\Typed\Typed;
-
-use function array_combine;
-use function array_key_first;
-use function time;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Status;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-balance-scale-left')]
 class TopPages extends Block
 {
-	public string $icon = 'fas fa-balance-scale-left';
-
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -74,53 +69,53 @@ class TopPages extends Block
 			->setValue($options['show_numbers_only']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$type = Typed::string($parameters['popularity_type'], default: 'comments');
-		$numPages = Typed::int($parameters['num_pages'], default: 10);
+		$type = $parameters->get('popularity_type', 'comments');
+		$numPages = $parameters->get('num_pages', 10);
 
-		$result = Db::$db->query('', '
-			SELECT p.page_id, p.slug, p.type, p.num_views, p.num_comments,
-				(
-					SELECT value
-					FROM {db_prefix}lp_titles
-					WHERE item_id = p.page_id
-						AND type = {literal:page}
-						AND lang IN ({string:lang}, {string:fallback_lang})
-					ORDER BY lang = {string:lang} DESC
-					LIMIT 1
-				) AS page_title
-			FROM {db_prefix}lp_pages AS p
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-			ORDER BY ' . ($type === 'comments' ? 'p.num_comments' : 'p.num_views') . ' DESC
-			LIMIT {int:limit}',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => 1,
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'limit'         => $numPages,
-			]
-		);
+		$subQuery = $this->sql->select()
+			->from('lp_translations')
+			->columns(['title'])
+			->where([
+				'item_id = p.page_id',
+				'type = ?' => 'page',
+				new Expression('lang IN (?, ?)', [User::$me->language, Config::$language]),
+			])
+			->order(new Expression('lang = ? DESC', [User::$me->language]))
+			->limit(1);
+
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns([
+				'page_id', 'slug', 'type', 'num_views', 'num_comments',
+				'page_title' => $subQuery,
+			])
+			->where([
+				'status'          => Status::ACTIVE->value,
+				'deleted_at'      => 0,
+				'created_at <= ?' => time(),
+				'permissions'     => Permission::all(),
+			])
+			->order('p.num_' . $type . ' DESC')
+			->limit($numPages);
+
+		$result = $this->sql->execute($select);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
+			Lang::censorText($row['page_title']);
+
 			$pages[$row['page_id']] = [
-				'title'        => $row['page_title'],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
 				'href'         => LP_PAGE_URL . $row['slug'],
+				'title'        => $row['page_title'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $pages;
 	}
@@ -134,7 +129,7 @@ class TopPages extends Block
 			->setFallback(fn() => $this->getData($parameters));
 
 		if ($topPages) {
-			$type = Typed::string($parameters['popularity_type'], default: 'comments');
+			$type = Str::typed('string',$parameters['popularity_type'], default: 'comments');
 			$max = $topPages[array_key_first($topPages)]['num_' . $type];
 
 			if (empty($max)) {
@@ -162,7 +157,7 @@ class TopPages extends Block
 						? $page['num_' . $type]
 						: Lang::getTxt('lp_' . $type . '_set', [$type => $page['num_' . $type]]);
 
-					$dd->addHtml(Str::html('span', $countText));
+					$dd->addHtml(Str::html('span', (string) $countText));
 
 					$dl->addHtml($dt);
 					$dl->addHtml($dd);

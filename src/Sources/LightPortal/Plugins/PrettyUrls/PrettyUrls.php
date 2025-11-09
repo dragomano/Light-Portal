@@ -8,34 +8,29 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.01.25
+ * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PrettyUrls;
+namespace LightPortal\Plugins\PrettyUrls;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Str;
-
-use function is_file;
-use function preg_match;
-use function preg_replace;
-use function pretty_update_filters;
-use function serialize;
-use function unserialize;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
 
 use const LP_ACTION;
+use const LP_ALIAS_PATTERN;
 use const LP_NAME;
 use const LP_PAGE_PARAM;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::SEO)]
 class PrettyUrls extends Plugin
 {
-	public string $type = 'seo';
-
 	private const PRIORITY = 30;
 
 	public function init(): void

@@ -7,37 +7,29 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\Config;
 use Closure;
+use LightPortal\UI\TemplateLoader;
 
-use function array_key_last;
-use function call_user_func;
-use function function_exists;
-use function gettype;
-use function ob_get_clean;
-use function ob_start;
-use function settype;
+if (! defined('SMF'))
+	die('No direct access...');
 
-class VarFactory
+readonly class VarFactory
 {
-	public function __construct(private readonly string $name, private readonly string $type) {}
+	public function __construct(private string $name, private string $type) {}
 
 	public function createTemplateCallback(): Closure
 	{
 		return fn() => function() {
-			if (! function_exists('template_callback_' . $this->name)) {
-				return '';
-			}
-
 			ob_start();
 
-			call_user_func('template_callback_' . $this->name);
+			echo TemplateLoader::fromFile('admin/callbacks/' . $this->name, useSubTemplate: false);
 
 			return (string) ob_get_clean();
 		};

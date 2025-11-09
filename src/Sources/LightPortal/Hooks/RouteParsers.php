@@ -7,18 +7,21 @@
  * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.9
+ * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\QueryString;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Routes\Forum;
-use Bugo\LightPortal\Routes\Page;
-use Bugo\LightPortal\Routes\Portal;
+use LightPortal\Enums\Action;
+use LightPortal\Routes\Forum;
+use LightPortal\Routes\Page;
+use LightPortal\Routes\Portal;
 
 use const LP_ACTION;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class RouteParsers
 {

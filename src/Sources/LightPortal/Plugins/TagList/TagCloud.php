@@ -8,10 +8,10 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 23.04.25
  */
 
-namespace Bugo\LightPortal\Plugins\TagList;
+namespace LightPortal\Plugins\TagList;
 
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\Tag\Cloud;
