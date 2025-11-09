@@ -28,6 +28,10 @@ class LangHandler
 		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
 			return;
 
+		if (! isset(User::$me)) {
+			User::load();
+		}
+
 		$userLang  = Language::getNameFromLocale(User::$me->language);
 		$languages = array_unique([Language::FALLBACK, $userLang]);
 

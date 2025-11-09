@@ -86,7 +86,7 @@ class AdminAreas extends AbstractHook
 								'admin_forum',
 							],
 							'subsections' => [
-								'basic'    => [Icon::get('cog_spin') . Lang::$txt['mods_cat_features']],
+								'basic'    => [Icon::get('cog_spin') . Lang::getTxt('mods_cat_features', file: 'Admin')],
 								'extra'    => [Icon::get('pager') . Lang::$txt['lp_extra']],
 								'panels'   => [Icon::get('panels') . Lang::$txt['lp_panels']],
 								'misc'     => [Icon::get('tools') . Lang::$txt['lp_misc']],

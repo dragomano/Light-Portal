@@ -38,12 +38,12 @@
 
 				@switch ($tag)
 					@case('span')
-						<span @class([$class])>{{ $label }}</span>
-					@break
+						<span @class([$class])>{!! $label !!}</span>
+						@break
 
 					@case('div')
 					@default
-						<div @class([$class])>{{ $label }}</div>
+						<div @class([$class])>{!! $label !!}</div>
 				@endswitch
 			@else
 				{!! $message !!}

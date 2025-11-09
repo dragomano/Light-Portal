@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 02.11.25
+ * @version 09.11.25
  */
 
 namespace LightPortal\Plugins\HelloPortal;
@@ -33,11 +33,15 @@ class HelloPortal extends Plugin
 {
 	private array $themes = ['', 'dark', 'modern', 'flattener'];
 
+	private readonly ?string $sa;
+
 	private readonly string $steps;
 
 	public function __construct()
 	{
 		parent::__construct();
+
+		$this->sa = $this->request()->get('sa');
 
 		$this->steps = $this->getStepData();
 	}
@@ -86,21 +90,21 @@ class HelloPortal extends Plugin
 				doneLabel: ' . Utils::escapeJavaScript(Lang::$txt['attach_dir_ok']) . ',
 				steps: [' . $this->steps . '],
 				showProgress: ' . (
-					empty($this->context['show_progress']) ? 'false' : 'true'
-				) . ',
+			empty($this->context['show_progress']) ? 'false' : 'true'
+			) . ',
 				showButtons: ' . (
-					empty($this->context['show_buttons']) ? 'false' : 'true'
-				) . ',
+			empty($this->context['show_buttons']) ? 'false' : 'true'
+			) . ',
 				showBullets: false,
 				exitOnOverlayClick: ' . (
-					empty($this->context['exit_on_overlay_click']) ? 'false' : 'true'
-				) . ',
+			empty($this->context['exit_on_overlay_click']) ? 'false' : 'true'
+			) . ',
 				keyboardNavigation: ' . (
-					empty($this->context['keyboard_navigation']) ? 'false' : 'true'
-				) . ',
+			empty($this->context['keyboard_navigation']) ? 'false' : 'true'
+			) . ',
 				disableInteraction: ' . (
-					empty($this->context['disable_interaction']) ? 'false' : 'true'
-				) . ',
+			empty($this->context['disable_interaction']) ? 'false' : 'true'
+			) . ',
 				scrollToElement: true,
 				scrollTo: "tooltip"
 			}).start();
@@ -154,19 +158,21 @@ class HelloPortal extends Plugin
 	{
 		return $this->request()->has('area') && $this->request()->get('area') === $area &&
 			(
-				$canBeEmpty
-				? (Utils::$context['current_subaction'] === $sa || empty(Utils::$context['current_subaction']))
-				: Utils::$context['current_subaction'] === $sa
+			$canBeEmpty
+				? ($this->sa === $sa || empty($this->sa))
+				: $this->sa === $sa
 			);
 	}
 
 	private function canShowTourButton(): bool
 	{
-		if ($this->request()->isNot('admin') || empty($this->steps))
+		if ($this->request()->isNot('admin') || empty($this->steps)) {
 			return false;
+		}
 
-		if (empty($this->request()->get('area')) || empty(Utils::$context['template_layers']))
+		if (empty($this->request()->get('area')) || empty(Utils::$context['template_layers'])) {
 			return false;
+		}
 
 		return true;
 	}
