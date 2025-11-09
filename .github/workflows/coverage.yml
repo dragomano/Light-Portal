@@ -6,38 +6,40 @@ on:
     branches:
       - master
     paths:
-      - 'src/**'
+      - "src/**"
+      - "tests/**"
   pull_request:
     branches:
       - master
     paths:
-      - 'src/**'
-      - '.github/workflows/coverage.yml'
+      - "src/**"
+      - "tests/**"
+      - ".github/workflows/coverage.yml"
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
 
-    - name: Install dependencies
-      run: composer install --no-interaction --prefer-dist
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
 
-    - name: Install LightPortal dependencies (generates Libs folder)
-      run: cd src/Sources/LightPortal && composer install --no-dev --no-interaction --prefer-dist
+      - name: Install LightPortal dependencies (generates Libs folder)
+        run: cd src/Sources/LightPortal && composer install --no-dev --no-interaction --prefer-dist
 
-    - name: Run tests
-      run: vendor/bin/pest --coverage-clover build/logs/clover.xml
+      - name: Run tests
+        run: vendor/bin/pest --coverage-clover build/logs/clover.xml
 
-    - name: Upload coverage results to Coveralls
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        composer global require php-coveralls/php-coveralls
-        php-coveralls --coverage_clover=build/logs/clover.xml -v
+      - name: Upload coverage results to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          php-coveralls --coverage_clover=build/logs/clover.xml -v
