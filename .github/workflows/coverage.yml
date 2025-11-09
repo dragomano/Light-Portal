@@ -12,6 +12,7 @@ on:
       - master
     paths:
       - 'src/**'
+      - '.github/workflows/coverage.yml'
 
 jobs:
   test:
@@ -26,7 +27,10 @@ jobs:
         php-version: '8.2'
 
     - name: Install dependencies
-      run: composer update
+      run: composer install --no-interaction --prefer-dist
+
+    - name: Install LightPortal dependencies (generates Libs folder)
+      run: cd src/Sources/LightPortal && composer install --no-dev --no-interaction --prefer-dist
 
     - name: Run tests
       run: vendor/bin/pest --coverage-clover build/logs/clover.xml
