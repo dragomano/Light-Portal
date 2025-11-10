@@ -59,15 +59,15 @@ To do this, create a file `custom.blade.php` in the `/Themes/default/portal_layo
 		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
-		<div class="
-			col-xs-12 col-sm-6 col-md-4
-			col-lg-{{ $context['lp_frontpage_num_columns'] }}
-			col-xl-{{ $context['lp_frontpage_num_columns'] }}
-		">
-			<figure class="noticebox">
-				{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
-			</figure>
-		</div>
+			<div class="
+				col-xs-12 col-sm-6 col-md-4
+				col-lg-{{ $context['lp_frontpage_num_columns'] }}
+				col-xl-{{ $context['lp_frontpage_num_columns'] }}
+			">
+				<figure class="noticebox">
+					{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
+				</figure>
+			</div>
 		@endforeach
 
 		@include('partials.pagination', ['position' => 'bottom'])

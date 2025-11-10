@@ -20,7 +20,7 @@ In this section, you can create a portal page with the content you need.
 Plugins can extend the functionality by adding new page types or statuses. Examples:
 
 - **Markdown**: Enables Markdown syntax for content
-- **Blog**: Blog-style pages provided by the BlogMode plugin
+- **BlogMode**: Adds a new "Blog entry" type for displaying pages in a separate menu section
 
 ## Content tab
 

@@ -53,9 +53,7 @@ Here you can configure:
 
 ## Appearance tab
 
-Here you can configure:
-
-- appearance options
+Here you can configure the block appearance options.
 
 ![Appearance tab](appearance_tab.png)
 

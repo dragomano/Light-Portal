@@ -7,7 +7,7 @@ order: 2
 
 Plugins are the extensions that expand the capabilities of the Light Portal. To create your own plugin, just follow the instructions below.
 
-## Using PluginType enum
+## PluginType enum
 
 For better type safety and IDE support, you can use the `PluginType` enum instead of string values for the `type` parameter:
 
@@ -227,9 +227,9 @@ For the Calculator plugin to display the calculator interface, create a template
 
 3. Save the file. The plugin will automatically use this template when rendering the block.
 
-This template provides a basic calculator interface with buttons for numbers, operators, equals, and clear. The JavaScript uses `eval()` for calculation (in a real-world scenario, consider using a safer evaluation method).
+The template implements a calculator interface with all the necessary buttons.
 
-## Using Composer
+## Composer
 
 Your plugin can use third-party libraries installed through Composer. Make sure that the `composer.json` file, which contains the necessary dependencies, is located in the plugin directory. Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).
 
