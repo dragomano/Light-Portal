@@ -8,6 +8,9 @@
 			<collection name="get_settings"/>
 			<stopCompletion/>
 		</classMethod>
+		<classMethod class="\LightPortal\Utils\Str" method="html" argument="0">
+			<collection name="GLOBAL:html-tags"/>
+		</classMethod>
 		<classMethod class="\LightPortal\Utils\Str" method="typed" argument="0">
 			<collection name="typed_methods"/>
 		</classMethod>
