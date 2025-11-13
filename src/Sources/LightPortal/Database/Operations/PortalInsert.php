@@ -33,7 +33,7 @@ class PortalInsert extends Insert
 	public function __construct(
 		$table = null,
 		private readonly string $prefix = '',
-		array|string $returning = null
+		array|string|null $returning = null
 	)
 	{
 		parent::__construct($table);

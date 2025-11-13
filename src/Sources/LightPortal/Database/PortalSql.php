@@ -119,7 +119,7 @@ class PortalSql extends Sql implements PortalSqlInterface
 		return new PortalSelect($table, $this->prefix);
 	}
 
-	public function insert($table = null, array|string $returning = null): PortalInsert
+	public function insert($table = null, array|string|null $returning = null): PortalInsert
 	{
 		return new PortalInsert($table, $this->prefix, $returning);
 	}
@@ -134,7 +134,7 @@ class PortalSql extends Sql implements PortalSqlInterface
 		return new PortalDelete($table, $this->prefix);
 	}
 
-	public function replace($table = null, array|string $returning = null): PortalReplace
+	public function replace($table = null, array|string|null $returning = null): PortalReplace
 	{
 		return new PortalReplace($table, $this->prefix, $returning);
 	}
