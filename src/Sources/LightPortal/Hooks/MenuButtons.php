@@ -193,12 +193,11 @@ class MenuButtons
 		// Display "Portal" item in Main Menu
 		$buttons = array_merge([
 			LP_ACTION => [
-				'title'       => Lang::$txt['lp_portal'],
-				'href'        => Config::$scripturl,
-				'icon'        => Action::HOME->value,
-				'show'        => true,
-				'action_hook' => true,
-				'is_last'     => Utils::$context['right_to_left'],
+				'title'   => Lang::$txt['lp_portal'],
+				'href'    => Config::$scripturl,
+				'icon'    => Action::HOME->value,
+				'show'    => true,
+				'is_last' => Utils::$context['right_to_left'],
 			],
 		], $buttons);
 
@@ -216,16 +215,16 @@ class MenuButtons
 		$buttons[LP_ACTION]['icon']    = Action::HOME->value;
 		$buttons[LP_ACTION]['is_last'] = Utils::$context['right_to_left'];
 
+		$href = Config::$modSettings['lp_standalone_url'] ? Config::$scripturl : Config::$scripturl . '?action=forum';
+
 		$buttons = array_merge(
 			array_slice($buttons, 0, 2, true),
 			[
 				Action::FORUM->value => [
-					'title'       => Lang::$txt['lp_forum'],
-					'href'        => Config::$modSettings['lp_standalone_url']
-						? Config::$scripturl : Config::$scripturl . '?action=forum',
-					'icon'        => 'im_on',
-					'show'        => true,
-					'action_hook' => true,
+					'title' => Lang::$txt['lp_forum'],
+					'href'  => $href,
+					'icon'  => 'im_on',
+					'show'  => true,
 				],
 			],
 			array_slice($buttons, 2, null, true)

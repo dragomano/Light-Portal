@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 14.11.25
  */
 
 namespace LightPortal\Plugins\ChessBoard;
@@ -23,6 +23,7 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Fields\RangeField;
 use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,6 +32,8 @@ if (! defined('LP_NAME'))
 class ChessBoard extends GameBlock
 {
 	const ENGINE = 'stockfish-17.1-lite-single-03e3232';
+
+	const VERSION = '17.1';
 
 	const BOARD_STYLE = [
 		'default'    => 'default',
@@ -65,9 +68,15 @@ class ChessBoard extends GameBlock
 
 	public function init(): void
 	{
+		$link = Str::html('a')
+			->href('https://github.com/nmrugg/stockfish.js')
+			->target('_blank')
+			->rel('noopener')
+			->addText('Stockfish ' . self::VERSION);
+
 		Lang::$txt['lp_chess_board']['description'] .= ' ' . sprintf(
 			Lang::$txt['lp_chess_board']['engine_note'],
-			'https://github.com/nmrugg/stockfish.js'
+			$link
 		);
 	}
 

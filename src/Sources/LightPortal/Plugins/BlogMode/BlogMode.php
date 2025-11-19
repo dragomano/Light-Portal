@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.11.25
+ * @version 19.11.25
  */
 
 namespace LightPortal\Plugins\BlogMode;
@@ -170,11 +170,10 @@ class BlogMode extends Plugin
 			array_slice($buttons, 0, $counter, true),
 			[
 				$this->blogAction => [
-					'title'       => $this->txt['menu_item_title'],
-					'href'        => Config::$scripturl . '?action=' . $this->blogAction,
-					'icon'        => 'replies',
-					'show'        => true,
-					'action_hook' => true,
+					'title' => $this->txt['menu_item_title'],
+					'href'  => Config::$scripturl . '?action=' . $this->blogAction,
+					'icon'  => 'replies',
+					'show'  => true,
 				],
 			],
 			array_slice($buttons, $counter, null, true)
