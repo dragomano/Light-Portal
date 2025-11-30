@@ -13,7 +13,7 @@ return [
 	'select_buttons' => 'Select social buttons to display',
 	'buttons_set' => [
 		'facebook' => 'Share',
-		'twitter' => 'Tweet',
+		'xcom' => 'Xeet',
 		'vkontakte' => 'Share',
 		'pinterest' => 'Pin',
 		'odnoklassniki' => 'Like',

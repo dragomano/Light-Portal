@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 30.11.25
  */
 
 namespace LightPortal\Plugins\Likely;
@@ -33,7 +33,7 @@ class Likely extends Block
 {
 	private array $buttons = [
 		'facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit',
-		'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp',
+		'telegram', 'xcom', 'viber', 'vkontakte', 'whatsapp',
 	];
 
 	public function prepareBlockParams(Event $e): void
