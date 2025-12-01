@@ -219,7 +219,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		}
 	}
 
-	public function remove(mixed $items): void
+	public function remove(mixed $items, bool $withResponse = false): void
 	{
 		$items = (array) $items;
 
@@ -289,7 +289,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 			$this->transaction->commit();
 
-			$this->response()->exit(['success' => true, 'items' => $allItems]);
+			$withResponse && $this->response()->exit(['success' => true, 'items' => $allItems]);
 		} catch (Exception $e) {
 			$this->transaction->rollback();
 

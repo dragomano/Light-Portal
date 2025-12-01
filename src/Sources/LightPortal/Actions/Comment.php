@@ -269,7 +269,7 @@ final class Comment implements ActionInterface
 			$this->response()->exit(['success' => false]);
 		}
 
-		$this->repository->remove($item);
+		$this->repository->remove($item, true);
 
 		$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 	}
