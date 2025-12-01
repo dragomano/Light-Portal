@@ -15,6 +15,7 @@ namespace LightPortal\Areas;
 use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Logging;
 use Bugo\Compat\Theme;
@@ -62,6 +63,11 @@ final class PageArea extends AbstractArea
 	public function __construct(PageRepositoryInterface $repository, EventDispatcherInterface $dispatcher)
 	{
 		parent::__construct($repository, $dispatcher);
+	}
+
+	protected function checkPermissions(): void
+	{
+		User::$me->isAllowedTo(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 	}
 
 	protected function getEntityName(): string
@@ -395,6 +401,18 @@ final class PageArea extends AbstractArea
 			Logging::logAction('remove_lp_page', [
 				'page' => Utils::$context['lp_current_page']['title'],
 			]);
+		}
+	}
+
+	protected function postProcessLoadedData(array &$data): void
+	{
+		$this->getRepository()->prepareData($data);
+	}
+
+	protected function validateEntityPermissions(): void
+	{
+		if (Utils::$context['lp_current_page']['can_edit'] === false) {
+			ErrorHandler::fatalLang('lp_page_not_editable', false);
 		}
 	}
 

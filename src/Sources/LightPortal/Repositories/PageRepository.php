@@ -301,23 +301,33 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$this->dispatcher->dispatch(PortalHook::onPageRemoving, ['items' => $items]);
 
-		$deletePages = $this->sql->delete('lp_pages');
-		$deletePages->where->in('page_id', $items);
-		$this->sql->execute($deletePages);
+		try {
+			$this->transaction->begin();
 
-		$deleteTranslations = $this->sql->delete('lp_translations');
-		$deleteTranslations->where->in('item_id', $items);
-		$deleteTranslations->where->equalTo('type', $this->entity);
-		$this->sql->execute($deleteTranslations);
+			$deletePages = $this->sql->delete('lp_pages');
+			$deletePages->where->in('page_id', $items);
+			$this->sql->execute($deletePages);
 
-		$deleteParams = $this->sql->delete('lp_params');
-		$deleteParams->where->in('item_id', $items);
-		$deleteParams->where->equalTo('type', $this->entity);
-		$this->sql->execute($deleteParams);
+			$deleteTranslations = $this->sql->delete('lp_translations');
+			$deleteTranslations->where->in('item_id', $items);
+			$deleteTranslations->where->equalTo('type', $this->entity);
+			$this->sql->execute($deleteTranslations);
 
-		$deletePageTag = $this->sql->delete('lp_page_tag');
-		$deletePageTag->where->in('page_id', $items);
-		$this->sql->execute($deletePageTag);
+			$deleteParams = $this->sql->delete('lp_params');
+			$deleteParams->where->in('item_id', $items);
+			$deleteParams->where->equalTo('type', $this->entity);
+			$this->sql->execute($deleteParams);
+
+			$deletePageTag = $this->sql->delete('lp_page_tag');
+			$deletePageTag->where->in('page_id', $items);
+			$this->sql->execute($deletePageTag);
+
+			$this->transaction->commit();
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
 
 		$commentsToRemove = $this->sql->select('lp_comments')->columns(['id']);
 		$commentsToRemove->where->in('page_id', $items);

@@ -22,8 +22,9 @@ trait HasThemes
 
 	public function isDarkTheme(?string $option): bool
 	{
-		if (empty($option))
+		if (empty($option)) {
 			return false;
+		}
 
 		$themes = array_flip(array_filter(explode(',', $option)));
 

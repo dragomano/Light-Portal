@@ -17,6 +17,9 @@ use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Status;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 trait HasPageFilters
 {
 	private array $params = [];

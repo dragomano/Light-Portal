@@ -135,7 +135,7 @@ class PortalReplace extends PortalInsert
 		$table = $adapter->getPlatform()->quoteIdentifier($this->table);
 
 		$sql = sprintf(
-		/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s%s",
+			/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s%s",
 			$table,
 			$columnList,
 			$placeholders,
@@ -188,7 +188,7 @@ class PortalReplace extends PortalInsert
 		$table = $adapter->getPlatform()->quoteIdentifier($this->table);
 
 		$sql = sprintf(
-		/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s%s",
+			/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s%s",
 			$table,
 			$columnList,
 			implode(',', $placeholders),

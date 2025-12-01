@@ -120,11 +120,13 @@ class Block implements ActionInterface
 				$block['areas'][LP_ACTION] = $block['areas'][Action::PORTAL->value];
 			}
 
-			if (isset($block['areas']['!' . $area]) && $tempAreas[0] === Action::ALL->value)
+			if (isset($block['areas']['!' . $area]) && $tempAreas[0] === Action::ALL->value) {
 				return false;
+			}
 
-			if (isset($block['areas'][Action::ALL->value]) || isset($block['areas'][$area]))
+			if (isset($block['areas'][Action::ALL->value]) || isset($block['areas'][$area])) {
 				return true;
+			}
 
 			if (
 				$area === LP_ACTION
@@ -151,14 +153,17 @@ class Block implements ActionInterface
 				}
 			}
 
-			if (empty(Utils::$context['current_board']))
+			if (empty(Utils::$context['current_board'])) {
 				return false;
+			}
 
-			if (isset($block['areas'][Action::BOARDS->value]) && empty(Utils::$context['current_topic']))
+			if (isset($block['areas'][Action::BOARDS->value]) && empty(Utils::$context['current_topic'])) {
 				return true;
+			}
 
-			if (isset($block['areas'][Action::TOPICS->value]) && ! empty(Utils::$context['current_topic']))
+			if (isset($block['areas'][Action::TOPICS->value]) && ! empty(Utils::$context['current_topic'])) {
 				return true;
+			}
 
 			$entities = $this->collectAllowedEntities($tempAreas);
 
