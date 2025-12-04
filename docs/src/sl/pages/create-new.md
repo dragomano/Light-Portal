@@ -5,14 +5,28 @@ order: 2
 
 # Dodaj stran
 
-V tem razdelku lahko ustvariš portalno stran s potrebnimi vsebinami. Obvezna polja so poudarjena z obrobo v barvi.
+V tem delu lahko ustvariš stran portala z želeno vsebino.
+
+## Vrste strani
+
+### Prednastavljene vrste vsebine
+
+- **BBC**: Omogoča uporabo BBCode označevalnika za vsebino
+- **HTML**: Surova HTML vsebina
+-
+
+### Strani na osnovi vtičnikov
+
+Vtičniki lahko dodajo nove vrste strani ali statuse in s tem razširijo funkcionalnosti. Primeri:
+
+- **Markdown**: omogoča uporabo Markdown sintakse za vsebino
+- **BlogMode**: Doda nov tip "Blog prispevek" za prikaz strani v ločenem razdelku menija.
 
 ## Zavihek za vsebino
 
 Tukaj lahko nastaviš:
 
 - naslov
-- vrsta strani
 - vsebina
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ Tukaj lahko nastaviš:
 
 Tukaj lahko nastaviš:
 
+- status — onemogočen, omogočen ali neodobren
 - dovoljenja — določi, kdo bo imel dostop do tvoje strani
 - category — if you like to keep things organized
-- prenos avtorstva — če želiš spremeniti avtorja
+- tip — standardni, interni ali osnutek
 
 ![Access tab](access_tab.png)
 

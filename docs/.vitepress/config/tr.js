@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Menü',
     returnToTopLabel: 'Başa dön',
     langMenuLabel: 'Dili değiştir',
+    lastUpdatedText: 'Son güncelleme',
     notFound: {
       title: 'SAYFA BULUNAMADI',
       quote: 'Ama eğer yönünü değiştirmezsen ve aramaya devam edersen, gittiğin yere varabilirsin.',

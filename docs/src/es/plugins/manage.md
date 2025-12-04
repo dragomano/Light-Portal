@@ -17,12 +17,6 @@ Si desea cambiar la configuración del plugin, haga clic en el engranaje junto a
 
 Algunos plugins no están incluidos en el portal, necesitan ser instalados por separado. Estos plugins se dividen en descargas y bonificaciones disponibles para los patrocinadores de proyectos.
 
-:::info Nota
-
-Los complementos adicionales también están disponibles para los traductores (si al menos `LightPortal.{your_language}. hp` está traducido al 100% de calidad), así como a todos los [participantes activos](../how-to/help-to-project) del proyecto.
-
-:::
-
 ![Download additional plugins](download_plugins.png)
 
-El paquete de plugins separado puede instalarse en la página [Importación de plugin](./impex). Pero también puedes simplemente extraer la carpeta del plugin del archivo descargado y moverla al directorio `Sources/LightPortal/Plugins`.
+The separate plugin package can be installed in the Plugin Import section. Pero también puedes simplemente extraer la carpeta del plugin del archivo descargado y moverla al directorio `Sources/LightPortal/Plugins`.

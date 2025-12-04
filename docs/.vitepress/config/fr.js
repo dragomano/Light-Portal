@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Menu',
     returnToTopLabel: 'Retour en haut',
     langMenuLabel: 'Changer de langue',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'PAGE NON TROUVÉ',
       quote: 'Mais si vous ne changez pas de direction et si vous continuez à regarder, vous finirez peut-être par vous diriger.',

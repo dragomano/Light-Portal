@@ -1,9 +1,7 @@
 ---
 description: ملخص موجز لإعدادات البوابة المتاحة
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # إعدادات البوابة
@@ -14,11 +12,11 @@ outline:
 
 ## الإعدادات العامة
 
-في هذا القسم، يمكنك تخصيص صفحة البوابة الأمامية بالكامل، وتمكين الوضع المستقل، وتغيير أذونات المستخدم للوصول إلى عناصر البوابة.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### إعدادات الصفحة الأمامية والمقالات
+### Settings for the front page and articles
 
-لتغيير محتوى الصفحة الرئيسية للبوابة، حدد الوضع المناسب "بوابة الصفحة الأمامية":
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - معطل
 - الصفحة المحددة (سيتم عرض الصفحة المحددة فقط)
@@ -53,7 +51,7 @@ This is a mode where you can specify your own home page, and remove unnecessary 
 ### وضع التوافق
 
 - قيمة معلمة **action** للبوابة - يمكنك تغيير هذا الإعداد لاستخدام Light Portal بالتزامن مع تعديلات مشابهة أخرى. ثم ستفتح الصفحة الرئيسية على العنوان المحدد.
-- معلمة **page** لصفحات البوابة - انظر أعلاه. بالمثل، لصفحات البوابة - قم بتغيير المعلمة وستفتح على عناوين URL مختلفة.
+- معلمة **page** لصفحات البوابة - انظر أعلاه. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### صيانة
 

@@ -1,9 +1,7 @@
 ---
 description: Een korte samenvatting van beschikbare portalinstellingen
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Portaal instellingen
@@ -14,11 +12,11 @@ We zullen niet in detail op elk van de beschikbare instellingen ingaan, we zulle
 
 ## Algemene instellingen
 
-In deze sectie kunt u de portalvoorpagina volledig aanpassen, standalone modus inschakelen en gebruikersrechten wijzigen voor portalitems.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Instellingen voor de voorpagina en artikelen
+### Settings for the front page and articles
 
-Om de inhoud van de homepagina van het portaal te wijzigen, selecteer je de juiste "frontpagina van het portaal" modus:
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Uitgeschakeld
 - Opgegeven pagina (alleen de geselecteerde pagina wordt weergegeven)
@@ -53,7 +51,7 @@ In dit gedeelte kunt u verschillende hulpinstellingen van de portal, die nuttig 
 ### Compatibiliteitsmodus
 
 - De waarde van de **actie** parameter van het portaal - u kunt deze instelling veranderen naar het Light Portal in combinatie met andere soortgelijke wijzigingen. Dan wordt de startpagina geopend op het opgegeven adres.
-- De **pagina** parameter voor portalpagina's - zie hierboven. Hetzelfde geldt voor portalpagina's - verander de parameter en deze zal worden geopend met verschillende URL's.
+- De **pagina** parameter voor portalpagina's - zie hierboven. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Onderhoud
 

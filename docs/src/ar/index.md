@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: سريع، لطيف، حديث
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: كيفية إنشاء تخطيط الصفحة الأمامية الخاصة
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: كتل

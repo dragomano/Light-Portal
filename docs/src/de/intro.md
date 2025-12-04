@@ -10,4 +10,4 @@ Willkommen zum Light-Portal-Schnellstart!
 
 ---
 
-Wenn du irgendwelche Fragen oder allgemeine Gedanken hast, lasse sie in [das Supportthema](https://www.simplemachines.org/community/index.php?topic=572393.0) oder [GitHub Discussions](https://github.com/dragomano/Light-Portal/discussions) und ich werde mich mit dir in Verbindung setzen.
+Have any questions or suggestions? Feel free to post them on [the support topic](https://www.simplemachines.org/community/index.php?topic=572393.0) or right here — I’ll get back to you as soon as I can.

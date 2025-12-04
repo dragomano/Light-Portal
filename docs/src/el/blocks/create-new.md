@@ -9,6 +9,28 @@ order: 2
 
 Ανάλογα με τον τύπο του μπλοκ, θα είναι διαθέσιμες διάφορες ρυθμίσεις, κατανεμημένες σε διαφορετικές καρτέλες.
 
+## Τύποι μπλοκ
+
+### Ενσωματωμένοι τύποι περιεχομένου
+
+- **BBC**: Επιτρέπει τη σήμανση BBCode για περιεχόμενο
+- **HTML**: Ακατέργαστο περιεχόμενο HTML
+- **PHP**: Εκτελέσιμος κώδικας PHP (μόνο για διαχειριστές)
+
+### Μπλοκ που βασίζονται σε πρόσθετα
+
+Blocks from plugins extend functionality. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **ArticleList**: Displays articles from topics/pages with customizable display options
+- **Calculator**: Interactive calculator widget
+- **BoardStats**: Forum board statistics
+- **News**: Latest announcements
+- **Polls**: Active forum polls
+- **RecentPosts**: Recent forum activity
+- **UserInfo**: Current user details
+- **WhosOnline**: Online users list
+
 ## Καρτέλα περιεχομένου
 
 Εδώ μπορείτε να διαμορφώσετε:
@@ -31,9 +53,7 @@ order: 2
 
 ## Καρτέλα εμφάνισης
 
-Εδώ μπορείτε να διαμορφώσετε:
-
-- επιλογές εμφάνισης
+Εδώ μπορείτε να διαμορφώσετε τις επιλογές εμφάνισης του Ιστολογίου - μπλοκ.
 
 ![Appearance tab](appearance_tab.png)
 

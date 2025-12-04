@@ -20,7 +20,7 @@ description: Список основних понять, які використ
 
 ## стаття
 
-Карти на фронтовій сторінці, що відображає вміст, встановлений в налаштуваннях: дошки форуму або теми, сторінки, картинки і т. д.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## категорія
 

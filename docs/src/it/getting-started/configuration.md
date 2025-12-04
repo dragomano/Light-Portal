@@ -1,9 +1,7 @@
 ---
 description: Un breve riepilogo delle impostazioni del portale disponibili
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Impostazioni Portale
@@ -14,11 +12,11 @@ Non verranno descritte nel dettaglio ciascuna delle impostazioni disponibili, ve
 
 ## Impostazioni generali
 
-In questa sezione è possibile personalizzare completamente la pagina iniziale del portale (frontpage), abilitare la modalità standalone e modificare le autorizzazioni utenti per accedere agli elementi del portale.
+In questa sezione è possibile personalizzare completamente il frontpage, abilitare la modalità standalone e modificare le autorizzazioni utenti per accedere agli elementi del portale.
 
 ### Impostazioni per frontpage e articoli
 
-Per modificare il contenuto della home page del portale, selezionare la desiderata modalità "frontage":
+Per modificare il contenuto della home page del portale, selezionare la modalità desiderata per il "frontage":
 
 - Disabilitato
 - Pagina specifica (verrà visualizzata solo la pagina selezionata)

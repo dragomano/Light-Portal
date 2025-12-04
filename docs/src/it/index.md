@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Veloce, bello, moderno
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Creare il proprio layout per il frontpage
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Blocchi

@@ -5,9 +5,9 @@ order: 1
 
 # Διαχείριση σελίδων
 
-Αυτή η ενότητα παραθέτει όλες τις δημιουργημένες σελίδες πύλης που μπορούν να επεξεργαστούν από τον τρέχοντα χρήστη. Γίνεται αναζήτηση για σελίδες ανά τίτλο ή ψευδώνυμο.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
 
-Για κάθε σελίδα, εμφανίζεται το αναγνωριστικό, η ημερομηνία δημιουργίας/ενημέρωσης, ο αριθμός προβολών, ο αριθμός σχολίων, ο τύπος, το ψευδώνυμο, ο τίτλος και η λίστα ενεργειών.
+Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
 
 ![Manage pages](manage_pages.png)
 

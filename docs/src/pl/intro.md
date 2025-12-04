@@ -10,4 +10,4 @@ Witamy w szybkim rozpoczęciu Light Portal!
 
 ---
 
-Jeśli masz jakiekolwiek pytania lub myśli ogólne, zostaw je w [temacie wsparcia](https://www.simplemachines.org/community/index.php?topic=572393.0) lub [GitHub Discussions](https://github.com/dragomano/Light-Portal/discussions) i wrócę do Ciebie ASAP.
+Have any questions or suggestions? Feel free to post them on [the support topic](https://www.simplemachines.org/community/index.php?topic=572393.0) or right here — I’ll get back to you as soon as I can.

@@ -16,7 +16,7 @@ There are no subtleties here. Light Portal can be installed like any other modif
 - PHP extension `intl` to localize some language strings properly
 - PHP extensions `dom` and `simplexml` to export/import pages and blocks
 - PHP extension `zip` to export/import plugins
-- MySQL 8.0+ / MariaDB 10.5+ / PostgreSQL 12+ / SQLite 3.35.0+ (for testing only, does not support in SMF)
+- MySQL 5.7+ / MariaDB 10.5+ / PostgreSQL 12+
 
 :::info Note
 

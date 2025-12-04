@@ -5,14 +5,28 @@ order: 2
 
 # إضافة صفحة
 
-في هذا القسم، يمكنك إنشاء صفحة بوابة مع المحتوى الذي تحتاجه. الحقول المطلوبة تم تسليط الضوء عليها مع إطار ملون.
+In this section, you can create a portal page with the content you need.
+
+## Page types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based pages
+
+Plugins can extend the functionality by adding new page types or statuses. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **BlogMode**: Adds a new "Blog entry" type for displaying pages in a separate menu section
 
 ## محتوى
 
 هنا يمكنك تكوين:
 
 - العنوان
-- نوع الصفحة
 - محتوى
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ order: 2
 
 هنا يمكنك تكوين:
 
+- status — inactive, active, or unapproved
 - الأذونات – تحديد من سيتمكن من الوصول إلى صفحتك
 - الفئة - إذا كنت ترغب في الحفاظ على تنظيم الأشياء
-- نقل المؤلف - إذا كنت ترغب في تغيير المؤلف
+- type — default, internal, or draft
 
 ![Access tab](access_tab.png)
 

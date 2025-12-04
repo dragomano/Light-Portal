@@ -17,12 +17,6 @@ Lahko preklopiš med prikazom vtičnikov v eni kolumni (privzeto) ali dveh kolum
 
 Nekateri vtičniki niso vključeni v portal, potrebno jih je namestiti ločeno. Taki vtičniki so razdeljeni na prenosljive in pa bonus vtičnike, ki so na voljo sponzorjem projekta.
 
-:::info Opomba
-
-Bonus vtičniki so na voljo prevajalcem (če je vsaj `LightPortal.{your_language}.php` 100% kakovostno preveden), prav tako pa vsem [aktivnim sodelavcem](../how-to/help-to-project) projekta.
-
-:::
-
 ![Download additional plugins](download_plugins.png)
 
-Ločen paket vtičnika lahko namestiš na strani [Uvoz vtičnikov](./impex). Lahko pa tudi preprosto izvlečeš mapo vtičnika iz prenesenega arhiva in jo premakneš v mapo `Sources/LightPortal/Plugins`.
+Ločen paket vtičnika je mogoče namestiti v razdelku Plugin Import. Lahko pa tudi preprosto izvlečeš mapo vtičnika iz prenesenega arhiva in jo premakneš v mapo `Sources/LightPortal/Plugins`.

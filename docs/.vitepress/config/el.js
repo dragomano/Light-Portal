@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Μενού',
     returnToTopLabel: 'Επιστροφή στην κορυφή',
     langMenuLabel: 'Αλλαγή γλώσσας',
+    lastUpdatedText: 'Τελευταία ενημέρωση',
     notFound: {
       title: 'Η ΣΕΛΙΔΑ ΔΕΝ ΒΡΕΘΗΚΕ',
       quote: 'Αλλά αν δεν αλλάξετε κατεύθυνση και αν συνεχίσετε να ψάχνετε, μπορεί να καταλήξετε εκεί που πηγαίνετε.',

@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Menú',
     returnToTopLabel: 'Volver arriba',
     langMenuLabel: 'Cambiar idioma',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'PAGO NO FUNCIONADO',
       quote: 'Pero si no cambias de dirección, y si sigues mirando, puede que termines adonde vayas.',

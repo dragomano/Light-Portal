@@ -10,4 +10,4 @@ Light Portal Hızlı Başlangıç'a hoş geldiniz!
 
 ---
 
-Herhangi bir sorunuz veya genel düşünceleriniz varsa, bunları [destek konusuna](https://www.simplemachines.org/community/index.php?topic=572393.0) veya [GitHub Tartışmaları](https://github.com/dragomano/Light-Portal/discussions) bırakın, en kısa sürede size geri döneceğim.
+Bir sorunuz veya öneriniz mi var? [Destek başlığında](https://www.simplemachines.org/community/index.php?topic=572393.0) veya burada göndermekten çekinmeyin — dönebildiğim en kısa sürede size dönüş yapacağım.

@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Menu',
     returnToTopLabel: 'Terug naar boven',
     langMenuLabel: 'Taal wijzigen',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'PAGINA NIET GEVONDEN',
       quote: 'Maar als je de richting niet verandert, en als je blijft kijken, kun je eindigen waar je naartoe gaat.',

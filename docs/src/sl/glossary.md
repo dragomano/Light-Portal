@@ -8,7 +8,7 @@ Seznam osnovnih konceptov, ki se uporabljajo v Light Portalu.
 
 ## blok
 
-Bloki so `aside` elementi , ki vsebujejo prilagojeno ali drugo vnaprej določeno vsebino. Podobno kot so hiše zgrajene iz opek in sten, so lahko tudi tvoje strani portala sestavljene iz različnih blokov, razporejenih po različnih ploščah.
+Bloki so elementi, ki vsebujejo prilagojeno ali drugo vnaprej določeno vsebino. Podobno kot so hiše zgrajene iz opek in sten, so lahko tudi tvoje strani portala sestavljene iz različnih blokov, razporejenih po različnih ploščah.
 
 ## stran
 
@@ -20,7 +20,7 @@ Gonilna sila portala. Možnost prilagoditve interakcije z modifikacijami tretjih
 
 ## članek
 
-Kartice na začetni strani, ki prikazujejo vsebino, določeno v nastavitvah: deske ali teme foruma, strani, slike itd.
+
 
 ## kategorija
 

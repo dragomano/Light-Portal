@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'القائمة',
     returnToTopLabel: 'العودة إلى الأعلى',
     langMenuLabel: 'تغيير اللغة',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'لا يوجد ملف',
       quote: 'ولكن إذا لم تغير اتجاهك ، وإذا استمرت في البحث ، قد ينتهي بك الأمر إلى أين تتجه .',

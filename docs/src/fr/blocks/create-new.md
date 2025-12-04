@@ -9,6 +9,28 @@ Pour ajouter un bloc, il suffit de cliquer dessus. Au départ, vous pouvez crée
 
 Selon le type de bloc, divers paramètres seront disponibles, répartis entre différents onglets.
 
+## Block types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based blocks
+
+Blocks from plugins extend functionality. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **ArticleList**: Displays articles from topics/pages with customizable display options
+- **Calculator**: Interactive calculator widget
+- **BoardStats**: Forum board statistics
+- **News**: Latest announcements
+- **Polls**: Active forum polls
+- **RecentPosts**: Recent forum activity
+- **UserInfo**: Current user details
+- **WhosOnline**: Online users list
+
 ## Content tab
 
 Ici, vous pouvez configurer :
@@ -31,9 +53,7 @@ Ici, vous pouvez configurer :
 
 ## Onglet Apparence
 
-Ici, vous pouvez configurer :
-
-- options d'apparence
+Here you can configure the block appearance options.
 
 ![Appearance tab](appearance_tab.png)
 

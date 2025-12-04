@@ -5,9 +5,9 @@ order: 1
 
 # Upravljaj bloke
 
-V tem razdelku so navedeni vsi konfigurirani portalni bloki, tako omogočeni kot onemogočeni. Bloki so razporejeni po ploščah.
+Ta razdelek prikazuje vse bloke portala, ne glede na to, ali so omogočeni ali onemogočeni. Bloki so urejeni po posameznih panelih.
 
-Za vsak blok so prikazani njegova ikona, opomba ali naslov, tip, izhodna območja, prioriteta in seznam dejanj.
+Pri vsakem bloku so prikazani ikona, opis ali naslov, tip, lokacija izhoda, pomembnost in seznam možnih dejanj.
 
 ![Manage blocks](manage_blocks.png)
 

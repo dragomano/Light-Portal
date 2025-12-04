@@ -5,9 +5,9 @@ order: 1
 
 # Blokları yönet
 
-Bu bölüm, hem etkin hem de devre dışı bırakılmış tüm yapılandırılmış portal bloklarını listeler. Bloklar panellere göre sıralanmıştır.
+Bu bölüm, etkin olsun veya olmasın yapılandırılmış tüm portal bloklarını gösterir. Bloklar panellere göre sıralanmıştır.
 
-Her blok için, simgesi, notu veya başlığı, türü, çıktı alanları, önceliği ve eylem listesi görüntülenir.
+Her blok için, simgesini, açıklamasını veya başlığını, türünü, çıktının nereye gittiğini, ne kadar önemli olduğunu ve onunla ne tür eylemler yapılbildiğinin bir listesini görürüz.
 
 ![Manage blocks](manage_blocks.png)
 

@@ -9,6 +9,28 @@ Om een blok toe te voegen, klik er eenvoudig op. In het begin kun je blokken van
 
 Afhankelijk van het bloktype zijn verschillende instellingen beschikbaar, verspreid over verschillende tabbladen.
 
+## Block types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based blocks
+
+Blocks from plugins extend functionality. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **ArticleList**: Displays articles from topics/pages with customizable display options
+- **Calculator**: Interactive calculator widget
+- **BoardStats**: Forum board statistics
+- **News**: Latest announcements
+- **Polls**: Active forum polls
+- **RecentPosts**: Recent forum activity
+- **UserInfo**: Current user details
+- **WhosOnline**: Online users list
+
 ## Content tab
 
 Hier kunt u configureren:
@@ -31,9 +53,7 @@ Hier kunt u configureren:
 
 ## Weergave tabblad
 
-Hier kunt u configureren:
-
-- weergave opties
+Here you can configure the block appearance options.
 
 ![Appearance tab](appearance_tab.png)
 

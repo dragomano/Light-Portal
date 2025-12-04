@@ -20,7 +20,7 @@ De locomotief van de portal. Mogelijkheid om de interactie met wijzigingen van d
 
 ## Artikel
 
-Kaarten op de voorpagina die de inhoud weergeven die is ingesteld in de instellingen: forum boards of topics, pagina's, afbeeldingen enz.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## categorie
 

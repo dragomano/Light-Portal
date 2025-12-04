@@ -5,9 +5,9 @@ order: 1
 
 # إدارة المربعات البرمجية
 
-يسرد هذا القسم جميع كتل البوابة التي تم تكوينها، سواء تم تمكينها أو تعطيلها. يتم فرز الكتل حسب اللوحات.
+This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
 
-لكل كتلة، يتم عرض أيقونة أو ملاحظة أو عنوان ، نوع ، مناطق الإخراج ، الأولوية وقائمة الإجراءات .
+For each block, we see its icon, description or title, the type, where the output goes, how important it is, and a list of actions that can be done with it.
 
 ![Manage blocks](manage_blocks.png)
 

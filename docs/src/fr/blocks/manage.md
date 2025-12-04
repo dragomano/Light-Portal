@@ -5,9 +5,9 @@ order: 1
 
 # Gérer les blocs
 
-Cette section liste tous les blocs de portail configurés, à la fois activés et désactivés. Les blocs sont triés par panneaux.
+This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
 
-Pour chaque bloc, son icône, sa note ou son titre, le type, les zones de sortie, la priorité et la liste des actions sont affichées.
+For each block, we see its icon, description or title, the type, where the output goes, how important it is, and a list of actions that can be done with it.
 
 ![Manage blocks](manage_blocks.png)
 

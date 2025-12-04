@@ -9,6 +9,28 @@ Za dodajanje bloka preprosto klikni nanj. Sprva lahko ustvariš bloke treh vrst:
 
 Glede na vrsto bloka bodo na voljo različne nastavitve, razporejene po različnih zavihkih.
 
+## Vrste bloka
+
+### Prednastavljene vrste vsebine
+
+- **BBC**: Omogoča uporabo BBCode označevalnika za vsebino
+- **HTML**: Surova HTML vsebina
+- **PHP**: Izvedljiva PHP koda (samo skrbnik)
+
+### Bloki na osnovi vtičnikov
+
+Bloki iz vtičnikov razširjajo funkcionalnost. Primeri:
+
+- **Markdown**: omogoča uporabo Markdown sintakse za vsebino
+- **ArticleList**: prikazuje članke iz tem/strani z možnostjo prilagajanja prikaza
+- **Calculator**: interaktivni kalkulator widget
+- **BoardStats**: statistika foruma
+- **News**: najnovejša obvestila
+- **Polls**: aktivne ankete na forumu
+- **RecentPosts**: nedavna aktivnost na forumu
+- **UserInfo**: podatki trenutnega uporabnika
+- **WhosOnline**: seznam uporabnikov na spletu
+
 ## Zavihek za vsebino
 
 Tukaj lahko nastaviš:
@@ -31,9 +53,7 @@ Tukaj lahko nastaviš:
 
 ## Zavihek videza
 
-Tukaj lahko nastaviš:
-
-- nastavitve videza
+Tukaj lahko nastaviš možnosti videza bloka.
 
 ![Appearance tab](appearance_tab.png)
 

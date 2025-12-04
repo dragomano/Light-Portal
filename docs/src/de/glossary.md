@@ -20,7 +20,7 @@ Die Lokomotive des Portals. Fähigkeit zur Anpassung der Interaktion mit Änderu
 
 ## Artikel
 
-Karten auf der Titelseite, die die eingestellten Inhalte in den Einstellungen anzeigen: Foren oder Themen, Seiten, Bilder, etc.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## Kategorie
 

@@ -10,4 +10,4 @@ Bienvenue dans le guide de démarrage rapide de Light Portal !
 
 ---
 
-Si vous avez des questions ou des réflexions générales, laissez-les dans [le sujet du support](https://www.simplemachines.org/community/index.php?topic=572393.0) ou [GitHub Discussions](https://github.com/dragomano/Light-Portal/discussions) et je reviendrai vers vous dès que possible.
+Have any questions or suggestions? Feel free to post them on [the support topic](https://www.simplemachines.org/community/index.php?topic=572393.0) or right here — I’ll get back to you as soon as I can.

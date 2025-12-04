@@ -5,9 +5,9 @@ order: 1
 
 # Administrar páginas
 
-Esta sección lista todas las páginas de portal creadas que pueden ser editadas por el usuario actual. Hay una búsqueda de páginas por título o slug.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
 
-Para cada página, se muestra su ID, fecha de creación/actualización, número de vistas, número de comentarios, tipo, slug, título y lista de acciones.
+Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
 
 ![Manage pages](manage_pages.png)
 

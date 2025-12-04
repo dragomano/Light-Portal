@@ -91,7 +91,7 @@ Create a separate folder for your plugin files, inside `/Sources/LightPortal/Plu
 
 File `index.php` can be copied from folders of other plugins. The file `HelloWorld.php` contains the plugin logic:
 
-```php:line-numbers {17}
+```php:line-numbers {16}
 <?php declare(strict_types=1);
 
 namespace LightPortal\Plugins\HelloWorld;
@@ -115,31 +115,9 @@ class HelloWorld extends Plugin
 
 ```
 
-## Using SSI
+## SSI
 
 If the plugin needs to retrieve any data using SSI functions, use the built-in `getFromSsi(string $function, ...$params)` method. As parameter `$function` you must pass the name of one of the functions contained in file **SSI.php**, without prefix `ssi_`. For example:
-
-```php
-$data = $this->getFromSSI('topTopics', 'views', 10, 'array');
-```
-
-### Example: SSI Integration Plugin (TopTopics)
-
-**Description:**
-
-This plugin demonstrates how to use SSI functions to retrieve and display data from SMF. The TopTopics plugin fetches the top topics based on views and displays them in a list.
-
-**Installation:**
-
-1. Create a new plugin directory `/Sources/LightPortal/Plugins/TopTopics/`.
-2. Create the required files as per the plugin structure guidelines.
-3. Enable the plugin in the admin panel under _Admin -> Portal settings -> Plugins_.
-
-**Usage:**
-
-Add this plugin as a block type to display top topics on your portal pages.
-
-**Code:**
 
 ```php:line-numbers {17}
 <?php declare(strict_types=1);
@@ -169,13 +147,11 @@ class TopTopics extends SsiBlock
 }
 ```
 
-## Examples of built-in plugins
+## Blade templates
 
-### Simple block plugin example (Calculator)
+Your plugin can use a template with Blade markup. For example:
 
-The Calculator plugin is a simple block that displays a calculator widget. Here's its main code:
-
-```php:line-numbers {14,25}
+```php:line-numbers {16,20}
 <?php declare(strict_types=1);
 
 namespace LightPortal\Plugins\Calculator;
@@ -200,19 +176,13 @@ class Calculator extends Block
 }
 ```
 
-This plugin uses a view template to render the calculator UI.
-
-#### Creating the template file for Calculator
-
-For the Calculator plugin to display the calculator interface, create a template file `default.blade.php` in the `/Sources/LightPortal/Plugins/Calculator/views/` directory. This file contains the HTML, CSS, and JavaScript needed for the calculator widget.
-
 **Instructions:**
 
-1. Create the `views` subdirectory inside your Calculator plugin directory if it doesn't exist.
+1. Create the `views` subdirectory inside your plugin directory if it doesn't exist.
 2. Create the file `default.blade.php` with the following content:
 
 ```blade
-<div class="calculator" id="calculator-{{ $id }}">
+<div class="some-class-{{ $id }}">
     {{-- Your blade markup --}}
 </div>
 
@@ -225,47 +195,15 @@ For the Calculator plugin to display the calculator interface, create a template
 </script>
 ```
 
-3. Save the file. The plugin will automatically use this template when rendering the block.
-
-The template implements a calculator interface with all the necessary buttons.
-
 ## Composer
 
 Your plugin can use third-party libraries installed through Composer. Make sure that the `composer.json` file, which contains the necessary dependencies, is located in the plugin directory. Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).
 
-### Example: Composer Dependency Plugin (CarbonDate)
+For example:
 
-**Description:**
+::: code-group
 
-This plugin demonstrates how to use Composer for managing PHP dependencies. The CarbonDate plugin uses the popular Carbon library to display the current date and time in a formatted manner.
-
-**Installation:**
-
-1. Create a new plugin directory `/Sources/LightPortal/Plugins/CarbonDate/`.
-2. Create a `composer.json` file in the plugin directory with the following content:
-
-```json
-{
-    "require": {
-      "nesbot/carbon": "^3.0"
-    },
-    "config": {
-      "optimize-autoloader": true
-    }
-}
-```
-
-3. Open the plugin directory in the command line and run: `composer install --no-dev -o`.
-4. Create the plugin files following the standard structure.
-5. Enable the plugin in the admin panel.
-
-**Usage:**
-
-This plugin can be used in blocks or pages to display formatted dates. The `init` method can be called to output the current date.
-
-**Code:**
-
-```php:line-numbers {17}
+```php:line-numbers {15} [CarbonDate.php]
 <?php declare(strict_types=1);
 
 namespace LightPortal\Plugins\CarbonDate;
@@ -288,3 +226,15 @@ class CarbonDate extends Plugin
     }
 }
 ```
+
+```json [composer.json]
+{
+    "require": {
+      "nesbot/carbon": "^3.0"
+    },
+    "config": {
+      "optimize-autoloader": true
+    }
+}
+```
+:::

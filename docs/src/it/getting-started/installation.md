@@ -12,10 +12,11 @@ Non c'è molto da dire qui. Light Portal puoi installarlo come qualsiasi altra m
 - [SMF 2.1.x](https://download.simplemachines.org)
 - Browser moderno con JavaScript abilitato
 - Internet (il portale e molti plugin caricano script e stili dalla CDN)
-- PHP 8.1 o superiore
+- PHP 8.2 o superiore
 - Estensione PHP `intl` per localizzare correttamente alcune stringhe di lingua
 - Estensioni PHP `dom` e `simplexml` per esportare/importare pagine e blocchi
 - Estensione PHP `zip` per esportare/importare plugin
+- MySQL 5.7+ / MariaDB 10.5+ / PostgreSQL 12+
 
 :::info Nota
 
@@ -23,8 +24,6 @@ Non c'è molto da dire qui. Light Portal puoi installarlo come qualsiasi altra m
 
 :::
 
-## Risoluzione dei problemi
+## Testing
 
-Se il tuo hosting è troppo "intelligente" con i permessi e i file del portale non sono stati decompressi durante l'installazione, devi estrarre manualmente le cartelle `Themes` e `Sources` dall'archivio della mod nella cartella del forum (dove si trovano le stesse cartelle Themes e Sources, così come i file `cron.php`, `SSI.php`, `Settings.php`, ecc) ed impostare le autorizzazioni appropriate. Molto spesso è "644", "664" o "666" per i file e "755", "775" o "777" per le cartelle.
-
-Inoltre devi estrarre il file `database.php` dall'archivio della mod alla radice del tuo forum, impostarne i diritti di esecuzione (`666`) e accedervi tramite il browser (devi aver effettuato l'accesso come amministratore del forum). Questo file contiene le istruzioni per la creazione delle tabelle utilizzate dal portale.
+Puoi provare il [file Docker](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) o se preferisci le applicazioni LAMP/WAMP/MAMP.

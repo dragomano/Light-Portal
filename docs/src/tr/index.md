@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Hızlı, güzel, modern
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Kendi ana sayfa düzeninizi nasıl oluşturursunuz
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Bloklar

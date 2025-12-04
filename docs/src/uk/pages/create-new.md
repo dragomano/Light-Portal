@@ -5,14 +5,28 @@ order: 2
 
 # Додати сторінку
 
-У цьому розділі ви можете створити сторінку порталу з необхідним змістом. Обов'язкові поля виділяються кольоровим камером.
+In this section, you can create a portal page with the content you need.
+
+## Page types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based pages
+
+Plugins can extend the functionality by adding new page types or statuses. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **BlogMode**: Adds a new "Blog entry" type for displaying pages in a separate menu section
 
 ## Вкладка "Вміст"
 
 Тут ви можете налаштувати:
 
 - назва
-- тип сторінки
 - зміст
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ order: 2
 
 Тут ви можете налаштувати:
 
+- status — inactive, active, or unapproved
 - права — вкажіть кому буде доступ на сторінку
 - категорії - якщо ви любите підтримувати організовані речі
-- передача авторства - якщо ви хочете змінити автора
+- type — default, internal, or draft
 
 ![Access tab](access_tab.png)
 

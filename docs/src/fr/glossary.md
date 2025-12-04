@@ -20,7 +20,7 @@ La locomotive du portail. Possibilité de personnaliser l'interaction avec des m
 
 ## Article
 
-Cartes sur la page d'accueil qui affichent le contenu défini dans les paramètres : forums ou sujets, pages, images, etc.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## Catégorie
 

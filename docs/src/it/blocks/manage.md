@@ -5,9 +5,9 @@ order: 1
 
 # Gestisci blocchi
 
-Questa sezione elenca tutti i blocchi del portale configurati, sia abilitati che disabilitati. I blocchi sono ordinati per pannello.
+This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
 
-Per ogni blocco vengono visualizzati l'icona, la nota o il titolo, la tipologia, le aree di visualizzazione, la priorità e l'elenco delle azioni.
+For each block, we see its icon, description or title, the type, where the output goes, how important it is, and a list of actions that can be done with it.
 
 ![Manage blocks](manage_blocks.png)
 
