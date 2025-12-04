@@ -43,7 +43,7 @@ enum TitleClass: string
 
 		return Str::html('div')
 			->class($isEmpty ? null : $this->value)
-			->addText($isEmpty ? '%s' : null)
+			->addText($isEmpty ? '%s' : '')
 			->addHtml($isEmpty ? '' : Str::html('h3', '%s')->class($class))
 			->toHtml();
 	}
