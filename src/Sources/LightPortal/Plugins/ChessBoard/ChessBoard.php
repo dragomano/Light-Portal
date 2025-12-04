@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.11.25
+ * @version 04.12.25
  */
 
 namespace LightPortal\Plugins\ChessBoard;
@@ -177,7 +177,7 @@ class ChessBoard extends GameBlock
 		<script type="module">
 		    window.portalApiData = window.portalApiData || {};
 		    window.portalApiData["chess_board_' . $e->args->id . '"] = "' . $e->args->id . '";
-		    usePortalApi("' . LP_BASE_URL . ';api=' . $this->name . ';id=' . $e->args->id . '", "chess_board/chessboard.js")
+		    usePortalApi("' . $this->buildApiUrl($e) . '", "chess_board/chessboard.js")
 		</script>';
 	}
 

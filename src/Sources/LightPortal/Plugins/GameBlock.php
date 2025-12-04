@@ -49,4 +49,13 @@ abstract class GameBlock extends Block
 	{
 		return [];
 	}
+
+	protected function buildApiUrl(Event $e): string
+	{
+		$currentUrl = $this->request()->url();
+
+		$separator = str_contains($currentUrl, '?') ? ';' : '?';
+
+		return $currentUrl . $separator . 'api=' . $this->name . ';id=' . $e->args->id;
+	}
 }
