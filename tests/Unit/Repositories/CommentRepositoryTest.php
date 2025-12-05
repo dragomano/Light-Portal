@@ -197,13 +197,7 @@ it('can remove comment and translations', function () {
     $transCountBefore = $translationsBefore->current()['count'];
     expect($transCountBefore)->toBe(1);
 
-    // Mock response to prevent exit() in remove method
-    /** @var CommentRepository|Mockery\MockInterface $repository */
-    $repository = mock($this->repository)->makePartial();
-    $repository->shouldReceive('response')
-        ->andReturn(mock()->shouldReceive('exit')->andThrow(new TestExitException()));
-
-    expect(fn() => $repository->remove([1]))->toThrow(TypeError::class);
+    $this->repository->remove([1]);
 
     $commentsAfter = $this->sql->getAdapter()
         ->query(/** @lang text */ 'SELECT COUNT(*) as count FROM lp_comments')->execute();
