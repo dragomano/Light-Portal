@@ -17,12 +17,6 @@ order: 1
 
 بعض الإضافات غير مدرجة في البوابة، يجب تثبيتها بشكل منفصل. وتقسم هذه الإضافات إلى إضافات يمكن تنزيلها ومكافآت متاحة لمقدمي المشاريع.
 
-:::info ملاحظة
-
-الإضافات الإضافية متاحة أيضا للمترجمين (إذا كان على الأقل `LightPortal.{your_language}. hp` مترجم بجودة 100%)، وكذلك لجميع [المشاركين النشطين](../how-to/help-to-project) للمشروع.
-
-:::
-
 ![Download additional plugins](download_plugins.png)
 
-يمكن تثبيت حزمة الإضافات المنفصلة على صفحة [استيراد الإضافة](./impex). لكن يمكنك أيضًا استخراج مجلد المكون الإضافي من الأرشيف الذي تم تنزيله ونقله إلى الدليل `Sources/LightPortal/Plugins`.
+The separate plugin package can be installed in the Plugin Import section. لكن يمكنك أيضًا استخراج مجلد المكون الإضافي من الأرشيف الذي تم تنزيله ونقله إلى الدليل `Sources/LightPortal/Plugins`.

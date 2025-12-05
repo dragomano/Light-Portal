@@ -17,12 +17,6 @@ Eklenti ayarlarını değiştirmek istiyorsanız, eklentinin geçiş düğmesini
 
 Bazı eklentiler portal ile birlikte gelmez, ayrı olarak kurulmaları gerekir. Bu tür eklentiler, indirilebilir ve proje sponsorlarına sunulan bonus eklentiler olarak ikiye ayrılır.
 
-:::info Not
-
-Bonus eklentileri, çevirmenler için de mevcuttur (eğer en az `LightPortal.{your_language}.php` %100 kaliteli bir şekilde çevrilmişse) ve ayrıca projenin tüm [aktif katılımcıları](../how-to/help-to-project) için de geçerlidir.
-
-:::
-
 ![Download additional plugins](download_plugins.png)
 
-Ayrı eklenti paketi, [Eklenti içe aktarma](./impex) sayfasında kurulabilir. Ancak, indirilen arşivden eklenti klasörünü çıkartıp `Sources/LightPortal/Plugins` dizinine de taşıyabilirsiniz.
+Eklenti İçe Aktarma bölümünde ayrı eklenti paketi kurulabilir. Ancak, indirilen arşivden eklenti klasörünü çıkartıp `Sources/LightPortal/Plugins` dizinine de taşıyabilirsiniz.

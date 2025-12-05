@@ -5,9 +5,9 @@ order: 1
 
 # Διαχείριση μπλοκ
 
-Αυτή η ενότητα παραθέτει όλα τα διαμορφωμένα μπλοκ πύλης, τόσο ενεργοποιημένα όσο και απενεργοποιημένα. Τα μπλοκ ταξινομούνται κατά πάνελ.
+This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
 
-Για κάθε μπλοκ, εμφανίζεται το εικονίδιο, η σημείωση ή ο τίτλος, ο τύπος, οι περιοχές εξόδου, η προτεραιότητα και η λίστα ενεργειών.
+For each block, we see its icon, description or title, the type, where the output goes, how important it is, and a list of actions that can be done with it.
 
 ![Manage blocks](manage_blocks.png)
 

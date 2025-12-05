@@ -5,9 +5,9 @@ order: 1
 
 # Upravljanje strani
 
-V tem razdelku so navedene vse ustvarjene portalne strani, ki jih lahko ureja trenutni uporabnik. Na voljo je iskanje strani po naslovu ali identifikatorju strani.
+Ta razdelek prikazuje vse strani, ki si jih ustvaril in jih lahko urejaš. Iskanje je mogoče po naslovu ali identifikatorju strani.
 
-Za vsako stran so prikazani njen ID, datum nastanka/posodobitve, število ogledov, število komentarjev, tip, identifikator strani, naslov in seznam dejanj.
+Vsaka stran ima svoj ID, datum ustvarjanja ali zadnje posodobitve, število ogledov, število komentarjev, tip strani, identifikator in naslov. Prikazan je tudi seznam možnih akcij za vsako stran.
 
 ![Manage pages](manage_pages.png)
 

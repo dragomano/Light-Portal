@@ -116,7 +116,7 @@ public function prepareBlockParams(Event $e): void
         'display_type'   => 0,
         'include_topics' => '',
         'include_pages'  => '',
-        'seek_images'    => false
+        'seek_images'    => false,
     ];
 }
 ```
@@ -181,6 +181,15 @@ public function prepareBlockFields(Event $e): void
 
 > προσαρμοσμένες ενέργειες για την αφαίρεση μπλοκ
 
+```php
+public function onBlockRemoving(Event $e): void
+{
+    foreach ($e->args->items as $item) {
+        $this->cache()->forget('block_' . $item . '_cache');
+    }
+}
+```
+
 ## Εργαστείτε με σελίδες
 
 ### preparePageParams
@@ -229,9 +238,33 @@ public function preparePageFields(Event $e): void
 
 > προσαρμοσμένες ενέργειες κατά την αποθήκευση/επεξεργασία σελίδων
 
+### onCustomPageImport
+
+> custom actions on custom page import
+
+```php
+public function onCustomPageImport(Event $e): void
+{
+    $e->args->items = array_map(function ($item) {
+        $item['title'] = Utils::$smcFunc['htmlspecialchars']($item['title']);
+
+        return $item;
+    }, $e->args->items);
+}
+```
+
 ### onPageRemoving
 
 > προσαρμοσμένες ενέργειες κατά την κατάργηση σελίδων
+
+```php
+public function onPageRemoving(Event $e): void
+{
+    foreach ($e->args->items as $item) {
+        $this->cache()->forget('page_' . $item . '_cache');
+    }
+}
+```
 
 ### preparePageData
 
@@ -303,18 +336,29 @@ public function commentButtons(Event $e): void
 ```php
 public function addSettings(Event $e): void
 {
-    $e->args->settings[$this->name][] = [
-        'text',
-        'shortname',
-        'subtext' => $this->txt['shortname_subtext'],
-        'required' => true,
-    ];
+    $this->addDefaultValues(['some_color' => '#ff00ad']);
+
+    $e->args->settings[$this->name] = SettingsFactory::make()
+        ->text('some_text')
+        ->check('some_check')
+        ->int('some_int', ['min' => 1])
+        ->select('some_select', [1, 2, 3])
+        ->color('some_color')
+        ->range('some_range', ['max' => 10])
+        ->toArray();
 }
 ```
 
 ### saveSettings
 
 > πρόσθετες ενέργειες μετά την αποθήκευση των ρυθμίσεων της προσθήκης
+
+```php
+public function saveSettings(Event $e): void
+{
+    $this->cache()->flush();
+}
+```
 
 ### prepareAssets
 
@@ -323,8 +367,10 @@ public function addSettings(Event $e): void
 ```php
 public function prepareAssets(Event $e): void
 {
-    $e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-    $e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+    $builder = new AssetBuilder($this);
+    $builder->scripts()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.js');
+    $builder->css()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.css');
+    $builder->appendTo($e->args->assets);
 }
 ```
 
@@ -339,7 +385,7 @@ public function frontModes(Event $e): void
 {
     $$e->args->modes[$this->mode] = CustomArticle::class;
 
-    Config::$modSettings['lp_frontpage_mode'] = $this->mode;
+    $e->args->currentMode = $this->mode;
 }
 ```
 
@@ -375,26 +421,21 @@ public function layoutExtensions(Event $e): void
 ```php
 public function frontAssets(): void
 {
-    Theme::loadJavaScriptFile(
-        'https://' . $this->context['shortname'] . '.disqus.com/count.js',
-        ['external' => true],
-    );
+    $this->loadExternalResources([
+        ['type' => 'css', 'url' => 'https://cdn.example.com/custom.css'],
+        ['type' => 'js',  'url' => 'https://cdn.example.com/custom.js'],
+    ]);
 }
 ```
 
 ### frontTopics
 
-> προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__function
+> προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__λειτουργίες
 
 ```php
 public function frontTopics(Event $e): void
 {
-    if (! class_exists('TopicRatingBar'))
-        return;
-
-    $e->args->columns[] = 'tr.total_votes, tr.total_value';
-
-    $e->args->tables[] = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+    $e->args->wheres[] = ['t.num_replies > ?' => 1];
 }
 ```
 
@@ -405,26 +446,62 @@ public function frontTopics(Event $e): void
 ```php
 public function frontTopicsRow(Event $e): void
 {
-    $e->args->articles[$e->args->row['id_topic']]['rating'] = empty($e->args->row['total_votes'])
-        ? 0 : (number_format($e->args->row['total_value'] / $e->args->row['total_votes']));
+    $e->args->articles[$e->args->row['id_topic']]['replies'] = $e->args->row['num_replies'] ?? 0;
 }
 ```
 
 ### frontPages
 
-> προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__λειτουργίες
+> adding custom columns, joins, where conditions, params and orders to _init_ function
+
+```php
+public function frontPages(Event $e): void
+{
+    $e->args->joins[] = fn(Select $select) => $select->join(
+        ['lc' => 'lp_comments'],
+        'lp.page_id = lc.page_id',
+        ['num_comments'],
+        Select::JOIN_LEFT
+    );
+
+    $e->args->wheres[] = ['lc.approved' => 1];
+}
+```
 
 ### frontPagesRow
 
 > διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
+```php
+public function frontPagesRow(Event $e): void
+{
+    $e->args->articles[$e->args->row['id']]['comments'] = $e->args->row['num_comments'] ?? 0;
+}
+```
+
 ### frontBoards
 
 > προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__function
 
+```php
+public function frontBoards(Event $e): void
+{
+    $e->args->columns['num_topics'] = new Expression('MIN(b.num_topics)');
+
+    $e->args->wheres[] = fn(Select $select) => $select->where->greaterThan('b.num_topics', 5);
+}
+```
+
 ### frontBoardsRow
 
 > διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
+
+```php
+public function frontBoardsRow(Event $e): void
+{
+    $e->args->articles[$e->args->row['id_board']]['custom_field'] = 'value';
+}
+```
 
 ## Εργαστείτε με εικονίδια
 
@@ -454,9 +531,23 @@ public function prepareIconList(Event $e): void
 
 > προσθήκη προσαρμοσμένου προτύπου για την εμφάνιση εικονιδίων
 
+```php
+public function prepareIconTemplate(Event $e): void
+{
+    $e->args->template = "<i class=\"custom-class {$e->args->icon}\" aria-hidden=\"true\"></i>";
+}
+```
+
 ### changeIconSet
 
 > δυνατότητα επέκτασης εικονιδίων διεπαφής που είναι διαθέσιμα μέσω του πίνακα "Utils::$context['lp_icon_set']"
+
+```php
+public function changeIconSet(Event $e): void
+{
+    $e->args->set['snowman'] = 'fa-solid fa-snowman';
+}
+```
 
 ## Ρυθμίσεις πόρταλ
 
@@ -464,12 +555,19 @@ public function prepareIconList(Event $e): void
 
 > προσθέτοντας προσαρμοσμένες ρυθμίσεις παραμέτρων στην περιοχή βασικών ρυθμίσεων της πύλης
 
-### updateAdminAreas
+```php
+public function extendBasicConfig(Event $e): void
+{
+    $e->args->configVars[] = ['text', 'option_key', 'subtext' => $this->txt['my_mod_description']];
+}
+```
+
+### extendAdminAreas
 
 > προσθέτει τις προσαρμοσμένες περιοχές της πύλης στο Κέντρο διαχείρισης
 
 ```php
-public function updateAdminAreas(Event $e): void
+public function extendAdminAreas(Event $e): void
 {
     if (User::$info['is_admin']) {
         $e->args->areas['lp_pages']['subsections']['import_from_ep'] = [
@@ -479,49 +577,49 @@ public function updateAdminAreas(Event $e): void
 }
 ```
 
-### updateBlockAreas
+### extendBlockAreas
 
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις περιοχής αποκλεισμού
 
 ```php
-public function updateBlockAreas(Event $e): void
+public function extendBlockAreas(Event $e): void
 {
     $e->args->areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
-### updatePageAreas
+### extendPageAreas
 
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις της περιοχής σελίδας
 
 ```php
-public function updatePageAreas(Event $e): void
+public function extendPageAreas(Event $e): void
 {
     $e->args->areas['import_from_ep'] = [new Import(), 'main'];
 }
 ```
 
-### updateCategoryAreas
+### extendCategoryAreas
 
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις περιοχής κατηγορίας
 
 ```php
-public function updateCategoryAreas(Event $e): void
+public function extendCategoryAreas(Event $e): void
 {
     $e->args->areas['import_from_tp'] = [new Import(), 'main'];
 }
 ```
 
-### updateTagAreas
+### extendTagAreas
 
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις της περιοχής ετικετών
 
-### updatePluginAreas
+### extendPluginAreas
 
 > προσθέτει προσαρμοσμένες καρτέλες στις ρυθμίσεις της περιοχής προσθήκης
 
 ```php
-public function updatePluginAreas(Event $e): void
+public function extendPluginAreas(Event $e): void
 {
     $e->args->areas['add'] = [new Handler(), 'add'];
 }
@@ -545,5 +643,18 @@ public function credits(Event $e): void
             'link' => 'https://www.freepikcompany.com/legal#nav-flaticon-agreement'
         ]
     ];
+}
+```
+
+### downloadRequest
+
+> handling download requests for portal attachments
+
+```php
+public function downloadRequest(Event $e): void
+{
+    if ($e->args->attachRequest['id'] === (int) $this->request()->get('attach')) {
+        // Some handling
+    }
 }
 ```

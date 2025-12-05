@@ -5,9 +5,9 @@ order: 1
 
 # Pagina's beheren
 
-Deze sectie geeft een overzicht van alle aangemaakte portalpagina's die kunnen worden bewerkt door de huidige gebruiker. Er wordt gezocht naar pagina's op titel of slug.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
 
-Voor elke pagina, zijn ID, aanmaak/bijwerken datum, aantal weergaven, aantal opmerkingen, type, slug, titel en lijst van acties worden weergegeven.
+Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
 
 ![Manage pages](manage_pages.png)
 

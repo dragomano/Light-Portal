@@ -12,6 +12,7 @@
 
 namespace LightPortal\Hooks;
 
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
@@ -195,6 +196,10 @@ class AdminAreas extends AbstractHook
 		}
 
 		$this->dispatcher->dispatch(PortalHook::extendAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
+
+		if (! User::$me->allowedTo('admin_forum') && $this->request()->isNot('lp_pages', 'area')) {
+			ErrorHandler::fatalLang('no_access', false);
+		}
 	}
 
 	public function settingAreas(): void

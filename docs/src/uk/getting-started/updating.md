@@ -5,11 +5,13 @@ order: 2
 
 # Оновлення
 
-Якщо немає нотаток в списку змін останньої версії, достатньо для вилучення каталогів "Теми" та "Джерела" з архіву модифікації до кореневого з вашого форуму, над існуючими модулями і оновлення буде правильним. Також, краще вилучити поточну версію перед встановленням нової версії.
+If the changelog contains no specific update instructions for the latest version, you can update by extracting the `Themes` and `Sources` directories to your forum root, overwriting existing files.
+
+However, for a clean installation, we recommend uninstalling the current version first.
 
 :::info Примітка
 
-If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
+If the new version can be installed without removing the previous one, the "Upgrade" button will appear instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

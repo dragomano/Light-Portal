@@ -10,4 +10,4 @@ Dobrodošli v hitri uvod v Light Portal!
 
 ---
 
-Če imaš kakršnakoli vprašanja ali splošne misli, jih pusti v [temi za podporo](https://www.simplemachines.org/community/index.php?topic=572393.0) ali v [GitHub razpravah](https://github.com/dragomano/Light-Portal/discussions) in ti bom čim prej odgovoril.
+Ali imaš kakšna vprašanja ali predloge? Lahko jih objaviš v tej [podporni temi](https://www.simplemachines.org/community/index.php?topic=572393.0) ali tukaj — odgovoril ti bom, takoj ko bo mogoče.

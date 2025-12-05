@@ -20,7 +20,7 @@ description: Μια λίστα βασικών σχεδίων που χρησιμ
 
 ## άρθρα
 
-Κάρτες στην πρώτη σελίδα που εμφανίζουν το περιεχόμενο που έχει οριστεί στις ρυθμίσεις: πίνακες φόρουμ ή θέματα, σελίδες, εικόνες κ.λπ.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## κατηγορία
 

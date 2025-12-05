@@ -5,9 +5,9 @@ order: 1
 
 # Gérer les pages
 
-Cette section liste toutes les pages de portail créées qui peuvent être éditées par l'utilisateur actuel. Il y a une recherche de pages par titre ou par slug.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
 
-Pour chaque page, son ID, sa date de création/mise à jour, le nombre de vues, le nombre de commentaires, le type, le slug, le titre et la liste des actions sont affichés.
+Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
 
 ![Manage pages](manage_pages.png)
 

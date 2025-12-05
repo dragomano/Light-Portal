@@ -5,9 +5,11 @@ order: 2
 
 # Aggiornamento
 
-Se non ci sono note nel changelog dell'ultima versione, è sufficiente estrarre le cartelle `Themes` e `Sources` dall'archivio della mod alla radice del tuo forum, sopra quelle esistenti, e l'aggiornamento sarà completato. Ma è meglio disinstallare la versione corrente prima di installare quella nuova.
+Se il changelog non contiene istruzioni di aggiornamento specifiche per l'ultima versione, è possibile aggiornare estraendo le directory `Themes` e `Sources` alla radice del forum, sovrascrivendo i file esistenti.
 
-:::info Nota
+Tuttavia, per un'installazione pulita, si consiglia di disinstallare prima la versione corrente.
+
+:::info Note
 
 Se la nuova versione può essere installata senza rimuovere quella precedente, vedrai il pulsante "Aggiorna" invece del pulsante "Installa":
 

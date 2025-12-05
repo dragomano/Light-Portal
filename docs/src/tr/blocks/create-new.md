@@ -9,6 +9,28 @@ Bir blok eklemek için, üzerine tıklamanız yeterlidir. Başlangıçta, üç t
 
 Blok türüne bağlı olarak, farklı sekmelerde çeşitli ayarlar mevcut olacaktır.
 
+## Blok türleri
+
+### Yerleşik içerik türleri
+
+- **BBC**: İçerikte BBCode işaretlemelerine izin verir
+- **HTML**: İşlenmemiş HTML içeriği
+- **PHP**: Çalıştırılabilir PHP kodu (sadece admin)
+
+### Eklenti-bazlı bloklar
+
+Eklentilerden bloklar işlevselliği genişletir. Örnekler:
+
+- **Markdown**: İçerik için Markdown sözdizimini etkinleştirir
+- **ArticleList**: Özelleştirilebilir gösterme seçenekleriyle konulardan/sayfalardan makaleler gösterir
+- **Calculator**: Etkileşimli hesap makinesi kutusu
+- **BoardStats**: Forum bölüm istatistikleri
+- **News**: Son duyurular
+- **Polls**: Etkin forum anketleri
+- **RecentPosts**: Son forum hareketleri
+- **UserInfo**: Mevcut kullanıcı ayrıntıları
+- **WhosOnline**: Bağlı kullanıcı listesi
+
 ## İçerik sekmesi
 
 Burada yapılandırabilirsiniz:
@@ -31,9 +53,7 @@ Burada yapılandırabilirsiniz:
 
 ## Görünüm sekmesi
 
-Burada yapılandırabilirsiniz:
-
-- görünüm seçenekleri
+Burada blok görünüm seçeneklerini ayarlayabilirsiniz.
 
 ![Appearance tab](appearance_tab.png)
 

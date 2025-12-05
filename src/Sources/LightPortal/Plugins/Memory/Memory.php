@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.10.25
+ * @version 04.12.25
  */
 
 namespace LightPortal\Plugins\Memory;
@@ -42,7 +42,7 @@ class Memory extends GameBlock
 		echo /** @lang text */ '
 		<div class="memory_game" id="memory_game_' . $e->args->id . '"></div>
 		<script type="module">
-			usePortalApi("' . LP_BASE_URL . ';api=' . $this->name . ';id=' . $e->args->id . '", "memory/memory.js")
+			usePortalApi("' . $this->buildApiUrl($e) . '", "memory/memory.js")
 		</script>';
 	}
 

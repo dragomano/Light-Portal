@@ -5,11 +5,13 @@ order: 2
 
 # Bijwerken
 
-Als er geen notities in het logboek van de laatste versie staan, het is genoeg om de mappen `Themes` en `Sources` te extraheren uit het wijzigingsarchief naar de hoofdmap van uw forum, over de bestaande en de update zal correct zijn. Maar het is het beste om de huidige versie te verwijderen voordat de nieuwe versie geïnstalleerd is.
+If the changelog contains no specific update instructions for the latest version, you can update by extracting the `Themes` and `Sources` directories to your forum root, overwriting existing files.
 
-:::info Opmerking
+However, for a clean installation, we recommend uninstalling the current version first.
 
-If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
+:::info Notitie
+
+If the new version can be installed without removing the previous one, the "Upgrade" button will appear instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

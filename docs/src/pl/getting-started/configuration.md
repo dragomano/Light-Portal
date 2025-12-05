@@ -1,9 +1,7 @@
 ---
 description: Krótkie podsumowanie dostępnych ustawień portalu
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Ustawienia portalu
@@ -14,11 +12,11 @@ Nie opiszemy szczegółowo każdego z dostępnych ustawień, wymienimy tylko te 
 
 ## Ustawienia ogólne
 
-W tej sekcji możesz w pełni dostosować stronę główną portalu, włączyć tryb samodzielny i zmienić uprawnienia użytkownika w celu uzyskania dostępu do elementów portalu.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Ustawienia strony głównej i artykułów
+### Settings for the front page and articles
 
-Aby zmienić zawartość strony głównej portalu, wybierz odpowiedni tryb "strona główna":
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Wyłącz
 - Określona strona (tylko wybrana strona będzie wyświetlana)
@@ -53,7 +51,7 @@ W tej sekcji możesz zmienić różne ustawienia pomocnicze portalu, które mog�
 ### Tryb kompatybilności
 
 - Wartość parametru **akcji** portalu, można zmienić to ustawienie na Portal Światła w połączeniu z innymi podobnymi modyfikacjami. Następnie strona główna zostanie otwarta pod podanym adres.
-- Parametr **strony** dla stron portalu, patrz powyżej. Podobnie, dla stron portalowych, zmień parametr i otworzą się za pomocą różnych adresów URL.
+- Parametr **strony** dla stron portalu, patrz powyżej. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Konserwacja
 

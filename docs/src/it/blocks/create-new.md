@@ -9,6 +9,28 @@ Per aggiungere un blocco, fai clic su di esso. Inizialmente, è possibile creare
 
 A seconda del tipo di blocco saranno disponibili diverse impostazioni, suddivise in diverse schede.
 
+## Tipi di blocco
+
+### Tipi di contenuto incorporati
+
+- **BBC**: Abilita il BBCode per il contenuto
+- **HTML**: Contenuto raw HTML
+- **PHP**: Codice PHP eseguibile (solo per gli amministratori)
+
+### Blocchi basati su plugin
+
+I blocchi dei plugin estendono la funzionalità. Esempi:
+
+- **Markdown**: Abilitata Markdown per il contenuto
+- **ArticleList**: Visualizza articolo da una discussione/pagina con settaggi di visualizzazione configurabili
+- **Calculator**: Widget di una calcolatrice interattiva
+- **BoardStats**: Statistiche del forum
+- **News**: Ultimi annunci
+- **Polls**: Sondaggi del forum attivi
+- **RecentPosts**: Attività recenti del forum
+- **UserInfo**: Dettaglio dell'utente corrente
+- **WhosOnline**: Lista degli utenti online
+
 ## Scheda contenuto
 
 Qui puoi configurare:
@@ -31,9 +53,7 @@ Qui puoi configurare:
 
 ## Scheda Aspetto
 
-Qui puoi configurare:
-
-- impostazioni aspetto
+Qui è possibile configurare le opzioni di aspetto del blocco.
 
 ![Appearance tab](appearance_tab.png)
 

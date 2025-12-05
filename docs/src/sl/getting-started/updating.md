@@ -5,11 +5,13 @@ order: 2
 
 # Posodabljanje
 
-Če v seznamu sprememb zadnje različice ni opomb, je dovolj, da iz arhiva modifikacije izvlečete mape 'Themes' in 'Sources' v korensko map tvojega foruma, čez obstoječe, in posodobitev bo pravilna. Vendar je najbolje, da najprej odstraniš trenutno različico, preden namestiš novo različico.
+Če dnevnik sprememb ne vsebuje posebnih navodil za posodobitev na najnovejšo različico, lahko posodobiš tako, da razširiš mapi `Themes` in `Sources` v korensko mapo foruma ter prepišeš obstoječe datoteke.
+
+Vendar za čisto namestitev priporočamo, da najprej odstraniš trenutno različico.
 
 :::info Opomba
 
-Če novo različico lahko namestiš brez odstranitve prejšnje, boš namesto gumba "Namesti" videl gumb "Posodobi":
+Če je mogoče novo različico namestiti brez odstranitve prejšnje, se bo namesto gumba "Namesti" prikazal gumb "Nadgradi":
 
 ![Updating](upgrade.png)
 

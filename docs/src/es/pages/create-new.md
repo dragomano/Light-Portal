@@ -5,14 +5,28 @@ order: 2
 
 # Añadir página
 
-En esta sección, puede crear una página de portal con el contenido que necesite. Los campos requeridos son resaltados con un marco de color.
+In this section, you can create a portal page with the content you need.
+
+## Page types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based pages
+
+Plugins can extend the functionality by adding new page types or statuses. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **BlogMode**: Adds a new "Blog entry" type for displaying pages in a separate menu section
 
 ## Content tab
 
 Aquí puede configurar:
 
 - título
-- tipo de página
 - contenido
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ Aquí puede configurar:
 
 Aquí puede configurar:
 
+- status — inactive, active, or unapproved
 - permisos — especifica quién accederá a tu página
 - categoría— si te gusta mantener las cosas organizadas
-- transferencia de autoría — si quieres cambiar el autor
+- type — default, internal, or draft
 
 ![Access tab](access_tab.png)
 

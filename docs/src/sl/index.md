@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Hiter, eleganten, sodoben
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Kako ustvariti lastno postavitev začetne strani
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Bloki

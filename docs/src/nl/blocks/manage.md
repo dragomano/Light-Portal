@@ -5,9 +5,9 @@ order: 1
 
 # Beheer blokken
 
-Deze sectie bevat alle geconfigureerde portalblokken, zowel ingeschakeld als uitgeschakeld. Blokken zijn gesorteerd op panelen.
+This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
 
-Voor elk blok, zijn pictogram, notitie of titel, type, uitvoer gebieden, prioriteit en lijst van acties worden weergegeven.
+For each block, we see its icon, description or title, the type, where the output goes, how important it is, and a list of actions that can be done with it.
 
 ![Manage blocks](manage_blocks.png)
 

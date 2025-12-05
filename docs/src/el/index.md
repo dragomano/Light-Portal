@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Γρήγορο, ωραίο, μοντέρνο
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Πώς να δημιουργήσετε τη δική σας διάταξη πρώτης σελίδας
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Μπλοκ

@@ -10,4 +10,4 @@ description: Приветствие для читателей документа
 
 ---
 
-Если у вас есть вопросы или общие соображения, оставляйте их на [русскоязычном форуме](https://www.simplemachines.ru/index.php?topic=21371.0) или в [обсуждениях GitHub](https://github.com/dragomano/Light-Portal/discussions), и я свяжусь с вами как можно скорее.
+Есть вопросы или предложения? Поделитесь ими в [теме поддержки](https://www.simplemachines.ru/index.php?topic=21371.0) или прямо здесь, в комментариях — я не кусаюсь!

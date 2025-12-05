@@ -12,5 +12,8 @@
 /composer.lock      export-ignore
 /eslint.config.js   export-ignore
 /package.json       export-ignore
+/phpunit.xml        export-ignore
 /pnpm-lock.yaml     export-ignore
 /rector.php         export-ignore
+/RoboFile.php       export-ignore
+/tsconfig.json      export-ignore

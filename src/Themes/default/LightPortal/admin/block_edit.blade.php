@@ -15,7 +15,7 @@
 			<h3 class="catbg">{!! $txt['lp_' . $context['lp_block']['type']]['title'] !!}</h3>
 		</div>
 		<div class="information">
-			{{ $txt['lp_' . $context['lp_block']['type']]['description'] }}
+			{!! $txt['lp_' . $context['lp_block']['type']]['description'] !!}
 		</div>
 	@endif
 @endsection

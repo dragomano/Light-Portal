@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Меню',
     returnToTopLabel: 'На початок',
     langMenuLabel: 'Змінити мову',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'СТОРІНКА НЕ ЗНАЙДЕНО',
       quote: 'Але якщо ви не зміните напрямок і продовжите шукати, ви зможете потрапити туди, куди ви прямуєте.',

@@ -20,7 +20,7 @@ La locomotora del portal. Capacidad de personalizar la interacción con modifica
 
 ## artículo
 
-Tarjetas en la página principal que muestran el contenido establecido en la configuración: foros o temas, páginas, imágenes, etc.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## categoría
 

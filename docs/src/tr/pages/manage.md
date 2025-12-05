@@ -5,9 +5,9 @@ order: 1
 
 # Sayfaları yönet
 
-Bu bölüm, mevcut kullanıcı tarafından düzenlenebilen tüm oluşturulmuş portal sayfalarını listeler. Sayfalar, başlık veya slug ile aranabilir.
+Bu bölüm daha önce oluşturduğunuz ve düzenleyebileceğiniz tüm sayfaları gösterir. Başlıkları veya takma adlarıyla onları arayabilirsiniz.
 
-Her sayfa için, ID'si, oluşturulma/güncellenme tarihi, görüntülenme sayısı, yorum sayısı, türü, slug'ı, başlığı ve eylem listesi görüntülenir.
+Her sayfanın kendi ID'si, ne zaman oluşturulduğu ve güncellendiği, ne kadar görüntülendiği, ne kadar yorumu olduğu, ne tür bir sayfa olduğu, takma adı ve başlığı vardır. Ayrıca onunla ne işlemler yapabileceğinizin bir listesini görürsünüz.
 
 ![Manage pages](manage_pages.png)
 

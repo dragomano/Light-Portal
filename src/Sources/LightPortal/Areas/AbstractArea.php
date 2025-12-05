@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
 use LightPortal\Enums\Tab;
@@ -37,6 +38,9 @@ use function LightPortal\app;
 
 use const LP_NAME;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractArea implements AreaInterface
 {
 	use HasArea;
@@ -46,7 +50,10 @@ abstract class AbstractArea implements AreaInterface
 	public function __construct(
 		protected readonly DataManagerInterface $repository,
 		protected readonly EventDispatcherInterface $dispatcher
-	) {}
+	)
+	{
+		$this->checkPermissions();
+	}
 
 	public function main(): void
 	{
@@ -113,6 +120,11 @@ abstract class AbstractArea implements AreaInterface
 	abstract protected function getValidatorClass(): string;
 
 	abstract protected function getFactoryClass(): string;
+
+	protected function checkPermissions(): void
+	{
+		User::$me->isAllowedTo('admin_forum');
+	}
 
 	protected function beforeMain(): void {}
 

@@ -1,9 +1,7 @@
 ---
 description: Mevcut portal ayarlarının kısa bir özeti
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Portal ayarları

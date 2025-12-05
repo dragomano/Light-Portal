@@ -1,9 +1,7 @@
 ---
 description: Eine kurze Zusammenfassung der verfügbaren Portaleinstellungen
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Portaleinstellungen
@@ -14,11 +12,11 @@ Wir werden nicht im Detail jedes der verfügbaren Einstellungen beschreiben, wir
 
 ## Allgemeine Einstellungen
 
-In diesem Abschnitt können Sie die Portal-Hauptseite vollständig personalisieren, den autonomen Modus aktivieren und Benutzerzugriffsberechtigungen auf Portalelemente ändern.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Einstellungen für Startseite und Artikel
+### Settings for the front page and articles
 
-Um den Inhalt der Portal-Startseite zu ändern, wählen Sie den passenden "Portal-Startseite" Modus:
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Deaktiviert
 - Spezifische Seite (nur die ausgewählte Seite wird angezeigt)
@@ -53,7 +51,7 @@ Ihn diesem Abschnitt können Sie diverse zusätzliche Einstellungen des Portals 
 ### Kompatibilitätsmodus
 
 - Der Wert des **action**-Parameters des Portals – Sie können diese Einstellung ändern, um Light Portal zusammen mit anderen, ähnlichen Modifikationen zu nutzen. Die Hauptseite ist dann unter der angegebenen Adresse erreichbar.
-- Der **page**-Parameter für Portalseiten – siehe oben. Analog für die Portalseiten – ändern Sie den Parameter und sie sind unter anderen URIs erreichbar.
+- Der **page**-Parameter für Portalseiten – siehe oben. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Wartung
 

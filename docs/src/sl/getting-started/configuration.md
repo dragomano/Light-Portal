@@ -1,9 +1,7 @@
 ---
 description: Kratek povzetek razpoložljivih nastavitev portala
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Nastavitve portala

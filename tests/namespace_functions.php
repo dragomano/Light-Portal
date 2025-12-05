@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LightPortal;
 
+use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
@@ -18,6 +19,7 @@ use LightPortal\Renderers\PurePHP;
 use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\UI\Breadcrumbs\BreadcrumbWrapper;
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\ViewInterface;
 use LightPortal\Utils\CacheInterface;
@@ -268,6 +270,24 @@ if (! function_exists('LightPortal\\app')) {
             $mock->shouldReceive('isEmpty')->andReturn(false);
             $mock->shouldReceive('isNotEmpty')->andReturn(false);
             $mock->shouldIgnoreMissing();
+
+            return $mock;
+        } elseif (str_contains($service, 'TablePresenterInterface')) {
+            if ($mock = AppMockRegistry::get(TablePresenterInterface::class)) {
+                return $mock;
+            }
+
+            $mock = mock(TablePresenterInterface::class);
+            $mock->shouldReceive('render')->byDefault()->andReturn('<table><tr><td>Test Data</td></tr></table>');
+
+            return $mock;
+        } elseif (str_contains($service, 'BreadcrumbWrapper')) {
+            if ($mock = AppMockRegistry::get('BreadcrumbWrapper')) {
+                return $mock;
+            }
+
+            $mock = mock(BreadcrumbWrapper::class);
+            $mock->shouldReceive('__call')->andReturnSelf()->byDefault();
 
             return $mock;
         }

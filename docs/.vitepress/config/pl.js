@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Menu',
     returnToTopLabel: 'Powrót do góry',
     langMenuLabel: 'Zmień język',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'STRONA NIEPRZEZNACZONA',
       quote: 'Ale jeśli nie zmienisz kierunku, a jeśli będziesz szukać, możesz skończyć tam, gdzie się kierujesz.',

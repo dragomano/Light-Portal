@@ -10,4 +10,4 @@ description: Привітання читачам документації
 
 ---
 
-Якщо у вас є які-небудь питання або загальні думки, залиште їх в [темі підтримки](https://www.simplemachines.org/community/index.php?topic=572393.0) або [GitHub Discussions](https://github.com/dragomano/Light-Portal/discussions) і я повернусь до ASAP.
+Have any questions or suggestions? Feel free to post them on [the support topic](https://www.simplemachines.org/community/index.php?topic=572393.0) or right here — I’ll get back to you as soon as I can.

@@ -1,9 +1,7 @@
 ---
 description: Un breve resumen de la configuración del portal disponible
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Configuración del portal
@@ -14,11 +12,11 @@ No describiremos en detalle cada una de las configuraciones disponibles, sólo m
 
 ## Configuración general
 
-En esta sección, puede personalizar completamente la página principal del portal, habilitar el modo independiente y cambiar los permisos de usuario para acceder a los elementos del portal.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Configuraciones para la portada y los artículos
+### Settings for the front page and articles
 
-Para cambiar el contenido de la página de inicio del portal, seleccione el modo apropiado "página de inicio del portal":
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Desactivado
 - Página especificada (solo se mostrará la página seleccionada)
@@ -53,7 +51,7 @@ En esta sección, puede cambiar varias configuraciones auxiliares del portal, qu
 ### Modo de compatibilidad
 
 - El valor del parámetro **acción** del portal - puedes cambiar esta opción para usar el Portal de Luz junto con otras modificaciones similares. Luego se abrirá la página de inicio en la dirección especificada.
-- El parámetro **página** para las páginas del portal - ver arriba. De manera similar, para las páginas del portal, cambie el parámetro y se abrirán con diferentes URL.
+- El parámetro **página** para las páginas del portal - ver arriba. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Mantenimiento
 

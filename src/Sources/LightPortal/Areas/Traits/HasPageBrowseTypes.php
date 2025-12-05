@@ -19,6 +19,9 @@ use Bugo\Compat\Utils;
 use LightPortal\Enums\Status;
 use LightPortal\Utils\Str;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 trait HasPageBrowseTypes
 {
 	private string $browseType;

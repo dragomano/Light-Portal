@@ -5,14 +5,28 @@ order: 2
 
 # Sayfa ekle
 
-Bu bölümde, ihtiyaç duyduğunuz içerikle bir portal sayfası oluşturabilirsiniz. Gerekli alanlar, renkli bir çerçeve ile vurgulanmıştır.
+Bu bölümde, ihtiyaç duyduğunuz içerikle bir portal sayfası oluşturabilirsiniz.
+
+## Sayfa türleri
+
+### Yerleşik içerik türleri
+
+- **BBC**: İçerikte BBCode işaretlemelerine izin verir
+- **HTML**: İşlenmemiş HTML içeriği
+- **PHP**: Çalıştırılabilir PHP kodu (sadece admin)
+
+### Eklenti-tabanlı bloklar
+
+Eklentiler yeni sayfa türleri ve durumlar ekleyerek işlevselliği genişletebilir. Örnekler:
+
+- **Markdown**: İçerik için Markdown sözdizimini etkinleştirir
+- **BlogMode**: Sayfaları ayrı bir menü bölümünde göstermek için yeni bir "Blok girdisi" ekler
 
 ## İçerik sekmesi
 
 Burada şunları yapılandırabilirsiniz:
 
 - başlık
-- sayfa türü
 - içerik
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ Burada şunları yapılandırabilirsiniz:
 
 Burada şunları yapılandırabilirsiniz:
 
+- durum — etkin değil, etkin veya onaylanmamış
 - izinler — sayfanıza kimin erişeceğini belirtin
 - kategori — işleri düzenli tutmak istiyorsanız
-- yazarlık devri — yazarı değiştirmek istiyorsanız
+- tür — varsayılan, dahili veya taslak
 
 ![Access tab](access_tab.png)
 

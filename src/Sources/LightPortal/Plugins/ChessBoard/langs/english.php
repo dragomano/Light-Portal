@@ -3,7 +3,7 @@
 return [
 	'title' => 'Chessboard',
 	'description' => 'Provides an opportunity to play chess with the computer.',
-	'engine_note' => 'The <a href="%s" target="_blank" rel="noopener">Stockfish 17.1</a> engine is used.',
+	'engine_note' => 'The %s engine is used.',
 	'board_style' => 'Board style',
 	'piece_style' => 'Piece style',
 	'border_type' => 'Border type',

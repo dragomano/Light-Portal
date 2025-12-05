@@ -1,16 +1,51 @@
 ---
-description: Instrukcje dotyczące tworzenia własnych układów portalu
+description: Comprehensive guide to Light Portal's template system, Blade templating, layouts, and themes
 ---
 
-# Utwórz własny układ strony głównej
+# Create custom layouts
 
-:::info Notatka
+Light Portal uses a flexible template system based on [BladeOne](https://github.com/EFTEC/BladeOne), a standalone implementation of Laravel's Blade templating engine. This system allows you to customize the appearance and structure of your portal through layouts, themes, and reusable components.
 
-Od wersji 2.6 używamy [BladeOne](https://github.com/EFTEC/BladeOne) do renderowania układów strony głównej.
+## Template system
 
-:::
+### Blade templating engine
 
-Oprócz istniejących układów zawsze możesz dodać własne.
+Blade is a powerful templating engine that provides clean, readable syntax for mixing PHP with HTML. Key features:
+
+- **Template Inheritance**: Use `@extends` and `@section` directives to create layout hierarchies
+- **Includes**: Reuse components with `@include` directives
+- **Control Structures**: PHP-like syntax with `@if`, `@foreach`, `@while`, etc.
+
+See detailed information about Blade markup [here](https://github.com/EFTEC/BladeOne/wiki/Template-variables).
+
+### Layouts
+
+Layouts define the overall structure of your front page. Located in `/Themes/default/LightPortal/layouts/`, they determine how front page articles are arranged. Examples include:
+
+- `default.blade.php` - Standard grid layout
+- `simple.blade.php` - Minimalist design
+- `modern.blade.php` - Contemporary styling
+- `featured_grid.blade.php` - Highlighted content grid
+
+### Partials
+
+Reusable template components stored in `/Themes/default/LightPortal/layouts/partials/`:
+
+- `base.blade.php` - Main layout wrapper
+- `card.blade.php` - Article card template
+- `pagination.blade.php` - Page navigation
+- `image.blade.php` - Image display component
+
+### Themes and assets
+
+- `/Themes/default/LightPortal`: Portal templates files
+- `/languages/LightPortal`: Localization files
+- `/css/light_portal`: CSS enhancements
+- `/scripts/light_portal`: JavaScript enhancements
+
+## Layout example
+
+In addition to existing front page layouts, you can always add your own.
 
 Aby to zrobić, utwórz plik "custom.blade.php" w katalogu "/Themes/default/portal_layouts":
 
@@ -24,39 +59,40 @@ Aby to zrobić, utwórz plik "custom.blade.php" w katalogu "/Themes/default/port
 		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
-		<div class="
-			col-xs-12 col-sm-6 col-md-4
-			col-lg-{{ $context['lp_frontpage_num_columns'] }}
-			col-xl-{{ $context['lp_frontpage_num_columns'] }}
-		">
-			<figure class="noticebox">
-				{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
-			</figure>
-		</div>
+			<div class="
+				col-xs-12 col-sm-6 col-md-4
+				col-lg-{{ $context['lp_frontpage_num_columns'] }}
+				col-xl-{{ $context['lp_frontpage_num_columns'] }}
+			">
+				<figure class="noticebox">
+					{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
+				</figure>
+			</div>
 		@endforeach
 
 		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
 @endsection
+
+<style>
+.article_custom {
+	// Your CSS
+}
+</style>
 ```
 
-Następnie zobaczysz nowy układ strony głównej - "Własny" - w ustawieniach portalu:
+After that you will see a new front page layout - `Custom` - on the portal settings:
 
 ![Select custom template](set_custom_template.png)
 
 Możesz stworzyć tyle takich układów, ile chcesz. Użyj "debug.blade.php" i innych układów w katalogu "/Themes/default/LightPortal/layouts" jako przykładów.
 
-Aby dostosować arkusz stylów, utwórz plik "portal_custom.css" w katalogu "/Themes/default/css":
+## CSS customizing
 
-```css {3}
-/* Custom layout */
-.article_custom {
-  /* Your rules */
-}
-```
+You can easily change the look of anything by adding your own styles. Just create a new file called `portal_custom.css` in the `Themes/default/css` directory and put your CSS there.
 
 :::tip Porada
 
-Jeśli utworzyłeś własny szablon strony głównej i chcesz udostępnić go programistom i innym użytkownikom, użyj https://codepen.io/pen/ lub innych podobnych zasobów.
+If you have created your own front page template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
 
 :::

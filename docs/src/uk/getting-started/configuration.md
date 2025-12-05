@@ -1,9 +1,7 @@
 ---
 description: Коротке описання доступних параметрів порталу
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Налаштування порталу
@@ -14,11 +12,11 @@ outline:
 
 ## Загальні налаштування
 
-У цьому розділі ви можете повністю налаштувати фронтальну сторінку порталу. Увімкніть автономні режими та змінити права користувача для доступу до порталу елементів.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Налаштування головної сторінки і статей
+### Settings for the front page and articles
 
-Щоб змінити вміст головної сторінки порталу, оберіть відповідний режим "інтерфейсу порталу" :
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Вимкнути
 - Вказана сторінка (тільки вибрана сторінка буде показана)
@@ -53,7 +51,7 @@ This is a mode where you can specify your own home page, and remove unnecessary 
 ### Режим сумісності
 
 - Значення параметра **дія** порталу - ви можете змінити цей параметр для використання Light Portal у поєднанні з іншими подібними модифікаціями. Потім домашня сторінка відкриється за вказаною адресою.
-- Параметр **page** для порталу сторінок - подивіться вище. Так само, для сторінок порталу - змінювати параметр і вони відкриються з різними URL-адресами.
+- Параметр **page** для порталу сторінок - подивіться вище. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Ремонт
 

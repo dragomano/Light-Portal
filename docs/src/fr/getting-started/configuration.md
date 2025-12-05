@@ -1,9 +1,7 @@
 ---
 description: Un bref résumé des paramètres du portail disponible
 order: 3
-outline:
-  - 2
-  - 3
+outline: [ 2, 3 ]
 ---
 
 # Paramètres du portail
@@ -14,11 +12,11 @@ Nous ne décrirons pas en détail chacun des paramètres disponibles, nous ne me
 
 ## Paramètres généraux
 
-Dans cette section, vous pouvez entièrement personnaliser la page d'accueil du portail, activer le mode autonome et modifier les permissions des utilisateurs pour accéder aux éléments du portail.
+In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
 
-### Paramètres de la page d'accueil et des articles
+### Settings for the front page and articles
 
-Pour modifier le contenu de la page d'accueil du portail, sélectionnez le mode "frontpage du portail" approprié :
+To change the content of the portal home page, select the appropriate "the portal front page" mode:
 
 - Désactivée
 - Page spécifiée (seule la page sélectionnée sera affichée)
@@ -53,7 +51,7 @@ Dans cette section, vous pouvez modifier divers paramètres auxiliaires du porta
 ### Mode de compatibilité
 
 - La valeur du paramètre **action** du portail - vous pouvez modifier ce paramètre pour utiliser le Light Portal en conjonction avec d'autres modifications similaires. Ensuite, la page d'accueil s'ouvrira à l'adresse indiquée.
-- Le paramètre **page** pour les pages du portail - voir ci-dessus. De même, pour les pages du portail, changez le paramètre et ils s'ouvriront avec différents URL.
+- Le paramètre **page** pour les pages du portail - voir ci-dessus. Similarly, for portal pages - change the parameter and they will open with different URLs.
 
 ### Entretien
 

@@ -5,14 +5,28 @@ order: 2
 
 # Προσθήκη σελίδας
 
-Σε αυτήν την ενότητα, μπορείτε να δημιουργήσετε μια σελίδα πύλης με το περιεχόμενο που χρειάζεστε. Τα υποχρεωτικά πεδία επισημαίνονται με έγχρωμο πλαίσιο.
+In this section, you can create a portal page with the content you need.
+
+## Page types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based pages
+
+Plugins can extend the functionality by adding new page types or statuses. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **Λειτουργία ιστολογίου**: Προσθέτει έναν νέο τύπο "Καταχώριση ιστολογίου" για την εμφάνιση σελίδων σε ξεχωριστή ενότητα μενού
 
 ## Καρτέλα περιεχομένου
 
 Εδώ μπορείτε να διαμορφώσετε:
 
 - τίτλος
-- τύπος σελίδας
 - περιεχόμενο
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ order: 2
 
 Εδώ μπορείτε να διαμορφώσετε:
 
+- status — inactive, active, or unapproved
 - δικαιώματα — καθορίστε ποιος θα έχει πρόσβαση στη σελίδα σας
 - κατηγορία — αν σας αρέσει να κρατάτε τα πράγματα οργανωμένα
-- μεταβίβαση της συγγραφής — εάν θέλετε να αλλάξετε τον συγγραφέα
+- type — default, internal, or draft
 
 ![Access tab](access_tab.png)
 

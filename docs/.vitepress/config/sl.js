@@ -33,6 +33,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Meni',
     returnToTopLabel: 'Nazaj na vrh',
     langMenuLabel: 'Spremeni jezik',
+    lastUpdatedText: 'Nazadnje posodobljeno',
     notFound: {
       title: 'STRAN NI NAJDENA',
       quote: 'Ampak če ne spremeniš svoje smeri in če nadaljuješ z iskanjem, lahko končaš tam, kamor si namenjen.',

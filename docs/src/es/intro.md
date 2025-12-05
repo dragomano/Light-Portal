@@ -10,4 +10,4 @@ description: Saludos a los lectores de la documentación
 
 ---
 
-Si tienes alguna pregunta o pensamiento general, déjalos en [el tema de soporte](https://www.simplemachines.org/community/index.php?topic=572393.0) o [GitHub Discussions](https://github.com/dragomano/Light-Portal/discussions) y te contactaré contigo ASAP.
+Have any questions or suggestions? Feel free to post them on [the support topic](https://www.simplemachines.org/community/index.php?topic=572393.0) or right here — I’ll get back to you as soon as I can.

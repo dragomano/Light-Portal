@@ -9,6 +9,28 @@ order: 2
 
 В залежності від типу блоку, будуть доступні різні параметри, поширюються на різні вкладки.
 
+## Block types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based blocks
+
+Blocks from plugins extend functionality. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **ArticleList**: Displays articles from topics/pages with customizable display options
+- **Calculator**: Interactive calculator widget
+- **BoardStats**: Forum board statistics
+- **News**: Latest announcements
+- **Polls**: Active forum polls
+- **RecentPosts**: Recent forum activity
+- **UserInfo**: Current user details
+- **WhosOnline**: Online users list
+
 ## Вкладка "Вміст"
 
 Тут ви можете налаштувати:
@@ -31,9 +53,7 @@ order: 2
 
 ## Зовнішня вкладка
 
-Тут ви можете налаштувати:
-
-- параметри вигляду
+Here you can configure the block appearance options.
 
 ![Appearance tab](appearance_tab.png)
 

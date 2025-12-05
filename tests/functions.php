@@ -356,3 +356,9 @@ if (! function_exists('template_control_richedit')) {
     {
     }
 }
+
+if (! function_exists('createList')) {
+    function createList(array $options): void
+    {
+    }
+}

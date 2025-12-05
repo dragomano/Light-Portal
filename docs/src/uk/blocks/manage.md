@@ -5,9 +5,9 @@ order: 1
 
 # Керування блоками
 
-Цей розділ перелічує всі налаштовані блоки порталу, увімкнені та відключені. Блоки відсортовані панелями.
+This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
 
-Для кожного блоку відображається його значок, примітка та назва, обсяги виходу, пріоритетні та список дій.
+For each block, we see its icon, description or title, the type, where the output goes, how important it is, and a list of actions that can be done with it.
 
 ![Manage blocks](manage_blocks.png)
 

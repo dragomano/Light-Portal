@@ -17,12 +17,6 @@ Jeśli chcesz zmienić ustawienia wtyczki, kliknij obok przycisku wtyczki.
 
 Niektóre wtyczki nie są dołączone do portalu, muszą być zainstalowane oddzielnie. Takie wtyczki są podzielone na wtyczki do pobrania i bonusowe dostępne dla sponsorów projektu.
 
-:::info Uwaga
-
-Dodatkowe wtyczki są również dostępne dla tłumaczy (jeśli co najmniej "LightPortal.{your_language}.php" jest przetłumaczona w 100% jakości), jak również dla wszystkich [aktywnych uczestników](../how-to/help-to-project) projektu.
-
-:::
-
 ![Download additional plugins](download_plugins.png)
 
-Oddzielny pakiet wtyczek może być zainstalowany na stronie [Import wtyczek](./impex). Możesz także po prostu wyodrębnić folder wtyczki z pobranego archiwum i przenieść go do katalogu "Sources/LightPortal/Plugins".
+The separate plugin package can be installed in the Plugin Import section. Możesz także po prostu wyodrębnić folder wtyczki z pobranego archiwum i przenieść go do katalogu "Sources/LightPortal/Plugins".

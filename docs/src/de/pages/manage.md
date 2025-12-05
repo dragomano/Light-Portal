@@ -5,9 +5,9 @@ order: 1
 
 # Seiten verwalten
 
-Dieser Abschnitt listet alle erstellten Portalseiten auf, die vom aktuellen Benutzer bearbeitet werden können. Es gibt eine Suche nach Seiten nach Titel oder Slug.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
 
-Für jede Seite werden die ID, das Erstellen/Aktualisieren Datum, die Anzahl der Anzeigen, die Anzahl der Kommentare, den Typ, die Slug, den Titel und die Liste der Aktionen angezeigt.
+Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
 
 ![Manage pages](manage_pages.png)
 

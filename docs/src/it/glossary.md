@@ -20,7 +20,7 @@ La locomotiva del portale. Possibilità di personalizzare l'interazione con modi
 
 ## articolo
 
-Schede in prima pagina che mostrano i contenuti impostati nelle impostazioni: bacheche del forum o discussioni, pagine, immagini, ecc.
+Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
 
 ## categoria
 

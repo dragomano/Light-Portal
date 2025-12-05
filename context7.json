@@ -1,0 +1,29 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Light Portal",
+  "description": "A fancy portal mod for SMF 2.1.x",
+  "branch": "master",
+  "excludeFolders": [
+    "configs",
+    "docs/src/ar",
+    "docs/src/de",
+    "docs/src/el",
+    "docs/src/es",
+    "docs/src/fr",
+    "docs/src/it",
+    "docs/src/nl",
+    "docs/src/pl",
+    "docs/src/ru",
+    "docs/src/sl",
+    "docs/src/tr",
+    "docs/src/uk",
+    "resources",
+    "src",
+    "tests"
+  ],
+  "excludeFiles": [
+    "LICENSE",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md"
+  ]
+}
