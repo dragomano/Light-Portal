@@ -1,4 +1,4 @@
--- Adminer 5.3.0 MariaDB 11.7.2-MariaDB dump
+-- Adminer 5.4.1 MariaDB 12.1.2-MariaDB-ubu2404 dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -959,7 +959,7 @@ CREATE TABLE `smf_log_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 INSERT INTO `smf_log_packages` (`id_install`, `filename`, `package_id`, `name`, `version`, `id_member_installed`, `member_installed`, `time_installed`, `id_member_removed`, `member_removed`, `time_removed`, `install_state`, `failed_steps`, `themes_installed`, `db_changes`, `credits`, `sha256_hash`) VALUES
-(1,	'light_portal.tgz',	'Bugo:LightPortal',	'Light Portal',	'2.9.5',	1,	'Test',	1756827505,	0,	'0',	0,	1,	'[]',	'1',	'[[\"remove_table\",\"smf_lp_blocks\"],[\"remove_table\",\"smf_lp_categories\"],[\"remove_table\",\"smf_lp_comments\"],[\"remove_table\",\"smf_lp_page_tag\"],[\"remove_table\",\"smf_lp_pages\"],[\"remove_table\",\"smf_lp_params\"],[\"remove_table\",\"smf_lp_plugins\"],[\"remove_table\",\"smf_lp_tags\"],[\"remove_table\",\"smf_lp_titles\"]]',	'',	'ad78e39eb30926a0e3d3935ddc503351bd71ec6a52b85d32b35b589d0ea1ed74');
+(1,	'light_portal.tgz',	'Bugo:LightPortal',	'Light Portal',	'3.0 beta 2',	1,	'Test',	1764899268,	0,	'0',	0,	1,	'[]',	'1',	'',	'',	'54ae9558b89b8524b89bd4401cca283d4c37c4c26a1958fda14badb564521d2c');
 
 DROP TABLE IF EXISTS `smf_log_polls`;
 CREATE TABLE `smf_log_polls` (
@@ -1129,93 +1129,100 @@ CREATE TABLE `smf_log_topics` (
 INSERT INTO `smf_log_topics` (`id_member`, `id_topic`, `id_msg`, `unwatched`) VALUES
 (1,	1,	1,	0);
 
+
 DROP TABLE IF EXISTS `smf_lp_blocks`;
 CREATE TABLE `smf_lp_blocks` (
-  `block_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `icon` varchar(255) DEFAULT NULL,
+  `block_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `icon` varchar(60) DEFAULT NULL,
   `type` varchar(30) NOT NULL,
-  `note` varchar(255) DEFAULT NULL,
-  `content` text DEFAULT NULL,
   `placement` varchar(10) NOT NULL,
-  `priority` tinyint(1) unsigned DEFAULT 0,
-  `permissions` tinyint(1) unsigned DEFAULT 0,
-  `status` tinyint(1) unsigned DEFAULT 1,
+  `priority` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `permissions` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT 1,
   `areas` varchar(255) NOT NULL DEFAULT 'all',
   `title_class` varchar(255) DEFAULT NULL,
   `content_class` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`block_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+INSERT INTO `smf_lp_blocks` (`block_id`, `icon`, `type`, `placement`, `priority`, `permissions`, `status`, `areas`, `title_class`, `content_class`) VALUES
+(1,	'fas fa-user',	'user_info',	'right',	0,	3,	1,	'all',	'cat_bar',	'roundframe');
 
 
 DROP TABLE IF EXISTS `smf_lp_categories`;
 CREATE TABLE `smf_lp_categories` (
-  `category_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `icon` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `priority` tinyint(1) unsigned DEFAULT 0,
-  `status` tinyint(1) unsigned DEFAULT 1,
-  PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `slug` varchar(255) NOT NULL,
+  `icon` varchar(60) DEFAULT NULL,
+  `priority` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`category_id`),
+  UNIQUE KEY `slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 DROP TABLE IF EXISTS `smf_lp_comments`;
 CREATE TABLE `smf_lp_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int(10) unsigned DEFAULT 0,
-  `page_id` smallint(5) unsigned DEFAULT NULL,
-  `author_id` mediumint(8) unsigned DEFAULT NULL,
-  `message` text NOT NULL,
-  `created_at` int(10) unsigned DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  `parent_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `page_id` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `author_id` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `created_at` int(10) unsigned NOT NULL DEFAULT 0,
+  `updated_at` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_comments_created_at` (`created_at`),
+  KEY `idx_comments_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 DROP TABLE IF EXISTS `smf_lp_pages`;
 CREATE TABLE `smf_lp_pages` (
   `page_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `category_id` int(10) unsigned DEFAULT 0,
-  `author_id` mediumint(8) unsigned DEFAULT 0,
+  `category_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `author_id` mediumint(8) unsigned NOT NULL DEFAULT 0,
   `slug` varchar(255) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `content` mediumtext NOT NULL,
   `type` varchar(10) NOT NULL DEFAULT 'bbc',
   `entry_type` varchar(10) NOT NULL DEFAULT 'default',
-  `permissions` tinyint(1) unsigned DEFAULT 0,
-  `status` tinyint(1) unsigned DEFAULT 1,
-  `num_views` int(10) unsigned DEFAULT 0,
-  `num_comments` int(10) unsigned DEFAULT 0,
-  `created_at` int(10) unsigned DEFAULT 0,
-  `updated_at` int(10) unsigned DEFAULT 0,
-  `deleted_at` int(10) unsigned DEFAULT 0,
-  `last_comment_id` int(10) unsigned DEFAULT 0,
+  `permissions` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `num_views` int(10) unsigned NOT NULL DEFAULT 0,
+  `num_comments` int(10) unsigned NOT NULL DEFAULT 0,
+  `created_at` int(10) unsigned NOT NULL DEFAULT 0,
+  `updated_at` int(10) unsigned NOT NULL DEFAULT 0,
+  `deleted_at` int(10) unsigned NOT NULL DEFAULT 0,
+  `last_comment_id` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`page_id`),
-  UNIQUE KEY `slug` (`slug`(191))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  UNIQUE KEY `slug` (`slug`),
+  KEY `idx_pages_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `smf_lp_pages` (`page_id`, `category_id`, `author_id`, `slug`, `description`, `content`, `type`, `entry_type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`, `deleted_at`, `last_comment_id`) VALUES
-(1,	0,	1,	'home',	NULL,	'<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.</p><p><br></p>\n				<p>Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.</p><p><br></p>\n				<p>Aliquam in quam ut diam consectetur semper. Aliquam commodo mi purus, bibendum laoreet massa tristique eget. Suspendisse ut purus nisi. Mauris euismod dolor nec scelerisque ullamcorper. Praesent imperdiet semper neque, ac luctus nunc ultricies eget. Praesent sodales ante sed dignissim vulputate. Ut vel ligula id sem feugiat sollicitudin non at metus. Aliquam vel est non sapien sodales semper. Suspendisse potenti. Sed convallis quis turpis eu pulvinar. Vivamus nulla elit, condimentum vitae commodo eu, pellentesque ullamcorper enim. Maecenas faucibus dolor nec enim interdum, quis iaculis lacus suscipit. Pellentesque aliquam, lectus id volutpat euismod, ante tellus mollis dui, sed placerat erat arcu sit amet purus.</p>',	'html',	'default',	3,	1,	1,	0,	1756827505,	0,	0,	0);
+INSERT INTO `smf_lp_pages` (`page_id`, `category_id`, `author_id`, `slug`, `type`, `entry_type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`, `deleted_at`, `last_comment_id`) VALUES
+(1,	0,	1,	'home',	'html',	'default',	3,	1,	0,	0,	1764899268,	0,	0,	0);
+
 
 DROP TABLE IF EXISTS `smf_lp_page_tag`;
 CREATE TABLE `smf_lp_page_tag` (
-  `page_id` int(10) unsigned NOT NULL,
-  `tag_id` int(10) unsigned NOT NULL,
+  `page_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `tag_id` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`page_id`,`tag_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 DROP TABLE IF EXISTS `smf_lp_params`;
 CREATE TABLE `smf_lp_params` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `item_id` int(10) unsigned DEFAULT NULL,
+  `item_id` int(10) unsigned NOT NULL DEFAULT 0,
   `type` varchar(30) NOT NULL DEFAULT 'block',
   `name` varchar(255) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_id_type_name` (`item_id`,`type`,`name`(191))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  UNIQUE KEY `item_id` (`item_id`,`type`,`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 INSERT INTO `smf_lp_params` (`id`, `item_id`, `type`, `name`, `value`) VALUES
 (1,	1,	'page',	'show_author_and_date',	'0');
+
 
 DROP TABLE IF EXISTS `smf_lp_plugins`;
 CREATE TABLE `smf_lp_plugins` (
@@ -1224,51 +1231,44 @@ CREATE TABLE `smf_lp_plugins` (
   `config` varchar(100) NOT NULL,
   `value` text DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_config` (`name`,`config`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  UNIQUE KEY `name` (`name`,`config`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 INSERT INTO `smf_lp_plugins` (`id`, `name`, `config`, `value`) VALUES
 (1,	'hello_portal',	'keyboard_navigation',	'1'),
 (2,	'hello_portal',	'show_buttons',	'1'),
 (3,	'hello_portal',	'show_progress',	'1'),
 (4,	'hello_portal',	'theme',	'flattener'),
-(5,	'blog_mode',	'blog_action',	'blog'),
-(6,	'blog_mode',	'show_blogs_in_profiles',	''),
-(7,	'search',	'min_chars',	'3');
-
-DROP TABLE IF EXISTS `smf_lp_simple_chat_messages`;
-CREATE TABLE `smf_lp_simple_chat_messages` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `block_id` int(10) unsigned DEFAULT NULL,
-  `user_id` int(10) unsigned DEFAULT NULL,
-  `message` varchar(255) NOT NULL,
-  `created_at` int(10) unsigned DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+(5,	'code_mirror',	'modes',	'html,php,markdown');
 
 
 DROP TABLE IF EXISTS `smf_lp_tags`;
 CREATE TABLE `smf_lp_tags` (
   `tag_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `icon` varchar(255) DEFAULT NULL,
-  `status` tinyint(1) unsigned DEFAULT 1,
-  PRIMARY KEY (`tag_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  `slug` varchar(255) NOT NULL,
+  `icon` varchar(60) DEFAULT NULL,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`tag_id`),
+  UNIQUE KEY `slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
-DROP TABLE IF EXISTS `smf_lp_titles`;
-CREATE TABLE `smf_lp_titles` (
+DROP TABLE IF EXISTS `smf_lp_translations`;
+CREATE TABLE `smf_lp_translations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `item_id` int(10) unsigned DEFAULT NULL,
+  `item_id` int(10) unsigned NOT NULL DEFAULT 0,
   `type` varchar(30) NOT NULL DEFAULT 'block',
   `lang` varchar(20) NOT NULL,
-  `value` varchar(255) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `content` mediumtext DEFAULT NULL,
+  `description` varchar(510) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_id_type_lang` (`item_id`,`type`,`lang`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+  UNIQUE KEY `item_id` (`item_id`,`type`,`lang`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `smf_lp_titles` (`id`, `item_id`, `type`, `lang`, `value`) VALUES
-(1,	1,	'page',	'english',	'My Community');
+INSERT INTO `smf_lp_translations` (`id`, `item_id`, `type`, `lang`, `title`, `content`, `description`) VALUES
+(1,	1,	'page',	'english',	'My Community',	'<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>',	NULL);
+
 
 DROP TABLE IF EXISTS `smf_mail_queue`;
 CREATE TABLE `smf_mail_queue` (
@@ -1846,15 +1846,38 @@ INSERT INTO `smf_settings` (`variable`, `value`) VALUES
 ('latestMember',	'1'),
 ('latestRealName',	'Test'),
 ('loginHistoryDays',	'30'),
-('lp_comment_block',	'none'),
+('lp_cache_interval',	'72000'),
+('lp_comment_block',	'default'),
 ('lp_enabled_plugins',	'CodeMirror,HelloPortal,ThemeSwitcher,UserInfo'),
 ('lp_fa_source',	'css_cdn'),
-('lp_frontpage_article_sorting',	'1'),
+('lp_footer_panel_width',	'12'),
+('lp_frontpage_article_sorting',	'created;desc'),
 ('lp_frontpage_chosen_page',	'home'),
 ('lp_frontpage_layout',	'default.blade.php'),
 ('lp_frontpage_mode',	'chosen_page'),
+('lp_frontpage_num_columns',	'2'),
 ('lp_frontpage_title',	'My Community'),
-('lp_num_items_per_page',	'10'),
+('lp_header_panel_width',	'12'),
+('lp_left_panel_sticky',	'1'),
+('lp_left_panel_width',	'{\"lg\":3,\"xl\":2}'),
+('lp_num_comments_per_page',	'10'),
+('lp_num_items_per_page',	'12'),
+('lp_page_maximum_tags',	'10'),
+('lp_page_og_image',	'1'),
+('lp_page_param',	'page'),
+('lp_portal_action',	'portal'),
+('lp_right_panel_sticky',	'1'),
+('lp_right_panel_width',	'{\"lg\":3,\"xl\":2}'),
+('lp_show_author',	'1'),
+('lp_show_debug_info',	'1'),
+('lp_show_images_in_articles',	'1'),
+('lp_show_layout_switcher',	'1'),
+('lp_show_pagination',	'1'),
+('lp_show_prev_next_links',	'1'),
+('lp_show_related_pages',	'1'),
+('lp_show_sort_dropdown',	'1'),
+('lp_show_tags_on_page',	'1'),
+('lp_show_teaser',	'1'),
 ('lp_show_views_and_comments',	'1'),
 ('lp_standalone_url',	'https://localhost/portal.php'),
 ('mail_limit',	'5'),
