@@ -124,7 +124,7 @@ final class BasicConfig extends AbstractConfig
 
 	private function isNewVersionAvailable(): array|bool
 	{
-		$cacheTTL = 3 * 24 * 60 * 60;
+		$cacheTTL = 7 * 24 * 60 * 60;
 
 		if (($xml = $this->cache()->get('repo_data', $cacheTTL)) === null) {
 			$repoData = WebFetchApi::fetch('https://api.github.com/repos/dragomano/Light-Portal/releases/latest');
@@ -134,11 +134,13 @@ final class BasicConfig extends AbstractConfig
 			$this->cache()->put('repo_data', $xml, $cacheTTL);
 		}
 
-		if (empty($xml) || empty($xml['tag_name'])) {
+		if (empty($xml) || empty($xml['name'])) {
 			return false;
 		}
 
-		if (version_compare('v' . LP_VERSION, $xml['tag_name'], '<')) {
+		$currentVersion = preg_replace('/^(\d+)\.(\d+)(?!\.)/', '$1.$2.0', LP_VERSION);
+
+		if (version_compare('v' . $currentVersion, $xml['name'], '<')) {
 			return $xml;
 		}
 
