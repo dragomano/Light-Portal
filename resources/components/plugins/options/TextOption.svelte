@@ -1,9 +1,9 @@
 <script>
   let { id, name, value = '', option = {} } = $props();
 
-  let pattern = $state(option.pattern);
-  let placeholder = $state(option.placeholder);
-  let required = $state(option.required);
+  let pattern = $derived(option.pattern);
+  let placeholder = $derived(option.placeholder);
+  let required = $derived(option.required);
 </script>
 
 <div>

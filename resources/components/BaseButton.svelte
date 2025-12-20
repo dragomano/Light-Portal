@@ -22,10 +22,12 @@
 
   let { tag = 'button', icon = '', children, ...rest }: ButtonProps | SpanProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const elementProps = tag === 'button'
     ? { tag: 'button', class: 'button', role: undefined }
     : { tag: 'span', class: undefined, role: 'button' };
 
+  // svelte-ignore state_referenced_locally
   const preparedIcon = iconState && (iconState[icon] ?? '');
 </script>
 

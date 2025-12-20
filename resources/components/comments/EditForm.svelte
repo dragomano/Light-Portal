@@ -10,7 +10,11 @@
     cancel: Function;
   }
 
+  const t = $_;
+
   let { comment, submit, cancel }: Props = $props();
+
+  // svelte-ignore state_referenced_locally
   let message = $state(comment.message);
 </script>
 
@@ -20,12 +24,12 @@
   <div class="comment_edit_buttons">
     {#if message.length}
       <Button onclick={() => submit({ id: comment.id, content: message })} tag="span" icon="save">
-        {$_('save')}
+        {t('save')}
       </Button>
     {/if}
 
     <Button onclick={() => cancel()} tag="span" icon="undo">
-      {$_('modify_cancel')}
+      {t('modify_cancel')}
     </Button>
   </div>
 </div>

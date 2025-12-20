@@ -12,10 +12,12 @@
   }
 
   let { item }: Props = $props();
-
   let show = $state(false);
+  // svelte-ignore state_referenced_locally
   let toggled = $state(item.status === 'on');
+  // svelte-ignore state_referenced_locally
   let outdated = $state(item.outdated);
+  // svelte-ignore state_referenced_locally
   let settingsId = $state(item.snakeName + '_' + appState.sessionId);
   let index = $state(
     Object.values(pluginState.list).findIndex(
