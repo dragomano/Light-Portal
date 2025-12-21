@@ -19,7 +19,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		@include functions.bradius(5px);
+		@include functions.bRadius(5px);
 		width: 100%;
 		height: 100%;
 
@@ -27,7 +27,7 @@
 			display: flex;
 			flex-direction: column;
 			font-size: 1rem;
-			@include functions.bradius(10px);
+			@include functions.bRadius(10px);
 			padding: 5px;
 			margin: 12px;
 			width: 90%;

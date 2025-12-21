@@ -5,12 +5,10 @@
 		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 10px 10px -5px rgba(0, 0, 0, .04);
 		flex-direction: column;
 		height: 18rem;
-		@include functions.bradius(.5rem);
+		@include functions.bRadius(.5rem);
 		align-items: center;
 		display: flex;
 		position: relative;
-		margin-left: .5rem;
-		margin-right: .5rem;
 		margin: .4em;
 
 		@media (min-width: 768px) {
@@ -26,12 +24,10 @@
 			order: 1;
 			height: 20rem;
 			width: 100%;
-			@include functions.bradius(.5rem);
+			@include functions.bRadius(.5rem, .5rem);
 
 			@media (min-width: 768px) {
-				@include functions.bradius(0);
-				border-top-right-radius: .5rem;
-				border-bottom-right-radius: .5rem;
+				@include functions.bRadius(0, .5rem, .5rem, 0);
 				width: 40%;
 				height: 100%;
 				order: 2;
@@ -66,7 +62,6 @@
 				height: 100%;
 				position: absolute;
 				padding: 1.5rem;
-				padding-bottom: 1.5rem;
 
 				@media (min-width: 768px) {
 					display: none;
@@ -122,7 +117,7 @@
 				box-shadow: 0 10px 10px -5px rgba(0, 0, 0, .04);
 				padding: 2rem;
 				background-color: rgba(255, 255, 255, 1);
-				@include functions.bradius(.5rem);
+				@include functions.bRadius(.5rem);
 				height: 100%;
 				margin-left: .5rem;
 				margin-right: .5rem;
@@ -131,9 +126,6 @@
 					box-shadow: none;
 					padding-left: 3.5rem;
 					padding-bottom: 3rem;
-					@include functions.bradius(0);
-					border-top-left-radius: .5rem;
-					border-bottom-left-radius: .5rem;
 					margin-left: 0;
 					margin-right: 0;
 				}

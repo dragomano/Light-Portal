@@ -9,7 +9,7 @@ $icon_color: #155724;
 	max-width: 95%;
 	margin: 0 auto;
 	padding: 10px;
-	@include functions.bradius(5px);
+	@include functions.bRadius(5px);
 }
 .forum-item {
 	display: flex;
@@ -36,7 +36,7 @@ $icon_color: #155724;
 	.tag {
 		display: inline-block;
 		padding: 2px 8px;
-		@include functions.bradius(3px);
+		@include functions.bRadius(3px);
 		font-size: 12px;
 		margin-bottom: 5px;
 	}

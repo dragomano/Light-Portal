@@ -20,7 +20,7 @@
 		}
 
 		> div {
-			@include functions.bradius(6px, 6px);
+			@include functions.bRadius(6px, 6px);
 			display: inline-block;
 			margin: 0 0 -1px;
 			padding: 15px 25px;
@@ -65,7 +65,7 @@
 		display: none;
 		padding: 15px;
 		border: 1px solid variables.$color-light-gray;
-		@include functions.bradius(0, 7px, 7px, 7px);
+		@include functions.bRadius(0, 7px, 7px, 7px);
 
 		&.active_content {
 			display: block;
@@ -169,7 +169,7 @@
 		}
 
 		.choices__inner {
-			@include functions.bradius;
+			@include functions.bRadius;
 		}
 
 		.add_option {

@@ -5,7 +5,7 @@
 	margin-top: 1em;
 
 	.cat_bar {
-		@include functions.bradius;
+		@include functions.bRadius;
 	}
 
 	.pagesection {
@@ -81,7 +81,7 @@
 			max-width: 45px !important;
 			max-height: 45px !important;
 			box-shadow: 0 0 4px #666;
-			@include functions.bradius(100%);
+			@include functions.bRadius(100%);
 		}
 	}
 
@@ -95,7 +95,7 @@
 			padding: 0 12px 8px;
 			border: 1px solid variables.$color-light-gray;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-			@include functions.bradius(7px);
+			@include functions.bRadius(7px);
 
 			.edit_form {
 				textarea {
@@ -140,7 +140,7 @@
 			border: 1px solid variables.$color-light-gray;
 			display: inline-block;
 			padding: 6px 11px;
-			@include functions.bradius(7px, 0, 7px, 0);
+			@include functions.bRadius(7px, 0, 7px, 0);
 			@include functions.valign(top);
 		}
 
@@ -149,7 +149,7 @@
 			display: inline-block;
 			padding: 6px 11px;
 			opacity: .8;
-			@include functions.bradius(0, 7px, 0, 7px);
+			@include functions.bRadius(0, 7px, 0, 7px);
 			@include functions.valign(top);
 
 			.bbc_link {
@@ -200,11 +200,11 @@
 	}
 
 	.comment_title span.bg {
-		@include functions.bradius(0, 7px, 0, 7px);
+		@include functions.bRadius(0, 7px, 0, 7px);
 	}
 
 	.comment_date {
-		@include functions.bradius(7px, 0, 7px, 0);
+		@include functions.bRadius(7px, 0, 7px, 0);
 	}
 
 	.comment_buttons {

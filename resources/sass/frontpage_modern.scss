@@ -34,7 +34,7 @@ $category_footer_color: #999;
 	flex-direction: column;
 	min-height: 220px;
 	padding: 15px;
-	@include functions.bradius(8px);
+	@include functions.bRadius(8px);
 	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 	transition: transform 0.2s;
 	background: white;
@@ -57,7 +57,7 @@ $category_footer_color: #999;
 	img {
 		width: 40px;
 		height: 40px;
-		@include functions.bradius(50%);
+		@include functions.bRadius(50%);
 		margin-right: 15px;
 	}
 
@@ -74,7 +74,7 @@ $category_footer_color: #999;
 		width: 100%;
 		max-height: 150px;
 		object-fit: contain;
-		@include functions.bradius;
+		@include functions.bRadius;
 		margin: 8px 0;
 		transition: opacity 0.2s;
 		background: #f9f9f9;
@@ -88,14 +88,14 @@ $category_footer_color: #999;
 .category-default-icon {
 	width: 40px;
 	height: 40px;
-	@include functions.bradius;
+	@include functions.bRadius;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 
 	[class*="icon"] {
 		font-size: 20px;
-		color: variables.$color_white;
+		color: variables.$color-white;
 	}
 }
 
@@ -128,6 +128,7 @@ $category_footer_color: #999;
 	font-size: 14px;
 	flex: 1;
 	display: -webkit-box;
+	line-clamp: 3;
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
@@ -164,9 +165,9 @@ $category_footer_color: #999;
 
 	.new-badge {
 		background: #e74c3c;
-		color: variables.$color_white;
+		color: variables.$color-white;
 		padding: 1px 4px;
-		@include functions.bradius(2px);
+		@include functions.bRadius(2px);
 		font-size: 8px;
 		font-weight: bold;
 		margin-right: 5px;
