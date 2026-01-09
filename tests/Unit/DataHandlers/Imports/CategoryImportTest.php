@@ -119,8 +119,8 @@ it('imports categories correctly for all scenarios', function (array $scenario) 
     $xml = simplexml_load_string(generateCategoryXml($scenario));
 
     $import = new ReflectionAccessor(new CategoryImport($this->sql, $this->fileMock, $this->errorHandlerMock));
-    $import->setProtectedProperty('xml', $xml);
-    $import->callProtectedMethod('processItems');
+    $import->setProperty('xml', $xml);
+    $import->callMethod('processItems');
 
     $rows = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_categories')->execute()

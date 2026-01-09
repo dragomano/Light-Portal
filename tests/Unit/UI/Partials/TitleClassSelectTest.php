@@ -138,7 +138,7 @@ it('handles empty params', function () {
 
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new TitleClassSelect());
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('preview_select');
 });

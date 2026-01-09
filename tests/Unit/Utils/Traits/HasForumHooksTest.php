@@ -18,7 +18,7 @@ it('applies hook with existing method name', function () {
 
     $result = null;
     try {
-        $reflection->callProtectedMethod('applyHook', [ForumHook::actions]);
+        $reflection->callMethod('applyHook', [ForumHook::actions]);
         $result = 'success';
     } catch (Exception $e) {
         $result = $e->getMessage();
@@ -36,7 +36,7 @@ it('applies hook with __invoke when method does not exist', function () {
 
     $result = null;
     try {
-        $reflection->callProtectedMethod('applyHook', [ForumHook::actions]);
+        $reflection->callMethod('applyHook', [ForumHook::actions]);
         $result = 'success';
     } catch (Exception $e) {
         $result = $e->getMessage();

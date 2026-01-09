@@ -128,7 +128,7 @@ describe('PortalSql', function () {
         $this->adapter->shouldReceive('query')->andReturn($result);
 
         $accessor = new ReflectionAccessor($this->sql);
-        $accessor->setProtectedProperty('adapter', $this->adapter);
+        $accessor->setProperty('adapter', $this->adapter);
 
         expect($this->sql->tableExists('lp_blocks'))->toBeTrue()
             ->and($this->sql->tableExists('lp_nonexistent'))->toBeFalse();

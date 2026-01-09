@@ -17,6 +17,6 @@ it('has required properties', function () {
 
     $reflection = new ReflectionAccessor($mock);
 
-    expect($reflection->getProtectedProperty('type'))->toBe('category')
-        ->and($reflection->getProtectedProperty('entity'))->toBe('categories');
+    expect($reflection->getProperty('type'))->toBe('category')
+        ->and($reflection->getProperty('entity'))->toBe('categories');
 });

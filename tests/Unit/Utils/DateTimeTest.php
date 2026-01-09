@@ -326,7 +326,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = strtotime('2024-03-15 14:30:00');
-            $result    = $this->accessor->callProtectedMethod(
+            $result    = $this->accessor->callMethod(
                 'getLocalDate',
                 [$timestamp, IntlDateFormatter::LONG, IntlDateFormatter::SHORT]
             );
@@ -341,7 +341,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = strtotime('2024-03-15 14:30:00');
-            $result    = $this->accessor->callProtectedMethod('getLocalDate', [$timestamp, $dateType, $timeType]);
+            $result    = $this->accessor->callMethod('getLocalDate', [$timestamp, $dateType, $timeType]);
 
             expect($result)->toBeString()->not->toBeEmpty();
         })->with([
@@ -361,7 +361,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = time();
-            $result    = $this->accessor->callProtectedMethod(
+            $result    = $this->accessor->callMethod(
                 'getLocalDate',
                 [$timestamp, IntlDateFormatter::FULL, IntlDateFormatter::SHORT]
             );
@@ -372,7 +372,7 @@ describe('DateTime', function () {
 
     describe('DateTime::parseDate', function () {
         it('parses valid dates correctly', function ($dateStr, $expectedYear, $expectedMonth, $expectedDay) {
-            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callMethod('parseDate', [$dateStr]);
 
             expect($result)
                 ->toBeInstanceOf(\DateTime::class)
@@ -387,7 +387,7 @@ describe('DateTime', function () {
         ]);
 
         it('returns null for invalid date formats', function ($dateStr) {
-            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callMethod('parseDate', [$dateStr]);
 
             expect($result)->toBeNull();
         })->with([
@@ -402,7 +402,7 @@ describe('DateTime', function () {
         ]);
 
         it('returns null when DateTime construction throws exception', function ($dateStr) {
-            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callMethod('parseDate', [$dateStr]);
 
             expect($result)->toBeNull();
         })->with([

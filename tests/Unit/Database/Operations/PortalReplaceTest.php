@@ -29,7 +29,7 @@ describe('PortalReplace', function () {
             $replace = new PortalReplace('test', 'prefix_');
 
             $reflection = new ReflectionAccessor($replace);
-            $tableProperty = $reflection->getProtectedProperty('table');
+            $tableProperty = $reflection->getProperty('table');
 
             expect($tableProperty)->toBe('prefix_test');
         });
@@ -268,7 +268,7 @@ describe('PortalReplace', function () {
             expect($result)->toBe($this->replace);
 
             $reflection = new ReflectionAccessor($this->replace);
-            $tableProperty = $reflection->getProtectedProperty('table');
+            $tableProperty = $reflection->getProperty('table');
 
             expect($tableProperty)->toBe('test_table');
         });
@@ -293,7 +293,7 @@ describe('PortalReplace', function () {
 
             $reflection = new ReflectionAccessor($this->replace);
 
-            expect($reflection->callProtectedMethod('getValues'))->toBe($values);
+            expect($reflection->callMethod('getValues'))->toBe($values);
         });
 
         it('uses batch() method correctly', function () {
@@ -307,7 +307,7 @@ describe('PortalReplace', function () {
             expect($result)->toBe($this->replace);
 
             $reflection = new ReflectionAccessor($this->replace);
-            $batchValuesProperty = $reflection->getProtectedProperty('batchValues');
+            $batchValuesProperty = $reflection->getProperty('batchValues');
 
             expect($batchValuesProperty)->toBe($batchData)
                 ->and($this->replace->isBatch())->toBeTrue();

@@ -333,7 +333,7 @@ describe('getData', function () {
 describe('getDefaultParams', function () {
     it('returns correct structure', function () {
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $params = $select->callProtectedMethod('getDefaultParams');
+        $params = $select->callMethod('getDefaultParams');
 
         expect($params)->toBeArray()
             ->and($params)->toHaveKey('id')
@@ -353,7 +353,7 @@ describe('getDefaultParams', function () {
         Config::$modSettings['lp_page_maximum_tags'] = 15;
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $params = $select->callProtectedMethod('getDefaultParams');
+        $params = $select->callMethod('getDefaultParams');
 
         expect($params['maxValues'])->toBe(15);
     });
@@ -363,7 +363,7 @@ describe('getDefaultParams', function () {
         Lang::$txt['lp_page_tags_empty'] = 'Custom empty text';
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $params = $select->callProtectedMethod('getDefaultParams');
+        $params = $select->callMethod('getDefaultParams');
 
         expect($params['hint'])->toBe('Custom placeholder')
             ->and($params['empty'])->toBe('Custom empty text');
@@ -371,7 +371,7 @@ describe('getDefaultParams', function () {
 
     it('includes showSelectedOptionsFirst', function () {
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $params = $select->callProtectedMethod('getDefaultParams');
+        $params = $select->callMethod('getDefaultParams');
 
         expect($params)->toHaveKey('showSelectedOptionsFirst')
             ->and($params['showSelectedOptionsFirst'])->toBeTrue();
@@ -402,7 +402,7 @@ describe('prepareSelectedValues', function () {
         ];
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $values = $select->callProtectedMethod('prepareSelectedValues');
+        $values = $select->callMethod('prepareSelectedValues');
 
         expect($values)->toBe([1, 3, 5]);
     });
@@ -415,7 +415,7 @@ describe('prepareSelectedValues', function () {
         ];
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $values = $select->callProtectedMethod('prepareSelectedValues');
+        $values = $select->callMethod('prepareSelectedValues');
 
         expect($values)->toBe([1, 2, 3]);
     });
@@ -424,7 +424,7 @@ describe('prepareSelectedValues', function () {
         Utils::$context = [];
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $values = $select->callProtectedMethod('prepareSelectedValues');
+        $values = $select->callMethod('prepareSelectedValues');
 
         expect($values)->toBe([]);
     });
@@ -433,7 +433,7 @@ describe('prepareSelectedValues', function () {
         Utils::$context['lp_page'] = [];
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $values = $select->callProtectedMethod('prepareSelectedValues');
+        $values = $select->callMethod('prepareSelectedValues');
 
         expect($values)->toBe([]);
     });
@@ -445,7 +445,7 @@ describe('prepareSelectedValues', function () {
         ];
 
         $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-        $values = $select->callProtectedMethod('prepareSelectedValues');
+        $values = $select->callMethod('prepareSelectedValues');
 
         expect($values)->toBe([1, 2]);
     });
@@ -528,7 +528,7 @@ it('handles edge case with numeric string tag IDs', function () {
     ];
 
     $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-    $values = $select->callProtectedMethod('prepareSelectedValues');
+    $values = $select->callMethod('prepareSelectedValues');
 
     expect($values)->toBe([123, 456, 789]);
 });
@@ -541,7 +541,7 @@ it('handles edge case with boolean-like context values', function () {
     ];
 
     $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-    $values = $select->callProtectedMethod('prepareSelectedValues');
+    $values = $select->callMethod('prepareSelectedValues');
 
     expect($values)->toBe(['false', 'true', '']);
 });
@@ -595,7 +595,7 @@ it('handles edge case with null and undefined context', function () {
     ];
 
     $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-    $values = $select->callProtectedMethod('prepareSelectedValues');
+    $values = $select->callMethod('prepareSelectedValues');
 
     expect($values)->toContain('null')
         ->and($values)->toContain('undefined');
@@ -608,7 +608,7 @@ it('handles edge case with malformed context structure', function () {
     ];
 
     $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-    $values = $select->callProtectedMethod('prepareSelectedValues');
+    $values = $select->callMethod('prepareSelectedValues');
 
     expect($values)->toContain('valid_tag')
         ->and($values)->toContain('another_tag');
@@ -626,7 +626,7 @@ it('handles edge case with deeply nested context', function () {
     ];
 
     $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-    $values = $select->callProtectedMethod('prepareSelectedValues');
+    $values = $select->callMethod('prepareSelectedValues');
 
     expect($values)->toBe([1, 2, 3]);
 });
@@ -639,7 +639,7 @@ it('correctly initializes TagList dependency', function () {
     $tagList = new TagList($repositoryMock);
     $select  = new ReflectionAccessor(new TagSelect($tagList));
 
-    $property = $select->getProtectedProperty('tagList');
+    $property = $select->getProperty('tagList');
 
     expect($property)->toBe($tagList);
 });
@@ -672,7 +672,7 @@ it('merges default params with provided params', function () {
 
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new TagSelect(app(TagList::class)));
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('virtual_select');
 });

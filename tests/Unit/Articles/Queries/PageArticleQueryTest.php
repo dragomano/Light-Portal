@@ -419,7 +419,7 @@ it('applies base conditions correctly', function () {
 
     $select = $this->sql->select()->from('lp_pages');
     $accessor = new ReflectionAccessor($this->query);
-    $accessor->callProtectedMethod('applyBaseConditions', [$select]);
+    $accessor->callMethod('applyBaseConditions', [$select]);
 
     $state = $select->getRawState();
 

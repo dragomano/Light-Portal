@@ -241,7 +241,7 @@ it('applies base conditions correctly', function () {
 
     $select = $this->sql->select()->from('boards');
     $accessor = new ReflectionAccessor($this->query);
-    $accessor->callProtectedMethod('applyBaseConditions', [$select]);
+    $accessor->callMethod('applyBaseConditions', [$select]);
 
     $state = $select->getRawState();
 
@@ -255,10 +255,10 @@ it('applies custom columns when set', function () {
     $this->query->init(['selected_boards' => [1]]);
 
     $accessor = new ReflectionAccessor($this->query);
-    $accessor->setProtectedProperty('columns', ['custom_topic_column']);
+    $accessor->setProperty('columns', ['custom_topic_column']);
 
     $select = $this->sql->select()->from('topics');
-    $accessor->callProtectedMethod('applyColumns', [$select]);
+    $accessor->callMethod('applyColumns', [$select]);
 
     $rawState = $select->getRawState(Select::COLUMNS);
 
@@ -271,7 +271,7 @@ it('applies custom joins when set', function () {
     $accessor = new ReflectionAccessor($this->query);
 
     $joinApplied = false;
-    $accessor->setProtectedProperty('joins', [
+    $accessor->setProperty('joins', [
         function ($sel) use (&$joinApplied) {
             $joinApplied = true;
             $sel->join('custom_topics_table', 'topic_condition');
@@ -279,7 +279,7 @@ it('applies custom joins when set', function () {
     ]);
 
     $select = $this->sql->select()->from('topics');
-    $accessor->callProtectedMethod('applyJoins', [$select]);
+    $accessor->callMethod('applyJoins', [$select]);
 
     expect($joinApplied)->toBeTrue();
 });
@@ -298,7 +298,7 @@ it('applies custom wheres when set', function () {
     $accessor = new ReflectionAccessor($this->query);
 
     $whereApplied = false;
-    $accessor->setProtectedProperty('wheres', [
+    $accessor->setProperty('wheres', [
         function ($sel) use (&$whereApplied) {
             $whereApplied = true;
             $sel->where('custom_topic_condition');
@@ -306,7 +306,7 @@ it('applies custom wheres when set', function () {
     ]);
 
     $select = $this->sql->select()->from('topics');
-    $accessor->callProtectedMethod('applyWheres', [$select]);
+    $accessor->callMethod('applyWheres', [$select]);
 
     expect($whereApplied)->toBeTrue();
 });

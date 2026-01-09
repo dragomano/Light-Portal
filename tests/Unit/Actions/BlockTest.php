@@ -291,7 +291,7 @@ describe('Block::getFilteredByAreas()', function () {
 
     it('should return empty array if lp_active_blocks is not set', function () {
         $block = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('getFilteredByAreas');
+        $result = $block->callMethod('getFilteredByAreas');
 
         expect($result)->toBeArray()
             ->and($result)->toBeEmpty();
@@ -300,7 +300,7 @@ describe('Block::getFilteredByAreas()', function () {
     it('should return empty array when getFilteredByAreas returns empty', function () {
         $blockAccessor = new ReflectionAccessor(new Block());
 
-        $result = $blockAccessor->callProtectedMethod('getVisibleBlocks');
+        $result = $blockAccessor->callMethod('getVisibleBlocks');
 
         expect($result)->toBeEmpty();
     });
@@ -322,7 +322,7 @@ describe('Block::getFilteredByAreas()', function () {
         ];
 
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('getFilteredByAreas');
+        $result = $block->callMethod('getFilteredByAreas');
 
         if ($expected) {
             expect($result)->toHaveKey(1);
@@ -348,7 +348,7 @@ describe('Block::getFilteredByAreas()', function () {
         ];
 
         $block = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('getFilteredByAreas');
+        $result = $block->callMethod('getFilteredByAreas');
 
         if ($expected) {
             expect($result)->toHaveKey(1);
@@ -374,7 +374,7 @@ describe('Block::getFilteredByAreas()', function () {
         ];
 
         $block = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('getFilteredByAreas');
+        $result = $block->callMethod('getFilteredByAreas');
 
         if ($expected) {
             expect($result)->toHaveKey(1);
@@ -405,7 +405,7 @@ describe('Block::prepareBlocks()', function () {
         ];
 
         $block = new ReflectionAccessor(new Block());
-        $block->callProtectedMethod('prepareBlocks', [$blocks]);
+        $block->callMethod('prepareBlocks', [$blocks]);
 
         expect(Utils::$context['lp_blocks']['top'][1])->toHaveKey('can_edit')
             ->and(Utils::$context['lp_blocks']['top'][1]['can_edit'])->toBeTrue();
@@ -427,7 +427,7 @@ describe('Block::resolveContent()', function () {
         Utils::$context['lp_active_blocks'][1] = ['parameters' => []];
 
         $blockObj = new ReflectionAccessor(new Block());
-        $result = $blockObj->callProtectedMethod('resolveContent', [$block]);
+        $result = $blockObj->callMethod('resolveContent', [$block]);
 
         expect($result)->toBe($expected);
     })->with('block content scenarios');
@@ -440,7 +440,7 @@ describe('Block::buildTitle()', function () {
 
     it('should build title correctly', function ($blockData, $expected) {
         $blockObj = new ReflectionAccessor(new Block());
-        $result = $blockObj->callProtectedMethod('buildTitle', [$blockData]);
+        $result = $blockObj->callMethod('buildTitle', [$blockData]);
 
         expect($result)->toBe($expected);
     })->with('title build scenarios');
@@ -455,7 +455,7 @@ describe('Block::resolveCurrentArea()', function () {
         Utils::$context['current_action'] = Action::FORUM->value;
 
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('resolveCurrentArea');
+        $result = $block->callMethod('resolveCurrentArea');
 
         expect($result)->toBe(Action::FORUM->value);
     });
@@ -465,7 +465,7 @@ describe('Block::resolveCurrentArea()', function () {
         Config::$modSettings['lp_standalone_url'] = 'https://example.com/test';
 
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('resolveCurrentArea');
+        $result = $block->callMethod('resolveCurrentArea');
 
         expect($result)->toBe(Action::FORUM->value);
     });
@@ -474,7 +474,7 @@ describe('Block::resolveCurrentArea()', function () {
         Utils::$context['lp_page'] = ['slug' => 'test-page'];
 
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('resolveCurrentArea');
+        $result = $block->callMethod('resolveCurrentArea');
 
         expect($result)->toBe('');
     });
@@ -486,7 +486,7 @@ describe('Block::resolveCurrentArea()', function () {
         Config::$modSettings['lp_frontpage_chosen_page'] = 'frontpage';
 
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('resolveCurrentArea');
+        $result = $block->callMethod('resolveCurrentArea');
 
         expect($result)->toBe(LP_ACTION);
     });
@@ -507,7 +507,7 @@ describe('Block::resolveCurrentArea()', function () {
             ->getMock();
 
         $blockAccessor = new ReflectionAccessor($blockMock);
-        $result = $blockAccessor->callProtectedMethod('resolveCurrentArea');
+        $result = $blockAccessor->callMethod('resolveCurrentArea');
 
         expect($result)->toBe(LP_ACTION);
     });
@@ -547,7 +547,7 @@ describe('Block::getAllowedIds()', function () {
 
     it('should parse allowed ids correctly', function ($input, $expected) {
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('getAllowedIds', [$input]);
+        $result = $block->callMethod('getAllowedIds', [$input]);
 
         expect($result)->toBe($expected);
     })->with('id_formats');
@@ -594,7 +594,7 @@ describe('Block::collectAllowedEntities()', function () {
 
     it('should collect allowed entities correctly', function ($areas, $expected) {
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('collectAllowedEntities', [$areas]);
+        $result = $block->callMethod('collectAllowedEntities', [$areas]);
 
         expect($result)->toBeArray()
             ->and($result)->toHaveKey('boards')
@@ -629,7 +629,7 @@ describe('Block::getVisibleBlocks()', function () {
         User::$me->allowedTo = fn($perm) => $perm === Permission::ALL->value;
 
         $block  = new ReflectionAccessor(new Block());
-        $result = $block->callProtectedMethod('getVisibleBlocks');
+        $result = $block->callMethod('getVisibleBlocks');
 
         expect($result)->toHaveKey(1)
             ->and($result)->not->toHaveKey(2);

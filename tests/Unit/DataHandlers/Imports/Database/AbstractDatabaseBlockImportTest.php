@@ -17,6 +17,6 @@ it('has required properties', function () {
 
     $reflection = new ReflectionAccessor($mock);
 
-    expect($reflection->getProtectedProperty('type'))->toBe('block')
-        ->and($reflection->getProtectedProperty('entity'))->toBe('blocks');
+    expect($reflection->getProperty('type'))->toBe('block')
+        ->and($reflection->getProperty('entity'))->toBe('blocks');
 });

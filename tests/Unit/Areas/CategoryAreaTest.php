@@ -42,19 +42,19 @@ it('can be instantiated', function () {
 });
 
 it('returns correct entity name', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityName');
+    $result = $this->accessor->callMethod('getEntityName');
 
     expect($result)->toBe('category');
 });
 
 it('returns correct entity name plural', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityNamePlural');
+    $result = $this->accessor->callMethod('getEntityNamePlural');
 
     expect($result)->toBe('categories');
 });
 
 it('returns correct custom action handlers', function () {
-    $result = $this->accessor->callProtectedMethod('getCustomActionHandlers');
+    $result = $this->accessor->callMethod('getCustomActionHandlers');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('update_priority')
@@ -62,13 +62,13 @@ it('returns correct custom action handlers', function () {
 });
 
 it('returns correct default sort column', function () {
-    $result = $this->accessor->callProtectedMethod('getDefaultSortColumn');
+    $result = $this->accessor->callMethod('getDefaultSortColumn');
 
     expect($result)->toBe('priority');
 });
 
 it('returns correct table script', function () {
-    $result = $this->accessor->callProtectedMethod('getTableScript');
+    $result = $this->accessor->callMethod('getTableScript');
 
     expect($result)->toBeString()
         ->and($result)->toContain('const entity = new Category();')
@@ -77,7 +77,7 @@ it('returns correct table script', function () {
 });
 
 it('returns correct table columns', function () {
-    $result = $this->accessor->callProtectedMethod('getTableColumns');
+    $result = $this->accessor->callMethod('getTableColumns');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveCount(6)
@@ -90,31 +90,31 @@ it('returns correct table columns', function () {
 });
 
 it('returns correct validator class', function () {
-    $result = $this->accessor->callProtectedMethod('getValidatorClass');
+    $result = $this->accessor->callMethod('getValidatorClass');
 
     expect($result)->toBe(CategoryValidator::class);
 });
 
 it('returns correct factory class', function () {
-    $result = $this->accessor->callProtectedMethod('getFactoryClass');
+    $result = $this->accessor->callMethod('getFactoryClass');
 
     expect($result)->toBe(CategoryFactory::class);
 });
 
 it('prepareSpecificFields can be called without errors', function () {
-    $this->accessor->callProtectedMethod('prepareSpecificFields');
+    $this->accessor->callMethod('prepareSpecificFields');
 
     expect(true)->toBeTrue();
 });
 
 it('finalizePreviewTitle can be called without errors', function () {
-    $this->accessor->callProtectedMethod('finalizePreviewTitle', [['icon' => 'fas fa-test']]);
+    $this->accessor->callMethod('finalizePreviewTitle', [['icon' => 'fas fa-test']]);
 
     expect(true)->toBeTrue();
 });
 
 it('getRepository returns correct instance', function () {
-    $result = $this->accessor->callProtectedMethod('getRepository');
+    $result = $this->accessor->callMethod('getRepository');
 
     expect($result)->toBe($this->repositoryMock);
 });

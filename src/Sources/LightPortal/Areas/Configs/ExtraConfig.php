@@ -87,10 +87,14 @@ final class ExtraConfig extends AbstractConfig
 	{
 		return [
 			CheckConfig::make('lp_show_tags_on_page'),
+
 			SelectConfig::make('lp_page_og_image')
 				->setOptions(Lang::$txt['lp_page_og_image_set']),
+
 			CheckConfig::make('lp_show_prev_next_links'),
+
 			CheckConfig::make('lp_show_related_pages'),
+
 			DividerConfig::make(),
 		];
 	}
@@ -106,14 +110,18 @@ final class ExtraConfig extends AbstractConfig
 		return [
 			/* @uses template_callback_comment_settings_before */
 			CallbackConfig::make('comment_settings_before'),
+
 			SelectConfig::make('lp_comment_block')
 				->setOptions(Lang::$txt['lp_comment_block_set'])
 				->setJavaScript('@change="comment_block = $event.target.value"'),
+
 			IntConfig::make('lp_time_to_change_comments')
 				->setPostInput(Lang::$txt['manageposts_minutes'])
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+
 			IntConfig::make('lp_num_comments_per_page')
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+
 			SelectConfig::make('lp_comment_sorting')
 				->setOptions([
 					Lang::$txt['lp_sort_by_created'],
@@ -122,8 +130,10 @@ final class ExtraConfig extends AbstractConfig
 					Lang::$txt['lp_sort_by_updated_desc'],
 				])
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+
 			/* @uses template_callback_comment_settings_after */
 			CallbackConfig::make('comment_settings_after'),
+
 			DividerConfig::make(),
 		];
 	}
@@ -133,8 +143,10 @@ final class ExtraConfig extends AbstractConfig
 		return [
 			IntConfig::make('lp_page_maximum_tags')
 				->setMin(1),
+
 			SelectConfig::make('lp_permissions_default')
 				->setOptions(Lang::$txt['lp_permissions']),
+
 			CheckConfig::make('lp_hide_blocks_in_acp'),
 		];
 	}
@@ -143,18 +155,23 @@ final class ExtraConfig extends AbstractConfig
 	{
 		return [
 			TitleConfig::make('mobile_user_menu'),
+
 			/* @uses template_callback_menu_settings_before */
 			CallbackConfig::make('menu_settings_before'),
+
 			CheckConfig::make('lp_menu_separate_subsection')
 				->setHelp('lp_menu_separate_subsection_help')
 				->setJavaScript('@change="separate_subsection = !separate_subsection"'),
+
 			TextConfig::make('lp_menu_separate_subsection_title')
 				->setHelp('lp_menu_separate_subsection_title_help')
 				->setJavaScript(':disabled="separate_subsection === false"')
 				->setSize('75" placeholder="{lp_pages}'),
+
 			TextConfig::make('lp_menu_separate_subsection_href')
 				->setJavaScript(':disabled="separate_subsection === false"')
 				->setSize('75" placeholder="' . Config::$scripturl),
+
 			/* @uses template_callback_menu_settings_after */
 			CallbackConfig::make('menu_settings_after'),
 		];
@@ -170,6 +187,7 @@ final class ExtraConfig extends AbstractConfig
 
 		return [
 			TitleConfig::make('lp_fa_source_title'),
+
 			SelectConfig::make('lp_fa_source')
 				->setOptions([
 					'none'      => Lang::$txt['no'],
@@ -180,9 +198,11 @@ final class ExtraConfig extends AbstractConfig
 				])
 				->setOnChange('document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';
 					document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'),
+
 			TextConfig::make('lp_fa_custom')
 				->setDisabled(Setting::get('lp_fa_source', 'string', '') !== 'custom')
 				->setSize('75'),
+
 			TextConfig::make('lp_fa_kit')
 				->setDisabled(isset(Config::$modSettings['lp_fa_kit']) && Config::$modSettings['lp_fa_source'] !== 'kit')
 				->setSize('75" placeholder="https://kit.fontawesome.com/xxx.js'),

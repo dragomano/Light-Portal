@@ -52,7 +52,7 @@ it('sets custom sorting when setSorting is called with valid sort type', functio
     $this->query->init([]);
 
     $accessor = new ReflectionAccessor($this->query);
-    $accessor->setProtectedProperty('orders', ['custom' => 'custom_order']);
+    $accessor->setProperty('orders', ['custom' => 'custom_order']);
 
     $this->query->setSorting('custom');
 
@@ -63,13 +63,13 @@ it('applies columns correctly when applyColumns is called', function () {
     $select = new Select();
 
     $accessor = new ReflectionAccessor($this->query);
-    $accessor->setProtectedProperty('columns', [
+    $accessor->setProperty('columns', [
         'column1',
         'column2, column3',
         ['column4', 'column5']
     ]);
 
-    $accessor->callProtectedMethod('applyColumns', [$select]);
+    $accessor->callMethod('applyColumns', [$select]);
 
     $rawState = $select->getRawState(Select::COLUMNS);
 
@@ -86,14 +86,14 @@ it('applies joins correctly when applyJoins is called', function () {
     $accessor = new ReflectionAccessor($this->query);
 
     $joinCalled = false;
-    $accessor->setProtectedProperty('joins', [
+    $accessor->setProperty('joins', [
         function ($sel) use (&$joinCalled) {
             $joinCalled = true;
             $sel->join('test_join', 'condition');
         }
     ]);
 
-    $accessor->callProtectedMethod('applyJoins', [$select]);
+    $accessor->callMethod('applyJoins', [$select]);
 
     expect($joinCalled)->toBeTrue();
 });
@@ -104,7 +104,7 @@ it('applies wheres correctly when applyWheres is called', function () {
     $accessor = new ReflectionAccessor($this->query);
 
     $whereCalled = false;
-    $accessor->setProtectedProperty('wheres', [
+    $accessor->setProperty('wheres', [
         'simple_condition',
         function ($sel) use (&$whereCalled) {
             $whereCalled = true;
@@ -112,14 +112,14 @@ it('applies wheres correctly when applyWheres is called', function () {
         }
     ]);
 
-    $accessor->callProtectedMethod('applyWheres', [$select]);
+    $accessor->callMethod('applyWheres', [$select]);
 
     expect($whereCalled)->toBeTrue();
 });
 
 it('returns correct orders array when getOrders is called', function () {
     $accessor = new ReflectionAccessor($this->query);
-    $orders = $accessor->callProtectedMethod('getOrders');
+    $orders = $accessor->callMethod('getOrders');
 
     expect($orders)->toBeArray()
         ->and($orders)->toHaveKey('created;desc')
@@ -128,7 +128,7 @@ it('returns correct orders array when getOrders is called', function () {
 
 it('returns correct event hook when getEventHook is called', function () {
     $accessor = new ReflectionAccessor($this->query);
-    $hook = $accessor->callProtectedMethod('getEventHook');
+    $hook = $accessor->callMethod('getEventHook');
 
     expect($hook)->toBeInstanceOf(PortalHook::class)
         ->and($hook)->toBe(PortalHook::frontBoards);
@@ -165,7 +165,7 @@ it('applies base conditions correctly when applyBaseConditions is called', funct
     };
 
     $accessor = new ReflectionAccessor($query);
-    $accessor->callProtectedMethod('applyBaseConditions', [$select]);
+    $accessor->callMethod('applyBaseConditions', [$select]);
 
     $rawState = $select->getRawState(Select::WHERE);
     expect($rawState)->toBeInstanceOf(Where::class);

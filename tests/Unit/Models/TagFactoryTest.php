@@ -12,7 +12,7 @@ beforeEach(function () {
 });
 
 it('populates missing fields with default values', function () {
-    $result = $this->reflection->callProtectedMethod('populate', [[]]);
+    $result = $this->reflection->callMethod('populate', [[]]);
 
     expect($result['status'])->toBe(Status::ACTIVE->value);
 });
@@ -35,7 +35,7 @@ it('preserves existing values', function () {
         'slug'   => 'test-slug',
     ];
 
-    $result = $this->reflection->callProtectedMethod('populate', [$data]);
+    $result = $this->reflection->callMethod('populate', [$data]);
 
     expect($result['status'])->toBe(Status::INACTIVE->value)
         ->and($result['title'])->toBe('Test')

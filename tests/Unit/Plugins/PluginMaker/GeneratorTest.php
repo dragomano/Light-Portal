@@ -27,7 +27,7 @@ it('returns correct plugin type', function ($types, $expected) {
 
     $generator = new ReflectionAccessor(new Generator($plugin));
 
-    $result = $generator->callProtectedMethod('getPluginType');
+    $result = $generator->callMethod('getPluginType');
 
     if ($expected === null) {
         expect($result)->toBeNull();

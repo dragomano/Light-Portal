@@ -101,7 +101,7 @@ dataset('areas validation cases', [
 
 describe('BlockValidator::__construct', function () {
     it('initializes with default block filters', function ($field, $filter) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey($field);
 
@@ -113,14 +113,14 @@ describe('BlockValidator::__construct', function () {
     })->with('block filter fields');
 
     it('initializes with custom filters', function ($field, $filter) {
-        $customFilters = $this->accessor->getProtectedProperty('customFilters');
+        $customFilters = $this->accessor->getProperty('customFilters');
 
         expect($customFilters)->toHaveKey($field)
             ->and($customFilters[$field])->toBe($filter);
     })->with('custom filter fields');
 
     it('has areas filter with callback', function () {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey('areas')
             ->and($filters['areas'])->toBeArray()
@@ -131,7 +131,7 @@ describe('BlockValidator::__construct', function () {
     });
 
     it('areas filter validates correctly', function () {
-        $filters      = $this->accessor->getProtectedProperty('filters');
+        $filters      = $this->accessor->getProperty('filters');
         $areasFilter  = $filters['areas']['options'];
 
         expect($areasFilter('all'))->toBe('all')
@@ -156,7 +156,7 @@ describe('BlockValidator::extendFilters', function () {
                 })
             );
 
-        $this->accessor->callProtectedMethod('extendFilters');
+        $this->accessor->callMethod('extendFilters');
     });
 
     it('preserves base custom filters', function () {
@@ -164,11 +164,11 @@ describe('BlockValidator::extendFilters', function () {
             ->once()
             ->with(PortalHook::validateBlockParams, Mockery::any());
 
-        $originalFilters = $this->accessor->getProtectedProperty('customFilters');
+        $originalFilters = $this->accessor->getProperty('customFilters');
 
-        $this->accessor->callProtectedMethod('extendFilters');
+        $this->accessor->callMethod('extendFilters');
 
-        $customFilters = $this->accessor->getProtectedProperty('customFilters');
+        $customFilters = $this->accessor->getProperty('customFilters');
 
         expect($customFilters['hide_header'])->toBe($originalFilters['hide_header'])
             ->and($customFilters['link_in_title'])->toBe($originalFilters['link_in_title']);
@@ -185,9 +185,9 @@ describe('BlockValidator::modifyData', function () {
                 'link_in_title' => 'https://example.com',
             ]);
 
-        $this->accessor->callProtectedMethod('modifyData');
+        $this->accessor->callMethod('modifyData');
 
-        $filteredData = $this->accessor->getProtectedProperty('filteredData');
+        $filteredData = $this->accessor->getProperty('filteredData');
 
         expect($filteredData)->toHaveKey('options')
             ->and($filteredData['options'])->toHaveKey('hide_header')
@@ -203,9 +203,9 @@ describe('BlockValidator::modifyData', function () {
                 'link_in_title' => 'https://example.com',
             ]);
 
-        $this->accessor->callProtectedMethod('modifyData');
+        $this->accessor->callMethod('modifyData');
 
-        $filteredData = $this->accessor->getProtectedProperty('filteredData');
+        $filteredData = $this->accessor->getProperty('filteredData');
 
         expect($filteredData['options']['hide_header'])->toBeTrue();
     });
@@ -219,9 +219,9 @@ describe('BlockValidator::modifyData', function () {
                 'link_in_title' => 'https://example.com',
             ]);
 
-        $this->accessor->callProtectedMethod('modifyData');
+        $this->accessor->callMethod('modifyData');
 
-        $filteredData = $this->accessor->getProtectedProperty('filteredData');
+        $filteredData = $this->accessor->getProperty('filteredData');
 
         expect($filteredData['options']['link_in_title'])->toBe('https://example.com');
     });
@@ -235,9 +235,9 @@ describe('BlockValidator::modifyData', function () {
                 'link_in_title' => 'not-a-url',
             ]);
 
-        $this->accessor->callProtectedMethod('modifyData');
+        $this->accessor->callMethod('modifyData');
 
-        $filteredData = $this->accessor->getProtectedProperty('filteredData');
+        $filteredData = $this->accessor->getProperty('filteredData');
 
         expect($filteredData['options']['link_in_title'])->toBeFalse();
     });
@@ -251,11 +251,11 @@ describe('BlockValidator::checkAreas', function () {
             ->andReturn($areasValue);
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', ['areas' => $validatedAreas]);
+        $this->accessor->setProperty('filteredData', ['areas' => $validatedAreas]);
 
-        $this->accessor->callProtectedMethod('checkAreas');
+        $this->accessor->callMethod('checkAreas');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         foreach ($expectedErrors as $expectedError) {
             expect($errors)->toContain($expectedError);
@@ -267,7 +267,7 @@ describe('BlockValidator::checkAreas', function () {
         }
 
         if (in_array('no_valid_areas', $expectedErrors)) {
-            $filteredData = $this->accessor->getProtectedProperty('filteredData');
+            $filteredData = $this->accessor->getProperty('filteredData');
             expect($filteredData['areas'])->toBe($areasValue);
         }
     })->with('areas validation cases');
@@ -281,16 +281,16 @@ describe('BlockValidator::extendErrors', function () {
             ->andReturn('all');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('errors', ['old_error']);
-        $this->accessor->setProtectedProperty('filteredData', ['areas' => 'all']);
+        $this->accessor->setProperty('errors', ['old_error']);
+        $this->accessor->setProperty('filteredData', ['areas' => 'all']);
 
         $this->dispatcher->shouldReceive('dispatch')
             ->once()
             ->with(PortalHook::findBlockErrors, Mockery::any());
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         expect($errors)->not->toContain('old_error');
     });
@@ -302,7 +302,7 @@ describe('BlockValidator::extendErrors', function () {
             ->andReturn('all');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', ['areas' => 'all', 'title' => 'Test']);
+        $this->accessor->setProperty('filteredData', ['areas' => 'all', 'title' => 'Test']);
 
         $wasDispatched = false;
 
@@ -317,7 +317,7 @@ describe('BlockValidator::extendErrors', function () {
                 })
             );
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
         expect($wasDispatched)->toBeTrue();
     });

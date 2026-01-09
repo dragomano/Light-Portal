@@ -220,7 +220,7 @@ dataset('error handling cases', [
 
 describe('AbstractValidator::__construct', function () {
     it('initializes with default title filter', function () {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey('title')
             ->and($filters['title'])->toHaveKey('filter')
@@ -229,7 +229,7 @@ describe('AbstractValidator::__construct', function () {
     });
 
     it('properly sanitizes title with filter', function ($input, $shouldNotContain) {
-        $filters     = $this->accessor->getProtectedProperty('filters');
+        $filters     = $this->accessor->getProperty('filters');
         $titleFilter = $filters['title']['options'];
 
         $result = $titleFilter($input);
@@ -452,11 +452,11 @@ describe('AbstractValidator::checkErrors', function () {
                 ->with('preview', true);
         }
 
-        $this->accessor->setProtectedProperty('filteredData', ['title' => $title]);
+        $this->accessor->setProperty('filteredData', ['title' => $title]);
 
-        $this->accessor->callProtectedMethod('checkErrors');
+        $this->accessor->callMethod('checkErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         if ($shouldHaveError) {
             expect($errors)->toContain('no_title');
@@ -506,11 +506,11 @@ describe('AbstractValidator::checkSlug', function () {
         $validator->setUniqueResult($isUnique);
 
         $accessor = new ReflectionAccessor($validator);
-        $accessor->setProtectedProperty('filteredData', ['slug' => $validatedSlug]);
+        $accessor->setProperty('filteredData', ['slug' => $validatedSlug]);
 
-        $accessor->callProtectedMethod('checkSlug');
+        $accessor->callMethod('checkSlug');
 
-        $errors = $accessor->getProtectedProperty('errors');
+        $errors = $accessor->getProperty('errors');
 
         foreach ($expectedErrors as $expectedError) {
             expect($errors)->toContain($expectedError);
@@ -526,7 +526,7 @@ describe('AbstractValidator::handleErrors', function () {
     it('handles error scenarios correctly', function (
         $errors, $shouldSetPreview, $shouldHavePostErrors, $expectedMessages = []
     ) {
-        $this->accessor->setProtectedProperty('errors', $errors);
+        $this->accessor->setProperty('errors', $errors);
 
         if ($shouldSetPreview) {
             $this->request->shouldReceive('put')
@@ -534,7 +534,7 @@ describe('AbstractValidator::handleErrors', function () {
                 ->with('preview', true);
         }
 
-        $this->accessor->callProtectedMethod('handleErrors');
+        $this->accessor->callMethod('handleErrors');
 
         if ($shouldHavePostErrors) {
             expect(Utils::$context)->toHaveKey('post_errors');
@@ -550,7 +550,7 @@ describe('AbstractValidator::handleErrors', function () {
 
 describe('AbstractValidator::isUnique', function () {
     it('returns true by default', function () {
-        $result = $this->accessor->callProtectedMethod('isUnique');
+        $result = $this->accessor->callMethod('isUnique');
 
         expect($result)->toBeTrue();
     });
@@ -558,7 +558,7 @@ describe('AbstractValidator::isUnique', function () {
 
 describe('AbstractValidator::recursiveArrayFilter', function () {
     it('filters arrays correctly', function ($input, $expected) {
-        $result = $this->accessor->callProtectedMethod('recursiveArrayFilter', [$input]);
+        $result = $this->accessor->callMethod('recursiveArrayFilter', [$input]);
 
         expect($result)->toBe($expected);
     })->with('recursive filter cases');

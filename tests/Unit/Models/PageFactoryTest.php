@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 it('populates missing fields with default values', function () {
-    $result = $this->reflection->callProtectedMethod('populate', [[]]);
+    $result = $this->reflection->callMethod('populate', [[]]);
 
     expect($result['type'])->toBe(ContentType::BBC->name())
         ->and($result['entry_type'])->toBe(EntryType::DEFAULT->name())
@@ -49,7 +49,7 @@ it('preserves existing values', function () {
         'status'      => Status::ACTIVE->value,
     ];
 
-    $result = $this->reflection->callProtectedMethod('populate', [$data]);
+    $result = $this->reflection->callMethod('populate', [$data]);
 
     expect($result['type'])->toBe(ContentType::HTML->name())
         ->and($result['entry_type'])->toBe(EntryType::INTERNAL->name())
@@ -60,14 +60,14 @@ it('preserves existing values', function () {
 
 it('processes tags as array', function () {
     $data = ['tags' => 'tag1,tag2,tag3'];
-    $result = $this->reflection->callProtectedMethod('populate', [$data]);
+    $result = $this->reflection->callMethod('populate', [$data]);
 
     expect($result['tags'])->toBe(['tag1', 'tag2', 'tag3']);
 });
 
 it('handles tags as array without splitting', function () {
     $data = ['tags' => ['tag1', 'tag2', 'tag3']];
-    $result = $this->reflection->callProtectedMethod('populate', [$data]);
+    $result = $this->reflection->callMethod('populate', [$data]);
 
     expect($result['tags'])->toBe(['tag1', 'tag2', 'tag3']);
 });

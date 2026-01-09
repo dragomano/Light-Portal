@@ -84,7 +84,7 @@ dataset('uniqueness scenarios', [
 
 describe('CategoryValidator::__construct', function () {
     it('initializes with default category filters', function ($field, $filter) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey($field);
 
@@ -96,7 +96,7 @@ describe('CategoryValidator::__construct', function () {
     })->with('category filter fields');
 
     it('has slug filter with alias pattern regexp', function () {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey('slug')
             ->and($filters['slug'])->toBeArray()
@@ -108,7 +108,7 @@ describe('CategoryValidator::__construct', function () {
     });
 
     it('validates slug pattern correctly', function ($slug, $isValid) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
         $pattern = $filters['slug']['options']['regexp'];
 
         $result = filter_var($slug, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => $pattern]]);
@@ -129,7 +129,7 @@ describe('CategoryValidator::extendErrors', function () {
             ->andReturn('test-category');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', ['slug' => 'test-category', 'category_id' => 1]);
+        $this->accessor->setProperty('filteredData', ['slug' => 'test-category', 'category_id' => 1]);
 
         $select = mock(PortalSelect::class);
         $result = mock(PortalResultInterface::class);
@@ -151,9 +151,9 @@ describe('CategoryValidator::extendErrors', function () {
         $result->shouldReceive('current')
             ->andReturn(['count' => 0]);
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         expect($errors)->toBeArray();
     });
@@ -161,7 +161,7 @@ describe('CategoryValidator::extendErrors', function () {
 
 describe('CategoryValidator::isUnique', function () {
     it('checks uniqueness correctly', function ($slug, $categoryId, $dbCount, $shouldBeUnique) {
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'        => $slug,
             'category_id' => $categoryId,
         ]);
@@ -198,13 +198,13 @@ describe('CategoryValidator::isUnique', function () {
             ->once()
             ->andReturn(['count' => $dbCount]);
 
-        $isUnique = $this->accessor->callProtectedMethod('isUnique');
+        $isUnique = $this->accessor->callMethod('isUnique');
 
         expect($isUnique)->toBe($shouldBeUnique);
     })->with('uniqueness scenarios');
 
     it('uses Expression for COUNT query', function () {
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'        => 'test-category',
             'category_id' => 1,
         ]);
@@ -236,7 +236,7 @@ describe('CategoryValidator::isUnique', function () {
         $result->shouldReceive('current')
             ->andReturn(['count' => 0]);
 
-        $this->accessor->callProtectedMethod('isUnique');
+        $this->accessor->callMethod('isUnique');
 
         expect($capturedExpression)->toBeInstanceOf(Expression::class)
             ->and($capturedExpression->getExpression())->toBe('COUNT(category_id)');

@@ -151,7 +151,7 @@ it('handles empty params', function () {
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new TopicSelect());
 
-	$property = $select->getProtectedProperty('template');
+	$property = $select->getProperty('template');
 
 	expect($property)->toBe('topic_select');
 });
@@ -291,7 +291,7 @@ it('handles database errors gracefully', function () {
 it('normalizes string values to array', function () {
     $select = new ReflectionAccessor(new TopicSelect(['value' => '1,2,3']));
 
-	$result = $select->callProtectedMethod('normalizeValue', ['1,2,3']);
+	$result = $select->callMethod('normalizeValue', ['1,2,3']);
 
 	expect($result)->toBe(['1', '2', '3']);
 });
@@ -299,7 +299,7 @@ it('normalizes string values to array', function () {
 it('normalizes array values', function () {
     $select = new ReflectionAccessor(new TopicSelect(['value' => ['1', '2', '3']]));
 
-	$result = $select->callProtectedMethod('normalizeValue', [['1', '2', '3']]);
+	$result = $select->callMethod('normalizeValue', [['1', '2', '3']]);
 
 	expect($result)->toBe(['1', '2', '3']);
 });
@@ -307,7 +307,7 @@ it('normalizes array values', function () {
 it('filters empty values in normalization', function () {
     $select = new ReflectionAccessor(new TopicSelect(['value' => ['0', '1', '', '2', null, '3']]));
 
-	$result = $select->callProtectedMethod('normalizeValue', [['0', '1', '', '2', null, '3']]);
+	$result = $select->callMethod('normalizeValue', [['0', '1', '', '2', null, '3']]);
 
 	expect($result)->toBe(['0', '1', '2', '', '3']);
 });

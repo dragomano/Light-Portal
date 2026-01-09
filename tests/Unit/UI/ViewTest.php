@@ -61,7 +61,7 @@ it('merges custom parameters with default parameters', function () {
 });
 
 it('gets default parameters correctly via reflection', function () {
-    $result = $this->accessor->callProtectedMethod('getDefaultParams');
+    $result = $this->accessor->callMethod('getDefaultParams');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('context')
@@ -73,19 +73,19 @@ it('gets default parameters correctly via reflection', function () {
 });
 
 it('finds blade template file correctly via reflection', function () {
-    $result = $this->accessor->callProtectedMethod('getFile', ['debug']);
+    $result = $this->accessor->callMethod('getFile', ['debug']);
 
     expect($result)->toContain('debug.blade.php');
 });
 
 it('finds php template file correctly via reflection', function () {
-    $result = $this->accessor->callProtectedMethod('getFile', ['index']);
+    $result = $this->accessor->callMethod('getFile', ['index']);
 
     expect($result)->toContain('index.php');
 });
 
 it('returns empty string when file not found via reflection', function () {
-    $result = $this->accessor->callProtectedMethod('getFile', ['nonexistent']);
+    $result = $this->accessor->callMethod('getFile', ['nonexistent']);
 
     expect($result)->toBe('');
 });
@@ -93,7 +93,7 @@ it('returns empty string when file not found via reflection', function () {
 it('creates correct renderer for blade files via reflection', function () {
     $bladeFile = $this->templateDir . '/test.blade.php';
 
-    $result = $this->accessor->callProtectedMethod('makeRenderer', [$bladeFile]);
+    $result = $this->accessor->callMethod('makeRenderer', [$bladeFile]);
 
     expect($result)->toBeInstanceOf(RendererInterface::class);
 });
@@ -101,7 +101,7 @@ it('creates correct renderer for blade files via reflection', function () {
 it('creates correct renderer for php files via reflection', function () {
     $phpFile = $this->templateDir . '/test.php';
 
-    $result = $this->accessor->callProtectedMethod('makeRenderer', [$phpFile]);
+    $result = $this->accessor->callMethod('makeRenderer', [$phpFile]);
 
     expect($result)->toBeInstanceOf(RendererInterface::class);
 });

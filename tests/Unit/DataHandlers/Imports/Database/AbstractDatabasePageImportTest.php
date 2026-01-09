@@ -17,6 +17,6 @@ it('has required properties', function () {
 
     $reflection = new ReflectionAccessor($mock);
 
-    expect($reflection->getProtectedProperty('type'))->toBe('page')
-        ->and($reflection->getProtectedProperty('entity'))->toBe('pages');
+    expect($reflection->getProperty('type'))->toBe('page')
+        ->and($reflection->getProperty('entity'))->toBe('pages');
 });

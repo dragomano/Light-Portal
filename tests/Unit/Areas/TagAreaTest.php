@@ -34,26 +34,26 @@ it('can be instantiated', function () {
 });
 
 it('returns correct entity name', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityName');
+    $result = $this->accessor->callMethod('getEntityName');
 
     expect($result)->toBe('tag');
 });
 
 it('returns correct entity name plural', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityNamePlural');
+    $result = $this->accessor->callMethod('getEntityNamePlural');
 
     expect($result)->toBe('tags');
 });
 
 it('returns empty custom action handlers', function () {
-    $result = $this->accessor->callProtectedMethod('getCustomActionHandlers');
+    $result = $this->accessor->callMethod('getCustomActionHandlers');
 
     expect($result)->toBeArray()
         ->and($result)->toBeEmpty();
 });
 
 it('returns correct table columns', function () {
-    $result = $this->accessor->callProtectedMethod('getTableColumns');
+    $result = $this->accessor->callMethod('getTableColumns');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveCount(5)
@@ -65,13 +65,13 @@ it('returns correct table columns', function () {
 });
 
 it('returns correct validator class', function () {
-    $result = $this->accessor->callProtectedMethod('getValidatorClass');
+    $result = $this->accessor->callMethod('getValidatorClass');
 
     expect($result)->toBe(TagValidator::class);
 });
 
 it('returns correct factory class', function () {
-    $result = $this->accessor->callProtectedMethod('getFactoryClass');
+    $result = $this->accessor->callMethod('getFactoryClass');
 
     expect($result)->toBe(TagFactory::class);
 });

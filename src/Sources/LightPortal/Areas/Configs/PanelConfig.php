@@ -49,10 +49,14 @@ final class PanelConfig extends AbstractConfig
 
 		$vars = ConfigBuilder::make()->addVars([
 			CheckConfig::make('lp_swap_header_footer'),
+
 			CheckConfig::make('lp_swap_left_right'),
+
 			CheckConfig::make('lp_swap_top_bottom'),
+
 			/* @uses template_callback_panel_layout */
 			CallbackConfig::make('panel_layout'),
+
 			/* @uses template_callback_panel_direction */
 			CallbackConfig::make('panel_direction'),
 		]);

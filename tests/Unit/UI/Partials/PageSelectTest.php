@@ -277,7 +277,7 @@ it('tests getData with parent constructor initialization', function () {
 
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new PageSelect(app(PageList::class)));
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('virtual_select');
 });

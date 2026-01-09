@@ -20,14 +20,14 @@ describe('TranslationsTableCreatorTest', function () {
 
     it('returns correct table name', function () {
         $creator = new ReflectionAccessor($this->creator);
-        $result = $creator->getProtectedProperty('tableName');
+        $result = $creator->getProperty('tableName');
 
         expect($result)->toBe('lp_translations');
     });
 
     it('returns correct full table name', function () {
         $creator = new ReflectionAccessor($this->creator);
-        $result = $creator->callProtectedMethod('getFullTableName');
+        $result = $creator->callMethod('getFullTableName');
 
         expect($result)->toBe('lp_translations');
     });

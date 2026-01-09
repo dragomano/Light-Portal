@@ -83,7 +83,7 @@ dataset('uniqueness scenarios', [
 
 describe('TagValidator::__construct', function () {
     it('initializes with default tag filters', function ($field, $filter) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey($field);
 
@@ -95,7 +95,7 @@ describe('TagValidator::__construct', function () {
     })->with('tag filter fields');
 
     it('has slug filter with alias pattern regexp', function () {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey('slug')
             ->and($filters['slug'])->toBeArray()
@@ -107,7 +107,7 @@ describe('TagValidator::__construct', function () {
     });
 
     it('validates slug pattern correctly', function ($slug, $isValid) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
         $pattern = $filters['slug']['options']['regexp'];
 
         $result = filter_var($slug, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => $pattern]]);
@@ -128,7 +128,7 @@ describe('TagValidator::extendErrors', function () {
             ->andReturn('test-tag');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', ['slug' => 'test-tag', 'tag_id' => 1]);
+        $this->accessor->setProperty('filteredData', ['slug' => 'test-tag', 'tag_id' => 1]);
 
         $select = mock(PortalSelect::class);
         $result = mock(PortalResultInterface::class);
@@ -150,9 +150,9 @@ describe('TagValidator::extendErrors', function () {
         $result->shouldReceive('current')
             ->andReturn(['count' => 0]);
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         expect($errors)->toBeArray();
     });
@@ -160,7 +160,7 @@ describe('TagValidator::extendErrors', function () {
 
 describe('TagValidator::isUnique', function () {
     it('checks uniqueness correctly', function ($slug, $tagId, $dbCount, $shouldBeUnique) {
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'   => $slug,
             'tag_id' => $tagId,
         ]);
@@ -197,13 +197,13 @@ describe('TagValidator::isUnique', function () {
             ->once()
             ->andReturn(['count' => $dbCount]);
 
-        $isUnique = $this->accessor->callProtectedMethod('isUnique');
+        $isUnique = $this->accessor->callMethod('isUnique');
 
         expect($isUnique)->toBe($shouldBeUnique);
     })->with('uniqueness scenarios');
 
     it('uses Expression for COUNT query', function () {
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'   => 'test-tag',
             'tag_id' => 1,
         ]);
@@ -235,7 +235,7 @@ describe('TagValidator::isUnique', function () {
         $result->shouldReceive('current')
             ->andReturn(['count' => 0]);
 
-        $this->accessor->callProtectedMethod('isUnique');
+        $this->accessor->callMethod('isUnique');
 
         expect($capturedExpression)->toBeInstanceOf(Expression::class)
             ->and($capturedExpression->getExpression())->toBe('COUNT(tag_id)');

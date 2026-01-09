@@ -71,7 +71,7 @@ describe('AbstractTableCreator', function () {
     it('returns correct full table name', function () {
         $accessor = new ReflectionAccessor($this->testClass);
 
-        $result = $accessor->callProtectedMethod('getFullTableName', [$this->creator]);
+        $result = $accessor->callMethod('getFullTableName', [$this->creator]);
 
         expect($result)->toBe('smf_test_table');
     });
@@ -82,7 +82,7 @@ describe('AbstractTableCreator', function () {
         $this->adapter->shouldReceive('query')->with('SELECT 1', Adapter::QUERY_MODE_EXECUTE)->once();
 
         $accessor = new ReflectionAccessor($this->creator);
-        $accessor->callProtectedMethod('executeSql', [$builder]);
+        $accessor->callMethod('executeSql', [$builder]);
     });
 
     it('creates table when it does not exist', function () {
@@ -148,7 +148,7 @@ describe('AbstractTableCreator', function () {
         }
 
         $accessor = new ReflectionAccessor($this->creator);
-        $accessor->callProtectedMethod('insertDefaultIfNotExists', [$where, ['id', 'name'], [1, 'test']]);
+        $accessor->callMethod('insertDefaultIfNotExists', [$where, ['id', 'name'], [1, 'test']]);
 
         expect(true)->toBeTrue();
     })->with('insert scenarios');

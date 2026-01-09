@@ -18,7 +18,7 @@ describe('PortalDelete', function () {
         expect($result)->toBeInstanceOf(PortalDelete::class);
 
         $reflection = new ReflectionAccessor($delete);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe('prefix_users');
     });
@@ -29,7 +29,7 @@ describe('PortalDelete', function () {
         $delete->from('users');
 
         $reflection = new ReflectionAccessor($delete);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe('users');
     });

@@ -57,7 +57,7 @@ describe('Installer', function () {
 
         $deleteMock = mock(PortalDelete::class)->shouldAllowMockingProtectedMethods();
         $reflection = new ReflectionAccessor($deleteMock);
-        $reflection->setProtectedProperty('where', mock(['like' => null]));
+        $reflection->setProperty('where', mock(['like' => null]));
 
         $this->portalSqlMock->shouldReceive('delete')->andReturn($deleteMock);
 
@@ -75,7 +75,7 @@ describe('Installer', function () {
         $this->installer->shouldAllowMockingProtectedMethods();
 
         $reflection = new ReflectionAccessor($this->installer);
-        $reflection->setProtectedProperty('sql', $this->portalSqlMock);
+        $reflection->setProperty('sql', $this->portalSqlMock);
     });
 
     dataset('table modes', ['install', 'uninstall']);
@@ -117,7 +117,7 @@ describe('Installer', function () {
         $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
 
         $reflection = new ReflectionAccessor(new Installer($sql));
-        $creators = $reflection->callProtectedMethod('getCreators');
+        $creators = $reflection->callMethod('getCreators');
 
         expect($creators)->toBeArray();
     });
@@ -127,21 +127,21 @@ describe('Installer', function () {
         $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
 
         $reflection = new ReflectionAccessor(new Installer($sql));
-        $upgraders = $reflection->callProtectedMethod('getUpgraders');
+        $upgraders = $reflection->callMethod('getUpgraders');
 
         expect($upgraders)->toBeArray();
     });
 
     it('processes tables for mode', function ($mode) {
         $reflection = new ReflectionAccessor($this->installer);
-        $reflection->callProtectedMethod('processTables', [$mode]);
+        $reflection->callMethod('processTables', [$mode]);
 
         expect(true)->toBeTrue();
     })->with('table modes');
 
     it('processes upgrade tasks', function () {
         $reflection = new ReflectionAccessor($this->installer);
-        $reflection->callProtectedMethod('processUpgradeTasks');
+        $reflection->callMethod('processUpgradeTasks');
 
         expect(true)->toBeTrue();
     });
@@ -157,7 +157,7 @@ describe('Installer', function () {
         $this->portalSqlMock->shouldReceive('execute')->with($deleteMock);
 
         $reflection = new ReflectionAccessor($this->installer);
-        $reflection->callProtectedMethod('cleanBackgroundTasks');
+        $reflection->callMethod('cleanBackgroundTasks');
 
         expect(true)->toBeTrue();
     });
@@ -167,7 +167,7 @@ describe('Installer', function () {
         $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
 
         $reflection = new ReflectionAccessor(new Installer($sql));
-        $reflection->callProtectedMethod('setDefaultSettings');
+        $reflection->callMethod('setDefaultSettings');
 
         expect(true)->toBeTrue();
     });
@@ -177,7 +177,7 @@ describe('Installer', function () {
         $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
 
         $reflection = new ReflectionAccessor(new Installer($sql));
-        $reflection->callProtectedMethod('setDirectoryPermissions');
+        $reflection->callMethod('setDirectoryPermissions');
 
         expect(true)->toBeTrue();
     });
@@ -191,7 +191,7 @@ describe('Installer', function () {
         $this->portalSqlMock->shouldReceive('execute')->with($updateMock);
 
         $reflection = new ReflectionAccessor($this->installer);
-        $reflection->callProtectedMethod('updateSettings');
+        $reflection->callMethod('updateSettings');
     });
 
     it('uninstalls with database changes', function () {

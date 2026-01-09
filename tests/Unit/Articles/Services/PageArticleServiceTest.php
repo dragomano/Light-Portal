@@ -617,7 +617,7 @@ it('prepares tags for pages', function () {
         })());
 
     $accessor = new ReflectionAccessor($this->service);
-    $accessor->callProtectedMethod('enrichArticles', [&$pages]);
+    $accessor->callMethod('enrichArticles', [&$pages]);
 
     expect($pages[1]['tags'])->toHaveCount(2)
         ->and($pages[1]['tags'])->toContain($tag1)
@@ -633,7 +633,7 @@ it('skips prepare tags when pages array is empty', function () {
     $this->pageRepository->shouldReceive('fetchTags')->with([])->never();
 
     $accessor = new ReflectionAccessor($this->service);
-    $accessor->callProtectedMethod('prepareTags', [&$pages]);
+    $accessor->callMethod('prepareTags', [&$pages]);
 
     expect($pages)->toBeEmpty();
 });
@@ -661,7 +661,7 @@ it('returns rules array from getRules method', function () {
         'cat_icon'     => 'fas fa-folder',
     ];
 
-    $rules = $accessor->callProtectedMethod('getRules', [$row]);
+    $rules = $accessor->callMethod('getRules', [$row]);
 
     expect($rules)->toBeArray()
         ->and($rules)->toHaveKey('id')
@@ -728,7 +728,7 @@ it('returns date based on sorting type for pages', function () {
     $queryMockCreated->shouldReceive('getSorting')->andReturn('created;desc');
     $serviceCreated = new PageArticleService($queryMockCreated, $this->events, $this->pageRepository);
     $accessorCreated = new ReflectionAccessor($serviceCreated);
-    $rulesCreated = $accessorCreated->callProtectedMethod('getRules', [$row]);
+    $rulesCreated = $accessorCreated->callMethod('getRules', [$row]);
     expect($rulesCreated['date']($row))->toContain('1 января')
         ->toContain('1970');
 
@@ -737,7 +737,7 @@ it('returns date based on sorting type for pages', function () {
     $queryMockUpdated->shouldReceive('getSorting')->andReturn('updated;desc');
     $serviceUpdated = new PageArticleService($queryMockUpdated, $this->events, $this->pageRepository);
     $accessorUpdated = new ReflectionAccessor($serviceUpdated);
-    $rulesUpdated = $accessorUpdated->callProtectedMethod('getRules', [$row]);
+    $rulesUpdated = $accessorUpdated->callMethod('getRules', [$row]);
     expect($rulesUpdated['date']($row))->toContain('1 января')
         ->toContain('1970');
 });
@@ -765,7 +765,7 @@ it('returns unique page fields (created and updated)', function () {
         'cat_icon'     => 'fas fa-folder',
     ];
 
-    $rules = $accessor->callProtectedMethod('getRules', [$row]);
+    $rules = $accessor->callMethod('getRules', [$row]);
 
     expect($rules['created']($row))->toBe(1000)
         ->and($rules['updated']($row))->toBe(1500);
@@ -794,7 +794,7 @@ it('returns section data for pages', function () {
         'cat_icon'     => 'fas fa-folder',
     ];
 
-    $rules = $accessor->callProtectedMethod('getRules', [$row]);
+    $rules = $accessor->callMethod('getRules', [$row]);
 
     $section = $rules['section']($row);
     expect($section)->toBeArray()
@@ -814,7 +814,7 @@ describe('guest role', function () {
         User::$me->allowedTo = fn($permission) => false;
 
         $accessor = new ReflectionAccessor($this->service);
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         foreach ($expected as $rule => $expectedValue) {
             expect($rules[$rule]($input))->toBe($expectedValue);
@@ -830,7 +830,7 @@ describe('author role', function () {
         User::$me->permissions = ['light_portal_manage_pages_own'];
 
         $accessor = new ReflectionAccessor($this->service);
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         foreach ($expected as $rule => $expectedValue) {
             expect($rules[$rule]($input))->toBe($expectedValue);
@@ -846,7 +846,7 @@ describe('admin role', function () {
         User::$me->allowedTo = fn($permission) => true;
 
         $accessor = new ReflectionAccessor($this->service);
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         foreach ($expected as $rule => $expectedValue) {
             expect($rules[$rule]($input))->toBe($expectedValue);
@@ -885,7 +885,7 @@ describe('admin role with images disabled', function () {
             'slug'         => 'page-with-image',
         ];
 
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         expect($rules['image']($input))->toBe('');
     });
@@ -922,7 +922,7 @@ describe('admin role with teaser disabled', function () {
             'slug'         => 'page-with-content',
         ];
 
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         expect($rules['teaser']($input))->toBe('');
     });

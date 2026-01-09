@@ -93,7 +93,7 @@ it('initializes with custom parameter', function ($param, $value) {
 
 it('checks that the template is virtual_select', function () {
     $select = new ReflectionAccessor(new ActionSelect());
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('virtual_select');
 });

@@ -110,7 +110,7 @@ it('renders to string', function () {
 
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new ActionSelect());
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('virtual_select');
 });

@@ -48,21 +48,21 @@ beforeEach(function () {
 });
 
 it('creates fallback alias correctly', function () {
-    $result = $this->reflection->callProtectedMethod('getFallbackAlias', ['alias_without_t']);
+    $result = $this->reflection->callMethod('getFallbackAlias', ['alias_without_t']);
     expect($result)->toBe('alias_without_tf');
 
-    $result = $this->reflection->callProtectedMethod('getFallbackAlias', ['some_alias']);
+    $result = $this->reflection->callMethod('getFallbackAlias', ['some_alias']);
     expect($result)->toBe('some_aliasf');
 
     // Test when it ends with 't' - should replace with 'tf'
-    $result = $this->reflection->callProtectedMethod('getFallbackAlias', ['t']);
+    $result = $this->reflection->callMethod('getFallbackAlias', ['t']);
     expect($result)->toBe('tf');
 
-    $result = $this->reflection->callProtectedMethod('getFallbackAlias', ['alias_t']);
+    $result = $this->reflection->callMethod('getFallbackAlias', ['alias_t']);
     expect($result)->toBe('alias_tf');
 
     // Test default alias used in addTranslationJoins
-    $result = $this->reflection->callProtectedMethod('getFallbackAlias', ['t']);
+    $result = $this->reflection->callMethod('getFallbackAlias', ['t']);
     expect($result)->toBe('tf');
 });
 
@@ -76,7 +76,7 @@ dataset('fallback alias scenarios', [
 ]);
 
 it('generates fallback aliases correctly', function (string $input, string $expected) {
-    $result = $this->reflection->callProtectedMethod('getFallbackAlias', [$input]);
+    $result = $this->reflection->callMethod('getFallbackAlias', [$input]);
     expect($result)->toBe($expected);
 })->with('fallback alias scenarios');
 
@@ -109,7 +109,7 @@ it('generates translation columns correctly', function () {
     $alias = 't';
     $aliasFallback = 'tf';
 
-    $columns = $this->reflection->callProtectedMethod('getTranslationColumns', [$fields, $alias, $aliasFallback]);
+    $columns = $this->reflection->callMethod('getTranslationColumns', [$fields, $alias, $aliasFallback]);
 
     expect($columns)->toHaveKey('title')
         ->and($columns)->toHaveKey('content')
@@ -124,7 +124,7 @@ it('handles translation filter creation', function () {
 });
 
 it('gets language query parameters', function () {
-    $params = $this->reflection->callProtectedMethod('getLangQueryParams');
+    $params = $this->reflection->callMethod('getLangQueryParams');
 
     expect($params)->toHaveKey('lang')
         ->and($params)->toHaveKey('fallback_lang')

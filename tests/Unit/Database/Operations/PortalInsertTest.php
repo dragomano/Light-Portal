@@ -31,7 +31,7 @@ describe('PortalInsert', function () {
             expect($result)->toBeInstanceOf(PortalInsert::class);
 
             $reflection = new ReflectionAccessor($insert);
-            $tableProperty = $reflection->getProtectedProperty('table');
+            $tableProperty = $reflection->getProperty('table');
 
             expect($tableProperty)->toBe('prefix_users');
         });
@@ -42,7 +42,7 @@ describe('PortalInsert', function () {
             $insert->into('users');
 
             $reflection = new ReflectionAccessor($insert);
-            $tableProperty = $reflection->getProtectedProperty('table');
+            $tableProperty = $reflection->getProperty('table');
 
             expect($tableProperty)->toBe('users');
         });

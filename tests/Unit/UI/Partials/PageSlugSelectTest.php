@@ -135,7 +135,7 @@ it('handles empty params', function () {
 
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new PageSlugSelect(app(PageList::class)));
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('virtual_select');
 });

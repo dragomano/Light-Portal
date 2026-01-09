@@ -130,7 +130,7 @@ describe('PluginArea::handleToggle()', function () {
 
         Theme::$current->settings['default_theme_dir'] = sys_get_temp_dir();
 
-        expect(fn() => $this->accessor->callProtectedMethod('handleToggle'))
+        expect(fn() => $this->accessor->callMethod('handleToggle'))
             ->not->toThrow(Exception::class);
     });
 
@@ -159,7 +159,7 @@ describe('PluginArea::handleToggle()', function () {
 
         Theme::$current->settings['default_theme_dir'] = sys_get_temp_dir();
 
-        expect(fn() => $this->accessor->callProtectedMethod('handleToggle'))
+        expect(fn() => $this->accessor->callMethod('handleToggle'))
             ->toThrow(TestExitException::class);
     });
 
@@ -169,7 +169,7 @@ describe('PluginArea::handleToggle()', function () {
             ->with('toggle')
             ->andReturn(true);
 
-        $this->accessor->callProtectedMethod('handleToggle');
+        $this->accessor->callMethod('handleToggle');
 
         expect(true)->toBeTrue();
     });
@@ -179,7 +179,7 @@ describe('PluginArea::getTypes()', function () {
     it('returns not applicable when snake name is empty', function () {
         Lang::$txt['not_applicable'] = 'N/A';
 
-        $types = $this->accessor->callProtectedMethod('getTypes', ['']);
+        $types = $this->accessor->callMethod('getTypes', ['']);
 
         expect($types)->toBe(['N/A' => '']);
     });
@@ -193,7 +193,7 @@ describe('PluginArea::getTypes()', function () {
             'block' => 'Block',
         ];
 
-        $types = $this->accessor->callProtectedMethod('getTypes', ['test_plugin']);
+        $types = $this->accessor->callMethod('getTypes', ['test_plugin']);
 
         expect($types)->toHaveKey('Block')
             ->and($types['Block'])->toBe(' lp_type_block');
@@ -209,7 +209,7 @@ describe('PluginArea::getTypes()', function () {
             'article' => 'Article',
         ];
 
-        $types = $this->accessor->callProtectedMethod('getTypes', ['test_plugin']);
+        $types = $this->accessor->callMethod('getTypes', ['test_plugin']);
 
         expect($types)->toHaveKeys(['Block', 'Article'])
             ->and($types['Block'])->toBe(' lp_type_block')
@@ -244,7 +244,7 @@ describe('PluginArea::prepareAddonList()', function () {
         $filesystemMock->shouldReceive('exists')->andReturn(false);
         AppMockRegistry::set(FilesystemInterface::class, $filesystemMock);
 
-        $this->accessor->callProtectedMethod('prepareAddonList', [$configVars]);
+        $this->accessor->callMethod('prepareAddonList', [$configVars]);
 
         expect(Utils::$context['all_lp_plugins'])->toBeArray()
             ->and(Utils::$context['all_lp_plugins'][0])->toHaveKeys([
@@ -269,7 +269,7 @@ describe('PluginArea::prepareAddonList()', function () {
         Utils::$context['lp_plugin_types'] = PluginType::all();
 
 
-        $this->accessor->callProtectedMethod('prepareAddonList', [[]]);
+        $this->accessor->callMethod('prepareAddonList', [[]]);
 
         $plugin = Utils::$context['all_lp_plugins'][0];
 
@@ -303,7 +303,7 @@ describe('PluginArea::preparedData()', function () {
         $languageMock->shouldReceive('getNameFromLocale')->andReturn('English');
         AppMockRegistry::set(Language::class, $languageMock);
 
-        $data = $this->accessor->callProtectedMethod('preparedData');
+        $data = $this->accessor->callMethod('preparedData');
 
         expect($data)->toHaveKeys(['txt', 'context', 'plugins', 'icons'])
             ->and($data['txt'])->toBeArray()

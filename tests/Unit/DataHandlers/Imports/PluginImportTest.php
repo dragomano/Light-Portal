@@ -118,7 +118,7 @@ it('sets UI', function () {
     unset( Utils::$context['lp_file_type']);
 
     $import = new ReflectionAccessor(new PluginImport($this->sqlMock, new File(), $this->errorHandlerMock));
-    $import->callProtectedMethod('setupUi');
+    $import->callMethod('setupUi');
 
     expect(Utils::$context['lp_file_type'])->toBe('application/zip');
 });
@@ -135,7 +135,7 @@ it('imports plugins correctly for all scenarios', function ($file, $expected_suc
     ];
 
     $import = new ReflectionAccessor(new PluginImport($this->sqlMock, new File(), $this->errorHandlerMock));
-    $import->callProtectedMethod('run');
+    $import->callMethod('run');
 
     if ($expected_success) {
         expect(Utils::$context['import_successful'])
