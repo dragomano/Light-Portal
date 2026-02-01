@@ -2,12 +2,7 @@ name: Coverage Tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-    paths:
-      - "src/**"
-      - "tests/**"
+
   pull_request:
     branches:
       - master
