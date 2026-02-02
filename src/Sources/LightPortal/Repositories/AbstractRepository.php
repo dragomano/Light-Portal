@@ -13,9 +13,11 @@
 namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Database\PortalTransactionInterface;
@@ -137,6 +139,38 @@ abstract class AbstractRepository implements RepositoryInterface
 			: $this->sql->insert('lp_params')->batch($rows);
 
 		$this->sql->execute($sqlObject);
+	}
+
+	protected function executeInTransaction(callable $callback): int
+	{
+		try {
+			$this->transaction->begin();
+
+			$result = $callback();
+
+			$this->transaction->commit();
+
+			return $result ?? 0;
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+
+			return 0;
+		}
+	}
+
+	protected function deleteRelatedData(array $items): void
+	{
+		$deleteTranslations = $this->sql->delete('lp_translations');
+		$deleteTranslations->where->in('item_id', $items);
+		$deleteTranslations->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteTranslations);
+
+		$deleteParams = $this->sql->delete('lp_params');
+		$deleteParams->where->in('item_id', $items);
+		$deleteParams->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteParams);
 	}
 
 	private function getDefaultTranslations(int $item): array

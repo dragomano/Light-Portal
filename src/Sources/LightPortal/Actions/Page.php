@@ -46,8 +46,8 @@ if (! defined('SMF'))
 
 final readonly class Page implements ActionInterface
 {
-	use HasCache;
 	use HasBreadcrumbs;
+	use HasCache;
 	use HasRequest;
 	use HasResponse;
 	use HasSorting;
@@ -61,6 +61,14 @@ final readonly class Page implements ActionInterface
 	{
 		User::$me->isAllowedTo('light_portal_view');
 
+		$this->initializePageData();
+		$this->validatePageAccess();
+		$this->preparePageContent();
+		$this->finalizePageRendering();
+	}
+
+	private function initializePageData(): void
+	{
 		$this->prepareSorting('frontpage_sorting');
 
 		$slug = $this->request()->get(LP_PAGE_PARAM);
@@ -71,10 +79,16 @@ final readonly class Page implements ActionInterface
 			$slug = explode(';', (string) $slug)[0];
 			$this->handleNonEmptySlug($slug);
 		}
+	}
 
+	private function validatePageAccess(): void
+	{
 		$this->handlePageNotFound();
 		$this->handlePagePermissions();
+	}
 
+	private function preparePageContent(): void
+	{
 		if (Utils::$context['lp_page']['created_at'] > time()) {
 			Utils::sendHttpStatus(404);
 		}
@@ -87,10 +101,17 @@ final readonly class Page implements ActionInterface
 		Utils::$context['lp_page']['content'] = Content::parse(
 			Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']
 		);
+	}
+
+	private function finalizePageRendering(): void
+	{
+		$slug = $this->request()->get(LP_PAGE_PARAM);
+		$slug = $slug ? explode(';', (string) $slug)[0] : null;
 
 		$this->setPageTitleAndCanonicalUrl($slug);
 
-		Utils::$context['lp_page_edit_link'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
+		Utils::$context['lp_page_edit_link']
+			= Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
 		Utils::$context['lp_comments_api_endpoint'] = Utils::$context['canonical_url'] . ';fetch_data';
 
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . (

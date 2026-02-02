@@ -16,7 +16,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use LightPortal\DataHandlers\DataHandler;
-use LightPortal\DataHandlers\Traits\HasDataOperations;
 use LightPortal\Enums\Permission;
 use LightPortal\UI\Tables\ImportButtonsRow;
 use LightPortal\UI\Tables\PortalTableBuilder;
@@ -30,7 +29,6 @@ if (! defined('SMF'))
 
 abstract class AbstractDatabaseImport extends DataHandler implements DatabaseImportInterface
 {
-	use HasDataOperations;
 	use HasRequest;
 	use HasTablePresenter;
 

@@ -12,15 +12,14 @@
 
 namespace LightPortal\Repositories;
 
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
+use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\Status;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
-use Exception;
-use Laminas\Db\Sql\Predicate\Expression;
+use RuntimeException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -172,9 +171,7 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 
 	private function addData(array $data): int
 	{
-		try {
-			$this->transaction->begin();
-
+		return $this->executeInTransaction(function() use ($data) {
 			$insert = $this->sql->insert('lp_tags', 'tag_id')
 				->values([
 					'slug'   => $data['slug'],
@@ -187,32 +184,20 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 			$item = (int) $result->getGeneratedValue('tag_id');
 
 			if (empty($item)) {
-				$this->transaction->rollback();
-
-				return 0;
+				throw new RuntimeException('Failed to insert tag');
 			}
 
 			$data['id'] = $item;
 
 			$this->saveTranslations($data);
 
-			$this->transaction->commit();
-
 			return $item;
-		} catch (Exception $e) {
-			$this->transaction->rollback();
-
-			ErrorHandler::fatal($e->getMessage(), false);
-
-			return 0;
-		}
+		});
 	}
 
 	private function updateData(int $item, array $data): void
 	{
-		try {
-			$this->transaction->begin();
-
+		$this->executeInTransaction(function() use ($item, $data) {
 			$update = $this->sql->update('lp_tags')
 				->set([
 					'slug'   => $data['slug'],
@@ -224,12 +209,6 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 			$this->sql->execute($update);
 
 			$this->saveTranslations($data, true);
-
-			$this->transaction->commit();
-		} catch (Exception $e) {
-			$this->transaction->rollback();
-
-			ErrorHandler::fatal($e->getMessage(), false);
-		}
+		});
 	}
 }

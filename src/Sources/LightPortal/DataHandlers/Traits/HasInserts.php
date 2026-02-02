@@ -14,6 +14,15 @@ namespace LightPortal\DataHandlers\Traits;
 
 trait HasInserts
 {
+	private const TABLE_ID_COLUMNS = [
+		'lp_pages'      => 'page_id',
+		'lp_blocks'     => 'block_id',
+		'lp_categories' => 'category_id',
+		'lp_tags'       => 'tag_id',
+		'lp_page_tag'   => 'tag_id',
+		'members'       => 'id_member',
+	];
+
 	protected function insertData(
 		string $table,
 		array $data,
@@ -51,13 +60,6 @@ trait HasInserts
 
 	private function getIdColumn(string $table): string
 	{
-		return match ($table) {
-			'lp_pages' => 'page_id',
-			'lp_blocks' => 'block_id',
-			'lp_categories' => 'category_id',
-			'lp_tags', 'lp_page_tag' => 'tag_id',
-			'members' => 'id_member',
-			default => 'id',
-		};
+		return self::TABLE_ID_COLUMNS[$table] ?? 'id';
 	}
 }

@@ -12,12 +12,10 @@
 
 namespace LightPortal\Repositories;
 
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
-use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\PortalHook;
@@ -25,6 +23,7 @@ use LightPortal\Enums\Status;
 use LightPortal\Lists\PluginList;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
+use RuntimeException;
 
 use function LightPortal\app;
 
@@ -246,16 +245,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		$delete->where->in('block_id', $items);
 		$this->sql->execute($delete);
 
-		$deleteTranslations = $this->sql->delete('lp_translations');
-		$deleteTranslations->where->in('item_id', $items);
-		$deleteTranslations->where->equalTo('type', $this->entity);
-		$this->sql->execute($deleteTranslations);
-
-		$deleteParams = $this->sql->delete('lp_params');
-		$deleteParams->where->in('item_id', $items);
-		$deleteParams->where->equalTo('type', $this->entity);
-		$this->sql->execute($deleteParams);
-
+		$this->deleteRelatedData($items);
 		$this->session('lp')->free('active_blocks');
 	}
 
@@ -289,9 +279,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 	private function addData(array $data): int
 	{
-		try {
-			$this->transaction->begin();
-
+		return $this->executeInTransaction(function() use ($data) {
 			$insert = $this->sql->insert('lp_blocks', 'block_id')
 				->values([
 					'icon'          => $data['icon'],
@@ -310,9 +298,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 			$item = (int) $result->getGeneratedValue('block_id');
 
 			if (empty($item)) {
-				$this->transaction->rollback();
-
-				return 0;
+				throw new RuntimeException('Failed to insert block');
 			}
 
 			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
@@ -322,23 +308,13 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 			$this->saveTranslations($data);
 			$this->saveOptions($data);
 
-			$this->transaction->commit();
-
 			return $item;
-		} catch (Exception $e) {
-			$this->transaction->rollback();
-
-			ErrorHandler::fatal($e->getMessage(), false);
-
-			return 0;
-		}
+		});
 	}
 
 	private function updateData(int $item, array $data): void
 	{
-		try {
-			$this->transaction->begin();
-
+		$this->executeInTransaction(function() use ($item, $data) {
 			$update = $this->sql->update('lp_blocks')
 				->set([
 					'icon'          => $data['icon'],
@@ -357,13 +333,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$this->saveTranslations($data, true);
 			$this->saveOptions($data, true);
-
-			$this->transaction->commit();
-		} catch (Exception $e) {
-			$this->transaction->rollback();
-
-			ErrorHandler::fatal($e->getMessage(), false);
-		}
+		});
 	}
 
 	private function prepareMissingBlockTypes(string $type): void

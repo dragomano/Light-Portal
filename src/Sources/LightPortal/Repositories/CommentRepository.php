@@ -13,9 +13,7 @@
 namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\NotifyType;
 use LightPortal\Utils\Avatar;
@@ -241,9 +239,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 		$pageIds = array_unique($pageIds);
 
-		try {
-			$this->transaction->begin();
-
+		$this->executeInTransaction(function() use ($allItems, $pageIds, $withResponse) {
 			$deleteComments = $this->sql->delete('lp_comments');
 			$deleteComments->where->in('id', $allItems);
 			$this->sql->execute($deleteComments);
@@ -270,15 +266,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 				$this->sql->execute($updateLast);
 			}
 
-			$deleteParams = $this->sql->delete('lp_params');
-			$deleteParams->where->in('item_id', $allItems);
-			$deleteParams->where->equalTo('type', $this->entity);
-			$this->sql->execute($deleteParams);
-
-			$deleteTranslations = $this->sql->delete('lp_translations');
-			$deleteTranslations->where->in('item_id', $allItems);
-			$deleteTranslations->where->equalTo('type', $this->entity);
-			$this->sql->execute($deleteTranslations);
+			$this->deleteRelatedData($allItems);
 
 			$deleteAlerts = $this->sql->delete('user_alerts');
 			$deleteAlerts->where([
@@ -287,14 +275,8 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			$deleteAlerts->where->in('content_id', $allItems);
 			$this->sql->execute($deleteAlerts);
 
-			$this->transaction->commit();
-
 			$withResponse && $this->response()->exit(['success' => true, 'items' => $allItems]);
-		} catch (Exception $e) {
-			$this->transaction->rollback();
-
-			ErrorHandler::fatal($e->getMessage(), false);
-		}
+		});
 	}
 
 	public function updateLastCommentId(int $item, int $pageId): void
