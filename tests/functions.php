@@ -272,6 +272,15 @@ if (! function_exists('obExit')) {
     }
 }
 
+if (! function_exists('redirectexit')) {
+    $GLOBALS['redirectexit_calls'] = [];
+
+    function redirectexit(string $url = ''): void
+    {
+        $GLOBALS['redirectexit_calls'][] = $url;
+    }
+}
+
 if (! function_exists('un_htmlspecialchars')) {
     function un_htmlspecialchars(string $string): string
     {
