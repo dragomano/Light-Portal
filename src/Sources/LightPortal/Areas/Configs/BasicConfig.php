@@ -139,12 +139,22 @@ final class BasicConfig extends AbstractConfig
 		}
 
 		$currentVersion = preg_replace('/^(\d+)\.(\d+)(?!\.)/', '$1.$2.0', LP_VERSION);
+		$currentVersion = $this->normalizeVersion($currentVersion);
+		$githubVersion = $this->normalizeVersion($xml['name']);
 
-		if (version_compare('v' . $currentVersion, $xml['name'], '<')) {
+		if (version_compare($currentVersion, $githubVersion, '<')) {
 			return $xml;
 		}
 
 		return false;
+	}
+
+	private function normalizeVersion(string $version): string
+	{
+		$version = preg_replace('/^v/i', '', trim($version));
+		$version = preg_replace('/\s+/', '-', $version);
+
+		return strtolower($version);
 	}
 
 	private function showInfoAboutNewRelease(): void
