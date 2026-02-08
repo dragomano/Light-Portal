@@ -166,8 +166,9 @@ final class Notifier extends BackgroundTask
 	{
 		$select = $this->sql->select()
 			->from('members')
-			->columns(['id_member', 'lngfile', 'email_address'])
-			->where->in('id_member', $notifies['email']);
+			->columns(['id_member', 'lngfile', 'email_address']);
+
+		$select->where->in('id_member', $notifies['email']);
 
 		$result = $this->sql->execute($select);
 

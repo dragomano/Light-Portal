@@ -61,7 +61,7 @@ class CategoryPageList extends AbstractPageList
 
 		$this->breadcrumbs()
 			->add(Lang::$txt['lp_all_categories'], PortalSubAction::CATEGORIES->url())
-			->add($category['title'] ?? Lang::$txt['lp_no_category'], before: $category['icon']);
+			->add($category['title'] ?? Lang::$txt['lp_no_category'], before: $category['icon'] ?? '');
 
 		$this->cardList->show($this);
 
