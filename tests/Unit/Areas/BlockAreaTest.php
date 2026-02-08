@@ -49,19 +49,19 @@ it('can be instantiated', function () {
 });
 
 it('returns correct entity name', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityName');
+    $result = $this->accessor->callMethod('getEntityName');
 
     expect($result)->toBe('block');
 });
 
 it('returns correct entity name plural', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityNamePlural');
+    $result = $this->accessor->callMethod('getEntityNamePlural');
 
     expect($result)->toBe('blocks');
 });
 
 it('returns correct custom action handlers', function () {
-    $result = $this->accessor->callProtectedMethod('getCustomActionHandlers');
+    $result = $this->accessor->callMethod('getCustomActionHandlers');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('clone_block')
@@ -71,37 +71,37 @@ it('returns correct custom action handlers', function () {
 });
 
 it('returns correct validator class', function () {
-    $result = $this->accessor->callProtectedMethod('getValidatorClass');
+    $result = $this->accessor->callMethod('getValidatorClass');
 
     expect($result)->toBe(BlockValidator::class);
 });
 
 it('returns correct factory class', function () {
-    $result = $this->accessor->callProtectedMethod('getFactoryClass');
+    $result = $this->accessor->callMethod('getFactoryClass');
 
     expect($result)->toBe(BlockFactory::class);
 });
 
 it('returns correct main form action suffix', function () {
-    $result = $this->accessor->callProtectedMethod('getMainFormActionSuffix');
+    $result = $this->accessor->callMethod('getMainFormActionSuffix');
 
     expect($result)->toBe(';sa=add');
 });
 
 it('returns correct remove redirect suffix', function () {
-    $result = $this->accessor->callProtectedMethod('getRemoveRedirectSuffix');
+    $result = $this->accessor->callMethod('getRemoveRedirectSuffix');
 
     expect($result)->toBe(';sa=main');
 });
 
 it('should flush cache returns true', function () {
-    $result = $this->accessor->callProtectedMethod('shouldFlushCache');
+    $result = $this->accessor->callMethod('shouldFlushCache');
 
     expect($result)->toBeTrue();
 });
 
 it('should require title fields returns false', function () {
-    $result = $this->accessor->callProtectedMethod('shouldRequireTitleFields');
+    $result = $this->accessor->callMethod('shouldRequireTitleFields');
 
     expect($result)->toBeFalse();
 });
@@ -109,13 +109,13 @@ it('should require title fields returns false', function () {
 it('showMainContent can be called without errors', function () {
     $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
 
-    $this->accessor->callProtectedMethod('showMainContent');
+    $this->accessor->callMethod('showMainContent');
 
     expect(true)->toBeTrue();
 });
 
 it('setupAdditionalAddContext can be called without errors', function () {
-    $this->accessor->callProtectedMethod('setupAdditionalAddContext');
+    $this->accessor->callMethod('setupAdditionalAddContext');
 
     expect(true)->toBeTrue();
 });
@@ -123,7 +123,7 @@ it('setupAdditionalAddContext can be called without errors', function () {
 it('prepareValidationContext can be called without errors', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('prepareValidationContext');
+    $this->accessor->callMethod('prepareValidationContext');
 
     expect(true)->toBeTrue();
 });
@@ -131,13 +131,13 @@ it('prepareValidationContext can be called without errors', function () {
 it('postProcessValidation can be called without errors', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('postProcessValidation');
+    $this->accessor->callMethod('postProcessValidation');
 
     expect(true)->toBeTrue();
 });
 
 it('prepareCommonFields can be called without errors', function () {
-    $this->accessor->callProtectedMethod('prepareCommonFields');
+    $this->accessor->callMethod('prepareCommonFields');
 
     expect(true)->toBeTrue();
 });
@@ -164,7 +164,7 @@ describe('prepareSpecificFields', function () {
             };
         }
 
-        $this->accessor->callProtectedMethod('prepareSpecificFields');
+        $this->accessor->callMethod('prepareSpecificFields');
 
         foreach ($expectations as $type => $checks) {
             match ($type) {
@@ -219,17 +219,17 @@ describe('prepareSpecificFields', function () {
 it('dispatchFieldsEvent dispatches event', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('dispatchFieldsEvent');
+    $this->accessor->callMethod('dispatchFieldsEvent');
 });
 
 it('prepareEditor dispatches event', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('prepareEditor');
+    $this->accessor->callMethod('prepareEditor');
 });
 
 it('preparePreviewContent can be called without errors', function () {
-    $this->accessor->callProtectedMethod(
+    $this->accessor->callMethod(
         'preparePreviewContent',
         [['type' => 'test', 'content' => 'test content']]
     );
@@ -238,7 +238,7 @@ it('preparePreviewContent can be called without errors', function () {
 });
 
 it('preparePreviewContent handles empty content correctly', function () {
-    $this->accessor->callProtectedMethod(
+    $this->accessor->callMethod(
         'preparePreviewContent',
         [['type' => 'test', 'content' => '', 'id' => 1]]
     );
@@ -247,13 +247,13 @@ it('preparePreviewContent handles empty content correctly', function () {
 });
 
 it('finalizePreviewTitle can be called without errors', function () {
-    $this->accessor->callProtectedMethod('finalizePreviewTitle', [['icon' => 'fas fa-test']]);
+    $this->accessor->callMethod('finalizePreviewTitle', [['icon' => 'fas fa-test']]);
 
     expect(true)->toBeTrue();
 });
 
 it('finalizePreviewTitle handles hide_header option correctly', function () {
-    $this->accessor->callProtectedMethod('finalizePreviewTitle', [
+    $this->accessor->callMethod('finalizePreviewTitle', [
         ['icon' => 'fas fa-test', 'options' => ['hide_header' => true]]
     ]);
 
@@ -268,30 +268,30 @@ it('handleClone can be called without errors', function () {
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('put')->with('clone', true);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('exit')->once()->with(['success' => true, 'id' => 1])->andThrow(new TestExitException());
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
-    expect(fn() => $this->accessor->callProtectedMethod('handleClone', ['1']))->toThrow(TestExitException::class);
+    expect(fn() => $this->accessor->callMethod('handleClone', ['1']))->toThrow(TestExitException::class);
 });
 
 it('handleClone returns early when item is empty', function () {
-    $this->accessor->callProtectedMethod('handleClone', ['']);
+    $this->accessor->callMethod('handleClone', ['']);
 
     expect(true)->toBeTrue();
 });
 
 it('handleClone returns early when item is null', function () {
-    $this->accessor->callProtectedMethod('handleClone', [null]);
+    $this->accessor->callMethod('handleClone', [null]);
 
     expect(true)->toBeTrue();
 });
 
 it('handleClone returns early when item is zero', function () {
-    $this->accessor->callProtectedMethod('handleClone', [0]);
+    $this->accessor->callMethod('handleClone', [0]);
 
     expect(true)->toBeTrue();
 });
@@ -305,14 +305,14 @@ it('handleClone handles successful cloning with string item', function () {
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('put')->with('clone', true);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('exit')->once()->with(['success' => true, 'id' => 456])->andThrow(new TestExitException());
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
-    expect(fn() => $this->accessor->callProtectedMethod('handleClone', ['123']))->toThrow(TestExitException::class);
+    expect(fn() => $this->accessor->callMethod('handleClone', ['123']))->toThrow(TestExitException::class);
 });
 
 it('handleClone handles cloning failure when id is zero', function () {
@@ -324,20 +324,20 @@ it('handleClone handles cloning failure when id is zero', function () {
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('put')->with('clone', true);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('exit')->once()->with(['success' => false])->andThrow(new TestExitException());
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
-    expect(fn() => $this->accessor->callProtectedMethod('handleClone', [1]))->toThrow(TestExitException::class);
+    expect(fn() => $this->accessor->callMethod('handleClone', [1]))->toThrow(TestExitException::class);
 });
 
 it('getDefaultOptions returns options array', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $result = $this->accessor->callProtectedMethod('getDefaultOptions');
+    $result = $this->accessor->callMethod('getDefaultOptions');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('hide_header')
@@ -345,19 +345,19 @@ it('getDefaultOptions returns options array', function () {
 });
 
 it('getAreasInfo can be called without errors', function () {
-    $this->accessor->callProtectedMethod('getAreasInfo');
+    $this->accessor->callMethod('getAreasInfo');
 
     expect(true)->toBeTrue();
 });
 
 it('prepareBlockList can be called without errors', function () {
-    $this->accessor->callProtectedMethod('prepareBlockList');
+    $this->accessor->callMethod('prepareBlockList');
 
     expect(true)->toBeTrue();
 });
 
 it('getRepository returns correct instance', function () {
-    $result = $this->accessor->callProtectedMethod('getRepository');
+    $result = $this->accessor->callMethod('getRepository');
 
     expect($result)->toBe($this->repositoryMock);
 });

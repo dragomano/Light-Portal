@@ -8,7 +8,7 @@ use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     $this->container = new ReflectionAccessor(new Container());
-    $this->container->setProtectedProperty('container', null);
+    $this->container->setProperty('container', null);
 });
 
 it('is a singleton', function () {
@@ -28,7 +28,7 @@ it('get returns service from container', function () {
     $mockContainer = mock(LeagueContainer::class);
     $mockContainer->shouldReceive('get')->with('test_service')->andReturn('mocked_service');
 
-    $this->container->setProtectedProperty('container', $mockContainer);
+    $this->container->setProperty('container', $mockContainer);
 
     $result = Container::get('test_service');
 

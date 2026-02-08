@@ -73,7 +73,7 @@ beforeEach(function() {
     $this->repository = new PageRepository($this->sql, $this->dispatcher, $this->notifier);
 
     $reflection = new ReflectionAccessor($this->repository);
-    $reflection->setProtectedProperty('transaction', $this->transaction);
+    $reflection->setProperty('transaction', $this->transaction);
 });
 
 arch()

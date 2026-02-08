@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 3.0
@@ -84,7 +84,13 @@ class ErrorHandler implements ErrorHandlerInterface
 
 	private function shouldLogToSmf(string $level): bool
 	{
-		$levels = ['debug' => 0, 'info' => 1, 'warning' => 2, 'error' => 3, 'critical' => 4];
+		$levels = [
+			'debug'    => 0,
+			'info'     => 1,
+			'warning'  => 2,
+			'error'    => 3,
+			'critical' => 4,
+		];
 
 		$currentPriority = $levels[$this->logLevel] ?? 3;
 		$messagePriority = $levels[$level] ?? 1;
@@ -95,9 +101,10 @@ class ErrorHandler implements ErrorHandlerInterface
 	private function mapLevelToSmfType(string $level): string
 	{
 		return match ($level) {
-			'warning'           => 'user',
-			'error', 'critical' => 'critical',
-			default             => 'general',
+			'warning'  => 'user',
+			'error',
+			'critical' => 'critical',
+			default    => 'general',
 		};
 	}
 }

@@ -73,7 +73,7 @@ FROM smf_lp_plugins
 SQL;
 
         $accessor = new ReflectionAccessor(new PortalProfiler());
-        $result = $accessor->callProtectedMethod('formatSql', [$source]);
+        $result = $accessor->callMethod('formatSql', [$source]);
 
         expect($result)->toBe($formatted);
     });
@@ -106,7 +106,7 @@ ORDER BY placement DESC, priority ASC
 SQL;
 
         $accessor = new ReflectionAccessor(new PortalProfiler());
-        $result = $accessor->callProtectedMethod('formatSql', [$source]);
+        $result = $accessor->callMethod('formatSql', [$source]);
 
         expect($result)->toBe($formatted);
     });
@@ -156,7 +156,7 @@ WHERE p.status = '1'
 SQL;
 
         $accessor = new ReflectionAccessor(new PortalProfiler());
-        $result = $accessor->callProtectedMethod('formatSql', [$source]);
+        $result = $accessor->callMethod('formatSql', [$source]);
 
         expect($result)->toBe($formatted);
     });

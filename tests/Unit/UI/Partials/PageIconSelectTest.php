@@ -147,7 +147,7 @@ it('handles empty params', function () {
 
 it('correctly sets the template', function () {
     $select = new ReflectionAccessor(new PageIconSelect());
-    $property = $select->getProtectedProperty('template');
+    $property = $select->getProperty('template');
 
     expect($property)->toBe('page_icon_select');
 });

@@ -49,19 +49,19 @@ arch()
     ->toImplement(AreaInterface::class);
 
 it('returns correct entity name', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityName');
+    $result = $this->accessor->callMethod('getEntityName');
 
     expect($result)->toBe('page');
 });
 
 it('returns correct entity name plural', function () {
-    $result = $this->accessor->callProtectedMethod('getEntityNamePlural');
+    $result = $this->accessor->callMethod('getEntityNamePlural');
 
     expect($result)->toBe('pages');
 });
 
 it('returns correct custom action handlers', function () {
-    $result = $this->accessor->callProtectedMethod('getCustomActionHandlers');
+    $result = $this->accessor->callMethod('getCustomActionHandlers');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('restore_item')
@@ -71,25 +71,25 @@ it('returns correct custom action handlers', function () {
 });
 
 it('returns correct validator class', function () {
-    $result = $this->accessor->callProtectedMethod('getValidatorClass');
+    $result = $this->accessor->callMethod('getValidatorClass');
 
     expect($result)->toBe(PageValidator::class);
 });
 
 it('returns correct factory class', function () {
-    $result = $this->accessor->callProtectedMethod('getFactoryClass');
+    $result = $this->accessor->callMethod('getFactoryClass');
 
     expect($result)->toBe(PageFactory::class);
 });
 
 it('should flush cache returns true', function () {
-    $result = $this->accessor->callProtectedMethod('shouldFlushCache');
+    $result = $this->accessor->callMethod('shouldFlushCache');
 
     expect($result)->toBeTrue();
 });
 
 it('returns correct main form action suffix', function () {
-    $result = $this->accessor->callProtectedMethod('getMainFormActionSuffix');
+    $result = $this->accessor->callMethod('getMainFormActionSuffix');
 
     expect($result)->toBe(';sa=main');
 });
@@ -97,10 +97,10 @@ it('returns correct main form action suffix', function () {
 it('returns correct main tab data', function () {
     User::$me->allowedTo(['light_portal_manage_pages_any']);
 
-    $this->accessor->setProtectedProperty('isModerate', true);
-    $this->accessor->setProtectedProperty('isDeleted', true);
+    $this->accessor->setProperty('isModerate', true);
+    $this->accessor->setProperty('isDeleted', true);
 
-    $result = $this->accessor->callProtectedMethod('getMainTabData');
+    $result = $this->accessor->callMethod('getMainTabData');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('title')
@@ -132,7 +132,7 @@ it('buildTable returns PortalTableBuilder instance', function () {
     $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
     $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
 
-    $result = $this->accessor->callProtectedMethod('buildTable');
+    $result = $this->accessor->callMethod('buildTable');
 
     expect($result)->toBeInstanceOf(PortalTableBuilderInterface::class);
 });
@@ -150,8 +150,8 @@ it('afterMain correctly runs', function () {
         'deleted_pages'    => 0,
     ];
 
-    $this->accessor->setProtectedProperty('browseType', 'all');
-    $this->accessor->callProtectedMethod('afterMain');
+    $this->accessor->setProperty('browseType', 'all');
+    $this->accessor->callMethod('afterMain');
 
     expect(Utils::$context['lp_pages']['title'])->toContain(Utils::$context['form_action']);
 });
@@ -166,9 +166,9 @@ it('setupAdditionalAddContext prepares page list and sets context', function () 
     $requestMock->shouldReceive('json')->andReturn([]);
     $requestMock->shouldReceive('get')->with('add_page')->andReturn('bbc');
     $requestMock->shouldReceive('get')->with('search')->andReturn('');
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('setupAdditionalAddContext');
+    $this->accessor->callMethod('setupAdditionalAddContext');
 
     expect(Utils::$context)->toHaveKey('lp_all_pages')
         ->and(Utils::$context['lp_all_pages'])->toHaveKey('bbc');
@@ -177,7 +177,7 @@ it('setupAdditionalAddContext prepares page list and sets context', function () 
 it('prepareValidationContext can be called without errors', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('prepareValidationContext');
+    $this->accessor->callMethod('prepareValidationContext');
 
     expect(true)->toBeTrue();
 });
@@ -185,13 +185,13 @@ it('prepareValidationContext can be called without errors', function () {
 it('postProcessValidation can be called without errors', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('postProcessValidation');
+    $this->accessor->callMethod('postProcessValidation');
 
     expect(true)->toBeTrue();
 });
 
 it('prepareCommonFields can be called without errors', function () {
-    $this->accessor->callProtectedMethod('prepareCommonFields');
+    $this->accessor->callMethod('prepareCommonFields');
 
     expect(true)->toBeTrue();
 });
@@ -245,7 +245,7 @@ describe('prepareSpecificFields', function () {
             };
         }
 
-        $this->accessor->callProtectedMethod('prepareSpecificFields');
+        $this->accessor->callMethod('prepareSpecificFields');
 
         foreach ($expectations as $type => $checks) {
             match ($type) {
@@ -356,13 +356,13 @@ describe('prepareSpecificFields', function () {
 it('dispatchFieldsEvent dispatches event', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('dispatchFieldsEvent');
+    $this->accessor->callMethod('dispatchFieldsEvent');
 });
 
 it('prepareEditor dispatches event', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $this->accessor->callProtectedMethod('prepareEditor');
+    $this->accessor->callMethod('prepareEditor');
 });
 
 it('finalizePreviewTitle sets preview title', function () {
@@ -370,7 +370,7 @@ it('finalizePreviewTitle sets preview title', function () {
 
     $entity = ['id' => 1, 'title' => 'Test Page'];
 
-    $this->accessor->callProtectedMethod('finalizePreviewTitle', [$entity]);
+    $this->accessor->callMethod('finalizePreviewTitle', [$entity]);
 
     expect(Utils::$context['preview_title'])->toBeString()->not->toBeEmpty();
 });
@@ -383,13 +383,13 @@ it('beforeRemove logs action if user is not author', function () {
         ],
     ];
 
-    $this->accessor->callProtectedMethod('beforeRemove', [1]);
+    $this->accessor->callMethod('beforeRemove', [1]);
 
     expect(true)->toBeTrue();
 });
 
 it('checkUser redirects if user has no permissions and no userId', function () {
-    $this->accessor->setProtectedProperty('userId', null);
+    $this->accessor->setProperty('userId', null);
 
     User::$me->allowedTo = fn() => false;
 
@@ -397,24 +397,24 @@ it('checkUser redirects if user has no permissions and no userId', function () {
     $responseMock->shouldReceive('redirect')->once()->with('action=admin;area=lp_pages;u=1');
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
 
-    $this->accessor->setProtectedProperty('response', $responseMock);
-    $this->accessor->callProtectedMethod('checkUser');
+    $this->accessor->setProperty('response', $responseMock);
+    $this->accessor->callMethod('checkUser');
 });
 
 it('promote does nothing when items array is empty', function () {
-    $this->accessor->callProtectedMethod('promote', [[]]);
+    $this->accessor->callMethod('promote', [[]]);
 
     expect(true)->toBeTrue();
 });
 
 it('promote moves pages up by default', function () {
-    $this->accessor->callProtectedMethod('promote', [[3, 4]]);
+    $this->accessor->callMethod('promote', [[3, 4]]);
 
     expect(true)->toBeTrue();
 });
 
 it('promote moves pages down when type is down', function () {
-    $this->accessor->callProtectedMethod('promote', [[1, 3], 'down']);
+    $this->accessor->callMethod('promote', [[1, 3], 'down']);
 
     expect(true)->toBeTrue();
 });
@@ -422,7 +422,7 @@ it('promote moves pages down when type is down', function () {
 it('getDefaultOptions returns correct default options', function () {
     $this->dispatcherMock->shouldReceive('dispatch')->once();
 
-    $result = $this->accessor->callProtectedMethod('getDefaultOptions');
+    $result = $this->accessor->callMethod('getDefaultOptions');
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('show_title')
@@ -445,7 +445,7 @@ it('preparePageList prepares all pages list', function () {
         'lp_html' => ['title' => 'HTML Page'],
     ];
 
-    $this->accessor->callProtectedMethod('preparePageList');
+    $this->accessor->callMethod('preparePageList');
 
     expect(Utils::$context)->toHaveKey('lp_all_pages')
         ->and(Utils::$context['lp_all_pages'])->toHaveKey('bbc')
@@ -456,23 +456,23 @@ it('preparePageList prepares all pages list', function () {
 it('getPageIcon returns icon for existing content type', function () {
     Utils::$context['lp_loaded_addons'] = ['custom' => ['icon' => 'fas fa-star']];
 
-    $result = $this->accessor->callProtectedMethod('getPageIcon', ['custom']);
+    $result = $this->accessor->callMethod('getPageIcon', ['custom']);
 
     expect($result)->toBe('fas fa-star');
 });
 
 it('getPageIcon returns default icon for unknown type', function () {
-    $result = $this->accessor->callProtectedMethod('getPageIcon', ['unknown']);
+    $result = $this->accessor->callMethod('getPageIcon', ['unknown']);
 
     expect($result)->toBe('fas fa-question');
 });
 it('beforeMain loads params and checks user', function () {
-    $this->accessor->setProtectedProperty('isModerate', true);
+    $this->accessor->setProperty('isModerate', true);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('redirect')->once();
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
     $responseMock->redirect();
 
@@ -483,9 +483,9 @@ it('beforeMain loads params and checks user', function () {
     $requestMock->shouldReceive('has')->with('deleted')->andReturn(false);
     $requestMock->shouldReceive('get')->with('type')->andReturn(null);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('beforeMain');
+    $this->accessor->callMethod('beforeMain');
 });
 
 it('performMassActions handles delete action', function () {
@@ -495,21 +495,21 @@ it('performMassActions handles delete action', function () {
     $cacheMock = mock(CacheInterface::class);
     $cacheMock->shouldReceive('flush')->once();
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
-    $this->accessor->setProtectedProperty('cache', $cacheMock);
+    $this->accessor->setProperty('cache', $cacheMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('redirect')->once();
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['1', '2']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('performMassActions');
+    $this->accessor->callMethod('performMassActions');
 });
 
 it('performMassActions handles delete_forever action', function () {
@@ -519,21 +519,21 @@ it('performMassActions handles delete_forever action', function () {
     $cacheMock = mock(CacheInterface::class);
     $cacheMock->shouldReceive('flush')->once();
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
-    $this->accessor->setProtectedProperty('cache', $cacheMock);
+    $this->accessor->setProperty('cache', $cacheMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('redirect')->once();
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['1']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('performMassActions');
+    $this->accessor->callMethod('performMassActions');
 });
 
 it('performMassActions handles toggle action', function () {
@@ -543,57 +543,57 @@ it('performMassActions handles toggle action', function () {
     $cacheMock = mock(CacheInterface::class);
     $cacheMock->shouldReceive('flush')->once();
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
-    $this->accessor->setProtectedProperty('cache', $cacheMock);
+    $this->accessor->setProperty('cache', $cacheMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('redirect')->once();
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['1', '3']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('performMassActions');
+    $this->accessor->callMethod('performMassActions');
 });
 
 it('performMassActions handles promote actions', function () {
     $cacheMock = mock(CacheInterface::class);
     $cacheMock->shouldReceive('flush')->once();
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
-    $this->accessor->setProtectedProperty('cache', $cacheMock);
+    $this->accessor->setProperty('cache', $cacheMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('redirect')->once();
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProtectedProperty('response', $responseMock);
+    $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['2', '4']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('performMassActions');
+    $this->accessor->callMethod('performMassActions');
 });
 
 it('performMassActions does nothing when no mass actions', function () {
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(true);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProtectedProperty('request', $requestMock);
+    $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callProtectedMethod('performMassActions');
+    $this->accessor->callMethod('performMassActions');
 
     expect(true)->toBeTrue();
 });
 
 it('getRepository returns correct instance', function () {
-    $result = $this->accessor->callProtectedMethod('getRepository');
+    $result = $this->accessor->callMethod('getRepository');
 
     expect($result)->toBe($this->repositoryMock);
 });

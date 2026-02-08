@@ -9,29 +9,35 @@ use ReflectionException;
 
 class ReflectionAccessor
 {
-    private object $object;
+    private ReflectionClass $reflection;
 
-    public function __construct(object $object)
+    private ?object $object;
+
+    public function __construct(object|string $objectOrClass)
     {
-        $this->object = $object;
+        try {
+            $this->reflection = new ReflectionClass($objectOrClass);
+        } catch (ReflectionException) {}
+
+        if (is_string($objectOrClass)) {
+            $this->object = null;
+        } else {
+            $this->object = $objectOrClass;
+        }
     }
 
-    public function setProtectedProperty(mixed $property, mixed $value): void
+    public function setProperty(mixed $property, mixed $value): void
     {
-        $reflection = new ReflectionClass($this->object);
-
         try {
-            $prop = $reflection->getProperty($property);
+            $prop = $this->reflection->getProperty($property);
             $prop->setValue($this->object, $value);
         } catch (ReflectionException) {}
     }
 
-    public function getProtectedProperty(mixed $property)
+    public function getProperty(string $property): mixed
     {
-        $reflection = new ReflectionClass($this->object);
-
         try {
-            $prop = $reflection->getProperty($property);
+            $prop = $this->reflection->getProperty($property);
 
             return $prop->getValue($this->object);
         } catch (ReflectionException $e) {
@@ -39,31 +45,12 @@ class ReflectionAccessor
         }
     }
 
-    public function callProtectedMethod(string $method, array $args = []): mixed
+    public function callMethod(string $method, array $args = []): mixed
     {
-        $reflection = new ReflectionClass($this->object);
-
         try {
-            $m = $reflection->getMethod($method);
+            $method = $this->reflection->getMethod($method);
 
-            $params = $m->getParameters();
-            $invokeArgs = [];
-
-            foreach ($params as $i => $param) {
-                if (array_key_exists($i, $args)) {
-                    if ($param->isPassedByReference()) {
-                        $invokeArgs[$i] = &$args[$i];
-                    } else {
-                        $invokeArgs[$i] = $args[$i];
-                    }
-                } else {
-                    $invokeArgs[$i] = $param->isDefaultValueAvailable()
-                        ? $param->getDefaultValue()
-                        : null;
-                }
-            }
-
-            return $m->invokeArgs($this->object, $invokeArgs);
+            return $method->invokeArgs($this->object, $args);
         } catch (ReflectionException $e) {
             return $e->getMessage();
         }

@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 3.0
@@ -36,6 +36,11 @@ class Filesystem implements FilesystemInterface
 
 	public function write(string $path, string $content): bool
 	{
+		$dir = dirname($path);
+		if (! $this->exists($dir)) {
+			throw new RuntimeException("Cannot write to file: $path (directory does not exist)");
+		}
+
 		$result = file_put_contents($path, $content);
 
 		if ($result === false) {

@@ -145,7 +145,7 @@
 	margin: 0 3px 3px 0;
 	padding: 2px 6px;
 	@include functions.pointer;
-	@include functions.bradius(0);
+	@include functions.bRadius(0);
 
 	&[data-value^="!"] {
 		background: variables.$ignore-action;

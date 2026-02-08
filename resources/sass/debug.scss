@@ -16,7 +16,7 @@ $sql_border_left: #007bff;
 	padding: 1rem;
 
 	.query-item {
-		@include functions.bradius(.375rem);
+		@include functions.bRadius(.375rem);
 		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 		padding: 1rem;
 
@@ -29,7 +29,7 @@ $sql_border_left: #007bff;
 			margin-bottom: .75rem;
 
 			.query-index {
-				@include functions.bradius(.25rem);
+				@include functions.bRadius(.25rem);
 				background: $index_background;
 				color: $index_color;
 				font-size: .875rem;
@@ -44,9 +44,8 @@ $sql_border_left: #007bff;
 			}
 
 			.query-location {
-				@include functions.bradius(.25rem);
+				@include functions.bRadius(.25rem);
 				background: $location_background;
-				color: $location_color;
 				color: $location_color;
 				font-family: monospace;
 				font-size: .875rem;
@@ -55,7 +54,7 @@ $sql_border_left: #007bff;
 		}
 
 		.query-sql {
-			@include functions.bradius(.375rem);
+			@include functions.bRadius(.375rem);
 			background: $sql_background;
 			border-left: 4px solid $sql_border_left;
 			font-family: monospace;

@@ -17,7 +17,7 @@ it('extends InputField', function () {
 });
 
 it('initializes with color type', function () {
-    expect($this->accessor->getProtectedProperty('type'))->toBe('color');
+    expect($this->accessor->getProperty('type'))->toBe('color');
 });
 
 it('writes to Utils context with color type', function () {

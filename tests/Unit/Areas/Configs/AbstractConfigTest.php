@@ -51,7 +51,7 @@ it('adds default values to mod settings', function () {
         'lp_valid_setting'     => 'valid_value',     // New setting
     ];
 
-    $reflection->callProtectedMethod('addDefaultValues', [$values]);
+    $reflection->callMethod('addDefaultValues', [$values]);
 
     expect(Config::$modSettings)->toHaveKey('lp_existing_setting1')
         ->and(Config::$modSettings['lp_existing_setting1'])->toBe('existing_value1')
@@ -110,7 +110,7 @@ it('prepares config fields for different field types', function () {
     ];
 
     // This should not throw an exception and should process all field types
-    $reflection->callProtectedMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields', [[]]);
 
     expect(true)->toBeTrue();
 });
@@ -135,7 +135,7 @@ it('prepares config fields for callback and permissions field types', function (
     ];
 
     // This should not throw an exception and should handle special field types
-    $reflection->callProtectedMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields', [[]]);
 
     expect(true)->toBeTrue();
 });
@@ -147,7 +147,7 @@ it('handles empty config vars array', function () {
     Utils::$context['posting_fields'] = [];
 
     // This should not throw an exception even with empty config vars
-    $reflection->callProtectedMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields', [[]]);
 
     expect(true)->toBeTrue();
 });
@@ -171,7 +171,7 @@ it('prepares config fields with configVars parameter', function () {
     ];
 
     // This should use the configVars parameter
-    $reflection->callProtectedMethod('prepareConfigFields', [$configVars]);
+    $reflection->callMethod('prepareConfigFields', [$configVars]);
 
     expect(true)->toBeTrue();
 });
@@ -190,7 +190,7 @@ it('handles unknown field type with default null', function () {
     $value = null;
     $defaultValue = null;
 
-    $reflection->callProtectedMethod(
+    $reflection->callMethod(
         'createFieldByType',
         ['unknown', 'lp_unknown_field', $var, $data, $value, $defaultValue]
     );
@@ -216,13 +216,13 @@ it('creates callback field using VarFactory createTemplateCallback', function ()
         ],
     ];
 
-    $reflection->callProtectedMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields', [[]]);
 
     expect(true)->toBeTrue();
 
     Utils::$context['config_vars'][0]['name'] = 'lp_unknown_template';
 
-    $reflection->callProtectedMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields', [[]]);
 
     expect(true)->toBeTrue();
 });

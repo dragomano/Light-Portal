@@ -18,7 +18,7 @@ describe('PortalUpdate', function () {
         expect($result)->toBeInstanceOf(PortalUpdate::class);
 
         $reflection = new ReflectionAccessor($update);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe('prefix_users');
     });
@@ -29,7 +29,7 @@ describe('PortalUpdate', function () {
         $update->table('users');
 
         $reflection = new ReflectionAccessor($update);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe('users');
     });

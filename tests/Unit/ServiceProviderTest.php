@@ -13,7 +13,7 @@ beforeEach(function () {
 
 it('provides returns true for registered services', function () {
     $provider = new ReflectionAccessor($this->serviceProvider);
-    $definitions = $provider->callProtectedMethod('getFlattenedDefinitions');
+    $definitions = $provider->callMethod('getFlattenedDefinitions');
 
     foreach ($definitions as $definition) {
         expect($this->serviceProvider->provides($definition['id']))->toBeTrue();
@@ -36,7 +36,7 @@ it('registers adds all services to container', function () {
     $mockDefinition->shouldReceive('setShared')->andReturnSelf()->zeroOrMoreTimes();
 
     $provider = new ReflectionAccessor($this->serviceProvider);
-    $provider->callProtectedMethod('setContainer', [$mockContainer]);
+    $provider->callMethod('setContainer', [$mockContainer]);
 
     $this->serviceProvider->register();
 
@@ -54,7 +54,7 @@ it('registers configures container properly', function () {
     $mockDefinition->shouldReceive('setShared')->andReturnSelf()->zeroOrMoreTimes();
 
     $provider = new ReflectionAccessor($this->serviceProvider);
-    $provider->callProtectedMethod('setContainer', [$mockContainer]);
+    $provider->callMethod('setContainer', [$mockContainer]);
 
     $this->serviceProvider->register();
 

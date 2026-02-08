@@ -13,7 +13,7 @@
 	}
 
 	article {
-		@include functions.bradius(12px);
+		@include functions.bRadius(12px);
 		transition: all .4s cubic-bezier(.175, .885, 0, 1);
 		position: relative;
 		overflow: hidden;

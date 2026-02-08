@@ -17,7 +17,7 @@ it('extends InputField', function () {
 });
 
 it('initializes with radio_select type', function () {
-    expect($this->accessor->getProtectedProperty('type'))->toBe('radio_select');
+    expect($this->accessor->getProperty('type'))->toBe('radio_select');
 });
 
 it('sets options and returns self', function () {
@@ -27,7 +27,7 @@ it('sets options and returns self', function () {
     $result = $this->field->setOptions($options);
 
     expect($result)->toBeInstanceOf(RadioField::class)
-        ->and($this->accessor->getProtectedProperty('options'))->toBe($options);
+        ->and($this->accessor->getProperty('options'))->toBe($options);
 });
 
 it('builds radio options with selected value', function () {

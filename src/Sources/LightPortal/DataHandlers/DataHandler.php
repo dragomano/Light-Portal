@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 3.0
@@ -15,7 +15,10 @@ namespace LightPortal\DataHandlers;
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\DataHandlers\Traits\HasDataOperations;
+use LightPortal\DataHandlers\Traits\HasInserts;
+use LightPortal\DataHandlers\Traits\HasParams;
+use LightPortal\DataHandlers\Traits\HasTransactions;
+use LightPortal\DataHandlers\Traits\HasTranslations;
 use LightPortal\Utils\ErrorHandlerInterface;
 
 use const LP_ALIAS_PATTERN;
@@ -25,7 +28,10 @@ if (! defined('SMF'))
 
 abstract class DataHandler implements DataHandlerInterface
 {
-	use HasDataOperations;
+	use HasInserts;
+	use HasParams;
+	use HasTransactions;
+	use HasTranslations;
 
 	protected string $entity;
 

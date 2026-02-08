@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 3.0
@@ -124,7 +124,7 @@ final class BasicConfig extends AbstractConfig
 
 	private function isNewVersionAvailable(): array|bool
 	{
-		$cacheTTL = 3 * 24 * 60 * 60;
+		$cacheTTL = 7 * 24 * 60 * 60;
 
 		if (($xml = $this->cache()->get('repo_data', $cacheTTL)) === null) {
 			$repoData = WebFetchApi::fetch('https://api.github.com/repos/dragomano/Light-Portal/releases/latest');
@@ -134,15 +134,27 @@ final class BasicConfig extends AbstractConfig
 			$this->cache()->put('repo_data', $xml, $cacheTTL);
 		}
 
-		if (empty($xml) || empty($xml['tag_name'])) {
+		if (empty($xml) || empty($xml['name'])) {
 			return false;
 		}
 
-		if (version_compare('v' . LP_VERSION, $xml['tag_name'], '<')) {
+		$currentVersion = preg_replace('/^(\d+)\.(\d+)(?!\.)/', '$1.$2.0', LP_VERSION);
+		$currentVersion = $this->normalizeVersion($currentVersion);
+		$githubVersion = $this->normalizeVersion($xml['name']);
+
+		if (version_compare($currentVersion, $githubVersion, '<')) {
 			return $xml;
 		}
 
 		return false;
+	}
+
+	private function normalizeVersion(string $version): string
+	{
+		$version = preg_replace('/^v/i', '', trim($version));
+		$version = preg_replace('/\s+/', '-', $version);
+
+		return strtolower($version);
 	}
 
 	private function showInfoAboutNewRelease(): void
@@ -168,26 +180,35 @@ final class BasicConfig extends AbstractConfig
 				->setOptions(FrontPageMode::getSelectOptions())
 				->setAttribute('@change', '$dispatch(\'change-mode\', { front: $event.target.value })')
 				->setTab(self::TAB_BASE),
+
 			CallbackConfig::make('frontpage_mode_settings')
 				->setTab(self::TAB_BASE),
+
 			TextConfig::make('lp_frontpage_title')
 				->setPlaceholder($this->getDefaultTitle())
 				->setTab(self::TAB_BASE),
+
 			SelectConfig::make('lp_frontpage_article_sorting')
 				->setOptions(Lang::$txt['lp_frontpage_article_sorting_set'])
 				->setTab(self::TAB_BASE),
+
 			CheckConfig::make('lp_show_layout_switcher')
 				->setTab(self::TAB_BASE),
+
 			CheckConfig::make('lp_show_sort_dropdown')
 				->setTab(self::TAB_BASE),
+
 			SelectConfig::make('lp_frontpage_num_columns')
 				->setOptions($this->getColumnsOptions())
 				->setTab(self::TAB_BASE),
+
 			SelectConfig::make('lp_show_pagination')
 				->setOptions(Lang::$txt['lp_show_pagination_set'])
 				->setTab(self::TAB_BASE),
+
 			CheckConfig::make('lp_use_simple_pagination')
 				->setTab(self::TAB_BASE),
+
 			IntConfig::make('lp_num_items_per_page')
 				->setMin(1)
 				->setTab(self::TAB_BASE),
@@ -200,16 +221,21 @@ final class BasicConfig extends AbstractConfig
 		return [
 			CheckConfig::make('lp_show_images_in_articles')
 				->setTab(self::TAB_CARDS),
+
 			TextConfig::make('lp_image_placeholder')
 				->setPlaceholder($this->getImagePlaceholder())
 				->setTab(self::TAB_CARDS),
+
 			CheckConfig::make('lp_show_teaser')
 				->setTab(self::TAB_CARDS),
+
 			CheckConfig::make('lp_show_author')
 				->setHelp('lp_show_author_help')
 				->setTab(self::TAB_CARDS),
+
 			CheckConfig::make('lp_show_views_and_comments')
 				->setTab(self::TAB_CARDS),
+
 			SelectConfig::make('lp_frontpage_layout')
 				->setOptions(app(RendererInterface::class)->getLayouts())
 				->setPostInput($this->getTemplateEditLink())
@@ -228,10 +254,12 @@ final class BasicConfig extends AbstractConfig
 			CheckConfig::make('lp_standalone_mode')
 				->setLabel(Lang::$txt['lp_action_on'])
 				->setTab(self::TAB_STANDALONE),
+
 			TextConfig::make('lp_standalone_url')
 				->setHelp('lp_standalone_url_help')
 				->setPlaceholder(Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php')
 				->setTab(self::TAB_STANDALONE),
+
 			CallbackConfig::make('standalone_mode_settings_after')
 				->setLabel(Lang::$txt['lp_disabled_actions'])
 				->setHelp('lp_disabled_actions_help')

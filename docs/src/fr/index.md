@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Rapide, agréable, moderne
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Comment créer sa propre mise en page
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Blocs

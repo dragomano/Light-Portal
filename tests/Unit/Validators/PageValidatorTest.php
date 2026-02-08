@@ -114,7 +114,7 @@ dataset('uniqueness scenarios', [
 
 describe('PageValidator::__construct', function () {
     it('initializes with default page filters', function ($field, $filter) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey($field);
 
@@ -126,14 +126,14 @@ describe('PageValidator::__construct', function () {
     })->with('page filter fields');
 
     it('initializes with custom filters', function ($field, $filter) {
-        $customFilters = $this->accessor->getProtectedProperty('customFilters');
+        $customFilters = $this->accessor->getProperty('customFilters');
 
         expect($customFilters)->toHaveKey($field)
             ->and($customFilters[$field])->toBe($filter);
     })->with('custom filter fields');
 
     it('has slug filter with alias pattern regexp', function () {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
 
         expect($filters)->toHaveKey('slug')
             ->and($filters['slug'])->toBeArray()
@@ -145,7 +145,7 @@ describe('PageValidator::__construct', function () {
     });
 
     it('validates slug pattern correctly', function ($slug, $isValid) {
-        $filters = $this->accessor->getProtectedProperty('filters');
+        $filters = $this->accessor->getProperty('filters');
         $pattern = $filters['slug']['options']['regexp'];
 
         $result = filter_var($slug, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => $pattern]]);
@@ -171,7 +171,7 @@ describe('PageValidator::extendFilters', function () {
                 })
             );
 
-        $this->accessor->callProtectedMethod('extendFilters');
+        $this->accessor->callMethod('extendFilters');
     });
 
     it('preserves base custom filters', function () {
@@ -179,11 +179,11 @@ describe('PageValidator::extendFilters', function () {
             ->once()
             ->with(PortalHook::validatePageParams, Mockery::any());
 
-        $originalFilters = $this->accessor->getProtectedProperty('customFilters');
+        $originalFilters = $this->accessor->getProperty('customFilters');
 
-        $this->accessor->callProtectedMethod('extendFilters');
+        $this->accessor->callMethod('extendFilters');
 
-        $customFilters = $this->accessor->getProtectedProperty('customFilters');
+        $customFilters = $this->accessor->getProperty('customFilters');
 
         expect($customFilters['page_icon'])->toBe($originalFilters['page_icon'])
             ->and($customFilters['show_in_menu'])->toBe($originalFilters['show_in_menu']);
@@ -204,9 +204,9 @@ describe('PageValidator::modifyData', function () {
                 'allow_comments'       => '1',
             ]);
 
-        $this->accessor->callProtectedMethod('modifyData');
+        $this->accessor->callMethod('modifyData');
 
-        $filteredData = $this->accessor->getProtectedProperty('filteredData');
+        $filteredData = $this->accessor->getProperty('filteredData');
 
         expect($filteredData)->toHaveKey('options')
             ->and($filteredData['options'])->toHaveKey('page_icon')
@@ -224,9 +224,9 @@ describe('PageValidator::modifyData', function () {
                 'show_related_pages' => '0',
             ]);
 
-        $this->accessor->callProtectedMethod('modifyData');
+        $this->accessor->callMethod('modifyData');
 
-        $filteredData = $this->accessor->getProtectedProperty('filteredData');
+        $filteredData = $this->accessor->getProperty('filteredData');
 
         expect($filteredData['options']['show_in_menu'])->toBeTrue()
             ->and($filteredData['options']['show_title'])->toBeFalse()
@@ -243,7 +243,7 @@ describe('PageValidator::extendErrors', function () {
             ->andReturn('test-page');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'    => 'test-page',
             'page_id' => 1,
             'content' => '',
@@ -273,9 +273,9 @@ describe('PageValidator::extendErrors', function () {
             ->once()
             ->with(PortalHook::findPageErrors, Mockery::any());
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         expect($errors)->toContain('no_content');
     });
@@ -289,7 +289,7 @@ describe('PageValidator::extendErrors', function () {
             ->andReturn('test-page');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'    => 'test-page',
             'page_id' => 1,
             'content' => '',
@@ -319,9 +319,9 @@ describe('PageValidator::extendErrors', function () {
             ->once()
             ->with(PortalHook::findPageErrors, Mockery::any());
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         expect($errors)->not->toContain('no_content');
 
@@ -335,7 +335,7 @@ describe('PageValidator::extendErrors', function () {
             ->andReturn('test-page');
 
         $this->validator->setMockPost($post);
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'    => 'test-page',
             'page_id' => 1,
             'content' => 'Test content',
@@ -365,9 +365,9 @@ describe('PageValidator::extendErrors', function () {
             ->once()
             ->with(PortalHook::findPageErrors, Mockery::any());
 
-        $this->accessor->callProtectedMethod('extendErrors');
+        $this->accessor->callMethod('extendErrors');
 
-        $errors = $this->accessor->getProtectedProperty('errors');
+        $errors = $this->accessor->getProperty('errors');
 
         expect($errors)->toBeArray();
     });
@@ -375,7 +375,7 @@ describe('PageValidator::extendErrors', function () {
 
 describe('PageValidator::isUnique', function () {
     it('checks uniqueness correctly', function ($slug, $pageId, $dbCount, $shouldBeUnique) {
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'    => $slug,
             'page_id' => $pageId,
         ]);
@@ -412,13 +412,13 @@ describe('PageValidator::isUnique', function () {
             ->once()
             ->andReturn(['count' => $dbCount]);
 
-        $isUnique = $this->accessor->callProtectedMethod('isUnique');
+        $isUnique = $this->accessor->callMethod('isUnique');
 
         expect($isUnique)->toBe($shouldBeUnique);
     })->with('uniqueness scenarios');
 
     it('uses Expression for COUNT query', function () {
-        $this->accessor->setProtectedProperty('filteredData', [
+        $this->accessor->setProperty('filteredData', [
             'slug'    => 'test-page',
             'page_id' => 1,
         ]);
@@ -450,7 +450,7 @@ describe('PageValidator::isUnique', function () {
         $result->shouldReceive('current')
             ->andReturn(['count' => 0]);
 
-        $this->accessor->callProtectedMethod('isUnique');
+        $this->accessor->callMethod('isUnique');
 
         expect($capturedExpression)->toBeInstanceOf(Expression::class)
             ->and($capturedExpression->getExpression())->toBe('COUNT(page_id)');

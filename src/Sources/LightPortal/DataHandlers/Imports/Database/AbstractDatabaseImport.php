@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  * @version 3.0
  */
@@ -16,7 +16,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use LightPortal\DataHandlers\DataHandler;
-use LightPortal\DataHandlers\Traits\HasDataOperations;
 use LightPortal\Enums\Permission;
 use LightPortal\UI\Tables\ImportButtonsRow;
 use LightPortal\UI\Tables\PortalTableBuilder;
@@ -30,7 +29,6 @@ if (! defined('SMF'))
 
 abstract class AbstractDatabaseImport extends DataHandler implements DatabaseImportInterface
 {
-	use HasDataOperations;
 	use HasRequest;
 	use HasTablePresenter;
 

@@ -11,7 +11,7 @@
 		@include functions.pointer;
 	}
 
-	&:not(checked) {
+	&:not(:checked) {
 		position: absolute;
 		opacity: 0;
 
@@ -26,7 +26,7 @@
 				left: 0;
 				width: 50px;
 				height: 26px;
-				@include functions.bradius(13px);
+				@include functions.bRadius(13px);
 				background: #cdd1da;
 				box-shadow: inset 0 2px 3px rgba(0, 0, 0, .2);
 			}
@@ -38,7 +38,7 @@
 				left: 2px;
 				width: 22px;
 				height: 22px;
-				@include functions.bradius(10px);
+				@include functions.bRadius(10px);
 				background: variables.$color-white;
 				box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
 				transition: all .2s;

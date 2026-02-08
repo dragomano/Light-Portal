@@ -151,8 +151,8 @@ it('imports pages with comments and params correctly', function () {
     $xml = simplexml_load_string(generatePageXml($pages));
 
     $import = new ReflectionAccessor(new PageImport($this->sql, $this->fileMock, $this->errorHandlerMock));
-    $import->setProtectedProperty('xml', $xml);
-    $import->callProtectedMethod('processItems');
+    $import->setProperty('xml', $xml);
+    $import->callMethod('processItems');
 
     $rows = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_pages')->execute()
@@ -216,8 +216,8 @@ it('imports pages with multilingual comments correctly', function () {
     $xml = simplexml_load_string(generatePageXml($pages));
 
     $import = new ReflectionAccessor(new PageImport($this->sql, $this->fileMock, $this->errorHandlerMock));
-    $import->setProtectedProperty('xml', $xml);
-    $import->callProtectedMethod('processItems');
+    $import->setProperty('xml', $xml);
+    $import->callMethod('processItems');
 
     $rows = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_pages')->execute()
@@ -293,8 +293,8 @@ it('imports pages with old format comments correctly', function () {
     $xml = simplexml_load_string(generatePageXml($pages));
 
     $import = new ReflectionAccessor(new PageImport($this->sql, $this->fileMock, $this->errorHandlerMock));
-    $import->setProtectedProperty('xml', $xml);
-    $import->callProtectedMethod('processItems');
+    $import->setProperty('xml', $xml);
+    $import->callMethod('processItems');
 
     $rows = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_pages')->execute()
@@ -344,8 +344,8 @@ it('imports pages without comments or params gracefully', function () {
     $xml = simplexml_load_string(generatePageXml($pages));
 
     $import = new ReflectionAccessor(new PageImport($this->sql, $this->fileMock, $this->errorHandlerMock));
-    $import->setProtectedProperty('xml', $xml);
-    $import->callProtectedMethod('processItems');
+    $import->setProperty('xml', $xml);
+    $import->callMethod('processItems');
 
     $rows = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_pages')->execute()

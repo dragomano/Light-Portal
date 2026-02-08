@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 it('populates missing fields with default values', function () {
-    $result = $this->reflection->callProtectedMethod('populate', [[]]);
+    $result = $this->reflection->callMethod('populate', [[]]);
 
     expect($result['placement'])->toBe(Placement::TOP->name())
         ->and($result['status'])->toBe(Status::ACTIVE->value)
@@ -42,7 +42,7 @@ it('preserves existing values', function () {
         'permissions' => Permission::MOD->value,
     ];
 
-    $result = $this->reflection->callProtectedMethod('populate', [$data]);
+    $result = $this->reflection->callMethod('populate', [$data]);
 
     expect($result['placement'])->toBe(Placement::RIGHT->name())
         ->and($result['permissions'])->toBe(Permission::MOD->value)

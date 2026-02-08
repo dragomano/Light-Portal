@@ -6,25 +6,23 @@
 	vertical-align: $align;
 }
 
-@mixin bradius($topleft: 6px, $topright: null, $bottomright: null, $bottomleft: null) {
-	@if $topright == null and $bottomright == null and $bottomleft == null {
-		border-radius: $topleft;
-		$topleft: null;
-	}
+@mixin bRadius($topLeft: 6px, $topRight: null, $bottomRight: null, $bottomLeft: null) {
+	@if $topRight == null and $bottomRight == null and $bottomLeft == null and $topLeft != null and $topLeft >= 0 {
+		border-radius: $topLeft;
+	} @else {
+		$tl: if($topLeft == null or $topLeft < 0, 0, $topLeft);
+		$tr: if($topRight == null or $topRight < 0, 0, $topRight);
+		$br: if($bottomRight == null or $bottomRight < 0, 0, $bottomRight);
+		$bl: if($bottomLeft == null or $bottomLeft < 0, 0, $bottomLeft);
 
-	@if $topleft != null and $topleft >= 0 {
-		border-top-left-radius: $topleft;
-	}
-
-	@if $topright != null and $topright >= 0 {
-		border-top-right-radius: $topright;
-	}
-
-	@if $bottomleft != null and $bottomleft >= 0 {
-		border-bottom-left-radius: $bottomleft;
-	}
-
-	@if $bottomright != null and $bottomright >= 0 {
-		border-bottom-right-radius: $bottomright;
+		@if $tl == $tr and $tr == $br and $br == $bl {
+			border-radius: $tl;
+		} @else if $tl == $br and $tr == $bl {
+			border-radius: $tl $tr;
+		} @else if $tr == $bl {
+			border-radius: $tl $tr $br;
+		} @else {
+			border-radius: $tl $tr $br $bl;
+		}
 	}
 }

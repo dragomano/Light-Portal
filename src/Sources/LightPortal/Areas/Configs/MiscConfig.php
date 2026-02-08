@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 3.0
@@ -44,18 +44,26 @@ final class MiscConfig extends AbstractConfig
 
 		$vars = ConfigBuilder::make()->addVars([
 			TitleConfig::make('lp_debug_and_caching'),
+
 			CheckConfig::make('lp_show_debug_info')
 				->setHelp('lp_show_debug_info_help'),
+
 			CheckConfig::make('lp_show_portal_queries')
 				->setHelp('lp_show_debug_info_help'),
+
 			IntConfig::make('lp_cache_interval')
 				->setPostInput(Lang::$txt['seconds']),
+
 			TitleConfig::make('lp_compatibility_mode'),
+
 			TextConfig::make('lp_portal_action')
 				->setSubText(Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'),
+
 			TextConfig::make('lp_page_param')
 				->setSubText(Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=page_slug'),
+
 			TitleConfig::make('admin_maintenance'),
+
 			CheckConfig::make('lp_weekly_cleaning'),
 		]);
 

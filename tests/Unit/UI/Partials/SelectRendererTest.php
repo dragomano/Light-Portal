@@ -55,7 +55,7 @@ it('builds init options for virtual select template', function () {
         'context' => Utils::$context,
     ];
 
-    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+    $result = $this->renderer->callMethod('buildInitOptions', [$config, $template, $templateData]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('ele')
@@ -96,7 +96,7 @@ it('builds init options for preview select template', function () {
         'context' => Utils::$context,
     ];
 
-    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+    $result = $this->renderer->callMethod('buildInitOptions', [$config, $template, $templateData]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('showSelectedOptionsFirst')
@@ -116,7 +116,7 @@ it('builds init options for icon select template', function () {
         'context' => Utils::$context,
     ];
 
-    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+    $result = $this->renderer->callMethod('buildInitOptions', [$config, $template, $templateData]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('allowNewOption')
@@ -166,7 +166,7 @@ it('tests generateId method with reflection', function () {
     };
 
     $select = new $testClass(['id' => 'custom_id']);
-    $result = $this->renderer->callProtectedMethod('generateId', [$select]);
+    $result = $this->renderer->callMethod('generateId', [$select]);
 
     expect($result)->toMatch('/^lp_select_/');
 });
@@ -178,7 +178,7 @@ it('tests formatPrettyOptions method with reflection', function () {
         'search'   => true,
     ];
 
-    $result = $this->renderer->callProtectedMethod('formatPrettyOptions', [$options]);
+    $result = $this->renderer->callMethod('formatPrettyOptions', [$options]);
 
     expect($result)->toBeString()
         ->and($result)->toContain('"ele": "#test_id"')
@@ -197,7 +197,7 @@ it('tests buildInitOptions method with reflection', function () {
         'context' => Utils::$context,
     ];
 
-    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+    $result = $this->renderer->callMethod('buildInitOptions', [$config, $template, $templateData]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('ele')
@@ -213,7 +213,7 @@ it('tests buildPreviewSelectOptions method with reflection', function () {
     $context = Utils::$context;
     $id      = 'test_id';
 
-    $result = $this->renderer->callProtectedMethod('buildPreviewSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callMethod('buildPreviewSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('showSelectedOptionsFirst')
@@ -228,7 +228,7 @@ it('tests buildIconSelectOptions method with reflection', function () {
     $context = Utils::$context;
     $id      = 'test_id';
 
-    $result = $this->renderer->callProtectedMethod('buildIconSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callMethod('buildIconSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('allowNewOption')
@@ -241,7 +241,7 @@ it('tests buildPageIconSelectOptions method with reflection', function () {
     $context = Utils::$context;
     $id      = 'test_id';
 
-    $result = $this->renderer->callProtectedMethod('buildPageIconSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callMethod('buildPageIconSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('allowNewOption')
@@ -254,7 +254,7 @@ it('tests buildVirtualSelectOptions method with reflection', function () {
     $context = Utils::$context;
     $id      = 'test_id';
 
-    $result = $this->renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('ele')
@@ -275,7 +275,7 @@ it('tests RTL direction in virtual select options', function () {
     $context = Utils::$context;
     $id      = 'test_id';
 
-    $result = $this->renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toHaveKey('textDirection')
         ->and($result['textDirection'])->toBe('rtl');
@@ -303,7 +303,7 @@ it('tests all virtual select options with complete config', function () {
     $context = Utils::$context;
     $id      = 'test_id';
 
-    $result = $this->renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toHaveKey('multiple')
         ->and($result)->toHaveKey('search')

@@ -41,8 +41,8 @@
     editMode = false;
   };
 
-  const even = index % 2 === 0;
-  const odd = !even;
+  const even = $derived(index % 2 === 0);
+  const odd = $derived(!even);
 </script>
 
 <li

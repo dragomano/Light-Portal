@@ -39,7 +39,7 @@ it('implements FactoryInterface', function () {
 });
 
 it('has modelClass property', function () {
-    expect($this->reflection->getProtectedProperty('modelClass'))->toBe(TestModel::class);
+    expect($this->reflection->getProperty('modelClass'))->toBe(TestModel::class);
 });
 
 it('create method returns ModelInterface instance', function () {
@@ -71,7 +71,7 @@ it('handle missing title field', function () {
 
 it('populate method returns data unchanged by default', function () {
     $data = ['title' => 'Test', 'description' => 'Description'];
-    $result = $this->reflection->callProtectedMethod('populate', [$data]);
+    $result = $this->reflection->callMethod('populate', [$data]);
 
     expect($result)->toBe($data);
 });

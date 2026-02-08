@@ -32,7 +32,7 @@ describe('TitlesTableUpgrader', function () {
 
     it('adds column', function () {
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod(
+        $upgrader->callMethod(
             'addColumn',
             [
                 'test_column',
@@ -56,7 +56,7 @@ describe('TitlesTableUpgrader', function () {
 
     it('renames table', function () {
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('renameTable', ['lp_translations']);
+        $upgrader->callMethod('renameTable', ['lp_translations']);
 
         expect(true)->toBeTrue();
     });

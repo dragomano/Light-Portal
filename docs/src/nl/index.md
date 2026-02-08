@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Snel, mooi, modern
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Hoe maak je eigen voorpagina lay-out
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Blokken

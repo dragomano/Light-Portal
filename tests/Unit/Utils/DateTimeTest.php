@@ -175,6 +175,24 @@ describe('DateTime', function () {
             }
         });
 
+        it('handles future date in different year', function () {
+            $nextYear = (int) date('Y') + 1;
+            $futureDate = mktime(12, 0, 0, 1, 15, $nextYear);
+
+            if (($futureDate - time()) <= (7 * 86400)) {
+                expect(true)->toBeTrue();
+                return;
+            }
+
+            $result = DateTime::relative($futureDate);
+
+            if (extension_loaded('intl')) {
+                expect($result)->toBeString()->not->toBeEmpty();
+            } else {
+                expect($result)->toBe('');
+            }
+        });
+
         it('handles dates in current month', function () {
             $currentMonth = strtotime('first day of this month 10:00:00');
 
@@ -326,7 +344,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = strtotime('2024-03-15 14:30:00');
-            $result    = $this->accessor->callProtectedMethod(
+            $result    = $this->accessor->callMethod(
                 'getLocalDate',
                 [$timestamp, IntlDateFormatter::LONG, IntlDateFormatter::SHORT]
             );
@@ -341,7 +359,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = strtotime('2024-03-15 14:30:00');
-            $result    = $this->accessor->callProtectedMethod('getLocalDate', [$timestamp, $dateType, $timeType]);
+            $result    = $this->accessor->callMethod('getLocalDate', [$timestamp, $dateType, $timeType]);
 
             expect($result)->toBeString()->not->toBeEmpty();
         })->with([
@@ -361,7 +379,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = time();
-            $result    = $this->accessor->callProtectedMethod(
+            $result    = $this->accessor->callMethod(
                 'getLocalDate',
                 [$timestamp, IntlDateFormatter::FULL, IntlDateFormatter::SHORT]
             );
@@ -372,7 +390,7 @@ describe('DateTime', function () {
 
     describe('DateTime::parseDate', function () {
         it('parses valid dates correctly', function ($dateStr, $expectedYear, $expectedMonth, $expectedDay) {
-            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callMethod('parseDate', [$dateStr]);
 
             expect($result)
                 ->toBeInstanceOf(\DateTime::class)
@@ -387,7 +405,7 @@ describe('DateTime', function () {
         ]);
 
         it('returns null for invalid date formats', function ($dateStr) {
-            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callMethod('parseDate', [$dateStr]);
 
             expect($result)->toBeNull();
         })->with([
@@ -402,7 +420,7 @@ describe('DateTime', function () {
         ]);
 
         it('returns null when DateTime construction throws exception', function ($dateStr) {
-            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callMethod('parseDate', [$dateStr]);
 
             expect($result)->toBeNull();
         })->with([

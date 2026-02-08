@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Szybki, przyjemny, nowoczesny
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Jak utworzyć własny układ strony głównej
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Bloki

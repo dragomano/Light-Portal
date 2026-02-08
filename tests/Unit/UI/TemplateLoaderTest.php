@@ -10,8 +10,8 @@ use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     $this->reflection = new ReflectionAccessor(new TemplateLoader);
-    $this->reflection->setProtectedProperty('view', null);
-    $this->reflection->setProtectedProperty('content', '');
+    $this->reflection->setProperty('view', null);
+    $this->reflection->setProperty('content', '');
 });
 
 it('renders template from file when template exists', function () {
@@ -28,7 +28,7 @@ it('returns false when template name is empty', function () {
 });
 
 it('returns last content from getLastContent', function () {
-    $this->reflection->setProtectedProperty('content', '<div>Test content</div>');
+    $this->reflection->setProperty('content', '<div>Test content</div>');
 
     $result = TemplateLoader::getLastContent();
 
@@ -42,17 +42,17 @@ it('returns empty string when no content has been set', function () {
 });
 
 it('checks if template exists via reflection', function () {
-    $result = $this->reflection->callProtectedMethod('templateExists', ['debug']);
+    $result = $this->reflection->callMethod('templateExists', ['debug']);
 
     expect($result)->toBeTrue();
 
-    $result = $this->reflection->callProtectedMethod('templateExists', ['nonexistent_template']);
+    $result = $this->reflection->callMethod('templateExists', ['nonexistent_template']);
 
     expect($result)->toBeFalse();
 });
 
 it('generates correct template path via reflection', function () {
-    $result = $this->reflection->callProtectedMethod('getTemplatePath', ['test_template']);
+    $result = $this->reflection->callMethod('getTemplatePath', ['test_template']);
 
     $expectedPath = Theme::$current->settings['default_theme_dir'] . '/LightPortal/test_template.blade.php';
 
@@ -60,7 +60,7 @@ it('generates correct template path via reflection', function () {
 });
 
 it('returns correct template base path via reflection', function () {
-    $result = $this->reflection->callProtectedMethod('getTemplateBasePath');
+    $result = $this->reflection->callMethod('getTemplateBasePath');
 
     $expectedPath = Theme::$current->settings['default_theme_dir'] . '/LightPortal';
 
@@ -68,20 +68,20 @@ it('returns correct template base path via reflection', function () {
 });
 
 it('initializes view correctly via reflection', function () {
-    $this->reflection->setProtectedProperty('view', null);
-    $this->reflection->callProtectedMethod('initView');
+    $this->reflection->setProperty('view', null);
+    $this->reflection->callMethod('initView');
 
-    $view = $this->reflection->getProtectedProperty('view');
+    $view = $this->reflection->getProperty('view');
 
     expect($view)->toBeInstanceOf(ViewInterface::class);
 });
 
 it('does not reinitialize view if already set', function () {
     $mockView = mock(ViewInterface::class);
-    $this->reflection->setProtectedProperty('view', $mockView);
-    $this->reflection->callProtectedMethod('initView');
+    $this->reflection->setProperty('view', $mockView);
+    $this->reflection->callMethod('initView');
 
-    $view = $this->reflection->getProtectedProperty('view');
+    $view = $this->reflection->getProperty('view');
 
     expect($view)->toBe($mockView);
 });

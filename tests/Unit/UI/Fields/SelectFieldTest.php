@@ -17,7 +17,7 @@ it('extends AbstractField', function () {
 });
 
 it('initializes with select type', function () {
-    expect($this->accessor->getProtectedProperty('type'))->toBe('select');
+    expect($this->accessor->getProperty('type'))->toBe('select');
 });
 
 it('sets options and returns self', function () {
@@ -27,7 +27,7 @@ it('sets options and returns self', function () {
     $result = $this->field->setOptions($options);
 
     expect($result)->toBeInstanceOf(SelectField::class)
-        ->and($this->accessor->getProtectedProperty('options'))->toBe($options);
+        ->and($this->accessor->getProperty('options'))->toBe($options);
 });
 
 it('builds select options with selected value', function () {

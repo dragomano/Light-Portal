@@ -649,7 +649,7 @@ it('finalizes item with avatar', function () {
         ]
     ];
 
-    $result = $accessor->callProtectedMethod('finalizeItem', [$item]);
+    $result = $accessor->callMethod('finalizeItem', [$item]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('author')
@@ -721,7 +721,7 @@ it('returns date based on sorting type for topics', function () {
     $queryMock->shouldReceive('getSorting')->andReturn('created;desc');
     $service = new TopicArticleService($queryMock, $this->events);
     $accessor = new ReflectionAccessor($service);
-    $rules = $accessor->callProtectedMethod('getRules', [$row]);
+    $rules = $accessor->callMethod('getRules', [$row]);
 
     // Test with created sorting
     expect($rules['date']($row))->toBe(1000);
@@ -731,7 +731,7 @@ it('returns date based on sorting type for topics', function () {
     $queryMock2->shouldReceive('getSorting')->andReturn('updated;desc');
     $service2 = new TopicArticleService($queryMock2, $this->events);
     $accessor2 = new ReflectionAccessor($service2);
-    $rules2 = $accessor2->callProtectedMethod('getRules', [$row]);
+    $rules2 = $accessor2->callMethod('getRules', [$row]);
     expect($rules2['date']($row))->toBe(2000);
 });
 
@@ -741,7 +741,7 @@ describe('guest role', function () {
         User::$me->is_guest = true;
 
         $accessor = new ReflectionAccessor($this->service);
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         foreach ($expected as $rule => $expectedValue) {
             expect($rules[$rule]($input))->toBe($expectedValue);
@@ -754,7 +754,7 @@ describe('author role', function () {
         User::$me = new User(1);
 
         $accessor = new ReflectionAccessor($this->service);
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         foreach ($expected as $rule => $expectedValue) {
             expect($rules[$rule]($input))->toBe($expectedValue);
@@ -768,7 +768,7 @@ describe('admin role', function () {
         User::$me->is_admin = true;
 
         $accessor = new ReflectionAccessor($this->service);
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         foreach ($expected as $rule => $expectedValue) {
             expect($rules[$rule]($input))->toBe($expectedValue);
@@ -808,7 +808,7 @@ describe('admin role with images disabled', function () {
             'id_msg_modified'  => 2,
         ];
 
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         expect($rules['image']($input))->toBe('');
     });
@@ -846,7 +846,7 @@ describe('admin role with teaser disabled', function () {
             'id_msg_modified'  => 2,
         ];
 
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         expect($rules['teaser']())->toBe('');
     });
@@ -884,7 +884,7 @@ describe('admin role with attachment fallback', function () {
             'id_msg_modified'  => 2,
         ];
 
-        $rules = $accessor->callProtectedMethod('getRules', [$input]);
+        $rules = $accessor->callMethod('getRules', [$input]);
 
         expect($rules['image']($input))->toBe('https://example.com/index.php?topic=6;attach=123;image');
     });

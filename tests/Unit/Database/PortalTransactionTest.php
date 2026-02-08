@@ -17,7 +17,7 @@ describe('PortalTransaction', function () {
         $adapter->shouldReceive('getDriver')->andReturn($driver);
 
         $transaction = new ReflectionAccessor(new PortalTransaction($adapter));
-        $actualConnection = $transaction->getProtectedProperty('connection');
+        $actualConnection = $transaction->getProperty('connection');
 
         expect($actualConnection)->toBe($connection);
     });

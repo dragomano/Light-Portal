@@ -4,7 +4,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2025 Bugo
+ * @copyright 2019-2026 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 3.0
@@ -61,7 +61,7 @@ class CategoryPageList extends AbstractPageList
 
 		$this->breadcrumbs()
 			->add(Lang::$txt['lp_all_categories'], PortalSubAction::CATEGORIES->url())
-			->add($category['title'] ?? Lang::$txt['lp_no_category'], before: $category['icon']);
+			->add($category['title'] ?? Lang::$txt['lp_no_category'], before: $category['icon'] ?? '');
 
 		$this->cardList->show($this);
 

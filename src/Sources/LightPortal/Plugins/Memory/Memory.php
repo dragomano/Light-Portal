@@ -4,7 +4,7 @@
  * @package Memory (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2025 Bugo
+ * @copyright 2025-2026 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin

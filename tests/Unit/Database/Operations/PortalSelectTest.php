@@ -18,7 +18,7 @@ describe('PortalSelect', function () {
         expect($result)->toBeInstanceOf(PortalSelect::class);
 
         $reflection = new ReflectionAccessor($select);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe('prefix_users');
     });
@@ -29,7 +29,7 @@ describe('PortalSelect', function () {
         $select->from('users');
 
         $reflection = new ReflectionAccessor($select);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe('users');
     });
@@ -40,7 +40,7 @@ describe('PortalSelect', function () {
         $select->from(['u' => 'users', 'p' => 'posts']);
 
         $reflection = new ReflectionAccessor($select);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe(['u' => 'prefix_users', 'p' => 'prefix_posts']);
     });
@@ -52,7 +52,7 @@ describe('PortalSelect', function () {
         $select->from(['u' => 'users', 'o' => $obj]);
 
         $reflection = new ReflectionAccessor($select);
-        $tableProperty = $reflection->getProtectedProperty('table');
+        $tableProperty = $reflection->getProperty('table');
 
         expect($tableProperty)->toBe(['u' => 'prefix_users', 'o' => $obj]);
     });

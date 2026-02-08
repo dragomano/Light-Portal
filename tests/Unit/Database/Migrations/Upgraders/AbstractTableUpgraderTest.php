@@ -36,7 +36,7 @@ describe('AbstractTableUpgrader', function () {
     it('defines varchar column correctly', function () {
         $upgrader = new ReflectionAccessor($this->upgrader);
 
-        $column = $upgrader->callProtectedMethod('defineColumn', [
+        $column = $upgrader->callMethod('defineColumn', [
             'test_column',
             [
                 'type'     => 'varchar',
@@ -53,7 +53,7 @@ describe('AbstractTableUpgrader', function () {
     it('defines int column correctly', function () {
         $upgrader = new ReflectionAccessor($this->upgrader);
 
-        $column = $upgrader->callProtectedMethod('defineColumn', [
+        $column = $upgrader->callMethod('defineColumn', [
             'test_int',
             [
                 'type'     => 'int',
@@ -72,7 +72,7 @@ describe('AbstractTableUpgrader', function () {
 
         $upgrader = new ReflectionAccessor($this->upgrader);
 
-        $fullName = $upgrader->callProtectedMethod('getFullTableName', ['test_table']);
+        $fullName = $upgrader->callMethod('getFullTableName', ['test_table']);
 
         expect($fullName)->toBe('smf_test_table');
     });
@@ -85,7 +85,7 @@ describe('AbstractTableUpgrader', function () {
         $this->adapter->shouldReceive('query')->with($sqlString, Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('executeSql', [$builder]);
+        $upgrader->callMethod('executeSql', [$builder]);
 
         expect(true)->toBeTrue();
     });
@@ -109,7 +109,7 @@ describe('AbstractTableUpgrader', function () {
             ->with(/** @lang text */ 'CREATE INDEX `test_index` ON smf_old_table (col1, col2)', Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('addIndex', ['test_index', ['col1', 'col2']]);
+        $upgrader->callMethod('addIndex', ['test_index', ['col1', 'col2']]);
 
         expect(true)->toBeTrue();
     });
@@ -140,7 +140,7 @@ describe('AbstractTableUpgrader', function () {
             });
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('addPrefixIndex', ['test_index', 'col1', 10]);
+        $upgrader->callMethod('addPrefixIndex', ['test_index', 'col1', 10]);
 
         expect(true)->toBeTrue();
     });
@@ -152,7 +152,7 @@ describe('AbstractTableUpgrader', function () {
             ->with(/** @lang text */ 'ALTER TABLE smf_old_table RENAME TO smf_new_table', Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('renameTable', ['new_table']);
+        $upgrader->callMethod('renameTable', ['new_table']);
 
         expect(true)->toBeTrue();
     });
@@ -166,7 +166,7 @@ describe('AbstractTableUpgrader', function () {
         $this->adapter->shouldReceive('query')->with($sqlString, Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('alterColumn', ['add', 'test_column', ['type' => 'varchar']]);
+        $upgrader->callMethod('alterColumn', ['add', 'test_column', ['type' => 'varchar']]);
 
         expect(true)->toBeTrue();
     });
@@ -180,7 +180,7 @@ describe('AbstractTableUpgrader', function () {
         $this->adapter->shouldReceive('query')->with($sqlString, Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('alterColumn', ['change', 'old_column', ['type' => 'int'], 'new_column']);
+        $upgrader->callMethod('alterColumn', ['change', 'old_column', ['type' => 'int'], 'new_column']);
 
         expect(true)->toBeTrue();
     });
@@ -194,7 +194,7 @@ describe('AbstractTableUpgrader', function () {
         $this->adapter->shouldReceive('query')->with($sqlString, Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('alterColumn', ['drop', 'test_column']);
+        $upgrader->callMethod('alterColumn', ['drop', 'test_column']);
 
         expect(true)->toBeTrue();
     });
@@ -206,7 +206,7 @@ describe('AbstractTableUpgrader', function () {
         $this->adapter->shouldNotReceive('query');
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('alterColumn', ['add', 'test_column']);
+        $upgrader->callMethod('alterColumn', ['add', 'test_column']);
 
         expect(true)->toBeTrue();
     });
@@ -214,7 +214,7 @@ describe('AbstractTableUpgrader', function () {
     it('defines column with default value', function () {
         $upgrader = new ReflectionAccessor($this->upgrader);
 
-        $column = $upgrader->callProtectedMethod('defineColumn', [
+        $column = $upgrader->callMethod('defineColumn', [
             'test_column',
             [
                 'type'     => 'varchar',
@@ -230,7 +230,7 @@ describe('AbstractTableUpgrader', function () {
     it('defines column with text type using default match case', function () {
         $upgrader = new ReflectionAccessor($this->upgrader);
 
-        $column = $upgrader->callProtectedMethod('defineColumn', [
+        $column = $upgrader->callMethod('defineColumn', [
             'text_column',
             [
                 'type'     => 'text',
@@ -283,7 +283,7 @@ describe('AbstractTableUpgrader', function () {
             }), Adapter::QUERY_MODE_EXECUTE);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('dropColumnSqlite', ['name']);
+        $upgrader->callMethod('dropColumnSqlite', ['name']);
 
         expect(true)->toBeTrue();
     });
@@ -328,7 +328,7 @@ describe('AbstractTableUpgrader', function () {
         $this->sql->shouldReceive('execute')->with($updateMock);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
+        $upgrader->callMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
 
         expect(true)->toBeTrue();
     });
@@ -373,7 +373,7 @@ describe('AbstractTableUpgrader', function () {
         $this->sql->shouldReceive('execute')->with($insertMock);
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
+        $upgrader->callMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
 
         expect(true)->toBeTrue();
     });
@@ -387,7 +387,7 @@ describe('AbstractTableUpgrader', function () {
     it('defines columns correctly', function ($columnName, $params, $expectedClass) {
         $upgrader = new ReflectionAccessor($this->upgrader);
 
-        $column = $upgrader->callProtectedMethod('defineColumn', [$columnName, $params]);
+        $column = $upgrader->callMethod('defineColumn', [$columnName, $params]);
 
         expect($column)->toBeInstanceOf($expectedClass)
             ->and($column->getName())->toBe($columnName);

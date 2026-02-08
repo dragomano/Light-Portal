@@ -20,11 +20,11 @@
 
   let { option, plugin } = $props();
 
-  let type = $state(option[0]);
-  let name = $state(option[1]);
-  let id = $state(`${plugin}.${name}`);
-  let value = $state(contextState[`lp_${plugin}`]?.[name]);
-  let { postfix, subtext } = $state(option);
+  let type = $derived(option[0]);
+  let name = $derived(option[1]);
+  let id = $derived(`${plugin}.${name}`);
+  let value = $derived(contextState[`lp_${plugin}`]?.[name]);
+  let { postfix, subtext } = $derived(option);
 
   const showLabel = $derived(!['callback', 'title', 'desc', 'check'].includes(type));
   const optionType = $derived(['float', 'int'].includes(type) ? 'number' : type);
