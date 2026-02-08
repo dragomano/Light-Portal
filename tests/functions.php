@@ -193,8 +193,40 @@ if (! function_exists('remove_integration_function')) {
 }
 
 if (! function_exists('clean_cache')) {
+    $GLOBALS['clean_cache_calls'] = [];
+
     function clean_cache(string $type = ''): void
     {
+        $GLOBALS['clean_cache_calls'][] = [
+            'type' => $type,
+        ];
+    }
+}
+
+if (! function_exists('cache_get_data')) {
+    $GLOBALS['cache_get_data_calls'] = [];
+
+    function cache_get_data(string $key, int $ttl = 120): mixed
+    {
+        $GLOBALS['cache_get_data_calls'][] = [
+            'key' => $key,
+            'ttl' => $ttl,
+        ];
+
+        return $GLOBALS['cache_get_data_return'] ?? null;
+    }
+}
+
+if (! function_exists('cache_put_data')) {
+    $GLOBALS['cache_put_data_calls'] = [];
+
+    function cache_put_data(string $key, mixed $value, int $ttl = 120): void
+    {
+        $GLOBALS['cache_put_data_calls'][] = [
+            'key' => $key,
+            'value' => $value,
+            'ttl' => $ttl,
+        ];
     }
 }
 
@@ -321,6 +353,17 @@ if (! function_exists('getBoardList')) {
     }
 }
 
+if (! function_exists('getLanguages')) {
+    function getLanguages(): array
+    {
+        return [
+            'english' => ['name' => 'English'],
+            'russian' => ['name' => 'Russian'],
+            'german'  => ['name' => 'German'],
+        ];
+    }
+}
+
 if (! function_exists('loadLanguage')) {
     function loadLanguage($filename, $lang = '', $fatal = true, $force_reload = false)
     {
@@ -369,5 +412,20 @@ if (! function_exists('template_control_richedit')) {
 if (! function_exists('createList')) {
     function createList(array $options): void
     {
+    }
+}
+
+if (! class_exists('SMF_BackgroundTask')) {
+    class SMF_BackgroundTask
+    {
+        public const RECEIVE_NOTIFY_ALERT = 0x01;
+        public const RECEIVE_NOTIFY_EMAIL = 0x02;
+
+        protected array $_details = [];
+
+        public function __construct(array $details = [])
+        {
+            $this->_details = $details;
+        }
     }
 }

@@ -175,6 +175,24 @@ describe('DateTime', function () {
             }
         });
 
+        it('handles future date in different year', function () {
+            $nextYear = (int) date('Y') + 1;
+            $futureDate = mktime(12, 0, 0, 1, 15, $nextYear);
+
+            if (($futureDate - time()) <= (7 * 86400)) {
+                expect(true)->toBeTrue();
+                return;
+            }
+
+            $result = DateTime::relative($futureDate);
+
+            if (extension_loaded('intl')) {
+                expect($result)->toBeString()->not->toBeEmpty();
+            } else {
+                expect($result)->toBe('');
+            }
+        });
+
         it('handles dates in current month', function () {
             $currentMonth = strtotime('first day of this month 10:00:00');
 

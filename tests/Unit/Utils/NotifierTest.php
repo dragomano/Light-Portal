@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use LightPortal\Database\Operations\PortalInsert;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\Notifier;
 use LightPortal\Utils\NotifierInterface;
@@ -44,6 +46,28 @@ describe('Notifier', function () {
             $notifier->notify('page', 'create');
 
             $mockSql->shouldNotHaveReceived('insert');
+        });
+
+        it('creates background task with correct data', function () {
+            $mockSql = mock(PortalSqlInterface::class);
+            $mockInsert = mock(PortalInsert::class);
+            $mockInsert->shouldReceive('values')->andReturnSelf();
+            $mockSql->shouldReceive('insert')->andReturn($mockInsert);
+            $mockSql->shouldReceive('execute');
+
+            Utils::$smcFunc['json_encode'] = 'json_encode';
+
+            $notifier = new Notifier($mockSql);
+
+            $notifier->notify('page', 'create', [
+                'time'      => 1234567890,
+                'author_id' => 42,
+                'item'      => 100,
+                'title'     => 'Test Page',
+                'url'       => 'https://example.com/page/test-page',
+            ]);
+
+            $mockSql->shouldHaveReceived('insert');
         });
     });
 
