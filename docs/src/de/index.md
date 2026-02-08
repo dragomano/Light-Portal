@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Schnell, angenehm, modern
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Wie man ein eigenes Frontpage Layout erstellt
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Blöcke

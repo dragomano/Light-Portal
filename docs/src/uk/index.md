@@ -1,5 +1,6 @@
 ---
 layout: home
+
 hero:
   name: Light Portal
   tagline: Швидкий, приємний, сучасний
@@ -19,6 +20,7 @@ hero:
     - theme: alt
       text: Як створити власний макет сторінки інтерфейсу
       link: ./how-to/create-layout
+
 features:
   - icon: 🧊
     title: Блоки
