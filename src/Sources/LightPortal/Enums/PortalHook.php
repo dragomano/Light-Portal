@@ -144,7 +144,7 @@ enum PortalHook
 			},
 			self::onBlockSaving,
 			self::onPageSaving => new class(...$data) {
-				public function __construct(public readonly int $item) {}
+				public function __construct(public readonly int $item, public array &$data) {}
 			},
 			self::parseContent => new class(...$data) {
 				public function __construct(public string &$content, public readonly string $type) {}

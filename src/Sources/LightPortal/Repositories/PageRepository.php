@@ -555,7 +555,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				throw new RuntimeException('Failed to insert page');
 			}
 
-			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item, 'data' => &$data]);
 
 			$data['id'] = $item;
 
@@ -598,7 +598,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$this->sql->execute($update);
 
-			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item, 'data' => &$data]);
 
 			$this->saveTranslations($data, true);
 			$this->saveTags($data, true);
