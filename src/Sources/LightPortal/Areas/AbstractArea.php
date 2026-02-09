@@ -29,6 +29,7 @@ use LightPortal\UI\Fields\TextField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
+use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Str;
@@ -400,9 +401,12 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function preparePreviewContent(array $entity): void
 	{
-		Utils::$context['preview_content'] = Utils::htmlspecialchars(
-			$entity['content'] ?? $entity['description'] ?? '',
-			ENT_QUOTES
+		Utils::$context['preview_content'] = Content::parse(
+			Utils::htmlspecialchars(
+				$entity['content'] ?? $entity['description'] ?? '',
+				ENT_QUOTES
+			),
+			$entity['type']
 		);
 
 		Lang::censorText(Utils::$context['preview_content']);
