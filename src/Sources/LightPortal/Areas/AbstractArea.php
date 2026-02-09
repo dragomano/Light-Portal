@@ -19,6 +19,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Enums\ContentType;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\FactoryInterface;
@@ -406,7 +407,7 @@ abstract class AbstractArea implements AreaInterface
 				$entity['content'] ?? $entity['description'] ?? '',
 				ENT_QUOTES
 			),
-			$entity['type']
+			$entity['type'] ?? ContentType::HTML->name()
 		);
 
 		Lang::censorText(Utils::$context['preview_content']);

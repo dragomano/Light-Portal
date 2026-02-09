@@ -26,7 +26,11 @@ if (! defined('LP_NAME'))
 class CodeMirror extends Editor
 {
 	private array $modes = [
-		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig',
+		'html'     => 'HTML',
+		'php'      => 'PHP',
+		'markdown' => 'Markdown',
+		'pug'      => 'Pug',
+		'twig'     => 'Twig',
 	];
 
 	public function addSettings(Event $e): void

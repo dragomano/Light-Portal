@@ -130,13 +130,15 @@ class Search extends Block
 
 	private function getResults(): array
 	{
-		if ($this->request()->isNotEmpty($this->name) === false)
+		if ($this->request()->isNotEmpty($this->name) === false) {
 			return [];
+		}
 
 		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request()->get($this->name)));
 
-		if (empty($query))
+		if (empty($query)) {
 			return [];
+		}
 
 		return $this->query($query);
 	}
@@ -215,8 +217,9 @@ class Search extends Block
 
 	private function getLink(array $row): string
 	{
-		if (empty($row['id_member']))
+		if (empty($row['id_member'])) {
 			return Lang::$txt['guest'];
+		}
 
 		return '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>';
 	}

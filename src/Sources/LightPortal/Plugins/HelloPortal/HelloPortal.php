@@ -156,12 +156,9 @@ class HelloPortal extends Plugin
 
 	private function isCurrentArea(string $area, string $sa = 'main', bool $canBeEmpty = true): bool
 	{
-		return $this->request()->has('area') && $this->request()->get('area') === $area &&
-			(
-			$canBeEmpty
-				? ($this->sa === $sa || empty($this->sa))
-				: $this->sa === $sa
-			);
+		return $this->request()->has('area')
+			&& $this->request()->get('area') === $area
+			&& ($canBeEmpty ? ($this->sa === $sa || empty($this->sa)) : $this->sa === $sa);
 	}
 
 	private function canShowTourButton(): bool

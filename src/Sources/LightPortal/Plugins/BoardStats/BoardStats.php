@@ -85,8 +85,9 @@ class BoardStats extends SsiBlock
 			empty($parameters['show_latest_member'])
 			&& empty($parameters['show_basic_info'])
 			&& empty($parameters['show_whos_online'])
-		)
+		) {
 			return [];
+		}
 
 		if ($parameters['show_basic_info']) {
 			$info = $this->getFromSSI('boardStats', 'array');

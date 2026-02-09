@@ -79,8 +79,9 @@ class TopPosters extends Block
 
 		$members = iterator_to_array($result);
 
-		if (empty($members))
+		if (empty($members)) {
 			return [];
+		}
 
 		$posters = [];
 		foreach ($members as $row) {

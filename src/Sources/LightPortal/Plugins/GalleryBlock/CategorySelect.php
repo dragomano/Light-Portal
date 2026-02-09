@@ -50,8 +50,9 @@ final class CategorySelect extends AbstractSelect
 
 	private function getGalleryCategories(): array
 	{
-		if (! $this->sql->tableExists('gallery_cat'))
+		if (! $this->sql->tableExists('gallery_cat')) {
 			return [];
+		}
 
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
 			$select = $this->sql->select()

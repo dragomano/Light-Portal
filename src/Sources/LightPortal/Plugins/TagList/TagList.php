@@ -80,8 +80,9 @@ class TagList extends Block
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
-		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler')) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['ok' => 'optimus_keywords'])

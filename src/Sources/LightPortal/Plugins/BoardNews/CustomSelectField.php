@@ -33,7 +33,9 @@ class CustomSelectField extends SelectField
 				Utils::$context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']] = [
 					'value'    => $board['id'],
 					'selected' => (bool) $board['selected'],
-					'label'    => ($board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '') . ' ' . $board['name']
+					'label'    => ($board['child_level'] > 0
+							? str_repeat('==', $board['child_level'] - 1) . '=&gt;'
+							: '') . ' ' . $board['name']
 				];
 			}
 		}

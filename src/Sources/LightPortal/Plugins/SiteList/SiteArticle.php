@@ -54,8 +54,9 @@ class SiteArticle implements ArticleInterface
 
 	public function getTotalCount(): int
 	{
-		if (empty($this->sites))
+		if (empty($this->sites)) {
 			return 0;
+		}
 
 		return count($this->sites);
 	}

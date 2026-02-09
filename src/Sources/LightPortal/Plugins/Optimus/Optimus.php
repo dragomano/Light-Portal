@@ -67,8 +67,9 @@ class Optimus extends Plugin
 
 	public function getKeywords(int $topic): array
 	{
-		if (empty($topic))
+		if (empty($topic)) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['ok' => 'optimus_keywords'])

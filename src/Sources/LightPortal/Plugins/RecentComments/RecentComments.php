@@ -69,8 +69,9 @@ class RecentComments extends Block
 
 	public function getData(int $commentsCount, int $length = 80): array
 	{
-		if (empty($commentsCount))
+		if (empty($commentsCount)) {
 			return [];
+		}
 
 		$latestComments = $this->sql->select()
 			->from('lp_comments')
