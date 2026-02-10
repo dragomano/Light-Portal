@@ -90,12 +90,12 @@ class FrontPage implements ActionInterface
 		Utils::$context['canonical_url'] = Config::$scripturl;
 
 		Utils::$context['page_title'] = Config::$modSettings['lp_frontpage_title'] ?: (
-			Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_portal']
+			Utils::$context['forum_name'] . ' - ' . __('lp_portal')
 		);
 
 		$this->breadcrumbs()->add(
-			Lang::$txt['lp_portal'],
-			after: '(' . Lang::getTxt('lp_articles_set', [
+			__('lp_portal'),
+			after: '(' . __('lp_articles_set', [
 				'articles' => Utils::$context['total_articles']
 			]) . ')'
 		);
@@ -264,12 +264,12 @@ class FrontPage implements ActionInterface
 		$button = Str::html('a')->class('button')->href('%s;start=%s');
 
 		if ($prev >= 0) {
-			$title = Icon::get('arrow_left') . ' ' . Lang::$txt['prev'];
+			$title = Icon::get('arrow_left') . ' ' . __('prev');
 			$paginate .= sprintf($button->startTag(), $url, $prev) . $title . $button->endTag();
 		}
 
 		if ($next) {
-			$title = Lang::$txt['next'] . ' ' . Icon::get('arrow_right');
+			$title = __('next') . ' ' . Icon::get('arrow_right');
 			$paginate .= sprintf($button->startTag(), $url, $next) . $title . $button->endTag();
 		}
 

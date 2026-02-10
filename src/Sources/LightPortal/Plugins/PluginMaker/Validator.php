@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventDispatcherInterface;
@@ -132,8 +131,8 @@ class Validator extends AbstractValidator
 		Utils::$context['post_errors'] = [];
 
 		foreach ($this->errors as $error) {
-			Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error]
-				?? Lang::$txt['lp_plugin_maker'][$error] ?? $error;
+			Utils::$context['post_errors'][] = __('lp_post_error_' . $error)
+				?? __('lp_plugin_maker')[$error] ?? $error;
 		}
 	}
 

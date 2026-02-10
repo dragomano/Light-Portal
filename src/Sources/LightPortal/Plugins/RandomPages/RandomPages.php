@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -100,7 +100,7 @@ class RandomPages extends Block
 		}
 
 		$params = [
-			'guest'          => Lang::$txt['guest_title'],
+			'guest'          => __('guest_title'),
 			'status'         => Status::ACTIVE->value,
 			'entry_type'     => EntryType::DEFAULT->name(),
 			'current_time'   => time(),
@@ -217,12 +217,12 @@ class RandomPages extends Block
 
 				$li
 					->addHtml($link)
-					->addText(' ' . Lang::$txt['by'] . ' ')
+					->addText(' ' . __('by') . ' ')
 					->addHtml($author)
 					->addHtml(', ' . DateTime::relative($page['created_at']));
 
 				$parameters['show_num_views'] && $li
-					->addText(' (' . Lang::getTxt('lp_views_set', ['views' => $page['num_views']]) . ')');
+					->addText(' (' . __('lp_views_set', ['views' => $page['num_views']]) . ')');
 
 				$ul->addHtml($li);
 				$i++;

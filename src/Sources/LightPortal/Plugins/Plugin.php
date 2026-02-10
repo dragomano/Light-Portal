@@ -195,7 +195,7 @@ abstract class Plugin implements PluginInterface, Stringable
 			match ($type) {
 				'css'   => Theme::loadCSSFile($url, ['external' => true]),
 				'js'    => Theme::loadJavaScriptFile($url, ['external' => true]),
-				default => ErrorHandler::log('[LP] ' . sprintf(Lang::$txt['lp_unsupported_resource_type'], $type)),
+				default => ErrorHandler::log('[LP] ' . sprintf(__('lp_unsupported_resource_type'), $type)),
 			};
 		}
 	}

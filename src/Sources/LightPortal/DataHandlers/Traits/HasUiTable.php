@@ -13,7 +13,6 @@
 namespace LightPortal\DataHandlers\Traits;
 
 use Bugo\Bricks\Tables\RowPosition;
-use Bugo\Compat\Lang;
 use LightPortal\UI\Tables\ExportButtonsRow;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\Utils\Traits\HasTablePresenter;
@@ -28,7 +27,7 @@ trait HasUiTable
 	protected function addUiTable(): void
 	{
 		$this->getTablePresenter()->show(
-			PortalTableBuilder::make('lp_' . $this->entity, Lang::$txt['lp_' . $this->entity . '_export'])
+			PortalTableBuilder::make('lp_' . $this->entity, __('lp_' . $this->entity . '_export'))
 				->setDefaultSortColumn('id')
 				->setItems($this->repository->getAll(...))
 				->setCount($this->repository->getTotalCount(...))

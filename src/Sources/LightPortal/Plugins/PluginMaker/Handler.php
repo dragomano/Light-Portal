@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -56,27 +56,33 @@ class Handler
 
 	public function add(): void
 	{
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_plugin_maker']['add_title'];
+		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __('lp_plugin_maker')['add_title'];
+		Utils::$context['page_area_title'] = __('lp_plugin_maker')['add_title'];
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_plugin_maker']['add_desc'],
+			'description' => __('lp_plugin_maker')['add_desc'],
 		];
 
-		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
-			Str::html('strong')
-				->style('color', 'initial')
-				->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s'))
-				->toHtml(),
-			LP_ADDON_DIR,
-			self::PLUGIN_NAME,
-		));
+		Lang::setTxt(
+			['lp_plugin_maker', 'add_info'],
+			sprintf(
+				__('lp_plugin_maker')['add_info'],
+				sprintf(
+					Str::html('strong')
+						->style('color', 'initial')
+						->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s'))
+						->toHtml(),
+					LP_ADDON_DIR,
+					self::PLUGIN_NAME,
+				)
+			)
+		);
 
 		if (! is_writable(LP_ADDON_DIR)) {
 			Utils::$context['lp_addon_dir_is_not_writable'] = sprintf(
-				Lang::$txt['lp_plugin_maker']['addon_dir_not_writable'], LP_ADDON_DIR
+				__('lp_plugin_maker')['addon_dir_not_writable'], LP_ADDON_DIR
 			);
 		}
 
@@ -193,9 +199,9 @@ class Handler
 
 		$this->prepareIconList();
 
-		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
+		TextField::make('name', __('lp_plugin_maker')['name'])
 			->setTab(Tab::CONTENT)
-			->setDescription(Lang::$txt['lp_plugin_maker']['name_subtext'])
+			->setDescription(__('lp_plugin_maker')['name_subtext'])
 			->required()
 			->setAttributes([
 				'maxlength' => 255,
@@ -205,11 +211,11 @@ class Handler
 			])
 			->setValue(Utils::$context['lp_plugin']['name']);
 
-		CustomField::make('type', Lang::$txt['lp_plugin_maker']['type'])
+		CustomField::make('type', __('lp_plugin_maker')['type'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TypeSelect());
 
-		CustomField::make('icon', Lang::$txt['current_icon'])
+		CustomField::make('icon', __('current_icon'))
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => SelectFactory::icon([
 				'icon' => Utils::$context['lp_plugin']['icon'],
@@ -218,42 +224,42 @@ class Handler
 
 		$this->setTitleField();
 
-		TextField::make('author', Lang::$txt['author'])
+		TextField::make('author', __('author'))
 			->setTab('copyright')
 			->setAttribute('maxlength', 255)
 			->required()
 			->setValue(Utils::$context['lp_plugin']['author']);
 
-		TextField::make('email', Lang::$txt['email'])
+		TextField::make('email', __('email'))
 			->setTab('copyright')
 			->setAttribute('maxlength', 255)
 			->setAttribute('style', 'width: 100%')
 			->setType('email')
 			->setValue(Utils::$context['lp_plugin']['email']);
 
-		UrlField::make('site', Lang::$txt['website'])
+		UrlField::make('site', __('website'))
 			->setTab('copyright')
-			->setDescription(Lang::$txt['lp_plugin_maker']['site_subtext'])
+			->setDescription(__('lp_plugin_maker')['site_subtext'])
 			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue(Utils::$context['lp_plugin']['site']);
 
-		SelectField::make('license', Lang::$txt['lp_plugin_maker']['license'])
+		SelectField::make('license', __('lp_plugin_maker')['license'])
 			->setTab('copyright')
 			->setOptions([
 				'gpl' => 'GPL 3.0+',
 				'mit' => 'MIT',
 				'bsd' => 'BSD',
-				'own' => Lang::$txt['lp_plugin_maker']['license_own']
+				'own' => __('lp_plugin_maker')['license_own']
 			])
 			->setValue(Utils::$context['lp_plugin']['license']);
 
-		CheckboxField::make('smf_hooks', Lang::$txt['lp_plugin_maker']['use_smf_hooks'])
+		CheckboxField::make('smf_hooks', __('lp_plugin_maker')['use_smf_hooks'])
 			->setValue(Utils::$context['lp_plugin']['smf_hooks']);
 
-		CheckboxField::make('smf_ssi', Lang::$txt['lp_plugin_maker']['use_smf_ssi'])
+		CheckboxField::make('smf_ssi', __('lp_plugin_maker')['use_smf_ssi'])
 			->setValue(Utils::$context['lp_plugin']['smf_ssi']);
 
-		CheckboxField::make('components', Lang::$txt['lp_plugin_maker']['use_components'])
+		CheckboxField::make('components', __('lp_plugin_maker')['use_components'])
 			->setValue(Utils::$context['lp_plugin']['components']);
 
 		$this->preparePostFields();
@@ -306,13 +312,13 @@ class Handler
 				->setAttribute('type', 'text')
 				->setAttribute('name', "titles[$key]")
 				->setAttribute('value', Utils::$context['lp_plugin']['titles'][$key] ?? '')
-				->placeholder(Lang::$txt['lp_title']);
+				->placeholder(__('lp_title'));
 
 			$inputDescription = Str::html('input')
 				->setAttribute('type', 'text')
 				->setAttribute('name', "descriptions[$key]")
 				->setAttribute('value', Utils::$context['lp_plugin']['descriptions'][$key] ?? '')
-				->placeholder(Lang::$txt['lp_page_description']);
+				->placeholder(__('lp_page_description'));
 
 			if (in_array($key, $languages)) {
 				$inputDescription->setAttribute('x-ref', 'title_' . $i--);
@@ -327,7 +333,7 @@ class Handler
 			$value->addHtml($inputDiv);
 		}
 
-		CustomField::make('title', Lang::$txt['lp_title'] . ' | ' . Lang::$txt['lp_page_description'])
+		CustomField::make('title', __('lp_title') . ' | ' . __('lp_page_description'))
 			->setTab(Tab::CONTENT)
 			->setValue($value);
 	}

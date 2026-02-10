@@ -338,14 +338,14 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 	private function prepareMissingBlockTypes(string $type): void
 	{
-		if (isset(Lang::$txt['lp_' . $type]['title']))
+		if (Lang::txtExists('lp_' . $type) && isset(Lang::getTxt('lp_' . $type)['title']))
 			return;
 
 		$plugin = Str::getCamelName($type);
 
 		$message = in_array($plugin, app(PluginList::class)())
-			? Lang::$txt['lp_addon_not_activated']
-			: Lang::$txt['lp_addon_not_installed'];
+			? __('lp_addon_not_activated')
+			: __('lp_addon_not_installed');
 
 		Utils::$context['lp_missing_block_types'][$type] = Str::html('span')->class('error')
 			->setText(sprintf($message, $plugin));

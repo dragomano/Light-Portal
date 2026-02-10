@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\BlogMode;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Actions\FrontPage;
 use LightPortal\Utils\Traits\HasBreadcrumbs;
@@ -45,10 +44,10 @@ class BlogIndex
 
 		Utils::$context['canonical_url'] = Config::$scripturl . '?action=' . $this->action;
 
-		Utils::$context['page_title'] = Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_blog_mode']['menu_item_title'];
+		Utils::$context['page_title'] = Utils::$context['forum_name'] . ' - ' . __('lp_blog_mode')['menu_item_title'];
 
 		$this->breadcrumbs()
 			->remove(1)
-			->add(Lang::$txt['lp_blog_mode']['menu_item_title']);
+			->add(__('lp_blog_mode')['menu_item_title']);
 	}
 }

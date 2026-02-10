@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\CustomTranslate;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\ForumHook;
@@ -101,7 +100,7 @@ class CustomTranslate extends Plugin
 				])
 					->class('lang__link lang__link_select')
 					->addHtml(
-						Str::html('div')->class('lang__code lang_' . Lang::$txt['lang_dictionary'])
+						Str::html('div')->class('lang__code lang_' . __('lang_dictionary'))
 					)
 			)
 			->addHtml($langLinks);

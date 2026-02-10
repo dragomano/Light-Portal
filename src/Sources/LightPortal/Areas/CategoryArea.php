@@ -14,7 +14,6 @@ namespace LightPortal\Areas;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
@@ -82,11 +81,11 @@ final class CategoryArea extends AbstractArea
 			IdColumn::make()->setSort($this->getEntityName() . '_id'),
 			IconColumn::make(),
 			TitleColumn::make(entity: $this->getEntityNamePlural()),
-			Column::make('priority', Lang::$txt['lp_block_priority'])
+			Column::make('priority', __('lp_block_priority'))
 				->setStyle('width: 12%')
 				->setData(static fn($entry) => Str::html('div')->data('id', $entry['id'])
 					->setHtml($entry['priority'] . ' ' .
-						Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ')), 'centertext')
+						Icon::get('sort', __('lp_action_move'), 'handle ')), 'centertext')
 				->setSort('priority'),
 			StatusColumn::make(),
 			ContextMenuColumn::make()
@@ -105,7 +104,7 @@ final class CategoryArea extends AbstractArea
 
 	protected function prepareSpecificFields(): void
 	{
-		TextareaField::make('description', Lang::$txt['lp_category_description'])
+		TextareaField::make('description', __('lp_category_description'))
 			->setTab(Tab::SEO)
 			->setAttribute('maxlength', 255)
 			->setValue($this->getContextEntity()['description'] ?? '');

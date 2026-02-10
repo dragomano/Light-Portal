@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Lists\TagList;
 use LightPortal\Utils\Setting;
@@ -49,8 +48,8 @@ final class TagSelect extends AbstractSelect
 			'multiple'  => true,
 			'wide'      => true,
 			'maxValues' => Setting::get('lp_page_maximum_tags', 'int', 10),
-			'hint'      => Lang::$txt['lp_page_tags_placeholder'],
-			'empty'     => Lang::$txt['lp_page_tags_empty'],
+			'hint'      => __('lp_page_tags_placeholder'),
+			'empty'     => __('lp_page_tags_empty'),
 			'value'     => $this->prepareSelectedValues(),
 		]);
 	}

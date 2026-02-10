@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseBlockImport;
@@ -43,10 +42,10 @@ class BlockImport extends AbstractDatabaseBlockImport
 		return [
 			TitleColumn::make()
 				->setData('title', 'word_break'),
-			Column::make('type', Lang::$txt['lp_block_type'])
+			Column::make('type', __('lp_block_type'))
 				->setData('type', 'centertext')
 				->setSort('type DESC', 'type'),
-			Column::make('placement', Lang::$txt['lp_block_placement'])
+			Column::make('placement', __('lp_block_placement'))
 				->setData('placement', 'centertext')
 				->setSort('col DESC', 'col'),
 			CheckboxColumn::make(entity: 'blocks'),
@@ -73,7 +72,7 @@ class BlockImport extends AbstractDatabaseBlockImport
 		foreach ($result as $row) {
 			$items[$row['id_block']] = [
 				'id'        => $row['id_block'],
-				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
+				'type'      => __('lp_' . $this->getType($row['type']))['title'],
 				'title'     => $row['title'],
 				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['col'])],
 			];

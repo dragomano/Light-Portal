@@ -13,14 +13,13 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use LightPortal\Utils\Str;
 
 class TitleColumn extends Column
 {
 	public static function make(string $name = 'title', string $title = '', ?string $entity = null): static
 	{
-		return parent::make($name, $title ?: Lang::$txt['lp_title'])
+		return parent::make($name, $title ?: __('lp_title'))
 			->setData(static fn($entry) => $entry['status']
 				? Str::html('a', ['class' => 'bbc_link'])
 					->href(LP_BASE_URL . ";sa=$entity;id=" . $entry['id'])

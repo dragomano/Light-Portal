@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\LanguageAccess;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\UI\Partials\AbstractSelect;
 
@@ -40,7 +39,7 @@ final class LanguageSelect extends AbstractSelect
 		return [
 			'id'       => 'allowed_languages',
 			'multiple' => true,
-			'hint'     => Lang::$txt['lp_language_access']['allowed_languages_subtext'],
+			'hint'     => __('lp_language_access')['allowed_languages_subtext'],
 			'value'    => $this->normalizeValue($this->params['allowed_languages']),
 		];
 	}

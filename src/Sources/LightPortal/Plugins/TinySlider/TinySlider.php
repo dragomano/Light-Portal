@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TinySlider;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
@@ -116,7 +115,7 @@ class TinySlider extends Block
 			->setValue($this->view(params: ['options' => $options]));
 
 		RadioField::make('axis', $this->txt['axis'])
-			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
+			->setOptions(array_combine(['vertical', 'horizontal'], __('lp_panel_direction_set')))
 			->setValue($options['axis']);
 
 		RangeField::make('num_items', $this->txt['num_items'])
@@ -145,7 +144,7 @@ class TinySlider extends Block
 			->setValue($options['arrow_keys']);
 
 		NumberField::make('fixed_width', $this->txt['fixed_width'])
-			->setDescription(Lang::$txt['zero_for_no_limit'])
+			->setDescription(__('zero_for_no_limit'))
 			->setAttribute('min', 0)
 			->setValue($options['fixed_width']);
 

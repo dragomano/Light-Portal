@@ -12,7 +12,6 @@
 
 namespace LightPortal\Validators;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventDispatcherInterface;
@@ -78,7 +77,9 @@ abstract class AbstractValidator implements ValidatorInterface
 		Utils::$context['post_errors'] = [];
 
 		foreach ($this->errors as $error) {
-			Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error] ?? $error;
+			$message = __('lp_post_error_' . $error);
+
+			Utils::$context['post_errors'][] = $message !== '' ? $message : $error;
 		}
 	}
 

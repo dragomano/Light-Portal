@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 04.12.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\Memory;
 
-use Bugo\Compat\Lang;
 use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
@@ -61,6 +60,6 @@ class Memory extends GameBlock
 
 	protected function getApiData(Event $e): array
 	{
-		return ['txt' => $this->txt, 'context' => ['locale' => Lang::$txt['lang_dictionary']]];
+		return ['txt' => $this->txt, 'context' => ['locale' => __('lang_dictionary')]];
 	}
 }

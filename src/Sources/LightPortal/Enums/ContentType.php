@@ -12,7 +12,6 @@
 
 namespace LightPortal\Enums;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Enums\Traits\HasNames;
 
@@ -27,9 +26,9 @@ enum ContentType
 	public static function all(): array
 	{
 		$types = [
-			self::BBC->name()  => Lang::$txt['lp_bbc']['title'],
-			self::HTML->name() => Lang::$txt['lp_html']['title'],
-			self::PHP->name()  => Lang::$txt['lp_php']['title'],
+			self::BBC->name()  => __('lp_bbc')['title'],
+			self::HTML->name() => __('lp_html')['title'],
+			self::PHP->name()  => __('lp_php')['title'],
 		];
 
 		return User::$me->is_admin ? $types : array_slice($types, 0, 2);

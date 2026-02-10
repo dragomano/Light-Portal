@@ -56,7 +56,7 @@ final class BasicConfig extends AbstractConfig
 
 	public function show(): void
 	{
-		Utils::$context['page_title']  = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
+		Utils::$context['page_title']  = Utils::$context['settings_title'] = __('lp_base');
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
 		Utils::$context['post_url']    = Utils::$context['form_action'] . ';save';
 
@@ -163,7 +163,7 @@ final class BasicConfig extends AbstractConfig
 			Utils::$context['settings_message'] = [
 				'tag'   => 'div',
 				'class' => 'errorbox',
-				'label' => Lang::getTxt('lp_new_version', [
+				'label' => __('lp_new_version', [
 					$info['tag_name'],
 					Time::stringFromUnix(strtotime($info['published_at'])),
 				]),
@@ -189,7 +189,7 @@ final class BasicConfig extends AbstractConfig
 				->setTab(self::TAB_BASE),
 
 			SelectConfig::make('lp_frontpage_article_sorting')
-				->setOptions(Lang::$txt['lp_frontpage_article_sorting_set'])
+				->setOptions(__('lp_frontpage_article_sorting_set'))
 				->setTab(self::TAB_BASE),
 
 			CheckConfig::make('lp_show_layout_switcher')
@@ -203,7 +203,7 @@ final class BasicConfig extends AbstractConfig
 				->setTab(self::TAB_BASE),
 
 			SelectConfig::make('lp_show_pagination')
-				->setOptions(Lang::$txt['lp_show_pagination_set'])
+				->setOptions(__('lp_show_pagination_set'))
 				->setTab(self::TAB_BASE),
 
 			CheckConfig::make('lp_use_simple_pagination')
@@ -245,23 +245,26 @@ final class BasicConfig extends AbstractConfig
 
 	private function getStandaloneTabSettings(): array
 	{
-		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
-			Config::$boardurl . '/portal.php',
-			Config::$scripturl,
-		]);
+		Lang::setTxt(
+			'lp_standalone_url_help',
+			__('lp_standalone_url_help', [
+				Config::$boardurl . '/portal.php',
+				Config::$scripturl,
+			])
+		);
 
 		return [
 			CheckConfig::make('lp_standalone_mode')
-				->setLabel(Lang::$txt['lp_action_on'])
+				->setLabel(__('lp_action_on'))
 				->setTab(self::TAB_STANDALONE),
 
 			TextConfig::make('lp_standalone_url')
 				->setHelp('lp_standalone_url_help')
-				->setPlaceholder(Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php')
+				->setPlaceholder(__('lp_example') . Config::$boardurl . '/portal.php')
 				->setTab(self::TAB_STANDALONE),
 
 			CallbackConfig::make('standalone_mode_settings_after')
-				->setLabel(Lang::$txt['lp_disabled_actions'])
+				->setLabel(__('lp_disabled_actions'))
 				->setHelp('lp_disabled_actions_help')
 				->setCallback(SelectFactory::action(...))
 				->setTab(self::TAB_STANDALONE),
@@ -279,7 +282,7 @@ final class BasicConfig extends AbstractConfig
 
 		return array_map(
 			fn($key, $group) => PermissionsConfig::make($key)
-				->setPostInput('<small class="floatright">' . Lang::$txt[$group] . '</small>')
+				->setPostInput('<small class="floatright">' . __($group) . '</small>')
 				->setHelp('permissionhelp_' . $key)
 				->setTab(self::TAB_PERMISSIONS),
 			array_keys($permissions),
@@ -290,13 +293,13 @@ final class BasicConfig extends AbstractConfig
 	private function getDefaultTitle(): string
 	{
 		return str_replace(["'", "\""], "", (string) Utils::$context['forum_name'])
-			. ' - ' . Lang::$txt['lp_portal'];
+			. ' - ' . __('lp_portal');
 	}
 
 	private function getColumnsOptions(): array
 	{
 		return array_map(
-			static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+			static fn($item) => __('lp_frontpage_num_columns_set', ['columns' => $item]),
 			[1, 2, 3, 4, 6]
 		);
 	}
@@ -304,7 +307,7 @@ final class BasicConfig extends AbstractConfig
 	private function getImagePlaceholder(): string
 	{
 		return implode('', [
-			Lang::$txt['lp_example'],
+			__('lp_example'),
 			Theme::$current->settings['default_images_url'],
 			'/smflogo.svg',
 		]);
@@ -318,7 +321,7 @@ final class BasicConfig extends AbstractConfig
 			'href'   => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
 		]);
 
-		return sprintf('&nbsp;' . $a->setText(Lang::$txt['lp_template_edit_link']),
+		return sprintf('&nbsp;' . $a->setText(__('lp_template_edit_link')),
 			Config::$scripturl,
 			Utils::$context['session_var'],
 			Utils::$context['session_id'],

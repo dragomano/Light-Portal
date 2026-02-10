@@ -12,7 +12,6 @@
 
 namespace LightPortal\Enums;
 
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Traits\HasNames;
 
 enum PluginType
@@ -36,7 +35,7 @@ enum PluginType
 
 	public static function all(): array
 	{
-		return Lang::$txt['lp_plugins_types'];
+		return __('lp_plugins_types');
 	}
 
 	public static function colors(): array

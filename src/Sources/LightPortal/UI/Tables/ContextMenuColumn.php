@@ -13,14 +13,13 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
 class ContextMenuColumn extends Column
 {
 	public static function make(string $name = 'actions', string $title = ''): static
 	{
-		return parent::make($name, $title ?: Lang::$txt['lp_actions'])
+		return parent::make($name, $title ?: __('lp_actions'))
 			->setStyle('width: 8%')
 			->setData(static fn($entry) => /** @lang text */ '
 				<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
@@ -28,8 +27,8 @@ class ContextMenuColumn extends Column
 						' . IconButton::make('ellipsis', ['x-on:click.prevent' => 'showContextMenu = true'], 'button floatnone') . '
 						<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
 							<ul>
-								<li>' . Link::make(Lang::$txt['modify'], ['href' => Utils::$context['form_action'] . ";sa=edit;id={$entry['id']}"]) . '</li>
-								<li>' . Link::make(Lang::$txt['remove'], ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error') . '</li>
+								<li>' . Link::make(__('modify'), ['href' => Utils::$context['form_action'] . ";sa=edit;id={$entry['id']}"]) . '</li>
+								<li>' . Link::make(__('remove'), ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error') . '</li>
 							</ul>
 						</div>
 					</div>

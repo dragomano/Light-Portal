@@ -45,16 +45,16 @@ class BoardArticleService extends AbstractArticleService
 	public function getSortingOptions(): array
 	{
 		return [
-			'created;desc'      => Lang::$txt['lp_sort_by_created_desc'],
-			'created'           => Lang::$txt['lp_sort_by_created'],
-			'updated;desc'      => Lang::$txt['lp_sort_by_updated_desc'],
-			'updated'           => Lang::$txt['lp_sort_by_updated'],
-			'last_comment;desc' => Lang::$txt['lp_sort_by_last_reply_desc'],
-			'last_comment'      => Lang::$txt['lp_sort_by_last_reply'],
-			'title;desc'        => Lang::$txt['lp_sort_by_title_desc'],
-			'title'             => Lang::$txt['lp_sort_by_title'],
-			'num_replies;desc'  => Lang::$txt['lp_sort_by_num_replies_desc'],
-			'num_replies'       => Lang::$txt['lp_sort_by_num_replies'],
+			'created;desc'      => __('lp_sort_by_created_desc'),
+			'created'           => __('lp_sort_by_created'),
+			'updated;desc'      => __('lp_sort_by_updated_desc'),
+			'updated'           => __('lp_sort_by_updated'),
+			'last_comment;desc' => __('lp_sort_by_last_reply_desc'),
+			'last_comment'      => __('lp_sort_by_last_reply'),
+			'title;desc'        => __('lp_sort_by_title_desc'),
+			'title'             => __('lp_sort_by_title'),
+			'num_replies;desc'  => __('lp_sort_by_num_replies_desc'),
+			'num_replies'       => __('lp_sort_by_num_replies'),
 		];
 	}
 
@@ -87,7 +87,7 @@ class BoardArticleService extends AbstractArticleService
 
 			'replies' => fn($row) => [
 				'num'   => $row['num_posts'],
-				'title' => Lang::$txt['lp_replies'],
+				'title' => __('lp_replies'),
 				'after' => '',
 			],
 

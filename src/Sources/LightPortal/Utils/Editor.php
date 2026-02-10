@@ -13,7 +13,6 @@
 namespace LightPortal\Utils;
 
 use Bugo\Compat\Editor as BaseEditor;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 
@@ -33,7 +32,7 @@ final class Editor extends BaseEditor
 
 		template_control_richedit(Utils::$context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 
-		Utils::$context['posting_fields']['content']['label']['html'] = '<label>' . Lang::$txt['lp_content'] . '</label>';
+		Utils::$context['posting_fields']['content']['label']['html'] = '<label>' . __('lp_content') . '</label>';
 		Utils::$context['posting_fields']['content']['input']['html'] = ob_get_clean();
 		Utils::$context['posting_fields']['content']['input']['tab'] = 'content';
 	}

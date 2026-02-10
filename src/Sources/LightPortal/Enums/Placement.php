@@ -12,7 +12,6 @@
 
 namespace LightPortal\Enums;
 
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Traits\HasNames;
 
 enum Placement
@@ -28,6 +27,6 @@ enum Placement
 
 	public static function all(): array
 	{
-		return array_combine(self::names(), Lang::$txt['lp_block_placement_set']);
+		return array_combine(self::names(), __('lp_block_placement_set'));
 	}
 }

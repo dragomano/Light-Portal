@@ -12,7 +12,6 @@
 
 namespace LightPortal\Enums;
 
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Traits\HasNames;
 
 enum EntryType
@@ -25,7 +24,7 @@ enum EntryType
 
 	public static function all(): array
 	{
-		return array_combine(self::names(), Lang::$txt['lp_page_type_set']);
+		return array_combine(self::names(), __('lp_page_type_set'));
 	}
 
 	public static function withoutDrafts(): array

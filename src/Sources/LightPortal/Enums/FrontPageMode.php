@@ -12,7 +12,6 @@
 
 namespace LightPortal\Enums;
 
-use Bugo\Compat\Lang;
 use LightPortal\Articles\BoardArticle;
 use LightPortal\Articles\ChosenPageArticle;
 use LightPortal\Articles\ChosenTopicArticle;
@@ -46,6 +45,6 @@ enum FrontPageMode: string
 
 	public static function getSelectOptions(): array
 	{
-		return array_combine(self::values(), Lang::$txt['lp_frontpage_mode_set']);
+		return array_combine(self::values(), __('lp_frontpage_mode_set'));
 	}
 }

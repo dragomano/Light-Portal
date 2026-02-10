@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TopBoards;
 
-use Bugo\Compat\Lang;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\SsiBlock;
@@ -97,7 +96,7 @@ class TopBoards extends SsiBlock
 
 			$countText = $parameters['show_numbers_only']
 				? $board['num_' . $type]
-				: Lang::getTxt($this->txt[$type], [$type => $board['num_' . $type]]);
+				: __($this->txt[$type], [$type => $board['num_' . $type]]);
 
 			$dd->addHtml(Str::html('span', $countText));
 

@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\RandomTopics;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
@@ -201,7 +200,7 @@ class RandomTopics extends Block
 
 				if ($topic['is_new']) {
 					$li->addHtml(
-						Str::html('span', Lang::$txt['new'])
+						Str::html('span', __('new'))
 							->class('new_posts')
 							->style('margin-right: 4px')
 					);
@@ -209,12 +208,12 @@ class RandomTopics extends Block
 
 				$li
 					->addHtml($link)
-					->addText(' ' . Lang::$txt['by'] . ' ')
+					->addText(' ' . __('by') . ' ')
 					->addHtml($author)
 					->addHtml(', ' . DateTime::relative($topic['time']));
 
 				$parameters['show_num_views'] && $li
-					->addText(' (' . Lang::getTxt('lp_views_set', ['views' => $topic['num_views']]) . ')');
+					->addText(' (' . __('lp_views_set', ['views' => $topic['num_views']]) . ')');
 
 				$ul->addHtml($li);
 				$i++;

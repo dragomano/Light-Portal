@@ -65,15 +65,15 @@ class Events extends Block
 
 		$options = $e->args->options;
 
-		CheckboxField::make('show_birthdays', Lang::$txt['setting_cal_showbdays'])
+		CheckboxField::make('show_birthdays', __('setting_cal_showbdays'))
 			->setTab(Tab::CONTENT)
 			->setValue($options['show_birthdays']);
 
-		CheckboxField::make('show_holidays', Lang::$txt['setting_cal_showholidays'])
+		CheckboxField::make('show_holidays', __('setting_cal_showholidays'))
 			->setTab(Tab::CONTENT)
 			->setValue($options['show_holidays']);
 
-		CheckboxField::make('show_events', Lang::$txt['setting_cal_showevents'])
+		CheckboxField::make('show_events', __('setting_cal_showevents'))
 			->setTab(Tab::CONTENT)
 			->setValue($options['show_events']);
 

@@ -13,7 +13,6 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
-use Bugo\Compat\Lang;
 
 class ImportButtonsRow extends Row
 {
@@ -21,8 +20,8 @@ class ImportButtonsRow extends Row
 	{
 		return parent::make($value ?: implode('', [
 			HiddenInput::make(),
-			Button::make('import_selection', Lang::$txt['lp_import_selection']),
-			Button::make('import_all', Lang::$txt['lp_import_all']),
+			Button::make('import_selection', __('lp_import_selection')),
+			Button::make('import_all', __('lp_import_all')),
 		]), $class ?? '');
 	}
 }

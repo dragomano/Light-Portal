@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\GalleryBlock;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
@@ -123,7 +122,7 @@ class GalleryBlock extends Block
 	public function prepareContent(Event $e): void
 	{
 		if (! User::$me->allowedTo('smfgallery_view')) {
-			echo Lang::$txt['cannot_smfgallery_view'];
+			echo __('cannot_smfgallery_view');
 			return;
 		}
 

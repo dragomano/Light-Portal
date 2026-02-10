@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
@@ -42,8 +41,8 @@ final class ActionSelect extends AbstractSelect
 			'multiple' => true,
 			'wide'     => true,
 			'allowNew' => true,
-			'hint'     => Lang::$txt['lp_example'] . 'mlist, calendar',
-			'empty'    => Lang::$txt['no'],
+			'hint'     => __('lp_example') . 'mlist, calendar',
+			'empty'    => __('no'),
 			'value'    => array_column($this->getData(), 'value'),
 		];
 	}

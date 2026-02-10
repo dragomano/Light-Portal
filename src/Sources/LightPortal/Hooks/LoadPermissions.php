@@ -23,7 +23,7 @@ class LoadPermissions
 {
 	public function __invoke(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups): void
 	{
-		Lang::$txt['permissiongroup_light_portal'] = LP_NAME;
+		Lang::setTxt('permissiongroup_light_portal', LP_NAME);
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];

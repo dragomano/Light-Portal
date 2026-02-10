@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TinyMCE;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Plugins\Event;
@@ -69,7 +68,7 @@ class TinyMCE extends Editor
 		const useDarkMode = ' . ($this->isDarkTheme($this->context['dark_themes']) ? 'true' : 'false') . ';
 		tinymce.init({
 			selector: "#content",
-			language: "' . Lang::$txt['lang_dictionary'] . '",
+			language: "' . __('lang_dictionary') . '",
 			directionality: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '",
 			plugins: [
 				"advlist", "autolink", "link", "image", "lists", "charmap", "preview", "anchor", "pagebreak",

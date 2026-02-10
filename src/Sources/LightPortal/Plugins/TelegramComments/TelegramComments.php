@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TelegramComments;
@@ -36,7 +36,7 @@ class TelegramComments extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_comment_block_set']['telegram'] = 'Telegram';
+		Lang::setTxt(['lp_comment_block_set', 'telegram'], 'Telegram');
 	}
 
 	public function addSettings(Event $e): void

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\FacebookComments;
@@ -37,7 +37,7 @@ class FacebookComments extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_comment_block_set']['facebook'] = 'Facebook';
+		Lang::setTxt(['lp_comment_block_set', 'facebook'], 'Facebook');
 	}
 
 	public function addSettings(Event $e): void
@@ -72,7 +72,7 @@ class FacebookComments extends Plugin
 					});
 				};
 			</script>
-			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . Lang::$txt['lang_locale'] . '/sdk.js"></script>
+			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . __('lang_locale') . '/sdk.js"></script>
 			<div
 				class="fb-comments"
 				data-href="' . Utils::$context['canonical_url'] . '"

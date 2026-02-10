@@ -58,7 +58,7 @@ final readonly class PluginArea
 	{
 		Lang::load('ManageMaintenance');
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
+		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __('lp_plugins_manage');
 
 		Utils::$context['post_url'] = Config::$scripturl . '?action=admin;area=lp_plugins;save';
 
@@ -67,7 +67,7 @@ final readonly class PluginArea
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
 			'description' => sprintf(
-				Lang::$txt['lp_plugins_manage_description'],
+				__('lp_plugins_manage_description'),
 				'https://github.com/dragomano/Light-Portal/wiki/How-to-create-a-plugin'
 			),
 		];
@@ -76,7 +76,7 @@ final readonly class PluginArea
 
 		$this->extendPluginList();
 
-		Utils::$context['lp_plugins_extra'] = Lang::$txt['lp_plugins'] . ' (' . count(Utils::$context['lp_plugins']) . ')';
+		Utils::$context['lp_plugins_extra'] = __('lp_plugins') . ' (' . count(Utils::$context['lp_plugins']) . ')';
 
 		$this->handleToggle();
 
@@ -159,7 +159,7 @@ final readonly class PluginArea
 
 			$version = $this->getVersion($item);
 			$plugin = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item] ?? [];
-			$outdated = DateTime::dateCompare($version, $plugin['version'] ?? '') ? Lang::$txt['lp_plugin_outdated'] : null;
+			$outdated = DateTime::dateCompare($version, $plugin['version'] ?? '') ? __('lp_plugin_outdated') : null;
 			if ($outdated) {
 				$pluginData = [];
 				$configVars[$snakeName] = [];
@@ -182,7 +182,7 @@ final readonly class PluginArea
 				'version'        => $version,
 				'outdated'       => $outdated,
 				'snakeName'      => $snakeName,
-				'desc'           => $outdated ?? Lang::$txt['lp_' . $snakeName]['description'] ?? '',
+				'desc'           => $outdated ?? __('lp_' . $snakeName)['description'] ?? '',
 				'status'         => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'          => $this->getTypes($snakeName),
 				'special'        => $special ?? '',
@@ -219,7 +219,7 @@ final readonly class PluginArea
 		foreach (Utils::$context['all_lp_plugins'] as $plugin) {
 			$types = [...array_keys($plugin['types'])];
 			foreach ($types as $type) {
-				$key = array_search($type, Lang::$txt['lp_plugins_types'], true);
+				$key = array_search($type, __('lp_plugins_types'), true);
 
 				if ($key === false) {
 					$key = PluginType::OTHER->name();
@@ -272,32 +272,32 @@ final readonly class PluginArea
 	private function preparedData(): array
 	{
 		$txtData = [
-			'plugins'           => Lang::$txt['lp_plugins'],
-			'apply_filter'      => Lang::$txt['apply_filter'],
-			'list_view'         => Lang::$txt['lp_list_view'],
-			'card_view'         => Lang::$txt['lp_card_view'],
-			'all'               => Lang::$txt['all'],
-			'lp_active_only'    => Lang::$txt['lp_active_only'],
-			'lp_plugins_desc'   => Lang::$txt['lp_plugins_desc'],
-			'lp_can_donate'     => Lang::$txt['lp_can_donate'],
-			'lp_can_download'   => Lang::$txt['lp_can_download'],
-			'lp_caution'        => Lang::$txt['lp_caution'],
-			'lp_block_note'     => Lang::$txt['lp_block_note'],
-			'not_applicable'    => Lang::$txt['not_applicable'],
-			'settings'          => Lang::$txt['settings'],
-			'settings_saved'    => Lang::$txt['settings_saved'],
-			'find_close'        => Lang::$txt['find_close'],
-			'save'              => Lang::$txt['save'],
-			'no_options'        => Lang::$txt['lp_plugins_no_options'],
-			'no_matches'        => Lang::$txt['no_matches'],
-			'search'            => Lang::$txt['search'],
-			'remove'            => Lang::$txt['remove'],
-			'no'                => Lang::$txt['no'],
-			'lp_plugins_select' => Lang::$txt['lp_plugins_select'],
+			'plugins'           => __('lp_plugins'),
+			'apply_filter'      => __('apply_filter'),
+			'list_view'         => __('lp_list_view'),
+			'card_view'         => __('lp_card_view'),
+			'all'               => __('all'),
+			'lp_active_only'    => __('lp_active_only'),
+			'lp_plugins_desc'   => __('lp_plugins_desc'),
+			'lp_can_donate'     => __('lp_can_donate'),
+			'lp_can_download'   => __('lp_can_download'),
+			'lp_caution'        => __('lp_caution'),
+			'lp_block_note'     => __('lp_block_note'),
+			'not_applicable'    => __('not_applicable'),
+			'settings'          => __('settings'),
+			'settings_saved'    => __('settings_saved'),
+			'find_close'        => __('find_close'),
+			'save'              => __('save'),
+			'no_options'        => __('lp_plugins_no_options'),
+			'no_matches'        => __('no_matches'),
+			'search'            => __('search'),
+			'remove'            => __('remove'),
+			'no'                => __('no'),
+			'lp_plugins_select' => __('lp_plugins_select'),
 		];
 
 		$contextData = [
-			'locale'  => Lang::$txt['lang_dictionary'],
+			'locale'  => __('lang_dictionary'),
 			'postUrl' => Utils::$context['post_url'],
 			'charset' => Utils::$context['character_set'],
 			'user'    => Utils::$context['user'],
@@ -315,8 +315,8 @@ final readonly class PluginArea
 		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
 
 		foreach ($allPlugins as $plugin) {
-			if (isset(Lang::$txt['lp_' . $plugin])) {
-				$txtData['lp_' . $plugin] = Lang::$txt['lp_' . $plugin];
+			if (Lang::txtExists('lp_' . $plugin)) {
+				$txtData['lp_' . $plugin] = __('lp_' . $plugin);
 			}
 
 			if (! empty(Utils::$context['lp_' . $plugin . '_plugin'])) {
@@ -391,7 +391,7 @@ final readonly class PluginArea
 	private function getTypes(string $snakeName): array
 	{
 		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? '')) {
-			return [Lang::$txt['not_applicable'] => ''];
+			return [__('not_applicable') => ''];
 		}
 
 		$types = explode(' ', (string) $type);

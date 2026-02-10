@@ -13,7 +13,6 @@
 namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Utils\MessageIndex;
 
 if (! defined('SMF'))
@@ -48,7 +47,7 @@ final class BoardSelect extends AbstractSelect
 			'id'       => 'lp_frontpage_boards',
 			'multiple' => true,
 			'wide'     => true,
-			'hint'     => Lang::$txt['lp_frontpage_boards_select'],
+			'hint'     => __('lp_frontpage_boards_select'),
 			'data'     => MessageIndex::getBoardList(),
 			'value'    => $this->normalizeValue(Config::$modSettings['lp_frontpage_boards'] ?? ''),
 		];

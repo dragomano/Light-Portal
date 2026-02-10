@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
@@ -23,7 +22,7 @@ final class StatusSelect extends AbstractSelect
 	public function getData(): array
 	{
 		$data = [];
-		foreach (Lang::$txt['lp_page_status_set'] as $value => $label) {
+		foreach (__('lp_page_status_set') as $value => $label) {
 			$data[] = [
 				'label' => $label,
 				'value' => $value,

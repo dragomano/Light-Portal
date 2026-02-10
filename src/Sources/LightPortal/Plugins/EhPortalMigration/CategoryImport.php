@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use Laminas\Db\Sql\Expression;
 use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseCategoryImport;
 use LightPortal\UI\Tables\CheckboxColumn;
@@ -36,7 +35,7 @@ class CategoryImport extends AbstractDatabaseCategoryImport
 		return [
 			TitleColumn::make()
 				->setData('title', 'word_break'),
-			Column::make('status', Lang::$txt['status'])
+			Column::make('status', __('status'))
 				->setData('status', 'centertext')
 				->setSort('status DESC', 'status'),
 			CheckboxColumn::make(entity: 'categories'),

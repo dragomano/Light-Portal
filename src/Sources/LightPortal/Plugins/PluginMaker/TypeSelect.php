@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\UI\Partials\AbstractSelect;
 
@@ -42,7 +41,7 @@ final class TypeSelect extends AbstractSelect
 		return [
 			'id'       => 'type',
 			'multiple' => true,
-			'hint'     => Lang::$txt['lp_plugin_maker']['type_select'],
+			'hint'     => __('lp_plugin_maker')['type_select'],
 			'value'    => Utils::$context['lp_plugin']['type'],
 		];
 	}

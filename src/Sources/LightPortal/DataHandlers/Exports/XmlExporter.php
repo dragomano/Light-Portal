@@ -12,7 +12,6 @@
 
 namespace LightPortal\DataHandlers\Exports;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use DomDocument;
 use DOMElement;
@@ -48,7 +47,7 @@ abstract class XmlExporter extends AbstractExport
 
 			return $file;
 		} catch (DOMException $e) {
-			$message = '[LP] ' . Lang::$txt['lp_' . $this->entity . '_export'] . ': ';
+			$message = '[LP] ' . __('lp_' . $this->entity . '_export') . ': ';
 			$this->errorHandler->log($message . $e->getMessage(), 'user', $e->getTrace());
 
 			return '';

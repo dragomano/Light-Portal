@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\GalleryBlock;
 
-use Bugo\Compat\Lang;
 use LightPortal\UI\Partials\AbstractSelect;
 use LightPortal\Utils\Traits\HasCache;
 
@@ -42,7 +41,7 @@ final class CategorySelect extends AbstractSelect
 		return [
 			'id'       => 'categories',
 			'multiple' => true,
-			'hint'     => Lang::$txt['lp_gallery_block']['categories_select'],
+			'hint'     =>__('lp_gallery_block')['categories_select'],
 			'data'     => $this->getGalleryCategories(),
 			'value'    => $this->normalizeValue($this->params['categories']),
 		];

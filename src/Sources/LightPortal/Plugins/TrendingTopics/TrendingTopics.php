@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TrendingTopics;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
@@ -159,7 +158,7 @@ class TrendingTopics extends Block
 							->href(Config::$scripturl . '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new');
 
 						$info = Str::html('span')
-							->setHtml($topic['poster_time'] . ' (' . Lang::getTxt('lp_replies_set', ['replies' => $topic['num_replies']]) . ')');
+							->setHtml($topic['poster_time'] . ' (' . __('lp_replies_set', ['replies' => $topic['num_replies']]) . ')');
 
 						$li->addHtml($link)->addHtml(' ')->addHtml($info);
 

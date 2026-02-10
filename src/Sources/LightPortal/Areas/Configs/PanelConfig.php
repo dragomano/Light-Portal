@@ -16,7 +16,7 @@ use Bugo\Bricks\Settings\CallbackConfig;
 use Bugo\Bricks\Settings\CheckConfig;
 use Bugo\Bricks\Settings\ConfigBuilder;
 use Bugo\Compat\Actions\Admin\ACP;
-use Bugo\Compat\{Config, Lang, Theme};
+use Bugo\Compat\{Config, Theme};
 use Bugo\Compat\{User, Utils};
 use LightPortal\Utils\Setting;
 
@@ -27,7 +27,7 @@ final class PanelConfig extends AbstractConfig
 {
 	public function show(): void
 	{
-		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_panels'];
+		Utils::$context['page_title'] = Utils::$context['settings_title'] = __('lp_panels');
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
 		Theme::addInlineCss('

@@ -14,7 +14,6 @@ namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Bricks\Tables\RowPosition;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
@@ -27,13 +26,13 @@ class PageSearchRow extends Row
 			'type'        => 'search',
 			'name'        => 'search',
 			'value'       => Utils::$context['search']['string'],
-			'placeholder' => Lang::$txt['lp_pages_search'],
+			'placeholder' => __('lp_pages_search'),
 			'style'       => 'width: 100%',
 		]);
 
 		$search = Str::html('div', ['class' => 'col-lg-10'])->setHtml($input);
 
-		$icon = Icon::get('search') . Lang::$txt['search'];
+		$icon = Icon::get('search') . __('search');
 
 		$button = Str::html('button', [
 			'type'  => 'submit',

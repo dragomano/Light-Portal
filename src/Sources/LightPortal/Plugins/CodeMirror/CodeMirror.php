@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\CodeMirror;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Plugins\Event;
@@ -174,69 +173,72 @@ class CodeMirror extends Editor
 		};
 
 		$options = [
-			'<option value="3024-day">3024 Day</option>',
-			'<option value="3024-night">3024 Night</option>',
-			'<option value="abcdef">Abcdef</option>',
-			'<option value="ambiance">Ambiance</option>',
-			'<option value="base16-dark">Base16 Dark</option>',
-			'<option value="base16-light">Base16 Light</option>',
-			'<option value="bespin">Bespin</option>',
-			'<option value="blackboard">Blackboard</option>',
-			'<option value="cobalt">Cobalt</option>',
-			'<option value="default">Default</option>',
-			'<option value="colorforth">Colorforth</option>',
-			'<option value="darcula">Darcula</option>',
-			'<option value="dracula">Dracula</option>',
-			'<option value="duotone-dark">Duotone Dark</option>',
-			'<option value="duotone-light">Duotone Light</option>',
-			'<option value="eclipse">Eclipse</option>',
-			'<option value="elegant">Elegant</option>',
-			'<option value="erlang-dark">Erlang Dark</option>',
-			'<option value="gruvbox-dark">Gruvbox Dark</option>',
-			'<option value="hopscotch">Hopscotch</option>',
-			'<option value="icecoder">Icecoder</option>',
-			'<option value="idea">Idea</option>',
-			'<option value="isotope">Isotope</option>',
-			'<option value="lesser-dark">Lesser Dark</option>',
-			'<option value="liquibyte">Liquibyte</option>',
-			'<option value="lucario">Lucario</option>',
-			'<option value="material">Material</option>',
-			'<option value="mbo">Mbo</option>',
-			'<option value="mdn-like">Mdn Like</option>',
-			'<option value="midnight">Midnight</option>',
-			'<option value="monokai">Monokai</option>',
-			'<option value="neat">Neat</option>',
-			'<option value="neo">Neo</option>',
-			'<option value="night">Night</option>',
-			'<option value="nord">Nord</option>',
-			'<option value="oceanic-next">Oceanic Next</option>',
-			'<option value="panda-syntax">Panda Syntax</option>',
-			'<option value="paraiso-dark">Paraiso Dark</option>',
-			'<option value="paraiso-light">Paraiso Light</option>',
-			'<option value="pastel-on-dark">Pastel On Dark</option>',
-			'<option value="railscasts">Railscasts</option>',
-			'<option value="rubyblue">Rubyblue</option>',
-			'<option value="seti">Seti</option>',
-			'<option value="shadowfox">Shadowfox</option>',
-			'<option value="solarized">Solarized</option>',
-			'<option value="ssms">Ssms</option>',
-			'<option value="the-matrix">The Matrix</option>',
-			'<option value="tomorrow-night-bright">Tomorrow Night Bright</option>',
-			'<option value="tomorrow-night-eighties">Tomorrow Night Eighties</option>',
-			'<option value="ttcn">Ttcn</option>',
-			'<option value="twilight">Twilight</option>',
-			'<option value="vibrant-ink">Vibrant Ink</option>',
-			'<option value="xq-dark">Xq Dark</option>',
-			'<option value="xq-light">Xq Light</option>',
-			'<option value="yeti">Yeti</option>',
-			'<option value="yonce">Yonce</option>',
-			'<option value="zenburn">Zenburn</option>',
+			'3024-day'                => '3024 Day',
+			'3024-night'              => '3024 Night',
+			'abcdef'                  => 'Abcdef',
+			'ambiance'                => 'Ambiance',
+			'base16-dark'             => 'Base16 Dark',
+			'base16-light'            => 'Base16 Light',
+			'bespin'                  => 'Bespin',
+			'blackboard'              => 'Blackboard',
+			'cobalt'                  => 'Cobalt',
+			'default'                 => 'Default',
+			'colorforth'              => 'Colorforth',
+			'darcula'                 => 'Darcula',
+			'dracula'                 => 'Dracula',
+			'duotone-dark'            => 'Duotone Dark',
+			'duotone-light'           => 'Duotone Light',
+			'eclipse'                 => 'Eclipse',
+			'elegant'                 => 'Elegant',
+			'erlang-dark'             => 'Erlang Dark',
+			'gruvbox-dark'            => 'Gruvbox Dark',
+			'hopscotch'               => 'Hopscotch',
+			'icecoder'                => 'Icecoder',
+			'idea'                    => 'Idea',
+			'isotope'                 => 'Isotope',
+			'lesser-dark'             => 'Lesser Dark',
+			'liquibyte'               => 'Liquibyte',
+			'lucario'                 => 'Lucario',
+			'material'                => 'Material',
+			'mbo'                     => 'Mbo',
+			'mdn-like'                => 'Mdn Like',
+			'midnight'                => 'Midnight',
+			'monokai'                 => 'Monokai',
+			'neat'                    => 'Neat',
+			'neo'                     => 'Neo',
+			'night'                   => 'Night',
+			'nord'                    => 'Nord',
+			'oceanic-next'            => 'Oceanic Next',
+			'panda-syntax'            => 'Panda Syntax',
+			'paraiso-dark'            => 'Paraiso Dark',
+			'paraiso-light'           => 'Paraiso Light',
+			'pastel-on-dark'          => 'Pastel On Dark',
+			'railscasts'              => 'Railscasts',
+			'rubyblue'                => 'Rubyblue',
+			'seti'                    => 'Seti',
+			'shadowfox'               => 'Shadowfox',
+			'solarized'               => 'Solarized',
+			'ssms'                    => 'Ssms',
+			'the-matrix'              => 'The Matrix',
+			'tomorrow-night-bright'   => 'Tomorrow Night Bright',
+			'tomorrow-night-eighties' => 'Tomorrow Night Eighties',
+			'ttcn'                    => 'Ttcn',
+			'twilight'                => 'Twilight',
+			'vibrant-ink'             => 'Vibrant Ink',
+			'xq-dark'                 => 'Xq Dark',
+			'xq-light'                => 'Xq Light',
+			'yeti'                    => 'Yeti',
+			'yonce'                   => 'Yonce',
+			'zenburn'                 => 'Zenburn',
 		];
 
-		$select = implode(' ', [
-			'<span class="floatright"><label>' . Lang::$txt['theme'] . '</label>',
-			'<select id="cmThemeChanger">' . implode('', $options) . '</select></span>',
-		]);
+		$select = '<span class="floatright"><label>' . __('theme') . '</label> '
+			. '<select id="cmThemeChanger">'
+			. implode('', array_map(
+				fn($v, $l) => "<option value=\"$v\">$l</option>",
+				array_keys($options), $options
+			))
+			. '</select></span>';
 
 		Theme::addInlineJavaScript('
 		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {

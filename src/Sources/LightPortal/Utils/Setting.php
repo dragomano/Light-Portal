@@ -13,7 +13,6 @@
 namespace LightPortal\Utils;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\FrontPageMode;
@@ -133,7 +132,7 @@ class Setting implements SettingInterface
 
 	public static function isSwapLeftRight(): bool
 	{
-		$isRtl = ! empty(Lang::$txt['lang_rtl']);
+		$isRtl = ! empty(__('lang_rtl'));
 		$swapLeftRight = self::get('lp_swap_left_right', 'bool', false);
 
 		return $isRtl ? ! $swapLeftRight : $swapLeftRight;

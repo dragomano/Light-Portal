@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
@@ -40,7 +39,7 @@ final class PlacementSelect extends AbstractSelect
 			'multiple' => false,
 			'search'   => false,
 			'wide'     => false,
-			'hint'     => Lang::$txt['lp_block_placement_select'],
+			'hint'     => __('lp_block_placement_select'),
 			'value'    => Utils::$context['lp_block']['placement'] ?? '',
 		];
 	}

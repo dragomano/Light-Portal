@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\Search;
@@ -218,7 +218,7 @@ class Search extends Block
 	private function getLink(array $row): string
 	{
 		if (empty($row['id_member'])) {
-			return Lang::$txt['guest'];
+			return __('guest');
 		}
 
 		return '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>';

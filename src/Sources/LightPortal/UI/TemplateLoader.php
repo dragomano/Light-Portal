@@ -12,7 +12,7 @@
 
 namespace LightPortal\UI;
 
-use Bugo\Compat\{ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{ErrorHandler, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,7 +37,7 @@ class TemplateLoader
 			return self::renderTemplate($template, $params, $useSubTemplate);
 		}
 
-		ErrorHandler::fatal('[LP] ' . sprintf(Lang::$txt['theme_template_error'], $template), false);
+		ErrorHandler::fatal('[LP] ' . sprintf(__('theme_template_error'), $template), false);
 
 		return false;
 	}

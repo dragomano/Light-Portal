@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TopPages;
@@ -155,7 +155,7 @@ class TopPages extends Block
 
 					$countText = $parameters['show_numbers_only']
 						? $page['num_' . $type]
-						: Lang::getTxt('lp_' . $type . '_set', [$type => $page['num_' . $type]]);
+						: __('lp_' . $type . '_set', [$type => $page['num_' . $type]]);
 
 					$dd->addHtml(Str::html('span', (string) $countText));
 

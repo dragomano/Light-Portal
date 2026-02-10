@@ -12,7 +12,6 @@
 
 namespace LightPortal\Renderers;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
@@ -96,7 +95,7 @@ abstract class AbstractRenderer implements RendererInterface
 			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
 
 			$titles[] = $title === static::DEFAULT_TEMPLATE
-				? Lang::$txt['lp_default']
+				? __('lp_default')
 				: str_replace('_', ' ', $shortName);
 		}
 

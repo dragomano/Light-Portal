@@ -11,6 +11,7 @@
  */
 
 use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventManagerFactory;
@@ -116,4 +117,35 @@ function show_pagination(string $position = 'top'): void
 		compact('position'),
 		false
 	);
+}
+
+if (! function_exists('__')) {
+	function __(string $key, array $args = [], string $var = 'txt'): string|array
+	{
+		// some/some::key
+		if (str_contains($key, '::')) {
+			[$file, $rest] = explode('::', $key, 2);
+
+			return Lang::getTxt($rest, $args, $var, $file);
+		}
+
+		// some/some.key
+		if (str_contains($key, '.')) {
+			[$file, $rest] = explode('.', $key, 2);
+
+			// group.key
+			if (str_contains($rest, '.')) {
+				return Lang::getTxt(
+					explode('.', $rest, 2),
+					$args,
+					$var,
+					$file
+				);
+			}
+
+			return Lang::getTxt($rest, $args, $var, $file);
+		}
+
+		return Lang::getTxt($key, $args, $var);
+	}
 }

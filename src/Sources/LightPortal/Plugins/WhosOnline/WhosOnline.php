@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\WhosOnline;
@@ -75,21 +75,21 @@ class WhosOnline extends SsiBlock
 		if (empty($whoIsOnline))
 			return;
 
-		echo Lang::getTxt('lp_guests_set', ['guests' => $whoIsOnline['num_guests']]) .
-			', ' . Lang::getTxt('lp_users_set', ['users' => $whoIsOnline['num_users_online']]);
+		echo __('lp_guests_set', ['guests' => $whoIsOnline['num_guests']]) .
+			', ' . __('lp_users_set', ['users' => $whoIsOnline['num_users_online']]);
 
 		$onlineList = [];
 
 		if (User::$me->buddies && $whoIsOnline['num_buddies']) {
-			$onlineList[] = Lang::getTxt('lp_buddies_set', ['buddies' => $whoIsOnline['num_buddies']]);
+			$onlineList[] = __('lp_buddies_set', ['buddies' => $whoIsOnline['num_buddies']]);
 		}
 
 		if ($whoIsOnline['num_spiders']) {
-			$onlineList[] = Lang::getTxt('lp_spiders_set', ['spiders' => $whoIsOnline['num_spiders']]);
+			$onlineList[] = __('lp_spiders_set', ['spiders' => $whoIsOnline['num_spiders']]);
 		}
 
 		if ($whoIsOnline['num_users_hidden']) {
-			$onlineList[] = Lang::getTxt('lp_hidden_set', ['hidden' => $whoIsOnline['num_users_hidden']]);
+			$onlineList[] = __('lp_hidden_set', ['hidden' => $whoIsOnline['num_users_hidden']]);
 		}
 
 		if ($onlineList) {

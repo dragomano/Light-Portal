@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\AdsBlock;
 
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Traits\HasNames;
 
 enum Placement
@@ -37,6 +36,6 @@ enum Placement
 
 	public static function all(): array
 	{
-		return array_combine(self::names(), Lang::$txt['lp_ads_block']['placement_set']);
+		return array_combine(self::names(), __('lp_ads_block')['placement_set']);
 	}
 }

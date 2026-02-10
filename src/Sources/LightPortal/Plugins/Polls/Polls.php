@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\Polls;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Event;
@@ -93,7 +92,7 @@ class Polls extends SsiBlock
 
 			$form->addHtml(Str::html('input', [
 				'type'  => 'submit',
-				'value' => Lang::$txt['poll_vote'],
+				'value' => __('poll_vote'),
 				'class' => 'button',
 			]));
 			$form->addHtml(Str::html('input', [
@@ -140,7 +139,7 @@ class Polls extends SsiBlock
 			if ($poll['allow_view_results']) {
 				$div->addHtml(
 					Str::html('strong')
-						->setText(Lang::$txt['poll_total_voters'] . ': ' . $poll['total_votes'])
+						->setText(__('poll_total_voters') . ': ' . $poll['total_votes'])
 				);
 			}
 
