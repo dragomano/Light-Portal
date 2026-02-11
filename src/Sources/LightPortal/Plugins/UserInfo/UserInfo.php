@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.25
+ * @version 11.02.25
  */
 
 namespace LightPortal\Plugins\UserInfo;
@@ -26,6 +26,11 @@ if (! defined('LP_NAME'))
 class UserInfo extends Block
 {
 	use HasView;
+
+	private const ZODIACS = [
+		'capricorn', 'aquarius', 'pisces', 'aries', 'taurus', 'gemini',
+		'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius',
+	];
 
 	public function getData(): array
 	{
@@ -46,6 +51,28 @@ class UserInfo extends Block
 			->setLifeTime($e->args->cacheTime)
 			->setFallback($this->getData(...));
 
-		echo $this->view(params: ['user' => $userData]);
+		echo $this->view(params: [
+			'user'   => $userData,
+			'zodiac' => $this->getZodiac($userData['birth_date']),
+		]);
+	}
+
+	private function getZodiac(string $birth_date = ''): string
+	{
+		if (empty($birth_date) || $birth_date === '1004-01-01') {
+			return '';
+		}
+
+		$month = (int) date('n', strtotime($birth_date));
+		$day   = (int) date('j', strtotime($birth_date));
+
+		$cutoffs = [19, 18, 20, 19, 20, 20, 22, 22, 22, 22, 21, 21];
+
+		$index = $month - 1;
+		if ($day > $cutoffs[$index]) {
+			$index = ($index + 1) % 12;
+		}
+
+		return self::ZODIACS[$index];
 	}
 }
