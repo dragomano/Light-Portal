@@ -28,8 +28,10 @@ if (! defined('SMF'))
 
 class CategoryPageList extends AbstractPageList
 {
-	public function __construct(protected CardListInterface $cardList, CategoryPageArticleService $articleService)
-	{
+	public function __construct(
+		protected CardListInterface $cardList,
+		CategoryPageArticleService $articleService
+	) {
 		parent::__construct($cardList, $articleService);
 	}
 

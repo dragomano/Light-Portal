@@ -27,8 +27,10 @@ if (! defined('SMF'))
 
 class TagPageList extends AbstractPageList
 {
-	public function __construct(protected CardListInterface $cardList, TagPageArticleService $articleService)
-	{
+	public function __construct(
+		protected CardListInterface $cardList,
+		TagPageArticleService $articleService
+	) {
 		parent::__construct($cardList, $articleService);
 	}
 

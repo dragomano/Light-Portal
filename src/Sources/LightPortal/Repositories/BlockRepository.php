@@ -301,7 +301,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 				throw new RuntimeException('Failed to insert block');
 			}
 
-			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item, 'data' => &$data]);
 
 			$data['id'] = $item;
 
@@ -329,7 +329,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$this->sql->execute($update);
 
-			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item, 'data' => &$data]);
 
 			$this->saveTranslations($data, true);
 			$this->saveOptions($data, true);

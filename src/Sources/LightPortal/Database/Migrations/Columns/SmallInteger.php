@@ -15,9 +15,4 @@ namespace LightPortal\Database\Migrations\Columns;
 class SmallInteger extends UnsignedInteger
 {
 	protected $type = 'SMALLINT';
-
-	public function __construct($name = null, $nullable = false, $default = 0, array $options = [])
-	{
-		parent::__construct($name, $nullable, $default, $options);
-	}
 }

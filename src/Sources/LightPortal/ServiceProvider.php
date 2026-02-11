@@ -133,6 +133,10 @@ class ServiceProvider extends AbstractServiceProvider
 				['id' => BoardIndex::class],
 				['id' => Block::class],
 				[
+					'id' => CardList::class,
+					'arguments' => [ArticleInterface::class, FrontPage::class],
+				],
+				[
 					'id' => CardListInterface::class,
 					'concrete' => CardList::class,
 				],
@@ -276,7 +280,13 @@ class ServiceProvider extends AbstractServiceProvider
 				['id' => EventManagerFactory::class],
 				[
 					'id' => PluginHandler::class,
-					'concrete' => fn() => fn(array $plugins = []) => new PluginHandler($plugins),
+					'concrete' => fn() => fn(array $plugins = []) => new PluginHandler(
+						$this->container->get(EventManager::class),
+						$this->container->get(AssetHandler::class),
+						$this->container->get(ConfigHandler::class),
+						$this->container->get(LangHandler::class),
+						$plugins
+					),
 				],
 				[
 					'id' => EventDispatcherInterface::class,

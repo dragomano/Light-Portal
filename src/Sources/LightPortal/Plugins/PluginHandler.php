@@ -28,21 +28,13 @@ if (! defined('LP_NAME'))
 
 final readonly class PluginHandler
 {
-	private AssetHandler $assetHandler;
-
-	private ConfigHandler $configHandler;
-
-	private LangHandler $langHandler;
-
-	private EventManager $manager;
-
-	public function __construct(array $plugins = [])
-	{
-		$this->manager       = app(EventManager::class);
-		$this->assetHandler  = app(AssetHandler::class);
-		$this->configHandler = app(ConfigHandler::class);
-		$this->langHandler   = app(LangHandler::class);
-
+	public function __construct(
+		private EventManager $manager,
+		private AssetHandler $assetHandler,
+		private ConfigHandler $configHandler,
+		private LangHandler $langHandler,
+		private array $plugins = []
+	) {
 		$this->prepareListeners($plugins);
 		$this->prepareAssets();
 		$this->assetHandler->minify();

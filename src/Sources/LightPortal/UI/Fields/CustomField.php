@@ -20,11 +20,6 @@ if (! defined('SMF'))
 
 class CustomField extends AbstractField
 {
-	public function __construct(string $name, string $label)
-	{
-		parent::__construct($name, $label);
-	}
-
 	protected function build(): void
 	{
 		$label = $this->label;
