@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 11.02.26
  */
 
 namespace LightPortal\Plugins\ChessBoard;
@@ -31,9 +31,9 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-chess')]
 class ChessBoard extends GameBlock
 {
-	const ENGINE = 'stockfish-17.1-lite-single-03e3232';
+	const ENGINE = 'stockfish-18-lite-single';
 
-	const VERSION = '17.1';
+	const VERSION = '18';
 
 	const BOARD_STYLE = [
 		'default'    => 'default',
