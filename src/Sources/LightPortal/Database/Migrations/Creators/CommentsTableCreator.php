@@ -12,11 +12,12 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\MediumInteger;
-use LightPortal\Database\Migrations\Columns\SmallInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\PortalTable;
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\MediumInteger;
+use Laminas\Db\Extra\Sql\Columns\SmallInteger;
+use Laminas\Db\Extra\Sql\Columns\UnsignedInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ class CommentsTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_comments';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id        = new AutoIncrementInteger();
 		$parentId  = new UnsignedInteger('parent_id');

@@ -55,7 +55,7 @@ it('should show pages and set context properly without calling obExit', function
 
     AppMockRegistry::set(RequestInterface::class, new Request());
 
-    $cardList = new CardList();
+    $cardList = new CardList($pageArticleMock, $frontPageMock);
     $cardList->show($entityMock);
 
     expect(Utils::$context['start'])->toBe(0)

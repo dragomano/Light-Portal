@@ -15,7 +15,7 @@ namespace LightPortal\Database\Migrations\Upgraders;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class TagsTableUpgrader extends AbstractTableUpgrader
+class TagsTableUpgrader extends TableUpgrader
 {
 	protected string $tableName = 'lp_tags';
 

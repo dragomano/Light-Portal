@@ -2,9 +2,9 @@
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use Laminas\Db\Sql\Expression;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Utils\PostInterface;
@@ -131,8 +131,8 @@ describe('CategoryValidator::extendErrors', function () {
         $this->validator->setMockPost($post);
         $this->accessor->setProperty('filteredData', ['slug' => 'test-category', 'category_id' => 1]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_categories')
@@ -166,8 +166,8 @@ describe('CategoryValidator::isUnique', function () {
             'category_id' => $categoryId,
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->once()
@@ -209,8 +209,8 @@ describe('CategoryValidator::isUnique', function () {
             'category_id' => 1,
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $capturedExpression = null;
 
@@ -264,8 +264,8 @@ describe('CategoryValidator::integration', function () {
             ->with('slug')
             ->andReturn('test-category');
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_categories')
@@ -317,8 +317,8 @@ describe('CategoryValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_categories')
@@ -366,8 +366,8 @@ describe('CategoryValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_categories')

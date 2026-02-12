@@ -17,6 +17,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Extra\Sql\ExtendedSqlInterface;
+use Laminas\Db\Extra\Sql\Migrations\AbstractInstaller;
 use LightPortal\Database\Migrations\Creators\BlocksTableCreator;
 use LightPortal\Database\Migrations\Creators\CategoriesTableCreator;
 use LightPortal\Database\Migrations\Creators\CommentsTableCreator;
@@ -24,14 +26,12 @@ use LightPortal\Database\Migrations\Creators\PagesTableCreator;
 use LightPortal\Database\Migrations\Creators\PageTagTableCreator;
 use LightPortal\Database\Migrations\Creators\ParamsTableCreator;
 use LightPortal\Database\Migrations\Creators\PluginsTableCreator;
-use LightPortal\Database\Migrations\Creators\TableCreatorInterface;
 use LightPortal\Database\Migrations\Creators\TagsTableCreator;
 use LightPortal\Database\Migrations\Creators\TranslationsTableCreator;
 use LightPortal\Database\Migrations\Upgraders\BlocksTableUpgrader;
 use LightPortal\Database\Migrations\Upgraders\CategoriesTableUpgrader;
 use LightPortal\Database\Migrations\Upgraders\CommentsTableUpgrader;
 use LightPortal\Database\Migrations\Upgraders\PagesTableUpgrader;
-use LightPortal\Database\Migrations\Upgraders\TableUpgraderInterface;
 use LightPortal\Database\Migrations\Upgraders\TagsTableUpgrader;
 use LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
 use LightPortal\Database\Migrations\Upgraders\TranslationsTableUpgrader;
@@ -43,15 +43,15 @@ use LightPortal\Utils\Traits\HasRequest;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class Installer implements InstallerInterface
+class Installer extends AbstractInstaller
 {
 	use HasRequest;
 
-	public function __construct(protected ?PortalSqlInterface $sql = null)
+	public function __construct(protected PortalSqlInterface|ExtendedSqlInterface|null $sql = null)
 	{
 		$this->sql ??= new PortalSql(PortalAdapterFactory::create());
 
-		DbPlatform::set($this->sql->getAdapter()->getPlatform());
+		parent::__construct($this->sql);
 	}
 
 	public function install(): bool
@@ -92,40 +92,7 @@ class Installer implements InstallerInterface
 		return true;
 	}
 
-	protected function processTables(string $mode): void
-	{
-		$creators = $this->getCreators();
-
-		foreach ($creators as $creatorClass) {
-			$creator = new $creatorClass($this->sql);
-			if (! $creator instanceof TableCreatorInterface) {
-				continue;
-			}
-
-			if ($mode === 'install') {
-				$creator->createTable();
-				$creator->insertDefaultData();
-			} elseif ($mode === 'uninstall') {
-				$creator->dropTable();
-			}
-		}
-	}
-
-	protected function processUpgradeTasks(): void
-	{
-		$upgraders = $this->getUpgraders();
-
-		foreach ($upgraders as $upgraderClass) {
-			$upgrader = new $upgraderClass($this->sql);
-			if (! $upgrader instanceof TableUpgraderInterface) {
-				continue;
-			}
-
-			$upgrader->updateTable();
-		}
-	}
-
-	private function getCreators(): array
+	protected function getCreators(): array
 	{
 		return [
 			BlocksTableCreator::class,
@@ -140,7 +107,7 @@ class Installer implements InstallerInterface
 		];
 	}
 
-	private function getUpgraders(): array
+	protected function getUpgraders(): array
 	{
 		return [
 			TitlesTableUpgrader::class,

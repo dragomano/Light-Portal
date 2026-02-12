@@ -7,11 +7,11 @@
     "ext-simplexml": "*",
     "ext-zip": "*",
     "bugo/fa-icon-builder": "^0.2",
+    "bugo/laminas-db-extra": "^0.1",
     "bugo/smf-bricks": "^0.8",
     "bugo/smf-compat": "dev-main",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.18",
-    "laminas/laminas-db": "^2.18",
     "league/container": "^5.1",
     "ramsey/collection": "^2.1",
     "wplake/typed": "^1.2"

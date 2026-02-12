@@ -12,43 +12,6 @@
 
 namespace LightPortal\Database;
 
-use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Extra\Adapter\ExtendedAdapter;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-class PortalAdapter extends Adapter implements PortalAdapterInterface
-{
-	public function __construct(protected array $config)
-	{
-		parent::__construct($this->config);
-	}
-
-	public function getConfig(): array
-	{
-		return $this->config;
-	}
-
-	public function getPrefix(): string
-	{
-		return $this->config['prefix'] ?? '';
-	}
-
-	public function getVersion(): string
-	{
-		if ($this->getTitle() === 'SQLite') {
-			$query = 'SELECT sqlite_version() AS version';
-		} else {
-			$query = 'SELECT VERSION() AS version';
-		}
-
-		$result = $this->query($query, self::QUERY_MODE_EXECUTE);
-
-		return $result->current()['version'];
-	}
-
-	public function getTitle(): string
-	{
-		return $this->getPlatform()->getName();
-	}
-}
+class PortalAdapter extends ExtendedAdapter implements PortalAdapterInterface {}

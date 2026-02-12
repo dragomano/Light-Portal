@@ -8,22 +8,22 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 07.11.25
+ * @version 12.02.26
  */
 
 namespace LightPortal\Plugins\SimpleChat;
 
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\Creators\AbstractTableCreator;
-use LightPortal\Database\Migrations\PortalTable;
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\UnsignedInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 class Table extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_simple_chat_messages';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id        = new AutoIncrementInteger('id');
 		$blockId   = new UnsignedInteger('block_id');

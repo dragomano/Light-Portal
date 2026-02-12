@@ -12,12 +12,13 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\MediumInteger;
+use Laminas\Db\Extra\Sql\Columns\TinyInteger;
+use Laminas\Db\Extra\Sql\Columns\UnsignedInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\MediumInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\EntryType;
 
@@ -28,7 +29,7 @@ class PagesTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_pages';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id          = new AutoIncrementInteger('page_id');
 		$categoryId  = new UnsignedInteger('category_id');

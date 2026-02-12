@@ -18,9 +18,9 @@ use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Exception;
+use Laminas\Db\Extra\Sql\TransactionInterface;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Enums\ContentType;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Utils\Language;
@@ -45,7 +45,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected string $entity;
 
-	protected PortalTransactionInterface $transaction;
+	protected TransactionInterface $transaction;
 
 	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
 	{

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use LightPortal\Database\Operations\PortalInsert;
+use Laminas\Db\Extra\Sql\Operations\ExtendedInsert;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\Notifier;
 use LightPortal\Utils\NotifierInterface;
@@ -50,7 +50,7 @@ describe('Notifier', function () {
 
         it('creates background task with correct data', function () {
             $mockSql = mock(PortalSqlInterface::class);
-            $mockInsert = mock(PortalInsert::class);
+            $mockInsert = mock(ExtendedInsert::class);
             $mockInsert->shouldReceive('values')->andReturnSelf();
             $mockSql->shouldReceive('insert')->andReturn($mockInsert);
             $mockSql->shouldReceive('execute');

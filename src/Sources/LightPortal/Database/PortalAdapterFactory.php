@@ -13,22 +13,21 @@
 namespace LightPortal\Database;
 
 use Bugo\Compat\Config;
-use Laminas\Db\Adapter\Platform\Mysql;
-use Laminas\Db\Adapter\Platform\PlatformInterface;
-use Laminas\Db\Adapter\Platform\Postgresql;
-use Laminas\Db\Adapter\Platform\Sqlite;
+use Laminas\Db\Extra\Adapter\AdapterFactory;
+use Laminas\Db\Extra\Adapter\ExtendedProfiler;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PortalAdapterFactory
+class PortalAdapterFactory extends AdapterFactory
 {
-	public static function create(array $options = []): PortalAdapterInterface
+	public static function create(array $config = []): PortalAdapterInterface
 	{
-		$profiler = new PortalProfiler(self::getPlatform());
+		$driver   = self::getDriver();
+		$profiler = new ExtendedProfiler(self::getPlatform($driver));
 
-		$config = [
-			'driver'   => self::getDriver(),
+		$baseConfig = [
+			'driver'   => $driver,
 			'hostname' => Config::$db_server,
 			'database' => Config::$db_name,
 			'prefix'   => str_replace('`' . Config::$db_name . '`.', '', Config::$db_prefix),
@@ -37,7 +36,7 @@ class PortalAdapterFactory
 			'profiler' => $profiler,
 		];
 
-		return new PortalAdapter(array_merge($config, $options));
+		return new PortalAdapter(array_merge($baseConfig, $config));
 	}
 
 	protected static function getDriver(): string
@@ -46,15 +45,6 @@ class PortalAdapterFactory
 			'postgresql' => 'Pdo_Pgsql',
 			'sqlite'     => 'Pdo_Sqlite',
 			default      => 'Pdo_Mysql',
-		};
-	}
-
-	protected static function getPlatform(): PlatformInterface
-	{
-		return match (Config::$db_type) {
-			'postgresql' => new Postgresql(),
-			'sqlite'     => new Sqlite(),
-			default      => new Mysql(),
 		};
 	}
 }

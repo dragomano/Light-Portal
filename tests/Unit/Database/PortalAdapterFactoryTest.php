@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Laminas\Db\Adapter\Platform\PlatformInterface;
+use Laminas\Db\Extra\Adapter\ExtendedProfiler;
 use LightPortal\Database\PortalAdapter;
 use LightPortal\Database\PortalAdapterFactory;
-use LightPortal\Database\PortalProfiler;
 
 describe('PortalAdapterFactory', function () {
     beforeEach(function () {
@@ -18,7 +18,7 @@ describe('PortalAdapterFactory', function () {
         $this->originalDbPasswd = Config::$db_passwd ?? 'pass';
         $this->originalDbPort   = Config::$db_port ?? 3306;
 
-        $this->profilerMock = mock(PortalProfiler::class);
+        $this->profilerMock = mock(ExtendedProfiler::class);
         $this->platformMock = mock(PlatformInterface::class);
 
         $this->portalAdapterFactoryMock = mock('alias:LightPortal\Database\PortalAdapterFactory');

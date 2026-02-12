@@ -17,7 +17,7 @@ use Laminas\Db\Sql\Expression;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class CommentsTableUpgrader extends AbstractTableUpgrader
+class CommentsTableUpgrader extends TableUpgrader
 {
 	protected string $tableName = 'lp_comments';
 

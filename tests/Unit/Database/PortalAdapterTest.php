@@ -21,7 +21,7 @@ describe('PortalAdapter', function () {
 
     it('returns empty string when prefix is not set', function () {
         $adapter = new PortalAdapter([
-            'driver' => 'Pdo_Mysql',
+            'driver'   => 'Pdo_Mysql',
             'database' => 'test_db',
             'username' => 'test_user',
             'password' => 'test_pass',

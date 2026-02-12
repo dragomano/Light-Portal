@@ -13,10 +13,11 @@
 namespace LightPortal\Database\Migrations\Creators;
 
 use Bugo\Compat\Utils;
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\TinyInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
-use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\ContentClass;
 use LightPortal\Enums\TitleClass;
@@ -28,7 +29,7 @@ class BlocksTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_blocks';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id           = new AutoIncrementInteger('block_id');
 		$icon         = new Varchar('icon', 60, true);

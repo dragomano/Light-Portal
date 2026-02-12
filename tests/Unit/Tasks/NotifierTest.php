@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Config;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\AlertAction;
 use LightPortal\Tasks\Notifier;
@@ -34,9 +34,9 @@ describe('Notifier task', function () {
 
         $this->accessor = new ReflectionAccessor($this->task);
 
-        $this->makeResult = function (array $rows): PortalResultInterface {
+        $this->makeResult = function (array $rows): ExtendedResultInterface {
             $iterator = new ArrayIterator($rows);
-            $result = mock(PortalResultInterface::class);
+            $result = mock(ExtendedResultInterface::class);
 
             $result->shouldReceive('current')->andReturnUsing(function () use ($iterator) {
                 return $iterator->current();
@@ -89,7 +89,7 @@ describe('Notifier task', function () {
     it('groups member emails by language', function () {
         Config::$language = 'en';
 
-        $select = new PortalSelect();
+        $select = new ExtendedSelect();
 
         $this->sql->shouldReceive('select')->andReturn($select);
         $this->sql->shouldReceive('execute')->with($select)->andReturn(($this->makeResult)([

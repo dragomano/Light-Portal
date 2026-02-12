@@ -2,9 +2,9 @@
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use Laminas\Db\Sql\Expression;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Utils\PostInterface;
@@ -130,8 +130,8 @@ describe('TagValidator::extendErrors', function () {
         $this->validator->setMockPost($post);
         $this->accessor->setProperty('filteredData', ['slug' => 'test-tag', 'tag_id' => 1]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_tags')
@@ -165,8 +165,8 @@ describe('TagValidator::isUnique', function () {
             'tag_id' => $tagId,
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->once()
@@ -208,8 +208,8 @@ describe('TagValidator::isUnique', function () {
             'tag_id' => 1,
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $capturedExpression = null;
 
@@ -262,8 +262,8 @@ describe('TagValidator::integration', function () {
             ->with('slug')
             ->andReturn('test-tag');
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_tags')
@@ -314,8 +314,8 @@ describe('TagValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_tags')
@@ -363,8 +363,8 @@ describe('TagValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_tags')
