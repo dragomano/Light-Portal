@@ -29,6 +29,7 @@ use LightPortal\Utils\Traits\HasRequest;
 use LightPortal\Utils\Traits\HasResponse;
 use LightPortal\Utils\Traits\HasSession;
 use ReflectionClass;
+use ReflectionException;
 use Stringable;
 
 use function LightPortal\app;
@@ -98,6 +99,12 @@ abstract class Plugin implements PluginInterface, Stringable
 	use HasResponse;
 	use HasSession;
 
+	public string $type;
+
+	public string $icon;
+
+	public bool $showSaveButton;
+
 	protected PortalSqlInterface $sql;
 
 	protected string $name;
@@ -106,22 +113,22 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	protected array $txt;
 
-	public function __construct(
-		public string $type = 'other',
-		public string $icon = 'fas fa-puzzle-piece',
-		public bool $showSaveButton = true,
-	)
+	private static array $attributeCache = [];
+
+	public function __construct()
 	{
 		$this->name = $this->getSnakeName();
-		$this->type = $this->getPluginType();
-		$this->icon = $this->getPluginIcon();
-		$this->showSaveButton = $this->isPluginHasSaveButton();
+		$this->sql  = $this->getPortalSql();
 
-		$this->sql = $this->getPortalSql();
+		$attr = $this->getPluginAttribute();
+
+		$this->type = $this->resolveType($attr->type);
+		$this->icon = $attr->icon ?? 'fas fa-puzzle-piece';
+
+		$this->showSaveButton = $attr->showSaveButton  ?? true;
 
 		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
-
-		$this->txt = &Lang::$txt['lp_' . $this->name];
+		$this->txt     = &Lang::$txt['lp_' . $this->name];
 	}
 
 	public function __toString(): string
@@ -137,33 +144,6 @@ abstract class Plugin implements PluginInterface, Stringable
 	public function getSnakeName(): string
 	{
 		return Str::getSnakeName($this->getCamelName());
-	}
-
-	public function getPluginType(): string
-	{
-		$pluginAttr = $this->getPluginAttribute();
-
-		$type = $pluginAttr->type ?? $this->type;
-
-		if (is_array($type)) {
-			return implode(' ', array_map(fn(PluginType $t) => $t->name(), $type));
-		}
-
-		return $type instanceof PluginType ? $type->name() : $type;
-	}
-
-	public function getPluginIcon(): string
-	{
-		$pluginAttr = $this->getPluginAttribute();
-
-		return $pluginAttr->icon ?? $this->icon;
-	}
-
-	public function isPluginHasSaveButton(): bool
-	{
-		$pluginAttr = $this->getPluginAttribute();
-
-		return $pluginAttr->showSaveButton ?? $this->showSaveButton;
 	}
 
 	public function isEnabled(): bool
@@ -190,7 +170,7 @@ abstract class Plugin implements PluginInterface, Stringable
 	{
 		foreach ($resources as $resource) {
 			$type = $resource['type'] ?? null;
-			$url  = $resource['url'] ?? null;
+			$url  = $resource['url']  ?? null;
 
 			match ($type) {
 				'css'   => Theme::loadCSSFile($url, ['external' => true]),
@@ -202,43 +182,59 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	private function getPluginAttribute(): PluginAttribute
 	{
-		$reflection = new ReflectionClass($this);
-		$inheritedType = null;
-		$inheritedIcon = null;
+		return self::$attributeCache[static::class] ??= $this->resolvePluginAttribute();
+	}
+
+	private function resolvePluginAttribute(): PluginAttribute
+	{
+		$inheritedType           = null;
+		$inheritedIcon           = null;
 		$inheritedShowSaveButton = null;
 
-		$classes = [];
-		do {
-			$classes[] = $reflection;
-			$reflection = $reflection->getParentClass();
-		} while ($reflection);
+		$hierarchy = array_reverse([
+			...array_values(class_parents($this)),
+			static::class,
+		]);
 
-		$classes = array_reverse($classes);
-		foreach ($classes as $classReflection) {
-			$pluginAttrs = $classReflection->getAttributes(PluginAttribute::class);
+		foreach ($hierarchy as $class) {
+			try {
+				$attrs = (new ReflectionClass($class))->getAttributes(PluginAttribute::class);
+			} catch (ReflectionException $e) {
+				ErrorHandler::log("[LP] $class: {$e->getMessage()}");
+			}
 
-			if (empty($pluginAttrs))
+			if (empty($attrs)) {
 				continue;
-
-			$attr = $pluginAttrs[0]->newInstance();
-
-			if ($attr->type !== null) {
-				$inheritedType = $attr->type;
 			}
 
-			if ($attr->icon !== null) {
-				$inheritedIcon = $attr->icon;
-			}
+			$attr = $attrs[0]->newInstance();
 
-			if ($attr->showSaveButton !== null) {
-				$inheritedShowSaveButton = $attr->showSaveButton;
-			}
+			$inheritedType           = $attr->type           ?? $inheritedType;
+			$inheritedIcon           = $attr->icon           ?? $inheritedIcon;
+			$inheritedShowSaveButton = $attr->showSaveButton ?? $inheritedShowSaveButton;
 		}
 
 		return new PluginAttribute(
 			type: $inheritedType,
 			icon: $inheritedIcon,
-			showSaveButton: $inheritedShowSaveButton
+			showSaveButton: $inheritedShowSaveButton,
 		);
+	}
+
+	private function resolveType(mixed $type): string
+	{
+		if ($type === null) {
+			return PluginType::OTHER->name();
+		}
+
+		if (is_array($type)) {
+			return implode(' ', array_map(fn(PluginType $t) => $t->name(), $type));
+		}
+
+		if ($type instanceof PluginType) {
+			return $type->name();
+		}
+
+		return (string) $type;
 	}
 }

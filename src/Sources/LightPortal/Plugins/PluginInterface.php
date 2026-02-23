@@ -18,12 +18,6 @@ interface PluginInterface
 
 	public function getSnakeName(): string;
 
-	public function getPluginType(): string;
-
-	public function getPluginIcon(): string;
-
-	public function isPluginHasSaveButton(): bool;
-
 	public function addDefaultValues(array $values): void;
 
 	public function loadExternalResources(array $resources): void;
