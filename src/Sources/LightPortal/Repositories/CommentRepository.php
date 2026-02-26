@@ -239,7 +239,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 		$pageIds = array_unique($pageIds);
 
-		$this->executeInTransaction(function() use ($allItems, $pageIds, $withResponse) {
+		$result = $this->executeInTransaction(function() use ($allItems, $pageIds, $withResponse) {
 			$deleteComments = $this->sql->delete('lp_comments');
 			$deleteComments->where->in('id', $allItems);
 			$this->sql->execute($deleteComments);
@@ -275,8 +275,12 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			$deleteAlerts->where->in('content_id', $allItems);
 			$this->sql->execute($deleteAlerts);
 
-			$withResponse && $this->response()->exit(['success' => true, 'items' => $allItems]);
+			return 1;
 		});
+
+		if ($withResponse) {
+			$this->response()->exit(['success' => (bool) $result, 'items' => $allItems]);
+		}
 	}
 
 	public function updateLastCommentId(int $item, int $pageId): void
