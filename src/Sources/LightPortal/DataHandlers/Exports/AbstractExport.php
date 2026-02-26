@@ -33,9 +33,9 @@ abstract class AbstractExport extends DataHandler
 	use HasRequest;
 
 	public function __construct(
-		protected string $entity,
-		protected PortalSqlInterface $sql,
-		protected FilesystemInterface $filesystem,
+		protected string                $entity,
+		protected PortalSqlInterface    $sql,
+		protected FilesystemInterface   $filesystem,
 		protected ErrorHandlerInterface $errorHandler
 	)
 	{

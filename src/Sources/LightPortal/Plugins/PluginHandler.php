@@ -33,7 +33,7 @@ final readonly class PluginHandler
 		private AssetHandler $assetHandler,
 		private ConfigHandler $configHandler,
 		private LangHandler $langHandler,
-		private array $plugins = []
+		array $plugins = []
 	) {
 		$this->prepareListeners($plugins);
 		$this->prepareAssets();

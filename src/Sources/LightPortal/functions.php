@@ -122,30 +122,18 @@ function show_pagination(string $position = 'top'): void
 if (! function_exists('__')) {
 	function __(string $key, array $args = [], string $var = 'txt'): string|array
 	{
-		// some/some::key
-		if (str_contains($key, '::')) {
-			[$file, $rest] = explode('::', $key, 2);
+		$separator = str_contains($key, '::') ? '::' : (str_contains($key, '.') ? '.' : null);
 
-			return Lang::getTxt($rest, $args, $var, $file);
+		if ($separator === null) {
+			return Lang::getTxt($key, $args, $var);
 		}
 
-		// some/some.key
-		if (str_contains($key, '.')) {
-			[$file, $rest] = explode('.', $key, 2);
+		[$file, $rest] = explode($separator, $key, 2);
 
-			// group.key
-			if (str_contains($rest, '.')) {
-				return Lang::getTxt(
-					explode('.', $rest, 2),
-					$args,
-					$var,
-					$file
-				);
-			}
+		$txtKey = ($separator === '.' && str_contains($rest, '.'))
+			? explode('.', $rest, 2)
+			: $rest;
 
-			return Lang::getTxt($rest, $args, $var, $file);
-		}
-
-		return Lang::getTxt($key, $args, $var);
+		return Lang::getTxt($txtKey, $args, $var, $file);
 	}
 }

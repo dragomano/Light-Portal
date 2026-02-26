@@ -30,9 +30,9 @@ class BlockExport extends XmlExporter
 
 	public function __construct(
 		private readonly BlockRepositoryInterface $repository,
-		PortalSqlInterface $sql,
-		FilesystemInterface $filesystem,
-		ErrorHandlerInterface $errorHandler
+		PortalSqlInterface                        $sql,
+		FilesystemInterface                       $filesystem,
+		ErrorHandlerInterface                     $errorHandler
 	)
 	{
 		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);

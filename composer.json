@@ -44,11 +44,11 @@
   },
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
-    "tests": "php -d memory_limit=512M vendor/bin/pest --colors=always",
-    "tests-debug": "php -d memory_limit=512M vendor/bin/pest --colors=always --display-warnings",
-    "tests-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=60",
-    "tests-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=60 --coverage-clover coverage.xml",
-    "tests-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=60 --coverage-html coverage",
+    "test": "php -d memory_limit=512M vendor/bin/pest --colors=always",
+    "test-debug": "php -d memory_limit=512M vendor/bin/pest --colors=always --display-warnings",
+    "test-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=60",
+    "test-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=60 --coverage-clover coverage.xml",
+    "test-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=60 --coverage-html coverage",
     "assets": [
       "pnpm update",
       "pnpm run build",
