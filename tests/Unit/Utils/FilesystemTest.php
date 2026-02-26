@@ -113,6 +113,12 @@ describe('Filesystem', function () {
             $this->fs->mkdir($this->testDir);
             expect($this->fs->isFile($this->testDir))->toBeFalse();
         });
+
+        it('throws exception when directory does not exist', function () {
+            $invalidPath = '/nonexistent/dir/file.txt';
+            expect(fn() => suppressWarnings(fn() => $this->fs->write($invalidPath, 'content')))
+                ->toThrow(RuntimeException::class, 'directory does not exist');
+        });
     });
 
     describe('mkdir()', function () {
@@ -162,6 +168,12 @@ describe('Filesystem', function () {
             expect($this->fs->delete($this->testDir))->toBeTrue()
                 ->and($this->fs->exists($this->testDir))->toBeFalse();
         });
+
+        it('throws exception when directory does not exist', function () {
+            $invalidPath = '/nonexistent/dir/file.txt';
+            expect(fn() => suppressWarnings(fn() => $this->fs->write($invalidPath, 'content')))
+                ->toThrow(RuntimeException::class, 'directory does not exist');
+        });
     });
 
     describe('listDir()', function () {
@@ -180,6 +192,12 @@ describe('Filesystem', function () {
             expect($contents)->toContain('file1.txt')
                 ->and($contents)->toContain('file2.txt');
         });
+
+        it('throws exception when directory does not exist', function () {
+            $invalidPath = '/nonexistent/dir/file.txt';
+            expect(fn() => suppressWarnings(fn() => $this->fs->write($invalidPath, 'content')))
+                ->toThrow(RuntimeException::class, 'directory does not exist');
+        });
     });
 
     describe('getSize()', function () {
@@ -197,6 +215,12 @@ describe('Filesystem', function () {
             $content = 'Test content with size';
             $this->fs->write($this->testFile, $content);
             expect($this->fs->getSize($this->testFile))->toBe(mb_strlen($content));
+        });
+
+        it('throws exception when directory does not exist', function () {
+            $invalidPath = '/nonexistent/dir/file.txt';
+            expect(fn() => suppressWarnings(fn() => $this->fs->write($invalidPath, 'content')))
+                ->toThrow(RuntimeException::class, 'directory does not exist');
         });
     });
 

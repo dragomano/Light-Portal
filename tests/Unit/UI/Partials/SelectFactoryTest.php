@@ -5,13 +5,20 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\PageList;
+use LightPortal\Lists\TagList;
 use LightPortal\UI\Partials\ActionSelect;
 use LightPortal\UI\Partials\AreaSelect;
 use LightPortal\UI\Partials\BoardSelect;
 use LightPortal\UI\Partials\CategorySelect;
 use LightPortal\UI\Partials\ContentClassSelect;
+use LightPortal\UI\Partials\IconSelect;
+use LightPortal\UI\Partials\PageSelect;
+use LightPortal\UI\Partials\PageSlugSelect;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\TagSelect;
 use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\MessageIndex;
 use Tests\AppMockRegistry;
@@ -37,6 +44,15 @@ beforeEach(function () {
     $cacheMock->shouldReceive('withKey')->andReturn($cacheMock);
     $cacheMock->shouldReceive('setFallback')->andReturn([]);
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    $categoryListMock = mock(CategoryList::class)->makePartial();
+    AppMockRegistry::set(CategoryList::class, $categoryListMock);
+
+    $pageListMock = mock(PageList::class)->makePartial();
+    AppMockRegistry::set(PageList::class, $pageListMock);
+
+    $tagListMock = mock(TagList::class)->makePartial();
+    AppMockRegistry::set(TagList::class, $tagListMock);
 });
 
 it('creates action select', function () {
@@ -69,6 +85,30 @@ it('creates content class select', function () {
     expect($select)->toBeInstanceOf(ContentClassSelect::class);
 });
 
+it('creates icon select', function () {
+    $select = SelectFactory::icon();
+
+    expect($select)->toBeInstanceOf(IconSelect::class);
+});
+
+it('creates page select', function () {
+    $select = SelectFactory::page();
+
+    expect($select)->toBeInstanceOf(PageSelect::class);
+});
+
+it('creates page slug select', function () {
+    $select = SelectFactory::pageSlug();
+
+    expect($select)->toBeInstanceOf(PageSlugSelect::class);
+});
+
+it('creates tag select', function () {
+    $select = SelectFactory::tag();
+
+    expect($select)->toBeInstanceOf(TagSelect::class);
+});
+
 it('creates select by type', function () {
     $select = SelectFactory::create('action');
 
@@ -80,7 +120,7 @@ it('throws exception for unknown type', function () {
 });
 
 it('checks that all created selects implement SelectInterface', function () {
-    $types = ['action', 'area', 'board', 'content_class', 'entry_type', 'icon', 'page_icon', 'permission', 'placement', 'status', 'title_class', 'topic'];
+    $types = ['action', 'area', 'board', 'category', 'content_class', 'entry_type', 'icon', 'page', 'page_icon', 'page_slug', 'permission', 'placement', 'status', 'tag', 'title_class', 'topic'];
 
     foreach ($types as $type) {
         $select = SelectFactory::create($type);

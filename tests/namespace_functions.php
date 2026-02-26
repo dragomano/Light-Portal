@@ -53,9 +53,9 @@ if (! function_exists('LightPortal\\app')) {
                     return $callback();
                 }
 
-                public function setFallback(callable $callback): null
+                public function setFallback(callable $callback): mixed
                 {
-                    return null;
+                    return $callback();
                 }
 
                 public function get(string $key, int $time = null): null

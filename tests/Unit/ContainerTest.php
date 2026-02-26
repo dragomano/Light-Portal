@@ -2,14 +2,9 @@
 
 declare(strict_types=1);
 
+use Laminas\ServiceManager\ServiceManager;
 use LightPortal\Container;
-use League\Container\Container as LeagueContainer;
 use Tests\ReflectionAccessor;
-
-beforeEach(function () {
-    $this->container = new ReflectionAccessor(new Container());
-    $this->container->setProperty('container', null);
-});
 
 it('is a singleton', function () {
     $instance1 = Container::getInstance();
@@ -18,34 +13,51 @@ it('is a singleton', function () {
     expect($instance1)->toBe($instance2);
 });
 
-it('getInstance returns LeagueContainer instance', function () {
+it('getInstance returns Container instance', function () {
     $instance = Container::getInstance();
 
-    expect($instance)->toBeInstanceOf(LeagueContainer::class);
+    expect($instance)->toBeInstanceOf(Container::class);
+});
+
+it('getInstance returns wrapper over ServiceManager', function () {
+    $instance = Container::getInstance();
+
+    $instance->get('LightPortal\Utils\Cache');
+
+    $accessor = new ReflectionAccessor($instance);
+    $serviceManager = $accessor->getProperty('container');
+
+    expect($serviceManager)->toBeInstanceOf(ServiceManager::class);
 });
 
 it('get returns service from container', function () {
-    $mockContainer = mock(LeagueContainer::class);
-    $mockContainer->shouldReceive('get')->with('test_service')->andReturn('mocked_service');
+    $instance = Container::getInstance();
+    $mockServiceManager = mock(ServiceManager::class);
+    $mockServiceManager->shouldReceive('get')->with('test_service')->andReturn('mocked_service');
 
-    $this->container->setProperty('container', $mockContainer);
+    $accessor = new ReflectionAccessor($instance);
+    $accessor->setProperty('container', $mockServiceManager);
 
-    $result = Container::get('test_service');
+    $result = $instance->get('test_service');
 
     expect($result)->toBe('mocked_service');
 });
 
 it('get handles exceptions gracefully', function () {
-    expect(Container::class)->toHaveMethod('get');
+    $instance = Container::getInstance();
 
-    $result = Container::get('nonexistent_service_' . uniqid());
+    $result = $instance->get('nonexistent_service_' . uniqid());
 
     expect($result)->toBeFalse();
 });
 
 it('init initializes container with ServiceProvider', function () {
-    $container = Container::getInstance();
+    $instance = Container::getInstance();
 
-    expect($container)->toBeInstanceOf(LeagueContainer::class)
-        ->and(true)->toBeTrue();
+    $instance->get('LightPortal\Utils\Cache');
+
+    $accessor = new ReflectionAccessor($instance);
+    $serviceManager = $accessor->getProperty('container');
+
+    expect($serviceManager)->toBeInstanceOf(ServiceManager::class);
 });
