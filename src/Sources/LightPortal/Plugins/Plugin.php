@@ -105,6 +105,8 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	public bool $showSaveButton;
 
+	public bool $showContentClass;
+
 	protected PortalSqlInterface $sql;
 
 	protected string $name;
@@ -125,7 +127,8 @@ abstract class Plugin implements PluginInterface, Stringable
 		$this->type = $this->resolveType($attr->type);
 		$this->icon = $attr->icon ?? 'fas fa-puzzle-piece';
 
-		$this->showSaveButton = $attr->showSaveButton  ?? true;
+		$this->showSaveButton   = $attr->showSaveButton ?? true;
+		$this->showContentClass = $attr->showContentClass ?? true;
 
 		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
 		$this->txt     = &Lang::$txt['lp_' . $this->name];
@@ -187,9 +190,10 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	private function resolvePluginAttribute(): PluginAttribute
 	{
-		$inheritedType           = null;
-		$inheritedIcon           = null;
-		$inheritedShowSaveButton = null;
+		$inheritedType             = null;
+		$inheritedIcon             = null;
+		$inheritedShowSaveButton   = null;
+		$inheritedShowContentClass = null;
 
 		$hierarchy = array_reverse([
 			...array_values(class_parents($this)),
@@ -209,15 +213,17 @@ abstract class Plugin implements PluginInterface, Stringable
 
 			$attr = $attrs[0]->newInstance();
 
-			$inheritedType           = $attr->type           ?? $inheritedType;
-			$inheritedIcon           = $attr->icon           ?? $inheritedIcon;
-			$inheritedShowSaveButton = $attr->showSaveButton ?? $inheritedShowSaveButton;
+			$inheritedType             = $attr->type             ?? $inheritedType;
+			$inheritedIcon             = $attr->icon             ?? $inheritedIcon;
+			$inheritedShowSaveButton   = $attr->showSaveButton   ?? $inheritedShowSaveButton;
+			$inheritedShowContentClass = $attr->showContentClass ?? $inheritedShowContentClass;
 		}
 
 		return new PluginAttribute(
 			type: $inheritedType,
 			icon: $inheritedIcon,
 			showSaveButton: $inheritedShowSaveButton,
+			showContentClass: $inheritedShowContentClass
 		);
 	}
 

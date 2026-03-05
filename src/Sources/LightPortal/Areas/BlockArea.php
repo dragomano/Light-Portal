@@ -21,7 +21,6 @@ use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
-use LightPortal\Plugins\Block;
 use LightPortal\Repositories\BlockRepositoryInterface;
 use LightPortal\UI\TemplateLoader;
 use LightPortal\UI\Fields\CheckboxField;
@@ -192,7 +191,7 @@ final class BlockArea extends AbstractArea
 			->setTab(Tab::APPEARANCE)
 			->setValue(SelectFactory::titleClass(...));
 
-		if (Block::showContentClassField(Utils::$context['lp_block']['type'])) {
+		if ($this->shouldShowContentClassField()) {
 			CustomField::make('content_class', __('lp_block_content_class'))
 				->setTab(Tab::APPEARANCE)
 				->setValue(SelectFactory::contentClass(...));
@@ -356,6 +355,13 @@ final class BlockArea extends AbstractArea
 
 		$titles = array_column(Utils::$context['lp_all_blocks'], 'title');
 		array_multisort($titles, SORT_ASC, Utils::$context['lp_all_blocks']);
+	}
+
+	private function shouldShowContentClassField(): bool
+	{
+		$type = Utils::$context['lp_block']['type'];
+
+		return ! empty(Utils::$context['lp_loaded_addons'][$type]['showContentClass']);
 	}
 
 	private function getRepository(): BlockRepositoryInterface
