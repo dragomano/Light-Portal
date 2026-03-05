@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 11.02.26
  */
 
 namespace LightPortal\Plugins\UserInfo;

@@ -13,7 +13,7 @@
 namespace LightPortal\Repositories;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Msg;
+use Bugo\Compat\Parser;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Predicate\Expression;
@@ -171,7 +171,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 		foreach ($result as $row) {
 			if ($row['type'] === ContentType::BBC->name()) {
-				$row['content'] = Msg::un_preparsecode($row['content'] ?? '');
+				$row['content'] = Parser::getEditableString($row['content'] ?? '');
 			}
 
 			$data ??= [

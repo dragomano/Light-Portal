@@ -15,7 +15,7 @@ namespace LightPortal\Repositories;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Logging;
-use Bugo\Compat\Msg;
+use Bugo\Compat\Parser;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -200,7 +200,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		foreach ($result as $row) {
 			if ($row['type'] === ContentType::BBC->name()) {
-				$row['content'] = Msg::un_preparsecode($row['content'] ?? '');
+				$row['content'] = Parser::getEditableString($row['content'] ?? '');
 			}
 
 			$data ??= [
@@ -489,7 +489,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			|| (User::$me->allowedTo('light_portal_manage_pages_own') && $isAuthor);
 
 		if ($data['type'] === ContentType::BBC->name()) {
-			$data['content'] = Msg::un_preparsecode($data['content']);
+			$data['content'] = Parser::getEditableString($data['content']);
 		}
 
 		$this->dispatcher->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);

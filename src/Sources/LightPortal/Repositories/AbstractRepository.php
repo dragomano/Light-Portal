@@ -14,7 +14,7 @@ namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Msg;
+use Bugo\Compat\Parser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Exception;
@@ -83,8 +83,7 @@ abstract class AbstractRepository implements RepositoryInterface
 			return;
 
 		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
-
-		Msg::preparseCode($entity['content']);
+		$entity['content'] = Parser::sanitize($entity['content']);
 	}
 
 	protected function saveTranslations(array $data, bool $replace = false): void

@@ -34,12 +34,12 @@ enum FrontPageMode: string
 	public function getArticleClass(): ?string
 	{
 		return match ($this) {
-			self::ALL_PAGES => PageArticle::class,
-			self::ALL_TOPICS => TopicArticle::class,
+			self::ALL_PAGES     => PageArticle::class,
+			self::ALL_TOPICS    => TopicArticle::class,
 			self::CHOSEN_BOARDS => BoardArticle::class,
-			self::CHOSEN_PAGES => ChosenPageArticle::class,
+			self::CHOSEN_PAGES  => ChosenPageArticle::class,
 			self::CHOSEN_TOPICS => ChosenTopicArticle::class,
-			default => null,
+			default             => null,
 		};
 	}
 

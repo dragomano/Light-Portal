@@ -35,11 +35,12 @@ enum ContentClass: string
 	public function getList(): string
 	{
 		$class = match ($this) {
-			self::ROUNDFRAME, self::WINDOWBG => $this->value . ' noup',
+			self::ROUNDFRAME,
+			self::WINDOWBG    => $this->value . ' noup',
 			self::ROUNDFRAME2 => self::ROUNDFRAME->value,
-			self::WINDOWBG2 => self::WINDOWBG->value,
-			self::EMPTY => null,
-			default => $this->value,
+			self::WINDOWBG2   => self::WINDOWBG->value,
+			self::EMPTY       => null,
+			default           => $this->value,
 		};
 
 		return Str::html('div', '%s')
