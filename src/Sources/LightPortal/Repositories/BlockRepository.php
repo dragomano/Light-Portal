@@ -277,6 +277,14 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		}
 	}
 
+	public function updateStatusByType(string $type, int $status): void
+	{
+		$update = $this->sql->update('lp_blocks');
+		$update->set(['status' => $status]);
+		$update->where(['type = ?' => $type]);
+		$this->sql->execute($update);
+	}
+
 	private function addData(array $data): int
 	{
 		return $this->executeInTransaction(function() use ($data) {

@@ -20,8 +20,10 @@ use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\Status;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Lists\PluginList;
+use LightPortal\Repositories\BlockRepositoryInterface;
 use LightPortal\Repositories\PluginRepositoryInterface;
 use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\DateTime;
@@ -99,19 +101,18 @@ final readonly class PluginArea
 		if ($this->request()->hasNot('toggle'))
 			return;
 
-		$data = $this->request()->json();
-
-		$pluginId = (int) $data['plugin'];
-
+		$data           = $this->request()->json();
+		$pluginId       = (int) $data['plugin'];
+		$pluginName     = Utils::$context['lp_plugins'][$pluginId] ?? '';
 		$enabledPlugins = Setting::getEnabledPlugins();
 
 		if ($data['status'] === 'on') {
 			$enabledPlugins = array_filter(
 				$enabledPlugins,
-				static fn($item) => $item !== Utils::$context['lp_plugins'][$pluginId]
+				static fn($item) => $item !== $pluginName
 			);
 		} else {
-			$enabledPlugins[] = Utils::$context['lp_plugins'][$pluginId];
+			$enabledPlugins[] = $pluginName;
 		}
 
 		sort($enabledPlugins);
@@ -125,9 +126,9 @@ final readonly class PluginArea
 		]);
 
 		$this->removeAssets();
+		$this->handleBlockPluginToggle($pluginName, $data);
 
 		$this->cache()->flush();
-
 		$this->response()->exit(['success' => true]);
 	}
 
@@ -151,15 +152,27 @@ final readonly class PluginArea
 		$this->response()->exit(['success' => true]);
 	}
 
+	private function handleBlockPluginToggle(string $pluginName, array $data): void
+	{
+		$snakeName     = Str::getSnakeName($pluginName);
+		$pluginData    = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
+		$isBlockPlugin = ($pluginData['type'] ?? '') === PluginType::BLOCK->name();
+
+		if ($data['status'] === 'on' && $isBlockPlugin) {
+			app(BlockRepositoryInterface::class)->updateStatusByType($snakeName, Status::INACTIVE->value);
+		}
+	}
+
 	private function prepareAddonList(array $configVars): void
 	{
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
-			$snakeName = Str::getSnakeName($item);
+			$snakeName  = Str::getSnakeName($item);
 			$pluginData = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
 
-			$version = $this->getVersion($item);
-			$plugin = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item] ?? [];
+			$version  = $this->getVersion($item);
+			$plugin   = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item] ?? [];
 			$outdated = DateTime::dateCompare($version, $plugin['version'] ?? '') ? __('lp_plugin_outdated') : null;
+
 			if ($outdated) {
 				$pluginData = [];
 				$configVars[$snakeName] = [];

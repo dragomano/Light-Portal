@@ -43,7 +43,7 @@
     });
 
     if (response.data.success) {
-      item.status = toggled ? 'off' : 'on';
+      item.status = toggled ? 'on' : 'off';
     }
   };
 </script>
