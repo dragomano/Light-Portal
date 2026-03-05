@@ -4,6 +4,7 @@
 	@php
 		$title = ($data['description'] ?: $data['title']) ?: '';
 		$status = empty($data['status']) ? 'false' : 'true';
+		$isMissingType = !isset($txt['lp_' . $data['type']]['title']);
 	@endphp
 
 	<tr
@@ -47,11 +48,13 @@
 			@endphp
 		</td>
 		<td class="status">
-            <span
-				:class="{ 'on': status, 'off': !status }"
-				:title="status ? '{{ $txt['lp_action_off'] }}' : '{{ $txt['lp_action_on'] }}'"
-				@click.prevent="status = !status"
-			></span>
+			@if (!$isMissingType)
+				<span
+					:class="{ 'on': status, 'off': !status }"
+					:title="status ? '{{ $txt['lp_action_off'] }}' : '{{ $txt['lp_action_on'] }}'"
+					@click.prevent="status = !status"
+				></span>
+			@endif
 		</td>
 		<td class="actions">
 			<div class="context_menu" @click.outside="showContextMenu = false">
