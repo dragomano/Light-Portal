@@ -1,81 +1,81 @@
 #lp_layout {
-	h3,
-	h4 {
-		&:hover {
-			white-space: normal;
-		}
-	}
+  h3,
+  h4 {
+    &:hover {
+      white-space: normal;
+    }
+  }
 
-	.file_content {
-		white-space: break-spaces;
-	}
+  .file_content {
+    white-space: break-spaces;
+  }
 
-	#post_confirm_buttons {
-		padding: 12px 0 0 0 !important;
-	}
+  #post_confirm_buttons {
+    padding: 12px 0 0 0 !important;
+  }
 
-	.row {
-		>aside {
-			margin: 0 !important;
-		}
+  .row {
+    > aside {
+      margin: 0 !important;
+    }
 
-		flex-wrap: wrap;
-		gap: 0;
-	}
+    flex-wrap: wrap;
+    gap: 0;
+  }
 
-	.between-xs+.row,
-	.row+.between-xs {
-		margin-top: 5px;
-	}
+  .between-xs + .row,
+  .row + .between-xs {
+    margin-top: 5px;
+  }
 
-	.sticky_sidebar {
-		position: sticky;
-		top: 5px;
+  .sticky_sidebar {
+    position: sticky;
+    top: 5px;
 
-		.button {
-			float: none;
-			width: 100%;
-		}
-	}
+    .button {
+      float: none;
+      width: 100%;
+    }
+  }
 
-	aside {
-		>div {
-			>h3,
-			>h4 {
-				white-space: nowrap;
-				text-overflow: ellipsis;
+  aside {
+    > div {
+      > h3,
+      > h4 {
+        white-space: nowrap;
+        text-overflow: ellipsis;
 
-				i {
-					margin-right: .5em;
-				}
-			}
+        i {
+          margin-right: 0.5em;
+        }
+      }
 
-			margin: 0;
-		}
+      margin: 0;
+    }
 
-		.progress_bar {
-			max-width: initial;
-		}
+    .progress_bar {
+      max-width: initial;
+    }
 
-		&[id^="block"]:not(:first-child) {
-			clear: both;
-			margin-top: 4px;
-		}
+    &[id^='block']:not(:first-child) {
+      clear: both;
+      margin-top: 4px;
+    }
 
-		.block_edit {
-			opacity: .5;
+    .block_edit {
+      opacity: 0.5;
 
-			&:hover {
-				opacity: 1;
-			}
-		}
-	}
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 
-	@media (max-width: 720px) {
-		input {
-			&[type="radio"] {
-				width: auto;
-			}
-		}
-	}
+  @media (max-width: 720px) {
+    input {
+      &[type='radio'] {
+        width: auto;
+      }
+    }
+  }
 }

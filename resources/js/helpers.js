@@ -1,10 +1,10 @@
-import { contextState, axios } from './states.svelte.ts';
+import { contextState, axios } from './states.svelte.ts'
 
-const { pageUrl } = contextState;
+const { pageUrl } = contextState
 
 class CommentApi {
   constructor(url) {
-    this.workUrl = url;
+    this.workUrl = url
   }
 
   async get(start) {
@@ -13,11 +13,11 @@ class CommentApi {
         params: {
           start,
         },
-      });
+      })
 
-      return response.data;
+      return response.data
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -27,11 +27,11 @@ class CommentApi {
         parent_id,
         author,
         message,
-      });
+      })
 
-      return response.data;
+      return response.data
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -40,11 +40,11 @@ class CommentApi {
       const response = await axios.post(`${this.workUrl}api=update_comment`, {
         comment_id,
         message,
-      });
+      })
 
-      return response.data;
+      return response.data
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -52,79 +52,77 @@ class CommentApi {
     try {
       const response = await axios.post(`${this.workUrl}api=remove_comment`, {
         comment_id,
-      });
+      })
 
-      return response.data;
+      return response.data
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 }
 
 class ObjectHelper {
   getData(tree) {
-    const data = [];
+    const data = []
 
     const traverse = (node) => {
-      const { id, parent_id, replies, ...rest } = node;
+      const { id, parent_id, replies, ...rest } = node
 
-      data.push({ id, parent_id, ...rest });
+      data.push({ id, parent_id, ...rest })
 
       if (replies) {
         for (const reply of Object.values(replies)) {
-          traverse(reply);
+          traverse(reply)
         }
       }
-    };
-
-    for (const node of Object.values(tree)) {
-      traverse(node);
     }
 
-    return data;
+    for (const node of Object.values(tree)) {
+      traverse(node)
+    }
+
+    return data
   }
 
   getTree(data) {
-    const tree = [];
-    const nodes = data.map((node) => ({ ...node, replies: [] }));
+    const tree = []
+    const nodes = data.map((node) => ({ ...node, replies: [] }))
 
     for (const node of nodes) {
       if (node.parent_id) {
-        const parent = nodes.find((n) => n.id === node.parent_id);
+        const parent = nodes.find((n) => n.id === node.parent_id)
 
         if (parent) {
-          parent.replies.push(node);
+          parent.replies.push(node)
         }
       } else {
-        tree.push(node);
+        tree.push(node)
       }
     }
 
-    return tree;
+    return tree
   }
 
   getSortedTree(data, condition) {
-    return this.getTree(
-      data.sort((a, b) => (condition ? a.created_at < b.created_at : a.created_at > b.created_at))
-    );
+    return this.getTree(data.sort((a, b) => (condition ? a.created_at < b.created_at : a.created_at > b.created_at)))
   }
 
   getFilteredTree(data, condition) {
     if (typeof data === 'object' && !Array.isArray(data)) {
-      data = Object.values(data);
+      data = Object.values(data)
     }
 
     return data.filter((item) => {
       if (item.replies) {
-        item.replies = this.getFilteredTree(item.replies, condition);
+        item.replies = this.getFilteredTree(item.replies, condition)
       }
 
-      return condition(item);
-    });
+      return condition(item)
+    })
   }
 }
 
-const api = new CommentApi(pageUrl);
-const helper = new ObjectHelper();
+const api = new CommentApi(pageUrl)
+const helper = new ObjectHelper()
 
-export { api, helper };
+export { api, helper }
