@@ -6,6 +6,8 @@ import { toRefs } from 'vue';
 import ExampleArea from '../components/ExampleArea.vue';
 import ExampleSites from '../components/ExampleSites.vue';
 import ExampleSitesItem from '../components/ExampleSitesItem.vue';
+import BackToTopButton from '@miletorix/vitepress-back-to-top-button';
+import '@miletorix/vitepress-back-to-top-button/style.css';
 
 export default {
   ...DefaultTheme,
@@ -13,6 +15,7 @@ export default {
     app.component('ExampleArea', ExampleArea);
     app.component('ExampleSites', ExampleSites);
     app.component('ExampleSitesItem', ExampleSitesItem);
+    BackToTopButton(app);
   },
   setup() {
     const { frontmatter } = toRefs(useData());
