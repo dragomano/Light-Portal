@@ -12,9 +12,6 @@
 
 namespace LightPortal\Repositories;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface RepositoryInterface
 {
 	public function getAll(

@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\DummyArticleCards;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Articles\ArticleInterface;
@@ -77,12 +76,12 @@ class DummyArticle implements ArticleInterface
 				'is_new'    => random_int(0, 1),
 				'views'     => [
 					'num'   => random_int(0, 9999),
-					'title' => Lang::$txt['lp_views'],
+					'title' => __('lp_views'),
 					'after' => '',
 				],
 				'replies'   => [
 					'num'   => random_int(0, 9999),
-					'title' => Lang::$txt['lp_replies'],
+					'title' => __('lp_replies'),
 					'after' => '',
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',

@@ -12,7 +12,6 @@
 
 namespace LightPortal\DataHandlers\Imports;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Exception;
 use ZipArchive;
@@ -41,7 +40,7 @@ class PluginImport extends AbstractImport
 		if ($this->extractPackage() === false)
 			return;
 
-		Utils::$context['import_successful'] = Lang::$txt['lp_plugins_import_success'];
+		Utils::$context['import_successful'] = __('lp_plugins_import_success');
 	}
 
 	protected function extractPackage(): bool

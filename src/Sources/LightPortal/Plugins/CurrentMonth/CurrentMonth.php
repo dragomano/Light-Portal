@@ -8,14 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\CurrentMonth;
 
 use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -69,7 +68,7 @@ class CurrentMonth extends Block
 		if ($calendarData) {
 			$calendarData['block_id'] = $id;
 
-			$title = Lang::$txt['months_titles'][$calendarData[$this->name]] . ' ' . $calendarData['current_year'];
+			$title = __('months_titles')[$calendarData[$this->name]] . ' ' . $calendarData['current_year'];
 
 			// Auto title
 			if (isset(Utils::$context['preview_title']) && empty(Utils::$context['preview_title'])) {

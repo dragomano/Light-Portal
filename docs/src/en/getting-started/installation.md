@@ -5,7 +5,7 @@ order: 1
 
 # Installation
 
-There are no subtleties here. Light Portal can be installed like any other modification for SMF - through the package manager.
+Nothing tricky here. Light Portal can be installed like any other modification for SMF — through the package manager.
 
 ## Requirements
 
@@ -26,4 +26,4 @@ It is enough to download the package with the portal files from the [official ca
 
 ## Testing
 
-You can try our [Docker files](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) or your preffered LAMP/WAMP/MAMP app.
+You can try our [Docker files](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) or your preferred LAMP/WAMP/MAMP app.

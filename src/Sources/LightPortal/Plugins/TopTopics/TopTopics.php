@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TopTopics;
 
-use Bugo\Compat\Lang;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\SsiBlock;
@@ -104,7 +103,7 @@ class TopTopics extends SsiBlock
 
 			$countText = $parameters['show_numbers_only']
 				? $topic['num_' . $type]
-				: Lang::getTxt('lp_' . $type . '_set', [$type => $topic['num_' . $type]]);
+				: __('lp_' . $type . '_set', [$type => $topic['num_' . $type]]);
 
 			$dd->addHtml(Str::html('span', $countText));
 

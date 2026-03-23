@@ -95,7 +95,7 @@ final readonly class Page implements ActionInterface
 
 		Utils::$context['lp_page']['errors'] = [];
 		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit']) {
-			Utils::$context['lp_page']['errors'][] = Lang::$txt['lp_page_visible_but_disabled'];
+			Utils::$context['lp_page']['errors'][] = __('lp_page_visible_but_disabled');
 		}
 
 		Utils::$context['lp_page']['content'] = Content::parse(
@@ -166,6 +166,7 @@ final readonly class Page implements ActionInterface
 	{
 		if (empty(Utils::$context['lp_page'])) {
 			$this->changeErrorPage();
+
 			ErrorHandler::fatalLang('lp_page_not_found', false, status: 404);
 		}
 	}
@@ -176,16 +177,19 @@ final readonly class Page implements ActionInterface
 
 		if (empty($page['can_view'])) {
 			$this->changeErrorPage();
+
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
 		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$me->id) {
 			$this->changeErrorPage();
+
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
 		if (empty($page['status']) && empty($page['can_edit'])) {
 			$this->changeErrorPage();
+
 			ErrorHandler::fatalLang('lp_page_not_activated', false);
 		}
 	}
@@ -193,13 +197,13 @@ final readonly class Page implements ActionInterface
 	private function setPageTitleAndCanonicalUrl(?string $slug): void
 	{
 		if (empty($slug)) {
-			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: Lang::$txt['lp_portal'];
+			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: __('lp_portal');
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
 
-			$this->breadcrumbs()->add(Lang::$txt['lp_portal']);
+			$this->breadcrumbs()->add(__('lp_portal'));
 		} else {
-			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: Lang::$txt['lp_post_error_no_title'];
+			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: __('lp_post_error_no_title');
 
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
@@ -218,14 +222,19 @@ final readonly class Page implements ActionInterface
 	private function changeErrorPage(): void
 	{
 		Utils::$context['error_link'] = Config::$scripturl;
-		Lang::$txt['back'] = empty(Config::$modSettings['lp_frontpage_mode'])
-			? Lang::$txt['lp_forum']
-			: Lang::$txt['lp_portal'];
 
-		if (Lang::$txt['back'] === Lang::$txt['lp_portal']) {
-			Lang::$txt['back'] = Lang::$txt['lp_forum'];
+		Lang::setTxt(
+			'back',
+			empty(Config::$modSettings['lp_frontpage_mode'])
+				? __('lp_forum')
+				: __('lp_portal')
+		);
+
+		if (__('back') === __('lp_portal')) {
+			Lang::setTxt('back', __('lp_forum'));
+
 			Utils::$context['error_link'] .= '">'
-				. Lang::$txt['lp_portal']
+				. __('lp_portal')
 				. '</a> <a class="button floatnone" href="' . Config::$scripturl . '?action=forum';
 		}
 	}
@@ -389,27 +398,27 @@ final readonly class Page implements ActionInterface
 	private function preparedData(): array
 	{
 		$txtData = [
-			'pages'         => Lang::$txt['pages'],
-			'author'        => Lang::$txt['author'],
-			'reply'         => Lang::$txt['reply'],
-			'modify'        => Lang::$txt['modify'],
-			'modify_cancel' => Lang::$txt['modify_cancel'],
-			'remove'        => Lang::$txt['remove'],
-			'add_comment'   => Lang::$txt['lp_comment_placeholder'],
-			'post'          => Lang::$txt['post'],
-			'save'          => Lang::$txt['save'],
-			'title'         => Lang::$txt['lp_comments_title'],
-			'prev'          => Lang::$txt['prev'],
-			'next'          => Lang::$txt['next'],
-			'bold'          => Lang::$editortxt['bold'],
-			'italic'        => Lang::$editortxt['italic'],
-			'quote'         => Lang::$editortxt['insert_quote'],
-			'code'          => Lang::$editortxt['code'],
-			'link'          => Lang::$editortxt['insert_link'],
-			'image'         => Lang::$editortxt['insert_image'],
-			'list'          => Lang::$editortxt['bullet_list'],
-			'task_list'     => Lang::$txt['lp_task_list'],
-			'updated'       => Lang::$txt['lp_updated'],
+			'pages'         => __('pages'),
+			'author'        => __('author'),
+			'reply'         => __('reply'),
+			'modify'        => __('modify'),
+			'modify_cancel' => __('modify_cancel'),
+			'remove'        => __('remove'),
+			'add_comment'   => __('lp_comment_placeholder'),
+			'post'          => __('post'),
+			'save'          => __('save'),
+			'title'         => __('lp_comments_title'),
+			'prev'          => __('prev'),
+			'next'          => __('next'),
+			'bold'          => __('bold', var: 'editortxt'),
+			'italic'        => __('italic', var: 'editortxt'),
+			'quote'         => __('insert_quote', var: 'editortxt'),
+			'code'          => __('code', var: 'editortxt'),
+			'link'          => __('insert_link', var: 'editortxt'),
+			'image'         => __('insert_image', var: 'editortxt'),
+			'list'          => __('bullet_list', var: 'editortxt'),
+			'task_list'     => __('lp_task_list'),
+			'updated'       => __('lp_updated'),
 		];
 
 		$pageUrl = Utils::$context['lp_page']['url'];
@@ -419,7 +428,7 @@ final readonly class Page implements ActionInterface
 		}
 
 		$contextData = [
-			'locale'  => Lang::$txt['lang_dictionary'],
+			'locale'  => __('lang_dictionary'),
 			'pageUrl' => $pageUrl,
 			'charset' => Utils::$context['character_set'],
 		];

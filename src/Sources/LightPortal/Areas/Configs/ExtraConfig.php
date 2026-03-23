@@ -35,7 +35,7 @@ final class ExtraConfig extends AbstractConfig
 
 	public function show(): void
 	{
-		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_extra'];
+		Utils::$context['page_title'] = Utils::$context['settings_title'] = __('lp_extra');
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
 		$this->addDefaultValues([
@@ -89,7 +89,7 @@ final class ExtraConfig extends AbstractConfig
 			CheckConfig::make('lp_show_tags_on_page'),
 
 			SelectConfig::make('lp_page_og_image')
-				->setOptions(Lang::$txt['lp_page_og_image_set']),
+				->setOptions(__('lp_page_og_image_set')),
 
 			CheckConfig::make('lp_show_prev_next_links'),
 
@@ -101,8 +101,8 @@ final class ExtraConfig extends AbstractConfig
 
 	private function getCommentSettings(): array
 	{
-		Lang::$txt['lp_comment_block_set']['none']    = Lang::$txt['lp_comment_block_set'][0];
-		Lang::$txt['lp_comment_block_set']['default'] = Lang::$txt['lp_comment_block_set'][1];
+		Lang::setTxt(['lp_comment_block_set', 'none'], __('lp_comment_block_set')[0]);
+		Lang::setTxt(['lp_comment_block_set', 'default'], __('lp_comment_block_set')[1]);
 
 		unset(Lang::$txt['lp_comment_block_set'][0], Lang::$txt['lp_comment_block_set'][1]);
 		asort(Lang::$txt['lp_comment_block_set']);
@@ -112,11 +112,11 @@ final class ExtraConfig extends AbstractConfig
 			CallbackConfig::make('comment_settings_before'),
 
 			SelectConfig::make('lp_comment_block')
-				->setOptions(Lang::$txt['lp_comment_block_set'])
+				->setOptions(__('lp_comment_block_set'))
 				->setJavaScript('@change="comment_block = $event.target.value"'),
 
 			IntConfig::make('lp_time_to_change_comments')
-				->setPostInput(Lang::$txt['manageposts_minutes'])
+				->setPostInput(__('manageposts_minutes'))
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
 
 			IntConfig::make('lp_num_comments_per_page')
@@ -124,10 +124,10 @@ final class ExtraConfig extends AbstractConfig
 
 			SelectConfig::make('lp_comment_sorting')
 				->setOptions([
-					Lang::$txt['lp_sort_by_created'],
-					Lang::$txt['lp_sort_by_created_desc'],
-					Lang::$txt['lp_sort_by_updated'],
-					Lang::$txt['lp_sort_by_updated_desc'],
+					__('lp_sort_by_created'),
+					__('lp_sort_by_created_desc'),
+					__('lp_sort_by_updated'),
+					__('lp_sort_by_updated_desc'),
 				])
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
 
@@ -145,7 +145,7 @@ final class ExtraConfig extends AbstractConfig
 				->setMin(1),
 
 			SelectConfig::make('lp_permissions_default')
-				->setOptions(Lang::$txt['lp_permissions']),
+				->setOptions(__('lp_permissions')),
 
 			CheckConfig::make('lp_hide_blocks_in_acp'),
 		];
@@ -179,22 +179,25 @@ final class ExtraConfig extends AbstractConfig
 
 	private function getFontAwesomeSettings(): array
 	{
-		Lang::$txt['lp_fa_source_title'] .= ' ' . Str::html('img', [
-			'class' => 'floatright',
-			'src'   => 'https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded',
-			'alt'   => '',
-		]);
+		Lang::setTxt(
+			'lp_fa_source_title',
+			__('lp_fa_source_title') . Str::html('img', [
+				'class' => 'floatright',
+				'src'   => 'https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded',
+				'alt'   => '',
+			])
+		);
 
 		return [
 			TitleConfig::make('lp_fa_source_title'),
 
 			SelectConfig::make('lp_fa_source')
 				->setOptions([
-					'none'      => Lang::$txt['no'],
-					'css_cdn'   => Lang::$txt['lp_fa_source_css_cdn'],
-					'css_local' => Lang::$txt['lp_fa_source_css_local'],
-					'custom'    => Lang::$txt['lp_fa_custom'],
-					'kit'       => Lang::$txt['lp_fa_kit'],
+					'none'      => __('no'),
+					'css_cdn'   => __('lp_fa_source_css_cdn'),
+					'css_local' => __('lp_fa_source_css_local'),
+					'custom'    => __('lp_fa_custom'),
+					'kit'       => __('lp_fa_kit'),
 				])
 				->setOnChange('document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';
 					document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'),

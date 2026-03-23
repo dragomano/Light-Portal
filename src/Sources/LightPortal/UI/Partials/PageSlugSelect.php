@@ -13,7 +13,6 @@
 namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Lists\PageList;
 
 if (! defined('SMF'))
@@ -45,8 +44,8 @@ final class PageSlugSelect extends AbstractSelect
 	{
 		return [
 			'id'    => 'lp_frontpage_chosen_page',
-			'empty' => Lang::$txt['lp_frontpage_pages_no_items'],
-			'hint'  => Lang::$txt['no'],
+			'empty' => __('lp_frontpage_pages_no_items'),
+			'hint'  => __('no'),
 			'value' => $this->normalizeValue(Config::$modSettings['lp_frontpage_chosen_page'] ?? ''),
 		];
 	}

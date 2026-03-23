@@ -22,7 +22,7 @@ if (! function_exists('app')) {
 	/**
 	 * @template RequestedType
 	 * @param class-string<RequestedType>|string $service
-	 * @return RequestedType|mixed|\League\Container\Container
+	 * @return RequestedType|mixed|Container
 	 */
 	function app(string $service = ''): mixed
 	{
@@ -30,7 +30,7 @@ if (! function_exists('app')) {
 			return Container::getInstance();
 		}
 
-		return Container::get($service);
+		return Container::getInstance()->get($service);
 	}
 }
 

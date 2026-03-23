@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\ContentClass;
 
@@ -28,7 +27,7 @@ final class ContentClassSelect extends AbstractSelect
 		$data = [];
 		foreach ($this->params['data'] as $key => $template) {
 			$data[] = [
-				'label' => sprintf($template, empty($key) ? Lang::$txt['no'] : $key),
+				'label' => sprintf($template, empty($key) ? __('no') : $key),
 				'value' => $key,
 			];
 		}
@@ -43,7 +42,7 @@ final class ContentClassSelect extends AbstractSelect
 			'multiple' => false,
 			'search'   => false,
 			'wide'     => false,
-			'hint'     => Lang::$txt['no'],
+			'hint'     => __('no'),
 			'data'     => ContentClass::values() ?? [],
 			'value'    => Utils::$context['lp_block']['content_class'] ?? '',
 		];

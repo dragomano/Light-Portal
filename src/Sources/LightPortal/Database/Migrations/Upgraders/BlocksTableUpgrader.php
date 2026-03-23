@@ -17,7 +17,7 @@ use Laminas\Db\Sql\Expression;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class BlocksTableUpgrader extends AbstractTableUpgrader
+class BlocksTableUpgrader extends TableUpgrader
 {
 	protected string $tableName = 'lp_blocks';
 

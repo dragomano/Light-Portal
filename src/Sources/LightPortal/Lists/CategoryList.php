@@ -12,7 +12,6 @@
 
 namespace LightPortal\Lists;
 
-use Bugo\Compat\Lang;
 use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Traits\HasCache;
@@ -41,7 +40,7 @@ readonly class CategoryList implements ListInterface
 					'slug'     => 'uncategorized',
 					'icon'     => Icon::parse('fas folder-open'),
 					'priority' => 0,
-					'title'    => Lang::$txt['lp_no_category'],
+					'title'    => __('lp_no_category'),
 				]];
 
 				foreach ($items as $id => $item) {

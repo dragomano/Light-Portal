@@ -13,13 +13,12 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 
 class PageSlugColumn extends Column
 {
 	public static function make(string $name = 'slug', string $title = ''): static
 	{
-		return parent::make($name, $title ?: Lang::$txt['lp_slug'])
+		return parent::make($name, $title ?: __('lp_slug'))
 			->setData('slug', 'centertext')
 			->setSort('p.slug DESC', 'p.slug');
 	}

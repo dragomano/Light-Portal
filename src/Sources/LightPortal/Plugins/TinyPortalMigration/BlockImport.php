@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Expression;
 use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseBlockImport;
@@ -43,10 +42,10 @@ class BlockImport extends AbstractDatabaseBlockImport
 		return [
 			TitleColumn::make()
 				->setData('title', 'word_break'),
-			Column::make('type', Lang::$txt['lp_block_type'])
+			Column::make('type', __('lp_block_type'))
 				->setData('type', 'centertext')
 				->setSort('type DESC', 'type'),
-			Column::make('placement', Lang::$txt['lp_block_placement'])
+			Column::make('placement', __('lp_block_placement'))
 				->setData('placement', 'centertext')
 				->setSort('bar DESC', 'bar'),
 			CheckboxColumn::make(entity: 'blocks'),
@@ -73,7 +72,7 @@ class BlockImport extends AbstractDatabaseBlockImport
 		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'id'        => $row['id'],
-				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
+				'type'      => __('lp_' . $this->getType($row['type']))['title'],
 				'title'     => $row['title'],
 				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])],
 			];
@@ -131,8 +130,8 @@ class BlockImport extends AbstractDatabaseBlockImport
 	protected function getType(mixed $type): string
 	{
 		return match ($type) {
-			5  => ContentType::BBC->name(),
-			10 => ContentType::PHP->name(),
+			5       => ContentType::BBC->name(),
+			10      => ContentType::PHP->name(),
 			default => ContentType::HTML->name(),
 		};
 	}
@@ -140,11 +139,11 @@ class BlockImport extends AbstractDatabaseBlockImport
 	protected function getPlacement(int $col): string
 	{
 		return match ($col) {
-			1 => Placement::LEFT->name(),
-			2 => Placement::RIGHT->name(),
-			5 => Placement::FOOTER->name(),
-			6 => Placement::HEADER->name(),
-			7 => Placement::BOTTOM->name(),
+			1       => Placement::LEFT->name(),
+			2       => Placement::RIGHT->name(),
+			5       => Placement::FOOTER->name(),
+			6       => Placement::HEADER->name(),
+			7       => Placement::BOTTOM->name(),
 			default => Placement::TOP->name(),
 		};
 	}

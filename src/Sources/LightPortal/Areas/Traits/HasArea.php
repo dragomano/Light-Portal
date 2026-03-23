@@ -12,7 +12,6 @@
 
 namespace LightPortal\Areas\Traits;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\ContentType;
@@ -59,7 +58,7 @@ trait HasArea
 		$this->prepareIconList();
 		$this->prepareTopicList();
 
-		$title = TextField::make('title', Lang::$txt['lp_title'])
+		$title = TextField::make('title', __('lp_title'))
 			->setTab(Tab::CONTENT)
 			->setAttribute('x-model', 'title');
 
@@ -96,7 +95,7 @@ trait HasArea
 			(empty($prefix) ? '' : ($prefix . ' ')) . Utils::$context['preview_title'],
 			Utils::$context['right_to_left'] ? 'right' : 'left'
 		) . $this->getFloatSpan(
-			Lang::$txt['preview'],
+			__('preview'),
 			Utils::$context['right_to_left'] ? 'left' : 'right'
 		) . '<br>';
 	}

@@ -12,7 +12,6 @@
 
 namespace LightPortal\Enums;
 
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Traits\HasNames;
 
 enum PluginType
@@ -34,28 +33,37 @@ enum PluginType
 	case SEO;
 	case SSI;
 
-	public static function all(): array
+	public function color(): string
 	{
-		return Lang::$txt['lp_plugins_types'];
+		return match ($this) {
+			self::ARTICLE       => '#ef564f',
+			self::BLOCK         => '#667d99',
+			self::BLOCK_OPTIONS => '#ac7bd6',
+			self::COMMENT       => '#9354ca',
+			self::EDITOR        => '#48bf83',
+			self::FRONTPAGE     => '#d68b4f',
+			self::GAMES         => '#ff0000',
+			self::ICONS         => '#2a7750',
+			self::IMPEX         => '#2361ad',
+			self::OTHER         => '#414141',
+			self::PAGE_OPTIONS  => '#a39d47',
+			self::PARSER        => '#91ae26',
+			self::SEO           => '#c61a12',
+			self::SSI           => '#5f2c8c',
+		};
 	}
 
 	public static function colors(): array
 	{
-		return [
-			self::ARTICLE->name()       => '#ef564f',
-			self::BLOCK->name()         => '#667d99',
-			self::BLOCK_OPTIONS->name() => '#ac7bd6',
-			self::COMMENT->name()       => '#9354ca',
-			self::EDITOR->name()        => '#48bf83',
-			self::FRONTPAGE->name()     => '#d68b4f',
-			self::GAMES->name()         => '#ff0000',
-			self::ICONS->name()         => '#2a7750',
-			self::IMPEX->name()         => '#2361ad',
-			self::OTHER->name()         => '#414141',
-			self::PAGE_OPTIONS->name()  => '#a39d47',
-			self::PARSER->name()        => '#91ae26',
-			self::SEO->name()           => '#c61a12',
-			self::SSI->name()           => '#5f2c8c',
-		];
+		return array_column(
+			array_map(fn(self $type) => [$type->name(), $type->color()], self::cases()),
+			1,
+			0
+		);
+	}
+
+	public static function all(): array
+	{
+		return __('lp_plugins_types');
 	}
 }

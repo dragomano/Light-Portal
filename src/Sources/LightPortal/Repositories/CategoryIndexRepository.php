@@ -12,7 +12,6 @@
 
 namespace LightPortal\Repositories;
 
-use Bugo\Compat\Lang;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
@@ -62,7 +61,7 @@ class CategoryIndexRepository extends AbstractIndexRepository
 					CASE
 						WHEN p.category_id = 0 THEN ?
 						ELSE COALESCE(NULLIF(t.title, ''), tf.title, '')
-					END", [Lang::$txt['lp_no_category']]
+					END", [__('lp_no_category')]
 				),
 				'description' => new Expression("
 					CASE

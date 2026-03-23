@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Tasks\BackgroundTask;
-use LightPortal\Database\Operations\PortalDelete;
-use LightPortal\Database\Operations\PortalInsert;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\Operations\PortalUpdate;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedDelete;
+use Laminas\Db\Extra\Sql\Operations\ExtendedInsert;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
+use Laminas\Db\Extra\Sql\Operations\ExtendedUpdate;
 use LightPortal\Database\PortalAdapterInterface;
-use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Repositories\CommentRepositoryInterface;
 use LightPortal\Tasks\Maintainer;
@@ -25,9 +25,9 @@ describe('Maintainer::execute', function () {
         AppMockRegistry::set(PortalSqlInterface::class, $this->sql);
         AppMockRegistry::set(CommentRepositoryInterface::class, $this->commentRepository);
 
-        $this->makeResult = function (array $rows): PortalResultInterface {
+        $this->makeResult = function (array $rows): ExtendedResultInterface {
             $iterator = new ArrayIterator($rows);
-            $result = mock(PortalResultInterface::class);
+            $result = mock(ExtendedResultInterface::class);
 
             $result->shouldReceive('current')->andReturnUsing(function () use ($iterator) {
                 return $iterator->current();
@@ -54,34 +54,34 @@ describe('Maintainer::execute', function () {
     });
 
     it('runs maintenance steps and schedules next task', function () {
-        $delete = mock(PortalDelete::class);
+        $delete = mock(ExtendedDelete::class);
         $delete->shouldReceive('where')->andReturnSelf();
 
-        $select1 = mock(PortalSelect::class);
+        $select1 = mock(ExtendedSelect::class);
         $select1->shouldReceive('from')->andReturnSelf();
         $select1->shouldReceive('columns')->andReturnSelf();
         $select1->shouldReceive('join')->andReturnSelf();
         $select1->shouldReceive('where')->andReturnSelf();
 
-        $select2 = mock(PortalSelect::class);
+        $select2 = mock(ExtendedSelect::class);
         $select2->shouldReceive('from')->andReturnSelf();
         $select2->shouldReceive('columns')->andReturnSelf();
         $select2->shouldReceive('join')->andReturnSelf();
         $select2->shouldReceive('group')->andReturnSelf();
         $select2->shouldReceive('order')->andReturnSelf();
 
-        $select3 = mock(PortalSelect::class);
+        $select3 = mock(ExtendedSelect::class);
         $select3->shouldReceive('from')->andReturnSelf();
         $select3->shouldReceive('columns')->andReturnSelf();
         $select3->shouldReceive('join')->andReturnSelf();
         $select3->shouldReceive('group')->andReturnSelf();
         $select3->shouldReceive('order')->andReturnSelf();
 
-        $update = mock(PortalUpdate::class);
+        $update = mock(ExtendedUpdate::class);
         $update->shouldReceive('set')->andReturnSelf();
         $update->shouldReceive('where')->andReturnSelf();
 
-        $insert = mock(PortalInsert::class);
+        $insert = mock(ExtendedInsert::class);
         $insert->shouldReceive('values')->andReturnSelf();
 
         $adapter = mock(PortalAdapterInterface::class);

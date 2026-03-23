@@ -17,7 +17,7 @@ use Laminas\Db\Sql\Expression;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PagesTableUpgrader extends AbstractTableUpgrader
+class PagesTableUpgrader extends TableUpgrader
 {
 	protected string $tableName = 'lp_pages';
 

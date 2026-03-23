@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TagList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Actions\TagIndex;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Tab;
@@ -80,8 +79,9 @@ class TagList extends Block
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
-		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler')) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['ok' => 'optimus_keywords'])
@@ -127,7 +127,7 @@ class TagList extends Block
 		}
 
 		if (! $tagList) {
-			echo Lang::$txt['lp_no_tags'];
+			echo __('lp_no_tags');
 
 			return;
 		}

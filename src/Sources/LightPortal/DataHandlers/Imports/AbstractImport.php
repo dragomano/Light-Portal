@@ -12,7 +12,6 @@
 namespace LightPortal\DataHandlers\Imports;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSqlInterface;
@@ -59,14 +58,15 @@ abstract class AbstractImport extends DataHandler
 
 	protected function setupUi(): void
 	{
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_' . $this->entity . '_import'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_' . $this->entity . '_import'];
-		Utils::$context['page_area_info'] = Lang::$txt['lp_' . $this->entity . '_import_info'];
+		Utils::$context['page_title']      = __('lp_portal') . ' - ' . __('lp_' . $this->entity . '_import');
+		Utils::$context['page_area_title'] = __('lp_' . $this->entity . '_import');
+		Utils::$context['page_area_info']  = __('lp_' . $this->entity . '_import_info');
+
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_' . $this->entity . ';sa=import';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_' . $this->entity . '_import_description'],
+			'description' => __('lp_' . $this->entity . '_import_description'),
 		];
 
 		Utils::$context['lp_file_type'] = 'text/xml';

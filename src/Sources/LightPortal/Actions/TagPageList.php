@@ -27,8 +27,10 @@ if (! defined('SMF'))
 
 class TagPageList extends AbstractPageList
 {
-	public function __construct(protected CardListInterface $cardList, TagPageArticleService $articleService)
-	{
+	public function __construct(
+		protected CardListInterface $cardList,
+		TagPageArticleService $articleService
+	) {
 		parent::__construct($cardList, $articleService);
 	}
 
@@ -41,17 +43,22 @@ class TagPageList extends AbstractPageList
 		$tags = app(TagList::class)();
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = PortalSubAction::TAGS->url();
-			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
+
+			Lang::setTxt('back', __('lp_all_page_tags'));
+
 			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
 
 		$tag = $tags[$tag['id']];
-		Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_tags_by_key'], $tag['title']);
+
+		Utils::$context['page_title'] = sprintf(__('lp_all_tags_by_key'), $tag['title']);
+
 		Utils::$context['canonical_url'] = PortalSubAction::TAGS->url() . ';id=' . $tag['id'];
+
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()
-			->add(Lang::$txt['lp_all_page_tags'], PortalSubAction::TAGS->url())
+			->add(__('lp_all_page_tags'), PortalSubAction::TAGS->url())
 			->add($tag['title'], before: $tag['icon']);
 
 		$this->cardList->show($this);

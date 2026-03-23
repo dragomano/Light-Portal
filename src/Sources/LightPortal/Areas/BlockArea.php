@@ -21,7 +21,6 @@ use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
-use LightPortal\Plugins\Block;
 use LightPortal\Repositories\BlockRepositoryInterface;
 use LightPortal\UI\TemplateLoader;
 use LightPortal\UI\Fields\CheckboxField;
@@ -106,9 +105,12 @@ final class BlockArea extends AbstractArea
 
 	protected function setupAdditionalAddContext(): void
 	{
-		Lang::$txt['lp_blocks_add_instruction'] = sprintf(
-			Lang::$txt['lp_blocks_add_instruction'],
-			Config::$scripturl . '?action=admin;area=lp_plugins'
+		Lang::setTxt(
+			'lp_blocks_add_instruction',
+			sprintf(
+				__('lp_blocks_add_instruction'),
+				Config::$scripturl . '?action=admin;area=lp_plugins'
+			)
 		);
 
 		Utils::$context['lp_current_block']['placement'] = $this->request()->get('placement') ?: 'top';
@@ -153,14 +155,14 @@ final class BlockArea extends AbstractArea
 
 	protected function prepareSpecificFields(): void
 	{
-		TextField::make('description', Lang::$txt['lp_block_note'])
+		TextField::make('description', __('lp_block_note'))
 			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_block']['description'] ?? '');
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
 			if (Utils::$context['lp_block']['type'] !== ContentType::BBC->name()) {
-				TextareaField::make('content', Lang::$txt['lp_content'])
+				TextareaField::make('content', __('lp_content'))
 					->setTab(Tab::CONTENT)
 					->setValue($this->prepareContent(Utils::$context['lp_block']));
 			} else {
@@ -168,38 +170,38 @@ final class BlockArea extends AbstractArea
 			}
 		}
 
-		CustomField::make('placement', Lang::$txt['lp_block_placement'])
+		CustomField::make('placement', __('lp_block_placement'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(SelectFactory::placement(...));
 
-		CustomField::make('permissions', Lang::$txt['edit_permissions'])
+		CustomField::make('permissions', __('edit_permissions'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => SelectFactory::permission(['type' => 'block']));
 
-		CustomField::make('areas', Lang::$txt['lp_block_areas'])
+		CustomField::make('areas', __('lp_block_areas'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setDescription($this->getAreasInfo())
 			->setValue(SelectFactory::area(...));
 
-		CustomField::make('icon', Lang::$txt['current_icon'])
+		CustomField::make('icon', __('current_icon'))
 			->setTab(Tab::APPEARANCE)
 			->setValue(SelectFactory::icon(...));
 
-		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
+		CustomField::make('title_class', __('lp_block_title_class'))
 			->setTab(Tab::APPEARANCE)
 			->setValue(SelectFactory::titleClass(...));
 
-		if (Block::showContentClassField(Utils::$context['lp_block']['type'])) {
-			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
+		if ($this->shouldShowContentClassField()) {
+			CustomField::make('content_class', __('lp_block_content_class'))
 				->setTab(Tab::APPEARANCE)
 				->setValue(SelectFactory::contentClass(...));
 		}
 
-		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])
+		CheckboxField::make('hide_header', __('lp_block_hide_header'))
 			->setValue(Utils::$context['lp_block']['options']['hide_header']);
 
 		if (isset(Utils::$context['lp_block']['options']['link_in_title'])) {
-			UrlField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
+			UrlField::make('link_in_title', __('lp_block_link_in_title'))
 				->setValue(Utils::$context['lp_block']['options']['link_in_title']);
 		}
 	}
@@ -308,14 +310,17 @@ final class BlockArea extends AbstractArea
 			'topic=3|7',
 		];
 
-		Lang::$txt['lp_block_areas_values'][BlockAreaType::CUSTOM_ACTION->name()] = sprintf(
-			Lang::$txt['lp_block_areas_values'][BlockAreaType::CUSTOM_ACTION->name()],
-			'pm,agreement,search'
+		Lang::setTxt(
+			['lp_block_areas_values', BlockAreaType::CUSTOM_ACTION->name()],
+			sprintf(
+				__('lp_block_areas_values')[BlockAreaType::CUSTOM_ACTION->name()],
+				'pm,agreement,search'
+			)
 		);
 
 		$descriptions = [];
 		foreach (BlockAreaType::cases() as $type) {
-			$descriptions[] = Lang::$txt['lp_block_areas_values'][$type->name()];
+			$descriptions[] = __('lp_block_areas_values')[$type->name()];
 		}
 
 		Utils::$context['lp_possible_areas'] = array_combine($exampleAreas, $descriptions);
@@ -337,19 +342,26 @@ final class BlockArea extends AbstractArea
 		foreach ($plugins as $addon) {
 			$addon = Str::getSnakeName($addon);
 
-			if (! isset(Lang::$txt['lp_' . $addon]['title']) || isset(Utils::$context['lp_all_blocks'][$addon]))
+			if (! isset(__('lp_' . $addon)['title']) || isset(Utils::$context['lp_all_blocks'][$addon]))
 				continue;
 
 			Utils::$context['lp_all_blocks'][$addon] = [
 				'type'  => $addon,
 				'icon'  => Utils::$context['lp_loaded_addons'][$addon]['icon'],
-				'title' => Lang::$txt['lp_' . $addon]['title'],
-				'desc'  => Lang::$txt['lp_' . $addon]['block_desc'] ?? Lang::$txt['lp_' . $addon]['description'],
+				'title' => __('lp_' . $addon)['title'],
+				'desc'  => __('lp_' . $addon)['block_desc'] ?? __('lp_' . $addon)['description'],
 			];
 		}
 
 		$titles = array_column(Utils::$context['lp_all_blocks'], 'title');
 		array_multisort($titles, SORT_ASC, Utils::$context['lp_all_blocks']);
+	}
+
+	private function shouldShowContentClassField(): bool
+	{
+		$type = Utils::$context['lp_block']['type'];
+
+		return ! empty(Utils::$context['lp_loaded_addons'][$type]['showContentClass']);
 	}
 
 	private function getRepository(): BlockRepositoryInterface

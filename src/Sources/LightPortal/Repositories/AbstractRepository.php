@@ -14,13 +14,13 @@ namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Msg;
+use Bugo\Compat\Parser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Exception;
+use Laminas\Db\Extra\Sql\TransactionInterface;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Enums\ContentType;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Utils\Language;
@@ -45,7 +45,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected string $entity;
 
-	protected PortalTransactionInterface $transaction;
+	protected TransactionInterface $transaction;
 
 	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
 	{
@@ -83,8 +83,7 @@ abstract class AbstractRepository implements RepositoryInterface
 			return;
 
 		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
-
-		Msg::preparseCode($entity['content']);
+		$entity['content'] = Parser::sanitize($entity['content']);
 	}
 
 	protected function saveTranslations(array $data, bool $replace = false): void

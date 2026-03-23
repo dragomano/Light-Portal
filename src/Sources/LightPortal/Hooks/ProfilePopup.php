@@ -12,7 +12,6 @@
 
 namespace LightPortal\Hooks;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 
 if (! defined('SMF'))
@@ -39,7 +38,7 @@ class ProfilePopup
 				[
 					'menu'  => 'info',
 					'area'  => 'lp_my_pages',
-					'title' => Lang::$txt['lp_my_pages']
+					'title' => __('lp_my_pages')
 				]
 			],
 			array_slice($items, $counter, null, true)

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\Giscus;
@@ -62,7 +62,7 @@ class Giscus extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_comment_block_set'][$this->name] = 'Giscus';
+		Lang::setTxt(['lp_comment_block_set', $this->name], 'Giscus');
 	}
 
 	public function addSettings(Event $e): void
@@ -117,7 +117,7 @@ class Giscus extends Plugin
 				data-emit-metadata="0"
 				data-input-position="bottom"
 				data-theme="' . $this->context['theme'] . '"
-				data-lang="' . Lang::$txt['lang_dictionary'] . '"
+				data-lang="' . __('lang_dictionary') . '"
 				data-loading="lazy"
 				crossorigin="anonymous"
 				async

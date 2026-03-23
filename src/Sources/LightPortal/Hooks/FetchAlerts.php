@@ -13,7 +13,6 @@
 namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Enums\AlertAction;
 use LightPortal\Utils\Str;
@@ -32,7 +31,7 @@ class FetchAlerts
 
 				if ($alert['sender_id'] !== User::$me->id) {
 					$alerts[$id]['icon'] = Str::html('span', ['class' => 'alert_icon main_icons ' . $icon]);
-					$alerts[$id]['text'] = Lang::getTxt(
+					$alerts[$id]['text'] = __(
 						'alert_' . $alert['content_type'] . '_' . $alert['content_action'],
 						['gender' => $alert['extra']['sender_gender']]
 					);

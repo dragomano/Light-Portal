@@ -28,7 +28,7 @@ class AlertTypes
 
 	public function __invoke(array &$types): void
 	{
-		Lang::$txt['alert_group_light_portal'] = Lang::$txt['lp_portal'];
+		Lang::setTxt('alert_group_light_portal', __('lp_portal'));
 
 		if (Setting::getCommentBlock() === 'default') {
 			$types['light_portal'] = [

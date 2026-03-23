@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\HelloPortal;
@@ -60,7 +60,7 @@ class HelloPortal extends Plugin
 
 		Utils::$context['lp_reference_links'][] = [
 			'icon'   => 'fas fa-circle-info',
-			'text'   => Lang::$txt['lp_hello_portal']['tour_button'],
+			'text'   => __('lp_hello_portal')['tour_button'],
 			'params' => 'x-on:click.prevent="runTour()" x-data',
 		];
 
@@ -85,9 +85,9 @@ class HelloPortal extends Plugin
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
-				nextLabel: ' . Utils::escapeJavaScript(Lang::$txt['admin_next']) . ',
-				prevLabel: ' . Utils::escapeJavaScript(Lang::$txt['back']) . ',
-				doneLabel: ' . Utils::escapeJavaScript(Lang::$txt['attach_dir_ok']) . ',
+				nextLabel: ' . Utils::escapeJavaScript(__('admin_next')) . ',
+				prevLabel: ' . Utils::escapeJavaScript(__('back')) . ',
+				doneLabel: ' . Utils::escapeJavaScript(__('attach_dir_ok')) . ',
 				steps: [' . $this->steps . '],
 				showProgress: ' . (
 			empty($this->context['show_progress']) ? 'false' : 'true'
@@ -156,12 +156,9 @@ class HelloPortal extends Plugin
 
 	private function isCurrentArea(string $area, string $sa = 'main', bool $canBeEmpty = true): bool
 	{
-		return $this->request()->has('area') && $this->request()->get('area') === $area &&
-			(
-			$canBeEmpty
-				? ($this->sa === $sa || empty($this->sa))
-				: $this->sa === $sa
-			);
+		return $this->request()->has('area')
+			&& $this->request()->get('area') === $area
+			&& ($canBeEmpty ? ($this->sa === $sa || empty($this->sa)) : $this->sa === $sa);
 	}
 
 	private function canShowTourButton(): bool

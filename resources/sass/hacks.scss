@@ -1,218 +1,218 @@
-@use "functions";
-@use "variables";
+@use 'functions';
+@use 'variables';
 
 .block_bbc,
 .block_html,
 .block_markdown {
-	.videocontainer {
-		margin: 0 auto;
-	}
+  .videocontainer {
+    margin: 0 auto;
+  }
 }
 
 .preview .button {
-	float: none !important;
+  float: none !important;
 }
 
 #info_center {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #admin_form_wrapper {
-	p {
-		&.errorbox {
-			margin: 0;
-		}
-	}
+  p {
+    &.errorbox {
+      margin: 0;
+    }
+  }
 }
 
 .descbox {
-	details {
-		code {
-			white-space: break-spaces !important;
-		}
-	}
+  details {
+    code {
+      white-space: break-spaces !important;
+    }
+  }
 }
 
 .errorbox {
-	color: initial !important;
+  color: initial !important;
 }
 
 .action_admin {
-	&.sceditor-maximize {
-		#main_menu,
-		#genericmenu {
-			display: none;
-		}
-	}
+  &.sceditor-maximize {
+    #main_menu,
+    #genericmenu {
+      display: none;
+    }
+  }
 }
 
 #lp_post {
-	.centertext {
-		.button {
-			margin-left: 4px;
-		}
-	}
+  .centertext {
+    .button {
+      margin-left: 4px;
+    }
+  }
 
-	@media (max-width: 600px) {
-		.button {
-			float: none !important;
-			width: 100%;
-			margin-left: 0 !important;
-		}
-	}
+  @media (max-width: 600px) {
+    .button {
+      float: none !important;
+      width: 100%;
+      margin-left: 0 !important;
+    }
+  }
 }
 
 .col-xs-12 {
-	.pagesection {
-		.button {
-			margin: 2px;
-		}
-	}
+  .pagesection {
+    .button {
+      margin: 2px;
+    }
+  }
 }
 
 .sceditor-container {
-	position: relative;
-	min-height: 300px !important;
+  position: relative;
+  min-height: 300px !important;
 }
 
 .priority,
 .status,
 .actions {
-	span {
-		@include functions.pointer;
-	}
+  span {
+    @include functions.pointer;
+  }
 }
 
 .lp_default_blocks,
 .lp_additional_blocks {
-	margin-bottom: 10px !important;
+  margin-bottom: 10px !important;
 
-	th {
-		&.icon,
-		&.actions {
-			width: 8%;
-		}
-	}
+  th {
+    &.icon,
+    &.actions {
+      width: 8%;
+    }
+  }
 }
 
 .handle {
-	cursor: grab;
+  cursor: grab;
 }
 
 .additional_row {
-	.button {
-		margin-left: 2px;
-	}
+  .button {
+    margin-left: 2px;
+  }
 }
 
 @media (max-width: 887px) {
-	.information {
-		.righttext {
-			text-align: center;
-		}
-	}
-	.descbox {
-		&.alternative2 {
-			display: block;
-		}
-	}
+  .information {
+    .righttext {
+      text-align: center;
+    }
+  }
+  .descbox {
+    &.alternative2 {
+      display: block;
+    }
+  }
 }
 
 /* Animations */
 @-webkit-keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Virtual Select */
 .vscomp-value-tag {
-	background: variables.$tag-bg-color;
-	border: 0 solid variables.$tag-border-color;
-	color: variables.$tag-color;
-	margin: 0 3px 3px 0;
-	padding: 2px 6px;
-	@include functions.pointer;
-	@include functions.bRadius(0);
+  background: variables.$tag-bg-color;
+  border: 0 solid variables.$tag-border-color;
+  color: variables.$tag-color;
+  margin: 0 3px 3px 0;
+  padding: 2px 6px;
+  @include functions.pointer;
+  @include functions.bRadius(0);
 
-	&[data-value^="!"] {
-		background: variables.$ignore-action;
-	}
+  &[data-value^='!'] {
+    background: variables.$ignore-action;
+  }
 }
 .vscomp-value {
-	height: auto !important;
-	width: 98%;
+  height: auto !important;
+  width: 98%;
 
-	div {
-		margin: 0 !important;
-	}
+  div {
+    margin: 0 !important;
+  }
 
-	i {
-		margin-right: .5em;
-	}
+  i {
+    margin-right: 0.5em;
+  }
 }
 .vscomp-option-text {
-	div {
-		margin: 0 !important;
-	}
+  div {
+    margin: 0 !important;
+  }
 }
 .vscomp-search-input {
-	box-shadow: none;
+  box-shadow: none;
 }
 .pop-comp-wrapper {
-	flex-wrap: nowrap !important;
+  flex-wrap: nowrap !important;
 }
 .vscomp-value-tag-content {
-	width: auto !important;
+  width: auto !important;
 }
 
 /* Svelecte */
 .sv_dropdown {
-	&.is-open {
-		position: initial !important;
-	}
+  &.is-open {
+    position: initial !important;
+  }
 }
 
 /* RTL */
-[dir=rtl] {
-	.gear {
-		right: -5px !important;
-	}
+[dir='rtl'] {
+  .gear {
+    right: -5px !important;
+  }
 
-	i[class] {
-		transform: scaleX(-1);
-	}
+  i[class] {
+    transform: scaleX(-1);
+  }
 }
 
 /* Icon colors */
 .fa-envelope-open-text {
-	color: red;
+  color: red;
 }
 .fa-floppy-disk {
-	color: green;
+  color: green;
 }
 
 /* Screen readers only */
 .sr-only {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0,0,0,0);
-	white-space: nowrap;
-	border: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

@@ -6,8 +6,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Laminas\Db\Extra\Sql\TransactionInterface;
 use LightPortal\Database\PortalSql;
-use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
@@ -50,7 +50,7 @@ beforeEach(function() {
 
     $this->sql = new PortalSql($adapter);
 
-    $transactionMock = mock(PortalTransactionInterface::class);
+    $transactionMock = mock(TransactionInterface::class);
     $transactionMock->shouldReceive('begin')->andReturnUsing(function () use ($adapter) {
         $adapter->getDriver()->getConnection()->beginTransaction();
     });

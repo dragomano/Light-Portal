@@ -8,14 +8,14 @@
 
 	<div class="cat_bar">
 		<h3 class="catbg">
-            <span class="floatright">
-                <a href="{{ $add_link }}" x-data>
-                    @php
+			<span class="floatright">
+				<a href="{{ $add_link }}" x-data>
+					@php
 						$icon = Icon::get('plus', $txt['lp_blocks_add']);
 						echo str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" class=', $icon);
 					@endphp
-                </a>
-            </span>
+				</a>
+			</span>
 			{{ $context['lp_block_placements'][$placement] ?? $txt['not_applicable'] }}{{ is_array($blocks) ? ' (' . count($blocks) . ')' : '' }}
 		</h3>
 	</div>

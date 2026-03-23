@@ -13,14 +13,13 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use LightPortal\Utils\Icon;
 
 class NumViewsColumn extends Column
 {
 	public static function make(string $name = 'num_views', string $title = ''): static
 	{
-		return parent::make($name, $title ?: Icon::get('views', Lang::$txt['lp_views']))
+		return parent::make($name, $title ?: Icon::get('views', __('lp_views')))
 			->setData('num_views', 'centertext')
 			->setSort('p.num_views DESC', 'p.num_views');
 	}

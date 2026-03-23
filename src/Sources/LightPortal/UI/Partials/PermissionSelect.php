@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
@@ -23,7 +22,7 @@ final class PermissionSelect extends AbstractSelect
 	public function getData(): array
 	{
 		$data = [];
-		foreach (Lang::$txt['lp_permissions'] as $level => $title) {
+		foreach (__('lp_permissions') as $level => $title) {
 			if (empty(Utils::$context['user']['is_admin']) && empty($level)) {
 				continue;
 			}

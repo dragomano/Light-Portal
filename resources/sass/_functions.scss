@@ -1,28 +1,28 @@
 @mixin pointer() {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 @mixin valign($align: middle) {
-	vertical-align: $align;
+  vertical-align: $align;
 }
 
 @mixin bRadius($topLeft: 6px, $topRight: null, $bottomRight: null, $bottomLeft: null) {
-	@if $topRight == null and $bottomRight == null and $bottomLeft == null and $topLeft != null and $topLeft >= 0 {
-		border-radius: $topLeft;
-	} @else {
-		$tl: if($topLeft == null or $topLeft < 0, 0, $topLeft);
-		$tr: if($topRight == null or $topRight < 0, 0, $topRight);
-		$br: if($bottomRight == null or $bottomRight < 0, 0, $bottomRight);
-		$bl: if($bottomLeft == null or $bottomLeft < 0, 0, $bottomLeft);
+  @if $topRight == null and $bottomRight == null and $bottomLeft == null and $topLeft != null and $topLeft >= 0 {
+    border-radius: $topLeft;
+  } @else {
+    $tl: if($topLeft == null or $topLeft < 0, 0, $topLeft);
+    $tr: if($topRight == null or $topRight < 0, 0, $topRight);
+    $br: if($bottomRight == null or $bottomRight < 0, 0, $bottomRight);
+    $bl: if($bottomLeft == null or $bottomLeft < 0, 0, $bottomLeft);
 
-		@if $tl == $tr and $tr == $br and $br == $bl {
-			border-radius: $tl;
-		} @else if $tl == $br and $tr == $bl {
-			border-radius: $tl $tr;
-		} @else if $tr == $bl {
-			border-radius: $tl $tr $br;
-		} @else {
-			border-radius: $tl $tr $br $bl;
-		}
-	}
+    @if $tl == $tr and $tr == $br and $br == $bl {
+      border-radius: $tl;
+    } @else if $tl == $br and $tr == $bl {
+      border-radius: $tl $tr;
+    } @else if $tr == $bl {
+      border-radius: $tl $tr $br;
+    } @else {
+      border-radius: $tl $tr $br $bl;
+    }
+  }
 }

@@ -34,4 +34,37 @@ describe('PageButtonsRow', function () {
             ->toContain('name="mass_actions"')
             ->toContain('value="Go"');
     });
+
+    it('renders toggle option when user has approve_pages permission', function () {
+        User::$me->permissions = ['light_portal_approve_pages'];
+        Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
+
+        $row = PageButtonsRow::make();
+        $value = $row->toArray()['value'];
+
+        expect($value)->toContain('toggle')
+            ->and($value)->toContain('Toggle');
+    });
+
+    it('renders promote_up option when frontpage mode is chosen_pages', function () {
+        User::$me->permissions = ['light_portal_approve_pages'];
+        Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
+
+        $row = PageButtonsRow::make();
+        $value = $row->toArray()['value'];
+
+        expect($value)->toContain('promote_up')
+            ->and($value)->toContain('Promote');
+    });
+
+    it('renders promote_down option when frontpage mode is chosen_pages', function () {
+        User::$me->permissions = ['light_portal_approve_pages'];
+        Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
+
+        $row = PageButtonsRow::make();
+        $value = $row->toArray()['value'];
+
+        expect($value)->toContain('promote_down')
+            ->and($value)->toContain('Remove');
+    });
 });

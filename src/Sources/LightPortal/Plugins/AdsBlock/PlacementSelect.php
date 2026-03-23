@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\AdsBlock;
 
-use Bugo\Compat\Lang;
 use LightPortal\UI\Partials\AbstractSelect;
 
 if (! defined('LP_NAME'))
@@ -40,7 +39,7 @@ final class PlacementSelect extends AbstractSelect
 			'id'       => 'ads_placement',
 			'multiple' => true,
 			'search'   => false,
-			'hint'     => Lang::$txt['lp_block_placement_select'],
+			'hint'     => __('lp_block_placement_select'),
 			'data'     => Placement::all(),
 			'value'    => $this->normalizeValue($this->params['placements']),
 		];

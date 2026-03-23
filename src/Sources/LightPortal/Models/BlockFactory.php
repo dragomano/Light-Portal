@@ -12,6 +12,7 @@
 
 namespace LightPortal\Models;
 
+use Bugo\Compat\Utils;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\ContentClass;
 use LightPortal\Enums\Permission;
@@ -40,12 +41,19 @@ class BlockFactory extends AbstractFactory
 
 		$data['title_class'] ??= TitleClass::first();
 
-		$data['content_class'] ??= ContentClass::first();
+		if ($this->shouldShowContentClass($data['type'] ?? '')) {
+			$data['content_class'] ??= ContentClass::first();
+		}
 
 		if (! empty($data['description'])) {
 			Str::cleanBbcode($data['description']);
 		}
 
 		return $data;
+	}
+
+	private function shouldShowContentClass(string $type): bool
+	{
+		return Utils::$context['lp_loaded_addons'][$type]['showContentClass'] ?? true;
 	}
 }

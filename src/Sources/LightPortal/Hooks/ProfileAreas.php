@@ -13,7 +13,6 @@
 namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Utils\Traits\HasRequest;
 
@@ -30,7 +29,7 @@ class ProfileAreas
 			return;
 
 		$areas['info']['areas']['lp_my_pages'] = [
-			'label'      => Lang::$txt['lp_my_pages'],
+			'label'      => __('lp_my_pages'),
 			'custom_url' => Config::$scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request()->get('area') === 'popup',

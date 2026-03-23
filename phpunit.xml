@@ -36,7 +36,7 @@
 			<file>src/Sources/LightPortal/Database/Operations/index.php</file>
 			<file>src/Sources/LightPortal/Database/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/Exports/index.php</file>
-			<file>src/Sources/LightPortal/DataHandlers/Imports/Custom/index.php</file>
+			<file>src/Sources/LightPortal/DataHandlers/Imports/Database/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/Imports/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/Traits/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/index.php</file>

@@ -25,7 +25,7 @@ class LangHandler
 
 	public function handle(string $path, string $snakeName): void
 	{
-		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
+		if (Lang::txtExists(self::PREFIX . $snakeName))
 			return;
 
 		if (! isset(User::$me)) {
@@ -35,12 +35,16 @@ class LangHandler
 		$userLang  = Language::getNameFromLocale(User::$me->language);
 		$languages = array_unique([Language::FALLBACK, $userLang]);
 
-		// @TODO This variable is still needed in some templates
-		Lang::$txt[self::PREFIX . $snakeName] = array_merge(
-			...array_map(function ($lang) use ($path) {
-				$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
-				return is_file($langFile) ? require $langFile : [];
-			}, $languages)
+		// @TODO This txt variable is still needed in some templates
+		Lang::setTxt(
+			self::PREFIX . $snakeName,
+			array_merge(
+				...array_map(function ($lang) use ($path) {
+					$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
+
+					return is_file($langFile) ? require $langFile : [];
+				}, $languages)
+			)
 		);
 	}
 }

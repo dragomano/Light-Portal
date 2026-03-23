@@ -13,7 +13,6 @@
 namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PortalHook;
@@ -37,7 +36,7 @@ class Credits extends AbstractHook
 
 			Utils::$context['robot_no_index'] = true;
 
-			Utils::$context['page_title'] = LP_NAME . ' - ' . Lang::$txt['lp_used_components'];
+			Utils::$context['page_title'] = LP_NAME . ' - ' . __('lp_used_components');
 
 			TemplateLoader::fromFile('credits');
 
@@ -47,11 +46,11 @@ class Credits extends AbstractHook
 
 	private function getLink(): string
 	{
-		$link = Lang::$txt['lang_dictionary'] === 'ru'
+		$link = __('lang_dictionary') === 'ru'
 			? 'https://dragomano.ru/mods/light-portal'
 			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		$license = Lang::$txt['credits_license'] . ': ' . Str::html('a', [
+		$license = __('credits_license') . ': ' . Str::html('a', [
 				'href'   => 'https://github.com/dragomano/Light-Portal/blob/master/LICENSE',
 				'target' => '_blank',
 				'rel'    => 'noopener',

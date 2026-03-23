@@ -128,16 +128,16 @@ final class PageArea extends AbstractArea
 		$key = User::$me->allowedTo('light_portal_manage_pages_any') && ! $this->userId ? 'all' : 'own';
 
 		$description = implode('', [
-			Lang::$txt['lp_pages_manage_' . $key . '_pages'] . ' ',
-			Lang::$txt['lp_pages_manage_description'],
+			__('lp_pages_manage_' . $key . '_pages') . ' ',
+			__('lp_pages_manage_description'),
 		]);
 
 		if ($this->isModerate) {
-			$description = Lang::$txt['lp_pages_unapproved_description'];
+			$description = __('lp_pages_unapproved_description');
 		}
 
 		if ($this->isDeleted) {
-			$description = Lang::$txt['lp_pages_deleted_description'];
+			$description = __('lp_pages_deleted_description');
 		}
 
 		return [
@@ -194,7 +194,7 @@ final class PageArea extends AbstractArea
 		$params = empty(Utils::$context['search_params']) ? '' : ';params=' . Utils::$context['search_params'];
 		$action = Utils::$context['form_action'] . $this->type . $params;
 
-		$builder = PortalTableBuilder::make('lp_pages', Lang::$txt['lp_pages_extra'])
+		$builder = PortalTableBuilder::make('lp_pages', __('lp_pages_extra'))
 			->setScript('const entity = new Page();')
 			->withCreateButton($this->getEntityNamePlural())
 			->withParams(
@@ -205,7 +205,7 @@ final class PageArea extends AbstractArea
 			->setCount($this->repository->getTotalCount(...), $this->params)
 			->addColumns([
 				IdColumn::make()->setSort('p.page_id'),
-				DateColumn::make(title: Lang::$txt['date']),
+				DateColumn::make(title: __('date')),
 				NumViewsColumn::make(),
 				PageSlugColumn::make(),
 				TitleColumn::make()->setData(
@@ -289,7 +289,7 @@ final class PageArea extends AbstractArea
 	protected function prepareSpecificFields(): void
 	{
 		if (Utils::$context['lp_page']['type'] !== ContentType::BBC->name()) {
-			TextareaField::make('content', Lang::$txt['lp_content'])
+			TextareaField::make('content', __('lp_content'))
 				->setTab(Tab::CONTENT)
 				->setAttribute('style', 'height: 300px')
 				->setValue($this->prepareContent(Utils::$context['lp_page']));
@@ -298,20 +298,20 @@ final class PageArea extends AbstractArea
 		}
 
 		if (Utils::$context['user']['is_admin']) {
-			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
+			CustomField::make('show_in_menu', __('lp_page_show_in_menu'))
 				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(SelectFactory::pageIcon(...));
 
-			CustomField::make('status', Lang::$txt['status'])
+			CustomField::make('status', __('status'))
 				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(SelectFactory::status(...));
 		}
 
-		CustomField::make('permissions', Lang::$txt['edit_permissions'])
+		CustomField::make('permissions', __('edit_permissions'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(SelectFactory::permission(...));
 
-		CustomField::make('category_id', Lang::$txt['lp_category'])
+		CustomField::make('category_id', __('lp_category'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => SelectFactory::category([
 				'id'       => 'category_id',
@@ -320,13 +320,13 @@ final class PageArea extends AbstractArea
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]));
 
-		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
+		CustomField::make('entry_type', __('lp_page_type'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(SelectFactory::entryType(...));
 
 		$this->prepareSlugField();
 
-		TextareaField::make('description', Lang::$txt['lp_page_description'])
+		TextareaField::make('description', __('lp_page_description'))
 			->setTab(Tab::SEO)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
@@ -336,13 +336,13 @@ final class PageArea extends AbstractArea
 				->setAttribute('hidden', true)
 				->setValue('');
 		} else {
-			CustomField::make('tags', Lang::$txt['lp_tags'])
+			CustomField::make('tags', __('lp_tags'))
 				->setTab(Tab::SEO)
 				->setValue(SelectFactory::tag(...));
 		}
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
-			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
+			CustomField::make('datetime', __('lp_page_publish_datetime'))
 				->setValue(Str::html('input', [
 						'type'  => 'date',
 						'id'    => 'datetime',
@@ -357,19 +357,19 @@ final class PageArea extends AbstractArea
 				);
 		}
 
-		CheckboxField::make('show_title', Lang::$txt['lp_page_show_title'])
+		CheckboxField::make('show_title', __('lp_page_show_title'))
 			->setValue(Utils::$context['lp_page']['options']['show_title']);
 
-		CheckboxField::make('show_author_and_date', Lang::$txt['lp_page_show_author_and_date'])
+		CheckboxField::make('show_author_and_date', __('lp_page_show_author_and_date'))
 			->setValue(Utils::$context['lp_page']['options']['show_author_and_date']);
 
 		if (Setting::showRelatedPages()) {
-			CheckboxField::make('show_related_pages', Lang::$txt['lp_page_show_related_pages'])
+			CheckboxField::make('show_related_pages', __('lp_page_show_related_pages'))
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
 
 		if (Setting::getCommentBlock() !== '' && Setting::getCommentBlock() !== 'none') {
-			CheckboxField::make('allow_comments', Lang::$txt['lp_page_allow_comments'])
+			CheckboxField::make('allow_comments', __('lp_page_allow_comments'))
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 	}
@@ -471,8 +471,8 @@ final class PageArea extends AbstractArea
 			Utils::$context['lp_all_pages'][$type] = [
 				'type'  => $type,
 				'icon'  => ContentType::icon($type) ?: Utils::$context['lp_loaded_addons'][$type]['icon'],
-				'title' => Lang::$txt['lp_' . $type]['title'] ?? $title,
-				'desc'  => Lang::$txt['lp_' . $type]['block_desc'] ?? Lang::$txt['lp_' . $type]['description'],
+				'title' => __('lp_' . $type)['title'] ?? $title,
+				'desc'  => __('lp_' . $type)['block_desc'] ?? __('lp_' . $type)['description'],
 			];
 		}
 

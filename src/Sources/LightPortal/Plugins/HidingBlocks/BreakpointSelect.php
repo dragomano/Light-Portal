@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\HidingBlocks;
 
-use Bugo\Compat\Lang;
 use LightPortal\UI\Partials\AbstractSelect;
 
 if (! defined('LP_NAME'))
@@ -25,7 +24,7 @@ final class BreakpointSelect extends AbstractSelect
 	{
 		$breakpoints = array_combine(
 			$this->params['classes'],
-			Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']
+			__('lp_hiding_blocks')['hidden_breakpoints_set']
 		);
 
 		$data = [];
@@ -44,7 +43,7 @@ final class BreakpointSelect extends AbstractSelect
 		return [
 			'id'       => 'hidden_breakpoints',
 			'multiple' => true,
-			'hint'     => Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_subtext'],
+			'hint'     => __('lp_hiding_blocks')['hidden_breakpoints_subtext'],
 			'value'    => $this->normalizeValue($this->params['hidden_breakpoints']),
 		];
 	}

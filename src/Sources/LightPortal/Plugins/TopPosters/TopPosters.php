@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\TopPosters;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
@@ -79,8 +78,9 @@ class TopPosters extends Block
 
 		$members = iterator_to_array($result);
 
-		if (empty($members))
+		if (empty($members)) {
 			return [];
+		}
 
 		$posters = [];
 		foreach ($members as $row) {
@@ -141,7 +141,7 @@ class TopPosters extends Block
 
 			$postCount = $parameters['show_numbers_only']
 				? $poster['posts']
-				: Lang::getTxt($this->txt['posts'], ['posts' => $poster['posts']]);
+				: __($this->txt['posts'], ['posts' => $poster['posts']]);
 
 			$dd->addHtml(Str::html('span', (string) $postCount));
 			$dl->addHtml($dt);

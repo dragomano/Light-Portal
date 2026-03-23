@@ -14,7 +14,6 @@ namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\TableBuilder;
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
@@ -26,7 +25,7 @@ class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInter
 		parent::__construct($id, $title);
 
 		$this->paginate(20);
-		$this->setNoItemsLabel(Lang::$txt['lp_no_items']);
+		$this->setNoItemsLabel(__('lp_no_items'));
 		$this->setFormAction(Utils::$context['form_action'] ?? Utils::$context['canonical_url'] ?? Config::$scripturl);
 	}
 
@@ -35,7 +34,7 @@ class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInter
 		$icon = str_replace(
 			' class=',
 			' @mouseover="entity.toggleSpin($event.target)" @mouseout="entity.toggleSpin($event.target)" class=',
-			Icon::get('plus', Lang::$txt["lp_{$entity}_add"])
+			Icon::get('plus', __("lp_{$entity}_add"))
 		);
 
 		$link = Str::html('a', [

@@ -13,14 +13,13 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Status;
 
 class StatusColumn extends Column
 {
 	public static function make(string $name = 'status', string $title = ''): static
 	{
-		return parent::make($name, $title ?: Lang::$txt['status'])
+		return parent::make($name, $title ?: __('status'))
 			->setStyle('width: 10%')
 			->setData(static fn($entry) => /** @lang text */ '
 				<div
@@ -30,7 +29,7 @@ class StatusColumn extends Column
 				>
 					<span
 						:class="{ \'on\': status, \'off\': !status }"
-						:title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'"
+						:title="status ? \'' . __('lp_action_off') . '\' : \'' . __('lp_action_on') . '\'"
 						@click.prevent="status = !status"
 					></span>
 				</div>', 'centertext')

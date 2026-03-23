@@ -13,7 +13,6 @@
 namespace LightPortal\Utils;
 
 use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use DateTime as BaseDateTime;
 use IntlDateFormatter;
@@ -39,7 +38,7 @@ final class DateTime
 
 		// Just now?
 		if ($timeDifference === 0) {
-			return Lang::$txt['lp_just_now'];
+			return __('lp_just_now');
 		}
 
 		$dateTime = self::get($timestamp);
@@ -102,7 +101,7 @@ final class DateTime
 	{
 		// Tomorrow at ...
 		if ($dateKey === date('jmY', strtotime('+1 day'))) {
-			return Lang::$txt['lp_tomorrow'] . $dateTime->format('H:i');
+			return __('lp_tomorrow') . $dateTime->format('H:i');
 		}
 
 		$secondsUntil = $timestamp - $now;
@@ -111,8 +110,8 @@ final class DateTime
 		// In n days (within a week)
 		if ($days > 1 && $days < self::DAYS_IN_WEEK) {
 			return sprintf(
-				Lang::$txt['lp_time_label_in'],
-				Lang::getTxt('lp_days_set', ['days' => $days])
+				__('lp_time_label_in'),
+				__('lp_days_set', ['days' => $days])
 			);
 		}
 
@@ -141,8 +140,8 @@ final class DateTime
 		$hours = $secondsUntil / self::SECONDS_IN_HOUR;
 		if ($hours >= 1) {
 			return sprintf(
-				Lang::$txt['lp_time_label_in'],
-				Lang::getTxt('lp_hours_set', ['hours' => ceil($hours)])
+				__('lp_time_label_in'),
+				__('lp_hours_set', ['hours' => ceil($hours)])
 			);
 		}
 
@@ -150,15 +149,15 @@ final class DateTime
 		$minutes = $secondsUntil / self::SECONDS_IN_MINUTE;
 		if ($minutes >= 1) {
 			return sprintf(
-				Lang::$txt['lp_time_label_in'],
-				Lang::getTxt('lp_minutes_set', ['minutes' => ceil($minutes)])
+				__('lp_time_label_in'),
+				__('lp_minutes_set', ['minutes' => ceil($minutes)])
 			);
 		}
 
 		// In n seconds
 		return sprintf(
-			Lang::$txt['lp_time_label_in'],
-			Lang::getTxt('lp_seconds_set', ['seconds' => abs($timeDifference)])
+			__('lp_time_label_in'),
+			__('lp_seconds_set', ['seconds' => abs($timeDifference)])
 		);
 	}
 
@@ -174,14 +173,16 @@ final class DateTime
 
 		// n seconds ago
 		if ($timeDifference < self::SECONDS_IN_MINUTE) {
-			$secondsText = Lang::getTxt('lp_seconds_set', ['seconds' => $timeDifference]);
-			return Utils::$smcFunc['ucfirst']($secondsText) . Lang::$txt['lp_time_label_ago'];
+			$secondsText = __('lp_seconds_set', ['seconds' => $timeDifference]);
+
+			return Utils::$smcFunc['ucfirst']($secondsText) . __('lp_time_label_ago');
 		}
 
 		// n minutes ago
 		if ($minutes < 60) {
-			$minutesText = Lang::getTxt('lp_minutes_set', ['minutes' => (int) $minutes]);
-			return Utils::$smcFunc['ucfirst']($minutesText) . Lang::$txt['lp_time_label_ago'];
+			$minutesText = __('lp_minutes_set', ['minutes' => (int) $minutes]);
+
+			return Utils::$smcFunc['ucfirst']($minutesText) . __('lp_time_label_ago');
 		}
 
 		$time = $dateTime->format('H:i');
@@ -190,12 +191,12 @@ final class DateTime
 
 		// Today at ...
 		if ($dateKey === $todayKey) {
-			return Lang::$txt['today'] . $time;
+			return __('today') . $time;
 		}
 
 		// Yesterday at ...
 		if ($dateKey === $yesterdayKey) {
-			return Lang::$txt['yesterday'] . $time;
+			return __('yesterday') . $time;
 		}
 
 		$month = $dateTime->format('m');
@@ -248,7 +249,7 @@ final class DateTime
 			return '';
 		}
 
-		$formatter = new IntlDateFormatter(Lang::$txt['lang_locale'], $dateType, $timeType);
+		$formatter = new IntlDateFormatter(__('lang_locale'), $dateType, $timeType);
 
 		return $formatter->format($timestamp);
 	}

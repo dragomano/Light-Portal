@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\Likely;
 
-use Bugo\Compat\Lang;
 use LightPortal\UI\Partials\AbstractSelect;
 
 if (! defined('LP_NAME'))
@@ -41,7 +40,7 @@ final class ButtonSelect extends AbstractSelect
 		return array_merge(['showSelectedOptionsFirst' => true], [
 			'id'       => 'buttons',
 			'multiple' => true,
-			'hint'     => Lang::$txt['lp_likely']['select_buttons'],
+			'hint'     => __('lp_likely')['select_buttons'],
 			'value'    => $this->normalizeValue($this->params['buttons']),
 		]);
 	}

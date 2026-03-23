@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\EasyMarkdownEditor;
@@ -56,7 +56,7 @@ class EasyMarkdownEditor extends Editor
 			autoDownloadFontAwesome: false,
 			autofocus: true,
 			spellChecker: false,
-			placeholder: "' . Lang::$txt['lp_post_error_no_content'] . '",
+			placeholder: "' . __('lp_post_error_no_content') . '",
 			forceSync: true,
 			direction: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '",
 			toolbar: [
@@ -64,19 +64,19 @@ class EasyMarkdownEditor extends Editor
 					name: "bold",
 					action: EasyMDE.toggleBold,
 					className: "fas fa-bold",
-					title: "' . Lang::$editortxt['bold'] . '"
+					title: "' . __('bold', var: 'editortxt') . '"
 				},
 				{
 					name: "italic",
 					action: EasyMDE.toggleItalic,
 					className: "fas fa-italic",
-					title: "' . Lang::$editortxt['italic'] . '"
+					title: "' . __('italic', var: 'editortxt') . '"
 				},
 				{
 					name: "strikethrough",
 					action: EasyMDE.toggleStrikethrough,
 					className: "fas fa-strikethrough",
-					title: "' . Lang::$editortxt['strikethrough'] . '"
+					title: "' . __('strikethrough', var: 'editortxt') . '"
 				},
 				"|",
 				{
@@ -86,52 +86,52 @@ class EasyMarkdownEditor extends Editor
 						EasyMDE.toggleHeadingSmaller(editor);
 					},
 					className: "fas fa-header",
-					title: "' . Lang::$txt['lp_title'] . '"
+					title: "' . __('lp_title') . '"
 				},
 				"|",
 				{
 					name: "image",
 					action: EasyMDE.drawImage,
 					className: "fas fa-image",
-					title: "' . Lang::$editortxt['insert_image'] . '"
+					title: "' . __('insert_image', var: 'editortxt') . '"
 				},
 				{
 					name: "link",
 					action: EasyMDE.drawLink,
 					className: "fas fa-link",
-					title: "' . Lang::$editortxt['insert_link'] . '"
+					title: "' . __('insert_link', var: 'editortxt') . '"
 				},
 				"|",
 				{
 					name: "table",
 					action: EasyMDE.drawTable,
 					className: "fas fa-table",
-					title: "' . Lang::$editortxt['insert_table'] . '"
+					title: "' . __('insert_table', var: 'editortxt') . '"
 				},
 				{
 					name: "code",
 					action: EasyMDE.toggleCodeBlock,
 					className: "fas fa-code",
-					title: "' . Lang::$editortxt['code'] . '"
+					title: "' . __('code', var: 'editortxt') . '"
 				},
 				{
 					name: "quote",
 					action: EasyMDE.toggleBlockquote,
 					className: "fas fa-quote-left",
-					title: "' . Lang::$editortxt['insert_quote'] . '"
+					title: "' . __('insert_quote', var: 'editortxt') . '"
 				},
 				"|",
 				{
 					name: "unordered-list",
 					action: EasyMDE.toggleUnorderedList,
 					className: "fas fa-list-ul",
-					title: "' . Lang::$editortxt['bullet_list'] . '"
+					title: "' . __('bullet_list', var: 'editortxt') . '"
 				},
 				{
 					name: "ordered-list",
 					action: EasyMDE.toggleOrderedList,
 					className: "fas fa-list-ol",
-					title: "' . Lang::$editortxt['numbered_list'] . '"
+					title: "' . __('numbered_list', var: 'editortxt') . '"
 				},
 				{
 					name: "task-list",
@@ -146,7 +146,7 @@ class EasyMarkdownEditor extends Editor
 					name: "horizontal-rule",
 					action: EasyMDE.drawHorizontalRule,
 					className: "fas fa-minus",
-					title: "' . Lang::$editortxt['insert_horizontal_rule'] . '"
+					title: "' . __('insert_horizontal_rule', var: 'editortxt') . '"
 				},
 				"|",
 				{

@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\Swiper;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
@@ -93,7 +92,7 @@ class Swiper extends Block
 			->setValue($this->view(params: ['options' => $options]));
 
 		RadioField::make('direction', $this->txt['direction'])
-			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
+			->setOptions(array_combine(['vertical', 'horizontal'], __('lp_panel_direction_set')))
 			->setValue($options['direction']);
 
 		SelectField::make('effect', $this->txt['effect'])

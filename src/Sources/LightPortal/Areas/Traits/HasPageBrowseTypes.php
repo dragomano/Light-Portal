@@ -12,7 +12,6 @@
 
 namespace LightPortal\Areas\Traits;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -53,22 +52,22 @@ trait HasPageBrowseTypes
 		$titles = [
 			'all' => [
 				'',
-				Lang::$txt['all'],
+				__('all'),
 				Utils::$context['lp_quantities']['active_pages']
 			],
 			'own' => [
 				';u=' . User::$me->id,
-				Lang::$txt['lp_my_pages'],
+				__('lp_my_pages'),
 				Utils::$context['lp_quantities']['my_pages']
 			],
 			'mod' => [
 				';moderate',
-				Lang::$txt['awaiting_approval'],
+				__('awaiting_approval'),
 				Utils::$context['lp_quantities']['unapproved_pages']
 			],
 			'del' => [
 				';deleted',
-				Lang::$txt['lp_pages_deleted'],
+				__('lp_pages_deleted'),
 				Utils::$context['lp_quantities']['deleted_pages']
 			]
 		];

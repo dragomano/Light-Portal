@@ -2,61 +2,46 @@
 
 declare(strict_types=1);
 
+use Laminas\ServiceManager\ServiceManager;
 use LightPortal\ServiceProvider;
-use League\Container\Container as LeagueContainer;
-use League\Container\Definition\DefinitionInterface;
-use Tests\ReflectionAccessor;
 
-beforeEach(function () {
-    $this->serviceProvider = new ServiceProvider();
+it('getConfig returns valid service manager configuration', function () {
+    $config = ServiceProvider::getConfig();
+
+    expect($config)->toBeArray()
+        ->toHaveKeys(['invokables', 'factories', 'shared', 'tags']);
 });
 
-it('provides returns true for registered services', function () {
-    $provider = new ReflectionAccessor($this->serviceProvider);
-    $definitions = $provider->callMethod('getFlattenedDefinitions');
+it('getConfig contains invokables', function () {
+    $config = ServiceProvider::getConfig();
 
-    foreach ($definitions as $definition) {
-        expect($this->serviceProvider->provides($definition['id']))->toBeTrue();
-    }
+    expect($config['invokables'])->toBeArray()
+        ->not->toBeEmpty();
 });
 
-it('provides returns false for unregistered services', function () {
-    expect($this->serviceProvider->provides('NonExistentService'))->toBeFalse()
-        ->and($this->serviceProvider->provides('AnotherNonExistentService'))->toBeFalse();
+it('getConfig contains factories', function () {
+    $config = ServiceProvider::getConfig();
+
+    expect($config['factories'])->toBeArray()
+        ->not->toBeEmpty();
 });
 
-it('registers adds all services to container', function () {
-    $mockContainer = mock(LeagueContainer::class);
-    $mockDefinition = mock(DefinitionInterface::class);
-    $mockContainer->shouldReceive('add')
-        ->andReturn($mockDefinition)
-        ->zeroOrMoreTimes();
+it('getConfig contains shared settings', function () {
+    $config = ServiceProvider::getConfig();
 
-    $mockDefinition->shouldReceive('addArguments')->andReturnSelf()->zeroOrMoreTimes();
-    $mockDefinition->shouldReceive('setShared')->andReturnSelf()->zeroOrMoreTimes();
-
-    $provider = new ReflectionAccessor($this->serviceProvider);
-    $provider->callMethod('setContainer', [$mockContainer]);
-
-    $this->serviceProvider->register();
-
-    expect(true)->toBeTrue();
+    expect($config['shared'])->toBeArray();
 });
 
-it('registers configures container properly', function () {
-    $mockContainer = mock(LeagueContainer::class);
-    $mockDefinition = mock(DefinitionInterface::class);
-    $mockContainer->shouldReceive('add')
-        ->andReturn($mockDefinition)
-        ->zeroOrMoreTimes();
+it('getConfig contains tags', function () {
+    $config = ServiceProvider::getConfig();
 
-    $mockDefinition->shouldReceive('addArguments')->andReturnSelf()->zeroOrMoreTimes();
-    $mockDefinition->shouldReceive('setShared')->andReturnSelf()->zeroOrMoreTimes();
+    expect($config['tags'])->toBeArray();
+});
 
-    $provider = new ReflectionAccessor($this->serviceProvider);
-    $provider->callMethod('setContainer', [$mockContainer]);
+it('service manager can be created with config', function () {
+    $config = ServiceProvider::getConfig();
 
-    $this->serviceProvider->register();
+    $serviceManager = new ServiceManager($config);
 
-    expect(true)->toBeTrue();
+    expect($serviceManager)->toBeInstanceOf(ServiceManager::class);
 });

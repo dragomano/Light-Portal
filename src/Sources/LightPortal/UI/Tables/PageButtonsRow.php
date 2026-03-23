@@ -13,7 +13,6 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Enums\FrontPageMode;
 use LightPortal\Utils\RequestInterface;
@@ -28,7 +27,7 @@ class PageButtonsRow extends Row
 	{
 		$request = app(RequestInterface::class);
 
-		$text = Lang::$txt[$request->has('deleted') ? 'lp_action_remove_permanently' : 'remove'];
+		$text = __($request->has('deleted') ? 'lp_action_remove_permanently' : 'remove');
 
 		$delete = Str::html('option', [
 			'value' => $request->has('deleted') ? 'delete_forever' : 'delete'
@@ -36,25 +35,25 @@ class PageButtonsRow extends Row
 
 		$toggle = User::$me->allowedTo('light_portal_approve_pages')
 			? Str::html('option', ['value' => 'toggle'])
-				->setText(Lang::$txt['lp_action_toggle'])
+				->setText(__('lp_action_toggle'))
 			: '';
 
 		$promoteUp = Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)
 			? Str::html('option', ['value' => 'promote_up'])
-				->setText(Lang::$txt['lp_promote_to_fp'])
+				->setText(__('lp_promote_to_fp'))
 			: '';
 
 		$promoteDown = Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)
 			? Str::html('option', ['value' => 'promote_down'])
-				->setText(Lang::$txt['lp_remove_from_fp'])
+				->setText(__('lp_remove_from_fp'))
 			: '';
 
 		$submit = Str::html('input', [
 			'type'    => 'submit',
 			'name'    => 'mass_actions',
-			'value'   => Lang::$txt['quick_mod_go'],
+			'value'   => __('quick_mod_go'),
 			'class'   => 'button',
-			'onclick' => "return document.forms['manage_pages']['page_actions'].value && confirm('" . Lang::$txt['quickmod_confirm'] . ");",
+			'onclick' => "return document.forms['manage_pages']['page_actions'].value && confirm('" . __('quickmod_confirm') . ");",
 		]);
 
 		$select = Str::html('select', ['name' => 'page_actions'])

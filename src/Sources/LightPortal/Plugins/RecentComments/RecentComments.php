@@ -69,8 +69,9 @@ class RecentComments extends Block
 
 	public function getData(int $commentsCount, int $length = 80): array
 	{
-		if (empty($commentsCount))
+		if (empty($commentsCount)) {
 			return [];
+		}
 
 		$latestComments = $this->sql->select()
 			->from('lp_comments')
@@ -102,7 +103,7 @@ class RecentComments extends Block
 			->join(
 				['mem' => 'members'],
 				'mem.id_member = com.author_id',
-				['author_name' => new Expression('COALESCE(mem.real_name, ?)', [Lang::$txt['guest_title']])],
+				['author_name' => new Expression('COALESCE(mem.real_name, ?)', [__('guest_title')])],
 				Select::JOIN_LEFT
 			)
 			->join(
@@ -174,7 +175,7 @@ class RecentComments extends Block
 						->setText($comment['message']))
 					->addHtml('<br>')
 					->addHtml(Str::html('span', ['class' => 'smalltext'])
-						->setText(Lang::$txt['by'] . ' ' . $comment['author_name']))
+						->setText(__('by') . ' ' . $comment['author_name']))
 					->addHtml('<br>')
 					->addHtml(Str::html('span', ['class' => 'smalltext'])
 						->setText(DateTime::relative($comment['created_at']))), $comments))

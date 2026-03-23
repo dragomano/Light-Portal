@@ -12,7 +12,6 @@
 
 namespace LightPortal\DataHandlers\Traits;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Utils\Traits\HasCache;
 
@@ -37,11 +36,11 @@ trait HasTransactions
 			$this->sql->getTransaction()->commit();
 		}
 
-		$entityText = Lang::getTxt('lp_' . $this->entity . '_set', [
+		$entityText = __('lp_' . $this->entity . '_set', [
 			$this->entity => Utils::$context['import_successful']
 		]);
 
-		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], $entityText);
+		Utils::$context['import_successful'] = sprintf(__('lp_import_success'), $entityText);
 
 		$this->cache()->flush();
 	}

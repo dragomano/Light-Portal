@@ -12,10 +12,11 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\TinyInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
-use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,7 +25,7 @@ class TagsTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_tags';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$tagId  = new AutoIncrementInteger('tag_id');
 		$slug   = new Varchar('slug', 255);

@@ -19,6 +19,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Enums\ContentType;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\FactoryInterface;
@@ -29,6 +30,7 @@ use LightPortal\UI\Fields\TextField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
+use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Str;
@@ -132,7 +134,7 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt["lp_{$entityPlural}_manage"];
+		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_manage");
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural" . $this->getMainFormActionSuffix();
@@ -146,7 +148,7 @@ abstract class AbstractArea implements AreaInterface
 
 		return [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt["lp_{$entityPlural}_manage_description"],
+			'description' => __("lp_{$entityPlural}_manage_description"),
 		];
 	}
 
@@ -226,7 +228,7 @@ abstract class AbstractArea implements AreaInterface
 		$count = Utils::$context['lp_quantities']['active_' . $this->getEntityNamePlural()] ?? 0;
 		$count = empty($count) ? '' : " ($count)";
 
-		return Lang::$txt['lp_' . $this->getEntityNamePlural()] . $count;
+		return __('lp_' . $this->getEntityNamePlural()) . $count;
 	}
 
 	protected function getDefaultSortColumn(): string
@@ -250,17 +252,16 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' .
-			Lang::$txt["lp_{$entityPlural}_add_title"];
+		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_add_title");
 
-		Utils::$context['page_area_title'] = Lang::$txt["lp_{$entityPlural}_add_title"];
+		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_add_title");
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=add";
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt["lp_{$entityPlural}_add_description"],
+			'description' => __("lp_{$entityPlural}_add_description"),
 		];
 
 		$this->setupAdditionalAddContext();
@@ -338,7 +339,7 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function prepareCommonFields(): void
 	{
-		CustomField::make('icon', Lang::$txt['current_icon'])
+		CustomField::make('icon', __('current_icon'))
 			->setTab(Tab::APPEARANCE)
 			->setValue(fn() => SelectFactory::icon([
 				'icon' => $this->getContextEntity()['icon'] ?? '',
@@ -349,9 +350,9 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function prepareSlugField(): void
 	{
-		TextField::make('slug', Lang::$txt['lp_slug'])
+		TextField::make('slug', __('lp_slug'))
 			->setTab(Tab::SEO)
-			->setDescription(Lang::$txt['lp_slug_subtext'])
+			->setDescription(__('lp_slug_subtext'))
 			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
@@ -386,7 +387,7 @@ abstract class AbstractArea implements AreaInterface
 		Str::cleanBbcode(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_title']);
 
-		Utils::$context['page_title'] = Lang::$txt['preview'] . (
+		Utils::$context['page_title'] = __('preview') . (
 			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
 		);
 
@@ -400,9 +401,12 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function preparePreviewContent(array $entity): void
 	{
-		Utils::$context['preview_content'] = Utils::htmlspecialchars(
-			$entity['content'] ?? $entity['description'] ?? '',
-			ENT_QUOTES
+		Utils::$context['preview_content'] = Content::parse(
+			Utils::htmlspecialchars(
+				$entity['content'] ?? $entity['description'] ?? '',
+				ENT_QUOTES
+			),
+			$entity['type'] ?? ContentType::HTML->name()
 		);
 
 		Lang::censorText(Utils::$context['preview_content']);
@@ -423,17 +427,16 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' .
-			Lang::$txt["lp_{$entityPlural}_edit_title"];
+		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_edit_title");
 
-		Utils::$context['page_area_title'] = Lang::$txt["lp_{$entityPlural}_edit_title"];
+		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_edit_title");
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=edit;id=$item";
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt["lp_{$entityPlural}_edit_description"],
+			'description' => __("lp_{$entityPlural}_edit_description"),
 		];
 	}
 
@@ -507,8 +510,7 @@ abstract class AbstractArea implements AreaInterface
 		$entity = $this->getContextEntity();
 		$title = $entity['title'] ?? '';
 
-		Utils::$context['page_area_title'] = Lang::$txt["lp_{$entityPlural}_edit_title"] .
-			($title ? ' - ' . $title : '');
+		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_edit_title") . ($title ? ' - ' . $title : '');
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=edit;id={$entity['id']}";

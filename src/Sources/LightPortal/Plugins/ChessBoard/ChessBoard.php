@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.12.25
+ * @version 11.02.26
  */
 
 namespace LightPortal\Plugins\ChessBoard;
@@ -31,9 +31,9 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-chess')]
 class ChessBoard extends GameBlock
 {
-	const ENGINE = 'stockfish-17.1-lite-single-03e3232';
+	const ENGINE = 'stockfish-18-lite-single';
 
-	const VERSION = '17.1';
+	const VERSION = '18';
 
 	const BOARD_STYLE = [
 		'default'    => 'default',
@@ -74,9 +74,9 @@ class ChessBoard extends GameBlock
 			->rel('noopener')
 			->addText('Stockfish ' . self::VERSION);
 
-		Lang::$txt['lp_chess_board']['description'] .= ' ' . sprintf(
-			Lang::$txt['lp_chess_board']['engine_note'],
-			$link
+		Lang::setTxt(
+			['lp_chess_board', 'description'],
+			__('lp_chess_board')['description'] . ' ' . sprintf(__('lp_chess_board')['engine_note'], $link)
 		);
 	}
 
@@ -233,7 +233,7 @@ class ChessBoard extends GameBlock
 				'markerType' => $parameters['marker_type'],
 				'skillLevel' => $parameters['skill_level'],
 				'depth'      => $parameters['depth'],
-				'locale'     => Lang::$txt['lang_dictionary'],
+				'locale'     => __('lang_dictionary'),
 			],
 		];
 	}

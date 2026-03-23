@@ -35,10 +35,10 @@ enum TitleClass: string
 		$isEmpty = $this === self::EMPTY;
 
 		$class = match ($this) {
-			self::CAT_BAR => 'catbg',
+			self::CAT_BAR   => 'catbg',
 			self::TITLE_BAR => 'titlebg',
-			self::SUB_BAR => 'subbg',
-			default => null,
+			self::SUB_BAR   => 'subbg',
+			default         => null,
 		};
 
 		return Str::html('div')

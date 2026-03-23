@@ -72,7 +72,7 @@ class AdminAreas extends AbstractHook
 			array_slice($areas, 0, $counter, true),
 			[
 				'lp_portal' => [
-					'title' => Lang::$txt['lp_portal'],
+					'title' => __('lp_portal'),
 					'permission' => [
 						'admin_forum',
 						'light_portal_manage_pages_any',
@@ -80,22 +80,22 @@ class AdminAreas extends AbstractHook
 					],
 					'areas' => [
 						'lp_settings' => [
-							'label' => Lang::$txt['settings'],
+							'label' => __('settings'),
 							'function' => $this->settingAreas(...),
 							'icon' => 'features',
 							'permission' => [
 								'admin_forum',
 							],
 							'subsections' => [
-								'basic'    => [Icon::get('cog_spin') . Lang::getTxt('mods_cat_features', file: 'Admin')],
-								'extra'    => [Icon::get('pager') . Lang::$txt['lp_extra']],
-								'panels'   => [Icon::get('panels') . Lang::$txt['lp_panels']],
-								'misc'     => [Icon::get('tools') . Lang::$txt['lp_misc']],
-								'feedback' => [Icon::get('comments') . Lang::$txt['lp_feedback']],
+								'basic'    => [Icon::get('cog_spin') . __('admin.mods_cat_features')],
+								'extra'    => [Icon::get('pager') . __('lp_extra')],
+								'panels'   => [Icon::get('panels') . __('lp_panels')],
+								'misc'     => [Icon::get('tools') . __('lp_misc')],
+								'feedback' => [Icon::get('comments') . __('lp_feedback')],
 							]
 						],
 						'lp_blocks' => [
-							'label' => Lang::$txt['lp_blocks'],
+							'label' => __('lp_blocks'),
 							'function' => $this->blockAreas(...),
 							'icon' => 'packages',
 							'amt' => Utils::$context['lp_quantities']['active_blocks'],
@@ -103,12 +103,12 @@ class AdminAreas extends AbstractHook
 								'admin_forum',
 							],
 							'subsections' => [
-								'main' => [Icon::get('main') . Lang::$txt['lp_blocks_manage']],
-								'add'  => [Icon::get('plus') . Lang::$txt['lp_blocks_add']],
+								'main' => [Icon::get('main') . __('lp_blocks_manage')],
+								'add'  => [Icon::get('plus') . __('lp_blocks_add')],
 							]
 						],
 						'lp_pages' => [
-							'label' => Lang::$txt['lp_pages'],
+							'label' => __('lp_pages'),
 							'function' => $this->pageAreas(...),
 							'icon' => 'reports',
 							'amt' => $this->getPagesCount(),
@@ -118,12 +118,12 @@ class AdminAreas extends AbstractHook
 								'light_portal_manage_pages_own',
 							],
 							'subsections' => [
-								'main' => [Icon::get('main') . Lang::$txt['lp_pages_manage']],
-								'add'  => [Icon::get('plus') . Lang::$txt['lp_pages_add']],
+								'main' => [Icon::get('main') . __('lp_pages_manage')],
+								'add'  => [Icon::get('plus') . __('lp_pages_add')],
 							]
 						],
 						'lp_categories' => [
-							'label' => Lang::$txt['lp_categories'],
+							'label' => __('lp_categories'),
 							'function' => $this->categoryAreas(...),
 							'icon' => 'boards',
 							'amt' => Utils::$context['lp_quantities']['active_categories'],
@@ -131,12 +131,12 @@ class AdminAreas extends AbstractHook
 								'admin_forum',
 							],
 							'subsections' => [
-								'main' => [Icon::get('main') . Lang::$txt['lp_categories_manage']],
-								'add'  => [Icon::get('plus') . Lang::$txt['lp_categories_add']],
+								'main' => [Icon::get('main') . __('lp_categories_manage')],
+								'add'  => [Icon::get('plus') . __('lp_categories_add')],
 							]
 						],
 						'lp_tags' => [
-							'label' => Lang::$txt['lp_tags'],
+							'label' => __('lp_tags'),
 							'function' => $this->tagAreas(...),
 							'icon' => 'attachment',
 							'amt' => Utils::$context['lp_quantities']['active_tags'],
@@ -144,12 +144,12 @@ class AdminAreas extends AbstractHook
 								'admin_forum',
 							],
 							'subsections' => [
-								'main' => [Icon::get('main') . Lang::$txt['lp_tags_manage']],
-								'add'  => [Icon::get('plus') . Lang::$txt['lp_tags_add']],
+								'main' => [Icon::get('main') . __('lp_tags_manage')],
+								'add'  => [Icon::get('plus') . __('lp_tags_add')],
 							]
 						],
 						'lp_plugins' => [
-							'label' => Lang::$txt['lp_plugins'],
+							'label' => __('lp_plugins'),
 							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
 							'amt' => count(Setting::getEnabledPlugins()),
@@ -157,7 +157,7 @@ class AdminAreas extends AbstractHook
 								'admin_forum',
 							],
 							'subsections' => [
-								'main' => [Icon::get('main') . Lang::$txt['lp_plugins_manage']]
+								'main' => [Icon::get('main') . __('lp_plugins_manage')]
 							]
 						]
 					]
@@ -168,29 +168,29 @@ class AdminAreas extends AbstractHook
 
 		if (Utils::$context['user']['is_admin']) {
 			$areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
-				'export' => [Icon::get('export') . Lang::$txt['lp_blocks_export']],
-				'import' => [Icon::get('import') . Lang::$txt['lp_blocks_import']],
+				'export' => [Icon::get('export') . __('lp_blocks_export')],
+				'import' => [Icon::get('import') . __('lp_blocks_import')],
 			];
 
 			$areas['lp_portal']['areas']['lp_pages']['subsections'] += [
-				'export' => [Icon::get('export') . Lang::$txt['lp_pages_export']],
-				'import' => [Icon::get('import') . Lang::$txt['lp_pages_import']],
+				'export' => [Icon::get('export') . __('lp_pages_export')],
+				'import' => [Icon::get('import') . __('lp_pages_import')],
 			];
 
 			$areas['lp_portal']['areas']['lp_categories']['subsections'] += [
-				'export' => [Icon::get('export') . Lang::$txt['lp_categories_export']],
-				'import' => [Icon::get('import') . Lang::$txt['lp_categories_import']],
+				'export' => [Icon::get('export') . __('lp_categories_export')],
+				'import' => [Icon::get('import') . __('lp_categories_import')],
 			];
 
 			$areas['lp_portal']['areas']['lp_tags']['subsections'] += [
-				'export' => [Icon::get('export') . Lang::$txt['lp_tags_export']],
-				'import' => [Icon::get('import') . Lang::$txt['lp_tags_import']],
+				'export' => [Icon::get('export') . __('lp_tags_export')],
+				'import' => [Icon::get('import') . __('lp_tags_import')],
 			];
 
 			if (extension_loaded('zip')) {
 				$areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
-					'export' => [Icon::get('export') . Lang::$txt['lp_plugins_export']],
-					'import' => [Icon::get('import') . Lang::$txt['lp_plugins_import']],
+					'export' => [Icon::get('export') . __('lp_plugins_export')],
+					'import' => [Icon::get('import') . __('lp_plugins_import')],
 				];
 			}
 		}
@@ -221,7 +221,7 @@ class AdminAreas extends AbstractHook
 					->class('floatright')
 					->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
 					->setAttribute('alt', LP_NAME . ' logo') .
-				Lang::getTxt('lp_base_info', [
+				__('lp_base_info', [
 					LP_VERSION,
 					PHP_VERSION,
 					$this->getPortalSql()->getAdapter()->getTitle(),
@@ -230,19 +230,19 @@ class AdminAreas extends AbstractHook
 			'tabs' => [
 				'basic' => [],
 				'extra' => [
-					'description' => Lang::$txt['lp_extra_info']
+					'description' => __('lp_extra_info')
 				],
 				'panels' => [
-					'description' => Lang::getTxt('lp_panels_info', [
+					'description' => __('lp_panels_info', [
 						LP_NAME,
 						'https://evgenyrodionov.github.io/flexboxgrid2/',
 					])
 				],
 				'misc' => [
-					'description' => Lang::$txt['lp_misc_info']
+					'description' => __('lp_misc_info')
 				],
 				'feedback' => [
-					'description' => Lang::$txt['lp_feedback_info']
+					'description' => __('lp_feedback_info')
 				],
 			]
 		];
@@ -356,11 +356,11 @@ class AdminAreas extends AbstractHook
 
 		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
 			$supportedLangs = ['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr', 'sl'];
-			$lang = in_array(Lang::$txt['lang_dictionary'], $supportedLangs) ? Lang::$txt['lang_dictionary'] : '';
+			$lang = in_array(__('lang_dictionary'), $supportedLangs) ? __('lang_dictionary') : '';
 
 			Utils::$context['lp_reference_links'] = [
 				[
-					'text'   => Lang::$txt['admin_search_type_online'],
+					'text'   => __('admin_search_type_online'),
 					'icon'   => 'fa-solid fa-book',
 					'href'   => 'https://dragomano.github.io/Light-Portal/' . $lang,
 					'params' => 'target="_blank" rel="noopener"',

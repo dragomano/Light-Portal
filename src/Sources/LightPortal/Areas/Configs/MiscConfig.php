@@ -17,8 +17,7 @@ use Bugo\Bricks\Settings\ConfigBuilder;
 use Bugo\Bricks\Settings\IntConfig;
 use Bugo\Bricks\Settings\TextConfig;
 use Bugo\Bricks\Settings\TitleConfig;
-use Bugo\Compat\{Config, Lang};
-use Bugo\Compat\{User, Utils};
+use Bugo\Compat\{Config, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use LightPortal\Tasks\Maintainer;
 
@@ -33,7 +32,7 @@ final class MiscConfig extends AbstractConfig
 {
 	public function show(): void
 	{
-		Utils::$context['page_title'] = Lang::$txt['lp_misc'];
+		Utils::$context['page_title'] = __('lp_misc');
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
 		$this->addDefaultValues([
@@ -52,7 +51,7 @@ final class MiscConfig extends AbstractConfig
 				->setHelp('lp_show_debug_info_help'),
 
 			IntConfig::make('lp_cache_interval')
-				->setPostInput(Lang::$txt['seconds']),
+				->setPostInput(__('seconds')),
 
 			TitleConfig::make('lp_compatibility_mode'),
 

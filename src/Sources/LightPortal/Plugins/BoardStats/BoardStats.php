@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\BoardStats;
@@ -85,8 +85,9 @@ class BoardStats extends SsiBlock
 			empty($parameters['show_latest_member'])
 			&& empty($parameters['show_basic_info'])
 			&& empty($parameters['show_whos_online'])
-		)
+		) {
 			return [];
+		}
 
 		if ($parameters['show_basic_info']) {
 			$info = $this->getFromSSI('boardStats', 'array');
@@ -134,8 +135,8 @@ class BoardStats extends SsiBlock
 
 		if ($parameters['show_basic_info'] && $boardStats['basic_info']) {
 			$statsTitle = User::$me->allowedTo('view_stats')
-				? Str::html('a', Lang::$txt['forum_stats'])->href(Config::$scripturl . '?action=stats')
-				: Lang::$txt['forum_stats'];
+				? Str::html('a', __('forum_stats'))->href(Config::$scripturl . '?action=stats')
+				: __('forum_stats');
 
 			$basicInfoDiv = Str::html('div');
 			$basicInfoHeader = Str::html('h4')->addHtml(
@@ -151,11 +152,11 @@ class BoardStats extends SsiBlock
 			if (User::$me->allowedTo('view_stats')) {
 				$basicInfoList->addHtml(
 					Str::html('li')
-						->setText(Lang::$txt['members'] . ': ' . $boardStats['basic_info']['members']) .
+						->setText(__('members') . ': ' . $boardStats['basic_info']['members']) .
 					Str::html('li')
-						->setText(Lang::$txt['posts'] . ': ' . $boardStats['basic_info']['posts']) .
+						->setText(__('posts') . ': ' . $boardStats['basic_info']['posts']) .
 					Str::html('li')
-						->setText(Lang::$txt['topics'] . ': ' . $boardStats['basic_info']['topics'])
+						->setText(__('topics') . ': ' . $boardStats['basic_info']['topics'])
 				);
 			}
 
@@ -172,8 +173,8 @@ class BoardStats extends SsiBlock
 
 		if ($parameters['show_whos_online'] && $boardStats['whos_online']) {
 			$onlineTitle = User::$me->allowedTo('who_view')
-				? Str::html('a', Lang::$txt['online_users'])->href(Config::$scripturl . '?action=who')
-				: Lang::$txt['online_users'];
+				? Str::html('a', __('online_users'))->href(Config::$scripturl . '?action=who')
+				: __('online_users');
 
 			$whosOnlineDiv = Str::html('div');
 			$whosOnlineHeader = Str::html('h4')->addHtml(
@@ -188,13 +189,13 @@ class BoardStats extends SsiBlock
 				->class('bbc_list')
 				->addHtml(
 					Str::html('li')
-						->setText(Lang::$txt['members'] . ': ' . Lang::numberFormat($boardStats['whos_online']['num_users_online'])) .
+						->setText(__('members') . ': ' . Lang::numberFormat($boardStats['whos_online']['num_users_online'])) .
 					Str::html('li')
 						->setText($this->txt['guests'] . ': ' . Lang::numberFormat($boardStats['whos_online']['num_guests'])) .
 					Str::html('li')
 						->setText($this->txt['spiders'] . ': ' . Lang::numberFormat($boardStats['whos_online']['num_spiders'])) .
 					Str::html('li')
-						->setText(Lang::$txt['total'] . ': ' . Lang::numberFormat($boardStats['whos_online']['total_users']))
+						->setText(__('total') . ': ' . Lang::numberFormat($boardStats['whos_online']['total_users']))
 				);
 
 			$whosOnlineDiv->addHtml($whosOnlineList);

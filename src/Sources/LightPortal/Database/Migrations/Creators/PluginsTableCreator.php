@@ -12,11 +12,12 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ class PluginsTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_plugins';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id     = new AutoIncrementInteger();
 		$name   = new Varchar('name', 100, false);

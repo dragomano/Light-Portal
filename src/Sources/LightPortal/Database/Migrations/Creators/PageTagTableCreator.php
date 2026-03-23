@@ -12,9 +12,10 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Extra\Sql\Columns\UnsignedInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,7 +24,7 @@ class PageTagTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_page_tag';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$pageId = new UnsignedInteger('page_id');
 		$tagId  = new UnsignedInteger('tag_id');

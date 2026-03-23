@@ -4,7 +4,7 @@ description: Οδηγίες για τον τρόπο προσθήκης προσ
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 Επιλέξτε και ενεργοποιήστε ένα από τα πρόσθετα γραφικών στοιχείων σχολίων:
 

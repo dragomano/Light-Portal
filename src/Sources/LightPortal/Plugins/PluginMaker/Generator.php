@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -217,7 +217,7 @@ class Generator
 				"Utils::\$context['lp_content_types'][\$this->name] = '" . $this->plugin['name'] . "';"
 			),
 			$this->hasType(PluginType::COMMENT) => $method->setBody(
-				"Lang::\$txt['lp_comment_block_set'][\$this->name] = '" . $this->plugin['name'] . "';"
+				"Lang::setTxt(['lp_comment_block_set', \$this->name], '" . $this->plugin['name'] . "');"
 			),
 			! empty($this->plugin['smf_hooks']) => $method->setBody(
 				"// \$this->applyHook('hook_name');"
@@ -530,12 +530,12 @@ class Generator
 
 		$method
 			->addBody("\$e->args->links[] = [")
-			->addBody("\t'title' => '" . Lang::$txt['lp_plugin_maker']['component_name'] . "',")
-			->addBody("\t'link' => '" . Lang::$txt['lp_plugin_maker']['component_link'] . "',")
-			->addBody("\t'author' => '" . Lang::$txt['lp_plugin_maker']['component_author'] . "',")
+			->addBody("\t'title' => '" . __('lp_plugin_maker')['component_name'] . "',")
+			->addBody("\t'link' => '" . __('lp_plugin_maker')['component_link'] . "',")
+			->addBody("\t'author' => '" . __('lp_plugin_maker')['component_author'] . "',")
 			->addBody("\t'license' => [")
-			->addBody("\t\t'name' => '" . Lang::$txt['lp_plugin_maker']['license_name'] . "',")
-			->addBody("\t\t'link' => '" . Lang::$txt['lp_plugin_maker']['license_link'] . "'")
+			->addBody("\t\t'name' => '" . __('lp_plugin_maker')['license_name'] . "',")
+			->addBody("\t\t'link' => '" . __('lp_plugin_maker')['license_link'] . "'")
 			->addBody("\t]")
 			->addBody("];");
 	}
@@ -705,8 +705,8 @@ class Generator
 			$licenseName = $licenseEnum->getName();
 			$licenseLink = $licenseEnum->getLink();
 		} else {
-			$licenseName = Lang::$txt['lp_plugin_maker']['license_name'];
-			$licenseLink = Lang::$txt['lp_plugin_maker']['license_link'];
+			$licenseName = __('lp_plugin_maker')['license_name'];
+			$licenseLink = __('lp_plugin_maker')['license_link'];
 		}
 
 		$file->addComment("@package " . $this->plugin['name'] . " (" . LP_NAME .')');

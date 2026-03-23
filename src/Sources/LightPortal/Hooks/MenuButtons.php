@@ -84,36 +84,36 @@ class MenuButtons
 			array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
 			[
 				'portal_settings' => [
-					'title'       => Lang::$txt['lp_settings'],
+					'title'       => __('lp_settings'),
 					'href'        => Config::$scripturl . '?action=admin;area=lp_settings',
 					'show'        => true,
 					'sub_buttons' => [
 						'blocks'  => [
-							'title' => Lang::$txt['lp_blocks'],
+							'title' => __('lp_blocks'),
 							'href'  => Config::$scripturl . '?action=admin;area=lp_blocks',
 							'amt'   => Utils::$context['lp_quantities']['active_blocks'],
 							'show'  => true,
 						],
 						'pages'   => [
-							'title' => Lang::$txt['lp_pages'],
+							'title' => __('lp_pages'),
 							'href'  => Config::$scripturl . '?action=admin;area=lp_pages',
 							'amt'   => Utils::$context['lp_quantities']['active_pages'],
 							'show'  => true,
 						],
 						'categories'   => [
-							'title' => Lang::$txt['lp_categories'],
+							'title' => __('lp_categories'),
 							'href'  => Config::$scripturl . '?action=admin;area=lp_categories',
 							'amt'   => Utils::$context['lp_quantities']['active_categories'],
 							'show'  => true,
 						],
 						'tags'   => [
-							'title' => Lang::$txt['lp_tags'],
+							'title' => __('lp_tags'),
 							'href'  => Config::$scripturl . '?action=admin;area=lp_tags',
 							'amt'   => Utils::$context['lp_quantities']['active_tags'],
 							'show'  => true,
 						],
 						'plugins' => [
-							'title'   => Lang::$txt['lp_plugins'],
+							'title'   => __('lp_plugins'),
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
 							'amt'     => count(Setting::getEnabledPlugins()),
 							'show'    => true,
@@ -136,7 +136,7 @@ class MenuButtons
 		$buttons['moderate']['sub_buttons'] = array_merge(
 			[
 				'lp_pages' => [
-					'title' => Lang::$txt['lp_pages_unapproved'],
+					'title' => __('lp_pages_unapproved'),
 					'href'  => Config::$scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
 					'amt'   => Utils::$context['lp_quantities']['unapproved_pages'],
 					'show'  => true,
@@ -193,7 +193,7 @@ class MenuButtons
 		// Display "Portal" item in Main Menu
 		$buttons = array_merge([
 			LP_ACTION => [
-				'title'   => Lang::$txt['lp_portal'],
+				'title'   => __('lp_portal'),
 				'href'    => Config::$scripturl,
 				'icon'    => Action::HOME->value,
 				'show'    => true,
@@ -202,7 +202,7 @@ class MenuButtons
 		], $buttons);
 
 		// "Forum"
-		$buttons[Action::HOME->value]['title'] = Lang::$txt['lp_forum'];
+		$buttons[Action::HOME->value]['title'] = __('lp_forum');
 		$buttons[Action::HOME->value]['href']  = Config::$scripturl . '?action=forum';
 		$buttons[Action::HOME->value]['icon']  = 'im_on';
 
@@ -210,7 +210,7 @@ class MenuButtons
 		if (empty(Config::$modSettings['lp_standalone_mode']))
 			return;
 
-		$buttons[LP_ACTION]['title']   = Lang::$txt['lp_portal'];
+		$buttons[LP_ACTION]['title']   = __('lp_portal');
 		$buttons[LP_ACTION]['href']    = Config::$modSettings['lp_standalone_url'] ?: Config::$scripturl;
 		$buttons[LP_ACTION]['icon']    = Action::HOME->value;
 		$buttons[LP_ACTION]['is_last'] = Utils::$context['right_to_left'];
@@ -221,7 +221,7 @@ class MenuButtons
 			array_slice($buttons, 0, 2, true),
 			[
 				Action::FORUM->value => [
-					'title' => Lang::$txt['lp_forum'],
+					'title' => __('lp_forum'),
 					'href'  => $href,
 					'icon'  => 'im_on',
 					'show'  => true,
@@ -247,8 +247,8 @@ class MenuButtons
 		}
 
 		if (! empty(Config::$modSettings['lp_show_debug_info'])) {
-			Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
-				Lang::getTxt('lp_seconds_set', [
+			Utils::$context['lp_load_page_stats'] = __('lp_load_page_stats', [
+				__('lp_seconds_set', [
 					'seconds' => microtime(true) - Utils::$context['lp_load_time'],
 				]),
 			]);

@@ -12,7 +12,6 @@
 namespace LightPortal\DataHandlers\Imports\Database;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use LightPortal\DataHandlers\DataHandler;
@@ -48,19 +47,21 @@ abstract class AbstractDatabaseImport extends DataHandler implements DatabaseImp
 
 	public function main(): void
 	{
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt[$this->langKey]['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_' . $this->entity . '_import'];
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_' . $this->entity . ';sa=' . $this->formAction;
+		Utils::$context['page_title']      = __('lp_portal') . ' - ' . __($this->langKey)['label_name'];
+		Utils::$context['page_area_title'] = __('lp_' . $this->entity . '_import');
+
+		Utils::$context['form_action'] = Config::$scripturl
+			. '?action=admin;area=lp_' . $this->entity . ';sa=' . $this->formAction;
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt[$this->langKey][$this->type . '_import_desc'],
+			'description' => __($this->langKey)[$this->type . '_import_desc'],
 		];
 
 		$this->run();
 
 		$this->getTablePresenter()->show(
-			PortalTableBuilder::make($this->uiTableId, Lang::$txt['lp_' . $this->entity . '_import'])
+			PortalTableBuilder::make($this->uiTableId, __('lp_' . $this->entity . '_import'))
 				->withParams(50, defaultSortColumn: $this->sortColumn)
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))

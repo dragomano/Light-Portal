@@ -62,8 +62,9 @@ class SimpleFeeder extends Block
 
 	public function getData(string $url): array
 	{
-		if ($url === '')
+		if ($url === '') {
 			return [];
+		}
 
 		$file = file_get_contents($url);
 

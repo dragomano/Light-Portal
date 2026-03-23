@@ -1,6 +1,6 @@
 {
     "require": {
-        "league/commonmark": "^2.4",
+        "league/commonmark": "^2.8",
         "zoon/commonmark-ext-youtube-iframe": "^2.0"
     },
     "autoload": {

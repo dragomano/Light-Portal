@@ -12,11 +12,12 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\TinyInteger;
+use Laminas\Db\Extra\Sql\Columns\UnsignedInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ class CategoriesTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_categories';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id       = new AutoIncrementInteger('category_id');
 		$parentId = new UnsignedInteger('parent_id');

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\BoardNews;
@@ -97,7 +97,7 @@ class BoardNews extends SsiBlock
 		Theme::loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($boardNews as $news) {
-			$news['link'] = Str::html('a', Lang::getTxt('lp_comments_set', ['comments' => $news['replies']]))
+			$news['link'] = Str::html('a', __('lp_comments_set', ['comments' => $news['replies']]))
 				->href($news['href']);
 
 			$content = Str::html('div')->class('news_item');
@@ -110,7 +110,7 @@ class BoardNews extends SsiBlock
 
 			$content->addHtml(
 				Str::html('div')->class('news_timestamp')
-					->setHtml($news['time'] . ' ' . Lang::$txt['by'] . ' ' . $news['poster']['link'])
+					->setHtml($news['time'] . ' ' . __('by') . ' ' . $news['poster']['link'])
 			);
 
 			$content->addHtml(
@@ -150,7 +150,7 @@ class BoardNews extends SsiBlock
 							->class('msg_like')
 							->addHtml(
 								Str::html('span')->class($news['likes']['you'] ? 'unlike' : 'like') .
-								($news['likes']['you'] ? Lang::$txt['unlike'] : Lang::$txt['like'])
+								($news['likes']['you'] ? __('unlike') : __('like'))
 							)
 					)
 			);
@@ -166,12 +166,12 @@ class BoardNews extends SsiBlock
 				$count--;
 			}
 
-			$base .= (isset(Lang::$txt[$base . $count])) ? $count : 'n';
+			$base .= (Lang::txtExists($base . $count)) ? $count : 'n';
 
 			$likesList->addHtml(
 				Str::html('li')->class('like_count smalltext')->setHtml(
 					sprintf(
-						Lang::$txt[$base],
+						__($base),
 						implode('', [
 							Config::$scripturl,
 							'?action=likes;sa=view;ltype=msg;like=',

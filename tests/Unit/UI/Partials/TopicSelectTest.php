@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
-use LightPortal\Database\PortalResultInterface;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use LightPortal\UI\Partials\TopicSelect;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Database\Operations\PortalSelect;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 
@@ -176,8 +176,8 @@ it('returns empty array for null topics', function () {
 
 it('builds correct SQL query for topics with board permissions', function () {
 	$sqlMock = mock(PortalSqlInterface::class);
-	$selectMock = mock(PortalSelect::class);
-	$resultMock = mock(PortalResultInterface::class);
+	$selectMock = mock(ExtendedSelect::class);
+	$resultMock = mock(ExtendedResultInterface::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
@@ -204,8 +204,8 @@ it('builds correct SQL query for topics with board permissions', function () {
 
 it('builds correct SQL query for topics without board permissions', function () {
 	$sqlMock = mock(PortalSqlInterface::class);
-	$selectMock = mock(PortalSelect::class);
-	$resultMock = mock(PortalResultInterface::class);
+	$selectMock = mock(ExtendedSelect::class);
+	$resultMock = mock(ExtendedResultInterface::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
@@ -234,8 +234,8 @@ it('processes topic results with text censoring', function () {
 	$testSubject = 'Test Topic Subject';
 
 	$sqlMock = mock(PortalSqlInterface::class);
-	$selectMock = mock(PortalSelect::class);
-	$resultMock = mock(PortalResultInterface::class);
+	$selectMock = mock(ExtendedSelect::class);
+	$resultMock = mock(ExtendedResultInterface::class);
 
 	$topics = [
 		['id_topic' => 1, 'subject' => $testSubject],
@@ -272,7 +272,7 @@ it('processes topic results with text censoring', function () {
 
 it('handles database errors gracefully', function () {
 	$sqlMock = mock(PortalSqlInterface::class);
-	$selectMock = mock(PortalSelect::class);
+	$selectMock = mock(ExtendedSelect::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andThrow(new Exception('Database error'));

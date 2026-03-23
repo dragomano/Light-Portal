@@ -12,13 +12,4 @@
 
 namespace LightPortal\UI\Fields;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-class InputField extends AbstractField
-{
-	public function __construct(string $name, string $label)
-	{
-		parent::__construct($name, $label);
-	}
-}
+class InputField extends AbstractField {}

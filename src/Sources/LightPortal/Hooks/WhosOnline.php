@@ -13,7 +13,6 @@
 namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Lists\CategoryList;
@@ -36,11 +35,11 @@ class WhosOnline
 	{
 		$result = '';
 		if (empty($actions['action']) && empty($actions['board'])) {
-			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
+			$result = sprintf(__('lp_who_viewing_frontpage'), Config::$scripturl);
 
 			if (Setting::isStandaloneMode()) {
 				$result = sprintf(
-					Lang::$txt['lp_who_viewing_frontpage'],
+					__('lp_who_viewing_frontpage'),
 					Config::$modSettings['lp_standalone_url']
 				);
 			}
@@ -48,7 +47,7 @@ class WhosOnline
 
 		if (isset($actions[LP_PAGE_PARAM])) {
 			$result = sprintf(
-				Lang::$txt['lp_who_viewing_page'],
+				__('lp_who_viewing_page'),
 				LP_PAGE_URL . $actions[LP_PAGE_PARAM]
 			);
 		}
@@ -57,18 +56,18 @@ class WhosOnline
 			return $result;
 
 		if ($actions['action'] === LP_ACTION) {
-			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], LP_BASE_URL);
+			$result = sprintf(__('lp_who_viewing_frontpage'), LP_BASE_URL);
 
 			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::TAGS->name()) {
 				$tags = app(TagList::class)();
 
 				$result = isset($actions['id'])
-					? Lang::getTxt('lp_who_viewing_the_tag', [
+					? __('lp_who_viewing_the_tag', [
 						PortalSubAction::TAGS->url() . ';id=' . $actions['id'],
 						$tags[$actions['id']]
 					])
 					: sprintf(
-						Lang::$txt['lp_who_viewing_tags'],
+						__('lp_who_viewing_tags'),
 						PortalSubAction::TAGS->url()
 					);
 			}
@@ -77,12 +76,12 @@ class WhosOnline
 				$categories = app(CategoryList::class)();
 
 				$result = isset($actions['id'])
-					? Lang::getTxt('lp_who_viewing_the_category', [
+					? __('lp_who_viewing_the_category', [
 						PortalSubAction::CATEGORIES->url() . ';id=' . $actions['id'],
 						$categories[$actions['id']]['name']
 					])
 					: sprintf(
-						Lang::$txt['lp_who_viewing_categories'],
+						__('lp_who_viewing_categories'),
 						PortalSubAction::CATEGORIES->url()
 					);
 			}
@@ -90,7 +89,7 @@ class WhosOnline
 
 		if ($actions['action'] === Action::FORUM->value) {
 			$result = sprintf(
-				Lang::$txt['lp_who_viewing_index'],
+				__('lp_who_viewing_index'),
 				Config::$scripturl . '?action=forum'
 			);
 		}

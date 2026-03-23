@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 02.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\AdsBlock;
@@ -45,7 +45,7 @@ class AdsBlock extends Block
 
 	public function init(): void
 	{
-		Utils::$context['lp_block_placements']['ads'] = Lang::$txt['lp_ads_block']['ads_type'];
+		Utils::$context['lp_block_placements']['ads'] = __('lp_ads_block')['ads_type'];
 
 		$this->applyHook(ForumHook::menuButtons, MenuButtons::class);
 		$this->applyHook(ForumHook::prepareDisplayContext, PrepareDisplayContext::class);
@@ -128,7 +128,7 @@ class AdsBlock extends Block
 			->setAttribute('class', 'hidden')
 			->setValue('all');
 
-		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
+		CustomField::make('ads_placement', __('lp_block_placement'))
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect([
 				'placements' => $options['ads_placement'],
@@ -174,7 +174,7 @@ class AdsBlock extends Block
 		if ($e->args->data['placement'] !== 'ads')
 			return;
 
-		Lang::$txt['lp_post_error_no_ads_placement'] = $this->txt['no_ads_placement'];
+		Lang::setTxt('lp_post_error_no_ads_placement', $this->txt['no_ads_placement']);
 
 		if (empty($e->args->data['options']['ads_placement'])) {
 			$e->args->errors[] = 'no_ads_placement';

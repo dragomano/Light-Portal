@@ -24,7 +24,7 @@ class PermissionsList
 {
 	public function __invoke(array &$permissions): void
 	{
-		Lang::$txt['permissiongroup_light_portal'] = LP_NAME;
+		Lang::setTxt('permissiongroup_light_portal', LP_NAME);
 
 		Permissions::$permission_groups['global'][] = 'light_portal';
 		Permissions::$left_permission_groups[] = 'light_portal';

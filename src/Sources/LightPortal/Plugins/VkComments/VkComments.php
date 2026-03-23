@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\VkComments;
@@ -30,7 +30,7 @@ class VkComments extends Plugin
 {
 	public function init(): void
 	{
-		Lang::$txt['lp_comment_block_set']['vk'] = 'VKontakte';
+		Lang::setTxt(['lp_comment_block_set', 'vk'], 'VKontakte');
 	}
 
 	public function addSettings(Event $e): void

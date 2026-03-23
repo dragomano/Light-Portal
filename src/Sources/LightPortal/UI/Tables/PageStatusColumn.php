@@ -12,7 +12,6 @@
 
 namespace LightPortal\UI\Tables;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Enums\Status;
 use LightPortal\Utils\Str;
@@ -23,7 +22,7 @@ class PageStatusColumn extends StatusColumn
 	{
 		return parent::make($name, $title)
 			->setData(fn($entry) => $entry['status'] >= count(Status::cases()) - 1
-				? Lang::$txt['lp_page_status_set'][$entry['status']] ?? Lang::$txt['no']
+				? __('lp_page_status_set')[$entry['status']] ?? __('no')
 				: (User::$me->allowedTo('light_portal_approve_pages')
 					? Str::html('div', [
 							'data-id' => $entry['id'],
@@ -31,7 +30,7 @@ class PageStatusColumn extends StatusColumn
 							'x-init'  => '$watch(\'status\', value => entity.toggleStatus($el))',
 						])->setHtml(Str::html('span', [
 							':class' => '{ \'on\': status, \'off\': !status }',
-							':title' => 'status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'',
+							':title' => 'status ? \'' . __('lp_action_off') . '\' : \'' . __('lp_action_on') . '\'',
 							'x-on:click.prevent' => 'status = !status',
 						])
 					)

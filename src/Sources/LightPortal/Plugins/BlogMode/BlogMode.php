@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\BlogMode;
@@ -100,8 +100,8 @@ class BlogMode extends Plugin
 
 	public function extendBasicConfig(Event $e): void
 	{
-		Lang::$txt['groups_light_portal_post_blog_entries'] = $this->txt['group_permission'];
-		Lang::$txt['permissionname_light_portal_post_blog_entries'] = $this->txt['permission'];
+		Lang::setTxt('groups_light_portal_post_blog_entries', $this->txt['group_permission']);
+		Lang::setTxt('permissionname_light_portal_post_blog_entries', $this->txt['permission']);
 
 		$configVars = &$e->args->configVars;
 
@@ -131,7 +131,7 @@ class BlogMode extends Plugin
 		$this->applyHook(ForumHook::loadIllegalGuestPermissions);
 		$this->applyHook(ForumHook::loadPermissions);
 
-		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = $this->txt['permission'];
+		Lang::setTxt('group_perms_name_light_portal_post_blog_entries', $this->txt['permission']);
 
 		if (empty(User::$me->allowedTo('light_portal_post_blog_entries')))
 			return;
@@ -200,8 +200,8 @@ class BlogMode extends Plugin
 
 	public function loadPermissions(array &$permissionGroups, array &$permissionList): void
 	{
-		Lang::$txt['permissionname_light_portal_post_blog_entries']   = $this->txt['permission'];
-		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = $this->txt['permission'];
+		Lang::setTxt('permissionname_light_portal_post_blog_entries', $this->txt['permission']);
+		Lang::setTxt('group_perms_name_light_portal_post_blog_entries', $this->txt['permission']);
 
 		$permissionList['membergroup']['light_portal_post_blog_entries'] = [false, 'light_portal'];
 	}
@@ -247,7 +247,7 @@ class BlogMode extends Plugin
 			->setCount($this->pageRepository->getTotalCount(...), $params)
 			->addColumns([
 				IdColumn::make()->setSort('p.page_id'),
-				DateColumn::make(title: Lang::$txt['date']),
+				DateColumn::make(title: __('date')),
 				NumViewsColumn::make(),
 				TitleColumn::make()
 					->setData(static fn($entry) => Str::html('a', ['class' => 'bbc_link'])
@@ -257,10 +257,10 @@ class BlogMode extends Plugin
 			]);
 
 		Utils::$context['user']['is_owner'] && $builder->addColumn(
-			Column::make('actions', Lang::$txt['lp_actions'])
+			Column::make('actions', __('lp_actions'))
 				->setStyle('width: 8%')
 				->setData(static fn($entry) => Str::html('a', ['class' => 'button'])
-					->title(Lang::$txt['modify'])
+					->title(__('modify'))
 					->href(Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'])
 					->setHtml(Str::html('span', ['class' => 'main_icons modify_button'])), 'centertext'),
 		);

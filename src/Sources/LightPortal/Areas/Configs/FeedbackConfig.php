@@ -13,7 +13,6 @@
 namespace LightPortal\Areas\Configs;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\UI\TemplateLoader;
 
@@ -24,7 +23,7 @@ final class FeedbackConfig extends AbstractConfig
 {
 	public function show(): void
 	{
-		Utils::$context['page_title']    = Lang::$txt['lp_feedback'];
+		Utils::$context['page_title']    = __('lp_feedback');
 		Utils::$context['success_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=feedback;success';
 		Utils::$context['feedback_sent'] = $this->request()->has('success');
 

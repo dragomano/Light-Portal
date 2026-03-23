@@ -4,9 +4,9 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use Laminas\Db\Sql\Expression;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
@@ -249,8 +249,8 @@ describe('PageValidator::extendErrors', function () {
             'content' => '',
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')
@@ -295,8 +295,8 @@ describe('PageValidator::extendErrors', function () {
             'content' => '',
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')
@@ -341,8 +341,8 @@ describe('PageValidator::extendErrors', function () {
             'content' => 'Test content',
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')
@@ -380,8 +380,8 @@ describe('PageValidator::isUnique', function () {
             'page_id' => $pageId,
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->once()
@@ -423,8 +423,8 @@ describe('PageValidator::isUnique', function () {
             'page_id' => 1,
         ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $capturedExpression = null;
 
@@ -498,8 +498,8 @@ describe('PageValidator::integration', function () {
                 'allow_comments'       => '1',
             ]);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')
@@ -561,8 +561,8 @@ describe('PageValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')
@@ -620,8 +620,8 @@ describe('PageValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')
@@ -679,8 +679,8 @@ describe('PageValidator::integration', function () {
             ->once()
             ->with('preview', true);
 
-        $select = mock(PortalSelect::class);
-        $result = mock(PortalResultInterface::class);
+        $select = mock(ExtendedSelect::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $this->sql->shouldReceive('select')
             ->with('lp_pages')

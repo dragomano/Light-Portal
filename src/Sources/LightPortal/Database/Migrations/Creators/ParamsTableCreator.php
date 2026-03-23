@@ -12,12 +12,13 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Extra\Sql\Columns\AutoIncrementInteger;
+use Laminas\Db\Extra\Sql\Columns\UnsignedInteger;
+use Laminas\Db\Extra\Sql\ExtendedTable;
+use Laminas\Db\Extra\Sql\Migrations\AbstractTableCreator;
 use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +27,7 @@ class ParamsTableCreator extends AbstractTableCreator
 {
 	protected string $tableName = 'lp_params';
 
-	protected function defineColumns(PortalTable $table): void
+	protected function defineColumns(ExtendedTable $table): void
 	{
 		$id     = new AutoIncrementInteger();
 		$itemId = new UnsignedInteger('item_id');

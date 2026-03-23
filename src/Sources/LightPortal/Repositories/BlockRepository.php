@@ -13,7 +13,7 @@
 namespace LightPortal\Repositories;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Msg;
+use Bugo\Compat\Parser;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Predicate\Expression;
@@ -171,7 +171,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 		foreach ($result as $row) {
 			if ($row['type'] === ContentType::BBC->name()) {
-				$row['content'] = Msg::un_preparsecode($row['content'] ?? '');
+				$row['content'] = Parser::getEditableString($row['content'] ?? '');
 			}
 
 			$data ??= [
@@ -277,6 +277,14 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		}
 	}
 
+	public function updateStatusByType(string $type, int $status): void
+	{
+		$update = $this->sql->update('lp_blocks');
+		$update->set(['status' => $status]);
+		$update->where(['type = ?' => $type]);
+		$this->sql->execute($update);
+	}
+
 	private function addData(array $data): int
 	{
 		return $this->executeInTransaction(function() use ($data) {
@@ -301,7 +309,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 				throw new RuntimeException('Failed to insert block');
 			}
 
-			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item, 'data' => &$data]);
 
 			$data['id'] = $item;
 
@@ -329,7 +337,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$this->sql->execute($update);
 
-			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item, 'data' => &$data]);
 
 			$this->saveTranslations($data, true);
 			$this->saveOptions($data, true);
@@ -338,14 +346,14 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 	private function prepareMissingBlockTypes(string $type): void
 	{
-		if (isset(Lang::$txt['lp_' . $type]['title']))
+		if (Lang::txtExists('lp_' . $type) && isset(Lang::getTxt('lp_' . $type)['title']))
 			return;
 
 		$plugin = Str::getCamelName($type);
 
 		$message = in_array($plugin, app(PluginList::class)())
-			? Lang::$txt['lp_addon_not_activated']
-			: Lang::$txt['lp_addon_not_installed'];
+			? __('lp_addon_not_activated')
+			: __('lp_addon_not_installed');
 
 		Utils::$context['lp_missing_block_types'][$type] = Str::html('span')->class('error')
 			->setText(sprintf($message, $plugin));

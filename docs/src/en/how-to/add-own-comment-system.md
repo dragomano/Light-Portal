@@ -4,7 +4,7 @@ description: Instructions on how to add custom comments for portal pages
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 Choose and enable one of comment widget plugins:
 

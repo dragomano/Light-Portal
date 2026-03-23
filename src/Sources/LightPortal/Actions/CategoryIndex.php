@@ -13,7 +13,6 @@
 namespace LightPortal\Actions;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Repositories\CategoryIndexRepository;
@@ -33,7 +32,7 @@ class CategoryIndex extends AbstractIndex
 
 	public function show(): void
 	{
-		Utils::$context['page_title']     = Lang::$txt['lp_all_categories'];
+		Utils::$context['page_title']     = __('lp_all_categories');
 		Utils::$context['canonical_url']  = PortalSubAction::CATEGORIES->url();
 		Utils::$context['robot_no_index'] = true;
 
@@ -43,21 +42,21 @@ class CategoryIndex extends AbstractIndex
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])
 				->withParams(
 					Setting::get('defaultMaxListItems', 'int', 50),
-					Lang::$txt['lp_no_categories'],
+					__('lp_no_categories'),
 					Utils::$context['canonical_url'],
 					'title'
 				)
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))
 				->addColumns([
-					Column::make('title', Lang::$txt['lp_category'])
+					Column::make('title', __('lp_category'))
 						->setData(static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
 								->href($entry['link']) . (empty($entry['description'])
 								? ''
 								: Str::html('p', $entry['description'])
 									->class('smalltext')))
 						->setSort('title DESC', 'title'),
-					Column::make('num_pages', Lang::$txt['lp_total_pages_column'])
+					Column::make('num_pages', __('lp_total_pages_column'))
 						->setStyle('width: 16%')
 						->setData('num_pages', 'centertext')
 						->setSort('frequency DESC', 'frequency'),

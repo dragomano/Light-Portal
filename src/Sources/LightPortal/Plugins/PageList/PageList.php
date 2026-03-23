@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 10.02.26
  */
 
 namespace LightPortal\Plugins\PageList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Tab;
@@ -69,7 +68,7 @@ class PageList extends Block
 	{
 		$options = $e->args->options;
 
-		CustomField::make('categories', Lang::$txt['lp_categories'])
+		CustomField::make('categories', __('lp_categories'))
 			->setTab(Tab::CONTENT)
 			->setValue(fn() => SelectFactory::category([
 				'id'    => 'categories',
@@ -77,7 +76,7 @@ class PageList extends Block
 				'value' => $options['categories'] ?? '',
 			]));
 
-		CustomField::make('types', Lang::$txt['lp_page_type'])
+		CustomField::make('types', __('lp_page_type'))
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => SelectFactory::entryType([
 				'id'    => 'types',
@@ -167,11 +166,11 @@ class PageList extends Block
 				])->setText($page['author_name']);
 
 				$li->addHtml($link)
-					->addHtml(' ' . Lang::$txt['by'] . ' ' . $author . ', ' . DateTime::relative($page['created_at']) . ' (')
-					->addHtml(Lang::getTxt('lp_views_set', ['views' => $page['num_views']]));
+					->addHtml(' ' . __('by') . ' ' . $author . ', ' . DateTime::relative($page['created_at']) . ' (')
+					->addHtml(__('lp_views_set', ['views' => $page['num_views']]));
 
 				if ($page['num_comments'] && Setting::getCommentBlock() === 'default') {
-					$li->addHtml(', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]));
+					$li->addHtml(', ' . __('lp_comments_set', ['comments' => $page['num_comments']]));
 				}
 
 				$li->addHtml(')');

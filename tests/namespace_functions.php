@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace LightPortal;
 
 use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventManager;
 use LightPortal\Lists\CategoryList;
@@ -53,9 +53,9 @@ if (! function_exists('LightPortal\\app')) {
                     return $callback();
                 }
 
-                public function setFallback(callable $callback): null
+                public function setFallback(callable $callback): mixed
                 {
-                    return null;
+                    return $callback();
                 }
 
                 public function get(string $key, int $time = null): null
@@ -70,7 +70,7 @@ if (! function_exists('LightPortal\\app')) {
                 public function flush(): void {}
             };
         } elseif (str_contains($service, 'PortalSqlInterface')) {
-            $selectMock = mock(PortalSelect::class);
+            $selectMock = mock(ExtendedSelect::class);
             $selectMock->shouldReceive('from')->andReturnSelf();
             $selectMock->shouldReceive('columns')->andReturnSelf();
             $selectMock->shouldReceive('join')->andReturnSelf();
@@ -78,7 +78,7 @@ if (! function_exists('LightPortal\\app')) {
             $selectMock->shouldReceive('order')->andReturnSelf();
             $selectMock->shouldIgnoreMissing();
 
-            $resultMock = mock(PortalResultInterface::class);
+            $resultMock = mock(ExtendedResultInterface::class);
             $resultMock->shouldReceive('current')->andReturn(['id_member' => []]);
             $resultMock->shouldReceive('valid')->andReturn(false);
             $resultMock->shouldReceive('next')->andReturn(null);

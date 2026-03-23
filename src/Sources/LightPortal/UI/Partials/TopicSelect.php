@@ -35,8 +35,8 @@ final class TopicSelect extends AbstractSelect
 			'multiple' => true,
 			'wide'     => true,
 			'more'     => true,
-			'hint'     => Lang::$txt['lp_frontpage_topics_select'],
-			'empty'    => Lang::$txt['lp_frontpage_topics_no_items'],
+			'hint'     => __('lp_frontpage_topics_select'),
+			'empty'    => __('lp_frontpage_topics_no_items'),
 			'value'    => $this->normalizeValue(Config::$modSettings['lp_frontpage_topics'] ?? ''),
 		];
 	}

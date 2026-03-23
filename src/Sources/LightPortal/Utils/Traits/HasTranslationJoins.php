@@ -13,7 +13,6 @@
 namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
@@ -108,7 +107,7 @@ trait HasTranslationJoins
 		return [
 			'lang'          => User::$me->language,
 			'fallback_lang' => Config::$language,
-			'guest'         => Lang::$txt['guest_title'],
+			'guest'         => __('guest_title'),
 		];
 	}
 }

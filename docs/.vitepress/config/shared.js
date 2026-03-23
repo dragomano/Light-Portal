@@ -11,6 +11,7 @@ const commonSidebarConfigs = {
   excludePattern: ['changelog.md', 'examples.md'],
   manualSortFileNameByPriority: [
     'intro.md',
+    'faq.md',
     'getting-started',
     'blocks',
     'pages',

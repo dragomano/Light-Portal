@@ -13,7 +13,7 @@
 namespace LightPortal;
 
 use Bugo\Compat\ErrorHandler;
-use League\Container\Container as LeagueContainer;
+use Laminas\ServiceManager\ServiceManager;
 use Throwable;
 
 if (! defined('SMF'))
@@ -21,15 +21,21 @@ if (! defined('SMF'))
 
 class Container
 {
-	private static ?LeagueContainer $container = null;
+	private static ?ServiceManager $container = null;
 
-	public static function getInstance(): LeagueContainer
+	private static array $tags = [];
+
+	private static array $taggedServices = [];
+
+	private static ?self $instance = null;
+
+	public static function getInstance(): self
 	{
-		if (self::$container === null) {
-			self::init();
+		if (self::$instance === null) {
+			self::$instance = new self();
 		}
 
-		return self::$container;
+		return self::$instance;
 	}
 
 	/**
@@ -37,21 +43,116 @@ class Container
 	 * @param class-string<RequestedType>|string $service
 	 * @return RequestedType|mixed
 	 */
-	public static function get(string $service): mixed
+	public function get(string $service): mixed
 	{
+		if (isset(self::$taggedServices[$service])) {
+			return self::$taggedServices[$service];
+		}
+
 		try {
-			return self::getInstance()->get($service);
+			return $this->getServiceManager()->get($service);
 		} catch (Throwable $e) {
-			ErrorHandler::log('[LP] container: ' . $e->getMessage(), file: $e->getFile(), line: $e->getLine());
+			ErrorHandler::log(
+				'[LP] container (get): ' . $e->getMessage(),
+				file: $e->getFile(),
+				line: $e->getLine()
+			);
 		}
 
 		return false;
 	}
 
-	protected static function init(): void
+	public function has(string $service): bool
 	{
-		self::$container = new LeagueContainer();
-		self::$container->defaultToShared();
-		self::$container->addServiceProvider(new ServiceProvider());
+		return $this->getServiceManager()->has($service) || isset(self::$taggedServices[$service]);
+	}
+
+	public function add(string $className, callable $factory = null): TaggableService
+	{
+		if ($factory === null) {
+			$factory = fn() => new $className();
+		}
+
+		$this->getServiceManager()->setFactory($className, $factory);
+
+		return new TaggableService($className, $this);
+	}
+
+	public function set(string $name, mixed $service): void
+	{
+		$this->getServiceManager()->setService($name, $service);
+	}
+
+	public function build(string $name, ?array $options = null): mixed
+	{
+		try {
+			return $this->getServiceManager()->build($name, $options);
+		} catch (Throwable $e) {
+			ErrorHandler::log(
+				'[LP] container (build): ' . $e->getMessage(),
+				file: $e->getFile(),
+				line: $e->getLine()
+			);
+		}
+
+		return false;
+	}
+
+	public function registerFactory(string $className, callable $factory): void
+	{
+		$this->getServiceManager()->setFactory($className, $factory);
+	}
+
+	public static function addServiceToTag(string $className, string $tag): void
+	{
+		if (! isset(self::$tags[$tag])) {
+			self::$tags[$tag] = [];
+		}
+
+		if (! in_array($className, self::$tags[$tag], true)) {
+			self::$tags[$tag][] = $className;
+		}
+
+		self::updateTaggedServices($tag);
+	}
+
+	private function getServiceManager(): ServiceManager
+	{
+		if (self::$container === null) {
+			$this->init();
+		}
+
+		return self::$container;
+	}
+
+	private static function updateTaggedServices(string $tag): void
+	{
+		$services = [];
+
+		foreach (self::$tags[$tag] ?? [] as $className) {
+			try {
+				$services[] = self::getInstance()->get($className);
+			} catch (Throwable $e) {
+				ErrorHandler::log(
+					"[LP] container: Failed to get tagged service '$className' for tag '$tag': " . $e->getMessage(),
+					file: $e->getFile(),
+					line: $e->getLine()
+				);
+			}
+		}
+
+		self::$taggedServices[$tag] = $services;
+	}
+
+	private function init(): void
+	{
+		$config = ServiceProvider::getConfig();
+
+		self::$container = new ServiceManager($config);
+
+		foreach ($config['tags'] ?? [] as $tag => $services) {
+			self::$tags[$tag] = $services;
+			self::updateTaggedServices($tag);
+		}
 	}
 }

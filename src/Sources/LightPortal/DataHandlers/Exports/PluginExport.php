@@ -35,8 +35,8 @@ class PluginExport extends AbstractExport
 	protected string $entity = 'plugins';
 
 	public function __construct(
-		PortalSqlInterface $sql,
-		FilesystemInterface $filesystem,
+		PortalSqlInterface    $sql,
+		FilesystemInterface   $filesystem,
 		ErrorHandlerInterface $errorHandler
 	)
 	{

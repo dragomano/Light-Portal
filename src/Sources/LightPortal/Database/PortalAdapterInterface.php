@@ -12,15 +12,6 @@
 
 namespace LightPortal\Database;
 
-use Laminas\Db\Adapter\AdapterInterface;
+use Laminas\Db\Extra\Adapter\ExtendedAdapterInterface;
 
-interface PortalAdapterInterface extends AdapterInterface
-{
-	public function getConfig(): array;
-
-	public function getPrefix(): string;
-
-	public function getVersion(): string;
-
-	public function getTitle(): string;
-}
+interface PortalAdapterInterface extends ExtendedAdapterInterface {}

@@ -1,12 +1,12 @@
-import { register, init, locale } from 'svelte-i18n';
+import { register, init, locale } from 'svelte-i18n'
 
-const { context, txt } = window.portalJson;
+const { context, txt } = window.portalJson
 
-register(context.locale, () => Promise.resolve(txt));
+register(context.locale, () => Promise.resolve(txt))
 
 init({
   fallbackLocale: context.locale,
   initialLocale: context.locale,
-});
+})
 
 locale.set(context.locale)

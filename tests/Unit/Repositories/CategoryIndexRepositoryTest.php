@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
+use Laminas\Db\Extra\Sql\TransactionInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\AbstractIndexRepository;
 use LightPortal\Repositories\CategoryIndexRepository;
-use LightPortal\Database\PortalTransactionInterface;
 
 arch()
     ->expect(CategoryIndexRepository::class)
@@ -29,7 +29,7 @@ beforeEach(function () {
 
     Config::$language = 'english';
 
-    $selectMock = mock(PortalSelect::class);
+    $selectMock = mock(ExtendedSelect::class);
     $selectMock->shouldReceive('from')->andReturnSelf();
     $selectMock->shouldReceive('columns')->andReturnSelf();
     $selectMock->shouldReceive('join')->andReturnSelf();
@@ -39,7 +39,7 @@ beforeEach(function () {
     $selectMock->shouldReceive('limit')->andReturnSelf();
     $selectMock->shouldReceive('offset')->andReturnSelf();
 
-    $transaction = mock(PortalTransactionInterface::class);
+    $transaction = mock(TransactionInterface::class);
 
     $this->sql = mock(PortalSqlInterface::class);
     $this->sql->shouldReceive('select')->andReturn($selectMock);
@@ -51,9 +51,9 @@ beforeEach(function () {
 
     $this->repository = new CategoryIndexRepository($this->sql, $this->dispatcher);
 
-    $this->makeResult = function (array $rows): PortalResultInterface {
+    $this->makeResult = function (array $rows): ExtendedResultInterface {
         $iterator = new ArrayIterator($rows);
-        $result = mock(PortalResultInterface::class);
+        $result = mock(ExtendedResultInterface::class);
 
         $result->shouldReceive('current')->andReturnUsing(function () use ($iterator) {
             return $iterator->current();

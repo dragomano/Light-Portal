@@ -10,6 +10,10 @@
 		<li><a href="{{ $user['href'] }}">{!! $user['avatar']['image'] !!}</a></li>
 	@endunless
 
+	@unless (empty($zodiac))
+		<li><i class="fas fa-{{ $zodiac }} fa-2x"></i></li>
+	@endunless
+
 	<li>{{ $user['primary_group'] ?: ($user['post_group'] ?: '') }}</li>
 	<li>{!! $user['group_icons'] !!}</li>
 

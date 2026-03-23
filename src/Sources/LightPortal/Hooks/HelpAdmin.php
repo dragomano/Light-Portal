@@ -21,12 +21,15 @@ class HelpAdmin
 {
 	public function __invoke(): void
 	{
-		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt(
+		Lang::setTxt(
 			'lp_menu_separate_subsection_title_help',
-			[
-				'<var>{lp_pages}</var>',
-				'<var>$txt[`lp_pages`]</var>',
-			]
+			__(
+				'lp_menu_separate_subsection_title_help',
+				[
+					'<var>{lp_pages}</var>',
+					'<var>$txt[`lp_pages`]</var>',
+				]
+			)
 		);
 	}
 }

@@ -6,14 +6,14 @@ use Bugo\Compat\Cache\CacheApi;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Laminas\Db\Adapter\Platform\PlatformInterface;
+use Laminas\Db\Extra\Result\ExtendedResultInterface;
+use Laminas\Db\Extra\Sql\Operations\ExtendedDelete;
+use Laminas\Db\Extra\Sql\Operations\ExtendedInsert;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
+use Laminas\Db\Extra\Sql\Operations\ExtendedUpdate;
 use LightPortal\Database\Migrations\Installer;
-use LightPortal\Database\Operations\PortalDelete;
-use LightPortal\Database\Operations\PortalInsert;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\Operations\PortalUpdate;
 use LightPortal\Database\PortalAdapterFactory;
 use LightPortal\Database\PortalAdapterInterface;
-use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\PostInterface;
 use Tests\ReflectionAccessor;
@@ -43,19 +43,19 @@ describe('Installer', function () {
         $this->portalSqlMock->shouldReceive('tableExists')->andReturn(false);
         $this->portalSqlMock->shouldReceive('columnExists')->andReturn(false);
 
-        $selectMock = mock(PortalSelect::class)->shouldAllowMockingProtectedMethods();
+        $selectMock = mock(ExtendedSelect::class)->shouldAllowMockingProtectedMethods();
         $selectMock->shouldReceive('columns')->andReturnSelf();
         $selectMock->shouldReceive('where')->andReturnSelf();
 
         $this->portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
-        $insertMock = mock(PortalInsert::class)->shouldAllowMockingProtectedMethods();
+        $insertMock = mock(ExtendedInsert::class)->shouldAllowMockingProtectedMethods();
         $insertMock->shouldReceive('columns')->andReturnSelf();
         $insertMock->shouldReceive('values')->andReturnSelf();
 
         $this->portalSqlMock->shouldReceive('insert')->andReturn($insertMock);
 
-        $deleteMock = mock(PortalDelete::class)->shouldAllowMockingProtectedMethods();
+        $deleteMock = mock(ExtendedDelete::class)->shouldAllowMockingProtectedMethods();
         $reflection = new ReflectionAccessor($deleteMock);
         $reflection->setProperty('where', mock(['like' => null]));
 
@@ -63,7 +63,7 @@ describe('Installer', function () {
 
         $this->portalSqlMock
             ->shouldReceive('execute')
-            ->andReturn(mock(PortalResultInterface::class, ['current' => ['count' => 0]]));
+            ->andReturn(mock(ExtendedResultInterface::class, ['current' => ['count' => 0]]));
 
         Mockery::spy(Config::class)->shouldReceive('updateModSettings')->andReturn(null);
         Mockery::spy(CacheApi::class)->shouldReceive('clean');
@@ -147,7 +147,7 @@ describe('Installer', function () {
     });
 
     it('cleans background tasks', function () {
-        $deleteMock = mock(PortalDelete::class);
+        $deleteMock = mock(ExtendedDelete::class);
         $deleteMock
             ->shouldReceive('where')
             ->with(['task_file LIKE ?' => '%$sourcedir/LightPortal%'])
@@ -183,7 +183,7 @@ describe('Installer', function () {
     });
 
     it('updates settings', function () {
-        $updateMock = mock(PortalUpdate::class);
+        $updateMock = mock(ExtendedUpdate::class);
         $updateMock->shouldReceive('set')->andReturnSelf()->once();
         $updateMock->shouldReceive('where')->andReturnSelf()->once();
 

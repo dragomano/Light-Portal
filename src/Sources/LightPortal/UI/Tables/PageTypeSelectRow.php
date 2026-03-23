@@ -14,7 +14,6 @@ namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Bricks\Tables\RowPosition;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\EntryType;
 use LightPortal\Utils\Str;
@@ -35,7 +34,7 @@ class PageTypeSelectRow extends Row
 		}
 
 		$label = Str::html('label', ['for' => 'type'])
-			->setText(Lang::$txt['lp_page_type']);
+			->setText(__('lp_page_type'));
 
 		$select = Str::html('select', [
 			'id'       => 'type',

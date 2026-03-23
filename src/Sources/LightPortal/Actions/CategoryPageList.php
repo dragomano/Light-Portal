@@ -28,8 +28,10 @@ if (! defined('SMF'))
 
 class CategoryPageList extends AbstractPageList
 {
-	public function __construct(protected CardListInterface $cardList, CategoryPageArticleService $articleService)
-	{
+	public function __construct(
+		protected CardListInterface $cardList,
+		CategoryPageArticleService $articleService
+	) {
 		parent::__construct($cardList, $articleService);
 	}
 
@@ -42,26 +44,32 @@ class CategoryPageList extends AbstractPageList
 		$categories = app(CategoryList::class)();
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = PortalSubAction::CATEGORIES->url();
-			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
+
+			Lang::setTxt('back', __('lp_all_categories'));
+
 			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
 
 		if ($category['id'] === 0) {
-			Utils::$context['page_title'] = Lang::$txt['lp_all_pages_without_category'];
+			Utils::$context['page_title'] = __('lp_all_pages_without_category');
 		} else {
 			$category = $categories[$category['id']];
-			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['title']);
+
+			Utils::$context['page_title'] = sprintf(__('lp_all_pages_with_category'), $category['title']);
 		}
 
 		Utils::$context['description'] = $category['description'] ?? '';
+
 		Utils::$context['lp_category_edit_link'] = Config::$scripturl
 			. '?action=admin;area=lp_categories;sa=edit;id=' . $category['id'];
+
 		Utils::$context['canonical_url'] = PortalSubAction::CATEGORIES->url() . ';id=' . $category['id'];
+
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()
-			->add(Lang::$txt['lp_all_categories'], PortalSubAction::CATEGORIES->url())
-			->add($category['title'] ?? Lang::$txt['lp_no_category'], before: $category['icon'] ?? '');
+			->add(__('lp_all_categories'), PortalSubAction::CATEGORIES->url())
+			->add($category['title'] ?? __('lp_no_category'), before: $category['icon'] ?? '');
 
 		$this->cardList->show($this);
 

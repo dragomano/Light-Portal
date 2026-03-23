@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Utils};
 use LightPortal\Actions\FrontPage;
 
 use function LightPortal\app;
@@ -23,7 +23,7 @@ if (! file_exists($ssi)) {
 require_once $ssi;
 
 if (empty(Config::$sourcedir)) {
-	die('<strong>' . Lang::$txt['error_occured'] . '</strong> ' . Lang::$txt['lp_standalone_mode_error']);
+	die('<strong>' . __('error_occured') . '</strong> ' . __('lp_standalone_mode_error'));
 }
 
 if (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])) {

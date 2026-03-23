@@ -13,7 +13,6 @@
 namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use LightPortal\Lists\CategoryList;
 
 if (! defined('SMF'))
@@ -48,7 +47,7 @@ final class CategorySelect extends AbstractSelect
 			'disabled' => count($this->getData()) < 2,
 			'multiple' => true,
 			'wide'     => true,
-			'hint'     => Lang::$txt['lp_frontpage_categories_select'],
+			'hint'     => __('lp_frontpage_categories_select'),
 			'value'    => $this->normalizeValue(Config::$modSettings['lp_frontpage_categories'] ?? ''),
 		];
 	}

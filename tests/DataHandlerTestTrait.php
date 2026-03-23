@@ -8,20 +8,21 @@ use Exception;
 use InvalidArgumentException;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
-use LightPortal\Database\Operations\PortalDelete;
-use LightPortal\Database\Operations\PortalInsert;
-use LightPortal\Database\Operations\PortalReplace;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\Operations\PortalUpdate;
+use Laminas\Db\Extra\Sql\Operations\ExtendedDelete;
+use Laminas\Db\Extra\Sql\Operations\ExtendedInsert;
+use Laminas\Db\Extra\Sql\Operations\ExtendedReplace;
+use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
+use Laminas\Db\Extra\Sql\Operations\ExtendedUpdate;
+use Laminas\Db\Extra\Sql\TransactionInterface;
 use LightPortal\Database\PortalAdapterInterface;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\RequestInterface;
 use Mockery;
 use ReflectionClass;
 use ReflectionException;
 use SimpleXMLElement;
+use Throwable;
 
 trait DataHandlerTestTrait
 {
@@ -128,7 +129,7 @@ trait DataHandlerTestTrait
     {
         $connectionMock = mock(ConnectionInterface::class);
 
-        $transactionMock = mock(PortalTransactionInterface::class);
+        $transactionMock = mock(TransactionInterface::class);
         $transactionMock->allows([
             'begin'    => $connectionMock,
             'commit'   => $connectionMock,
@@ -148,7 +149,7 @@ trait DataHandlerTestTrait
             'or'      => $whereMock,
         ]);
 
-        $updateMock = mock(PortalUpdate::class);
+        $updateMock = mock(ExtendedUpdate::class);
         $updateMock->allows([
             'set'     => $updateMock,
             'where'   => $whereMock,
@@ -157,17 +158,17 @@ trait DataHandlerTestTrait
             'columns' => $updateMock,
         ]);
 
-        $replaceMock = mock(PortalReplace::class);
+        $replaceMock = mock(ExtendedReplace::class);
         $replaceMock->allows([
             'setConflictKeys' => $replaceMock,
             'batch'           => $replaceMock,
         ]);
 
-        $insertMock = mock(PortalInsert::class)
+        $insertMock = mock(ExtendedInsert::class)
             ->shouldReceive('batch')->andReturnSelf()
             ->getMock();
 
-        $selectMock = mock(PortalSelect::class);
+        $selectMock = mock(ExtendedSelect::class);
         $selectMock->allows([
             'from'    => $selectMock,
             'join'    => $selectMock,
@@ -187,7 +188,7 @@ trait DataHandlerTestTrait
             'select'         => $selectMock,
             'insert'         => $insertMock,
             'update'         => $updateMock,
-            'delete'         => mock(PortalDelete::class),
+            'delete'         => mock(ExtendedDelete::class),
             'replace'        => $replaceMock,
             'execute'        => $resultMock,
             'query'          => $resultMock,
@@ -476,7 +477,7 @@ trait DataHandlerTestTrait
 
     /**
      * @throws ReflectionException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     protected function createXmlImporterMock(string $importerClass, array $options = []): Mockery\MockInterface
     {
@@ -603,7 +604,7 @@ trait DataHandlerTestTrait
 
     /**
      * @throws ReflectionException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     protected function createImportMock(
         string $importClass,
