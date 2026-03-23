@@ -58,7 +58,7 @@ RUN set -eux; \
     && rm -rf /tmp/turkish /tmp/turkish.zip
 
 RUN curl -L --retry 5 --retry-delay 5 --max-time 300 \
-    -o /tmp/light_portal.tgz "https://github.com/dragomano/Light-Portal/releases/download/v3.0.0beta2/light_portal_3.0_beta_2_dev_edition.tgz" \
+    -o /tmp/light_portal.tgz "https://github.com/dragomano/Light-Portal/releases/download/v3.0.0rc2/light_portal_3.0_RC2_dev_edition.tgz" \
     && cp /tmp/light_portal.tgz /var/www/html/Packages/light_portal.tgz \
     && tar -xzf /tmp/light_portal.tgz -C /var/www/html --wildcards "Sources/*" "Themes/*" "portal.php" \
     && ls -l /var/www/html \
