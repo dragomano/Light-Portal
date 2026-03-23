@@ -147,9 +147,9 @@ class TopTopics extends SsiBlock
 }
 ```
 
-## Blade templates
+## Πρότυπα Blade
 
-Your plugin can use a template with Blade markup. Για παράδειγμα:
+Το πρόσθετο σας μπορεί να χρησιμοποιήσει ένα πρότυπο με σήμανση Blade. Για παράδειγμα:
 
 ```php:line-numbers {16,20}
 <?php declare(strict_types=1);
@@ -178,20 +178,20 @@ class Calculator extends Block
 
 **Οδηγίες:**
 
-1. Create the `views` subdirectory inside your plugin directory if it doesn't exist.
+1. Δημιουργήστε τον υποκατάλογο `views` μέσα στον κατάλογο πρόσθετων (plugins) σας, εάν δεν υπάρχει.
 2. Δημιουργήστε το αρχείο `default.blade.php` με το ακόλουθο περιεχόμενο:
 
 ```blade
 <div class="some-class-{{ $id }}">
-    {{-- Your blade markup --}}
+    {{-- Η σήμανση του blade σας--}}
 </div>
 
 <style>
-// Your CSS
+// του CSS σας
 </style>
 
 <script>
-// Your JS
+// του JS σας
 </script>
 ```
 

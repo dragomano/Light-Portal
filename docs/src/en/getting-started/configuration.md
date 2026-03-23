@@ -6,9 +6,9 @@ outline: [2, 3]
 
 # Portal settings
 
-Use the quick access through the item in the main forum menu or the corresponding section in the admin panel to open the portal settings.
+You can access portal settings from the main forum menu or the corresponding section in the admin panel.
 
-We will not describe in detail each of the available settings, we will only mention the most important ones.
+We'll only cover the most important settings here.
 
 ## General settings
 
@@ -32,7 +32,7 @@ This is a mode where you can specify your own home page, and remove unnecessary 
 
 ### Permissions
 
-Here you simply note WHO can and WHAT can do with the various elements (blocks and pages) of the portal.
+Here you define who can access and what they can do with the various elements (blocks and pages) of the portal.
 
 ## Pages and blocks
 
