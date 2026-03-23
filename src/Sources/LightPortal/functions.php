@@ -130,10 +130,37 @@ if (! function_exists('__')) {
 
 		[$file, $rest] = explode($separator, $key, 2);
 
+		$file = resolve_lang_filename($file);
+
 		$txtKey = ($separator === '.' && str_contains($rest, '.'))
 			? explode('.', $rest, 2)
 			: $rest;
 
 		return Lang::getTxt($txtKey, $args, $var, $file);
+	}
+}
+
+if (! function_exists('resolve_lang_filename')) {
+	function resolve_lang_filename(string $name): string
+	{
+		static $cache = [];
+
+		if (array_key_exists($name, $cache)) {
+			return $cache[$name];
+		}
+
+		if (Lang::$dirs === []) {
+			new Lang();
+		}
+
+		foreach ([$name, ucfirst($name)] as $candidate) {
+			foreach (Lang::$dirs as $dir) {
+				if (glob($dir . '/' . $candidate . '.*.php')) {
+					return $cache[$name] = $candidate;
+				}
+			}
+		}
+
+		return $cache[$name] = $name;
 	}
 }

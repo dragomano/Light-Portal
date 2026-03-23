@@ -6,6 +6,22 @@ use Bugo\Compat\Lang;
 
 beforeEach(function () {
     Lang::$txt = [];
+
+    $this->tmpDir = sys_get_temp_dir() . '/lang_test_' . uniqid();
+
+    mkdir($this->tmpDir);
+
+    Lang::$dirs = [$this->tmpDir];
+});
+
+afterEach(function () {
+    foreach (glob($this->tmpDir . '/*.php') as $file) {
+        unlink($file);
+    }
+
+    rmdir($this->tmpDir);
+
+    Lang::$dirs = [];
 });
 
 describe('__ function', function () {
@@ -80,5 +96,67 @@ describe('__ function', function () {
         it('returns empty string for empty key', function () {
             expect(__(''))->toBe('');
         });
+    });
+});
+
+describe('resolve_lang_filename', function () {
+    it('returns name as-is when lowercase file exists', function () {
+        $name = 'index_' . uniqid();
+        touch($this->tmpDir . '/' . $name . '.english.php');
+
+        expect(resolve_lang_filename($name))->toBe($name);
+    });
+
+    it('returns ucfirst when only capitalized file exists', function () {
+        $name = 'admin_' . uniqid();
+        touch($this->tmpDir . '/' . ucfirst($name) . '.english.php');
+
+        expect(resolve_lang_filename($name))->toBe(ucfirst($name));
+    });
+
+    it('prefers lowercase over ucfirst when both exist', function () {
+        $name = 'test_' . uniqid();
+        touch($this->tmpDir . '/' . $name . '.english.php');
+        touch($this->tmpDir . '/' . ucfirst($name) . '.english.php');
+
+        expect(resolve_lang_filename($name))->toBe($name);
+    });
+
+    it('returns name as-is when no file found', function () {
+        $name = 'missing_' . uniqid();
+
+        expect(resolve_lang_filename($name))->toBe($name);
+    });
+
+    it('works with any language suffix', function () {
+        $name = 'calendar_' . uniqid();
+        touch($this->tmpDir . '/' . ucfirst($name) . '.russian.php');
+
+        expect(resolve_lang_filename($name))->toBe(ucfirst($name));
+    });
+
+    it('searches across multiple dirs', function () {
+        $secondDir = sys_get_temp_dir() . '/lang_test2_' . uniqid();
+        mkdir($secondDir);
+        Lang::$dirs[] = $secondDir;
+
+        $name = 'extra_' . uniqid();
+        touch($secondDir . '/' . ucfirst($name) . '.english.php');
+
+        expect(resolve_lang_filename($name))->toBe(ucfirst($name));
+
+        unlink($secondDir . '/' . ucfirst($name) . '.english.php');
+        rmdir($secondDir);
+    });
+
+    it('uses cached result on repeated calls', function () {
+        $name = 'cached_' . uniqid();
+        touch($this->tmpDir . '/' . ucfirst($name) . '.english.php');
+
+        $first = resolve_lang_filename($name);
+
+        unlink($this->tmpDir . '/' . ucfirst($name) . '.english.php');
+
+        expect(resolve_lang_filename($name))->toBe($first);
     });
 });
