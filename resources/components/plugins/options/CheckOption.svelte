@@ -3,7 +3,7 @@
   import Toggle from 'svelte-toggle';
 
   let { id, name, value = '' } = $props();
-  let toggled = $derived(!!value);
+  let toggled = $derived(value === '1' || value === 'true');
 </script>
 
 <div class="checkbox_field">
