@@ -8,25 +8,12 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 17.10.25
+ * @version 25.03.26
  */
 
 namespace LightPortal\Plugins\Markdown;
 
 use Bugo\Compat\Utils;
-use LightPortal\Enums\PluginType;
-use LightPortal\Plugins\Event;
-use LightPortal\Plugins\PluginAttribute;
-use LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
-use LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
-use LightPortal\Plugins\Markdown\SMF\HeadingRenderer;
-use LightPortal\Plugins\Markdown\SMF\ImageRenderer;
-use LightPortal\Plugins\Markdown\SMF\LinkRenderer;
-use LightPortal\Plugins\Markdown\SMF\ListBlockRenderer;
-use LightPortal\Plugins\Markdown\SMF\ListItemRenderer;
-use LightPortal\Plugins\Markdown\SMF\TableRenderer;
-use LightPortal\Plugins\Markdown\SMF\TableRowRenderer;
-use LightPortal\Plugins\Plugin;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -41,6 +28,21 @@ use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\Table\Table;
 use League\CommonMark\Extension\Table\TableRow;
 use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Util\HtmlFilter;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
+use LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
+use LightPortal\Plugins\Markdown\SMF\HeadingRenderer;
+use LightPortal\Plugins\Markdown\SMF\ImageRenderer;
+use LightPortal\Plugins\Markdown\SMF\LinkRenderer;
+use LightPortal\Plugins\Markdown\SMF\ListBlockRenderer;
+use LightPortal\Plugins\Markdown\SMF\ListItemRenderer;
+use LightPortal\Plugins\Markdown\SMF\TableRenderer;
+use LightPortal\Plugins\Markdown\SMF\TableRowRenderer;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use Zoon\CommonMark\Ext\YouTubeIframe\YouTubeIframeExtension;
 
 if (! defined('LP_NAME'))
@@ -54,6 +56,22 @@ class Markdown extends Plugin
 		Utils::$context['lp_content_types'][$this->name] = 'Markdown';
 	}
 
+	public function addSettings(Event $e): void
+	{
+		require_once __DIR__ . '/vendor/autoload.php';
+
+		$this->addDefaultValues([
+			'html_input' => HtmlFilter::ESCAPE,
+		]);
+
+		$inputs = [HtmlFilter::STRIP, HtmlFilter::ALLOW, HtmlFilter::ESCAPE];
+
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->select('html_input', array_combine($inputs, $this->txt['html_input_set']))
+			->check('allow_unsafe_links')
+			->toArray();
+	}
+
 	/**
 	 * @throws CommonMarkException
 	 */
@@ -65,9 +83,9 @@ class Markdown extends Plugin
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [
-			'title' => 'league/commonmark',
-			'link' => 'https://github.com/thephpleague/commonmark',
-			'author' => 'Colin O\'Dell & The League of Extraordinary Packages',
+			'title'   => 'league/commonmark',
+			'link'    => 'https://github.com/thephpleague/commonmark',
+			'author'  => 'Colin O\'Dell & The League of Extraordinary Packages',
 			'license' => [
 				'name' => 'the BSD-3-Clause License',
 				'link' => 'https://github.com/thephpleague/commonmark/blob/main/LICENSE'
@@ -89,21 +107,21 @@ class Markdown extends Plugin
 				'soft_break'      => PHP_EOL,
 			],
 			'commonmark' => [
-				'enable_em' => true,
-				'enable_strong' => true,
-				'use_asterisk' => true,
-				'use_underscore' => true,
+				'enable_em'              => true,
+				'enable_strong'          => true,
+				'use_asterisk'           => true,
+				'use_underscore'         => true,
 				'unordered_list_markers' => ['-', '*', '+'],
 			],
 			'youtube_iframe' => [
-				'width' => '600',
-				'height' => '300',
+				'width'             => '600',
+				'height'            => '300',
 				'allow_full_screen' => true,
 			],
-			'html_input' => 'escape',
-			'allow_unsafe_links' => false,
-			'max_nesting_level' => PHP_INT_MAX,
-			'slug_normalizer' => [
+			'html_input'         => $this->context['html_input'] ?? HtmlFilter::ESCAPE,
+			'allow_unsafe_links' => ! empty($this->context['allow_unsafe_links']),
+			'max_nesting_level'  => PHP_INT_MAX,
+			'slug_normalizer'    => [
 				'max_length' => 255,
 			],
 		];
