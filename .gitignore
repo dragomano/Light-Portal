@@ -52,3 +52,5 @@ src/Sources/LightPortal/Plugins/Memory/memory.js
 
 *.zip
 *.tgz
+
+.env
