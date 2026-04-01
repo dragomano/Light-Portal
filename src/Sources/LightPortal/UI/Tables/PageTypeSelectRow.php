@@ -24,7 +24,7 @@ class PageTypeSelectRow extends Row
 	{
 		$types = '';
 		foreach (Utils::$context['lp_page_types'] as $type => $text) {
-			if (Utils::$context['user']['is_admin'] === false && $type === EntryType::INTERNAL->name())
+			if (Utils::$context['user']['is_admin'] === false && $type === EntryType::INTERNAL->value)
 				continue;
 
 			$types .= Str::html('option', [

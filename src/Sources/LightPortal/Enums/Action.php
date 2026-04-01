@@ -18,11 +18,11 @@ enum Action: string
 {
 	use HasValues;
 
-	case ALL = 'all';
+	case ALL    = 'all';
 	case BOARDS = 'boards';
-	case FORUM = 'forum';
-	case HOME = 'home';
-	case PAGES = 'pages';
+	case FORUM  = 'forum';
+	case HOME   = 'home';
+	case PAGES  = 'pages';
 	case PORTAL = 'portal';
 	case TOPICS = 'topics';
 

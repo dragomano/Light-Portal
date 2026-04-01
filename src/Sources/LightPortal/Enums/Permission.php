@@ -23,12 +23,12 @@ enum Permission: int
 {
 	use HasValues;
 
-	case ADMIN = 0;
-	case GUEST = 1;
+	case ADMIN  = 0;
+	case GUEST  = 1;
 	case MEMBER = 2;
-	case ALL = 3;
-	case MOD = 4;
-	case OWNER = 5;
+	case ALL    = 3;
+	case MOD    = 4;
+	case OWNER  = 5;
 
 	public static function canViewItem(self|int $permission, int $userId = 0): bool
 	{

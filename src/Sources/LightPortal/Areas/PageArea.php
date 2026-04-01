@@ -288,7 +288,7 @@ final class PageArea extends AbstractArea
 
 	protected function prepareSpecificFields(): void
 	{
-		if (Utils::$context['lp_page']['type'] !== ContentType::BBC->name()) {
+		if (Utils::$context['lp_page']['type'] !== ContentType::BBC->value) {
 			TextareaField::make('content', __('lp_content'))
 				->setTab(Tab::CONTENT)
 				->setAttribute('style', 'height: 300px')

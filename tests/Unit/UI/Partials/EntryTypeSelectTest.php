@@ -12,11 +12,11 @@ use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Utils::$context['lp_page_types'] = [
-        EntryType::DEFAULT->name() => 'Default',
-        EntryType::INTERNAL->name() => 'Internal',
+        EntryType::DEFAULT->value => 'Default',
+        EntryType::INTERNAL->value => 'Internal',
     ];
     Utils::$context['user']['is_admin'] = true;
-    Utils::$context['lp_page']['entry_type'] = EntryType::DEFAULT->name();
+    Utils::$context['lp_page']['entry_type'] = EntryType::DEFAULT->value;
 });
 
 it('implements SelectInterface', function () {
@@ -33,7 +33,7 @@ it('initializes with default params', function () {
     expect($config['id'])->toBe('entry_type')
         ->and($config['multiple'])->toBeFalse()
         ->and($config['wide'])->toBeFalse()
-        ->and($config['value'])->toBe(EntryType::DEFAULT->name());
+        ->and($config['value'])->toBe(EntryType::DEFAULT->value);
 });
 
 it('initializes with custom id parameter', function () {
@@ -46,12 +46,12 @@ it('initializes with custom id parameter', function () {
 });
 
 it('initializes with custom value parameter', function () {
-    $params = ['value' => EntryType::INTERNAL->name()];
+    $params = ['value' => EntryType::INTERNAL->value];
     $select = new EntryTypeSelect($params);
 
     $config = $select->getParams();
 
-    expect($config['value'])->toBe(EntryType::INTERNAL->name());
+    expect($config['value'])->toBe(EntryType::INTERNAL->value);
 });
 
 it('initializes with custom multiple parameter', function () {

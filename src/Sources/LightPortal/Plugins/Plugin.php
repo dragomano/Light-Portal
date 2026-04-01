@@ -230,15 +230,15 @@ abstract class Plugin implements PluginInterface, Stringable
 	private function resolveType(mixed $type): string
 	{
 		if ($type === null) {
-			return PluginType::OTHER->name();
+			return PluginType::OTHER->value;
 		}
 
 		if (is_array($type)) {
-			return implode(' ', array_map(fn(PluginType $t) => $t->name(), $type));
+			return implode(' ', array_map(fn(PluginType $t) => $t->value, $type));
 		}
 
 		if ($type instanceof PluginType) {
-			return $type->name();
+			return $type->value;
 		}
 
 		return (string) $type;

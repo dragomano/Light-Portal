@@ -270,7 +270,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 			$deleteAlerts = $this->sql->delete('user_alerts');
 			$deleteAlerts->where([
-				'content_type = ?' => NotifyType::NEW_COMMENT->name(),
+				'content_type = ?' => NotifyType::NEW_COMMENT->value,
 			]);
 			$deleteAlerts->where->in('content_id', $allItems);
 			$this->sql->execute($deleteAlerts);

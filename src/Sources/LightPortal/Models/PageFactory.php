@@ -32,9 +32,9 @@ class PageFactory extends AbstractFactory
 	{
 		$data['author_id'] ??= User::$me->id;
 
-		$data['type'] ??= ContentType::BBC->name();
+		$data['type'] ??= ContentType::BBC->value;
 
-		$data['entry_type'] ??= EntryType::DEFAULT->name();
+		$data['entry_type'] ??= EntryType::DEFAULT->value;
 
 		$data['permissions'] ??= Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
 

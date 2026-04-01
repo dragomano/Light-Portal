@@ -406,7 +406,7 @@ abstract class AbstractArea implements AreaInterface
 				$entity['content'] ?? $entity['description'] ?? '',
 				ENT_QUOTES
 			),
-			$entity['type'] ?? ContentType::HTML->name()
+			$entity['type'] ?? ContentType::HTML->value
 		);
 
 		Lang::censorText(Utils::$context['preview_content']);

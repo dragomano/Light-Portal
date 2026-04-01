@@ -31,6 +31,6 @@ abstract class Block extends Plugin
 
 	public function isInSidebar(int $id): bool
 	{
-		return $this->isInPlacements($id, [Placement::LEFT->name(), Placement::RIGHT->name()]);
+		return $this->isInPlacements($id, [Placement::LEFT->value, Placement::RIGHT->value]);
 	}
 }

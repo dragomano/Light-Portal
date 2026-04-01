@@ -12,21 +12,21 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
+use LightPortal\Enums\Traits\HasValues;
 
-enum Placement
+enum Placement: string
 {
-	use HasNames;
+	use HasValues;
 
-	case HEADER;
-	case TOP;
-	case LEFT;
-	case RIGHT;
-	case BOTTOM;
-	case FOOTER;
+	case HEADER = 'header';
+	case TOP    = 'top';
+	case LEFT   = 'left';
+	case RIGHT  = 'right';
+	case BOTTOM = 'bottom';
+	case FOOTER = 'footer';
 
 	public static function all(): array
 	{
-		return array_combine(self::names(), __('lp_block_placement_set'));
+		return array_combine(self::values(), __('lp_block_placement_set'));
 	}
 }

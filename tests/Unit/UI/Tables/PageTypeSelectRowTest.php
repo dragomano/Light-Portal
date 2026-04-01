@@ -11,11 +11,11 @@ beforeEach(function () {
     Lang::$txt['lp_page_type'] = 'Type';
 
     Utils::$context['lp_page_types'] = [
-        EntryType::DEFAULT->name() => 'Default',
-        EntryType::INTERNAL->name() => 'Internal',
+        EntryType::DEFAULT->value => 'Default',
+        EntryType::INTERNAL->value => 'Internal',
     ];
     Utils::$context['user'] = ['is_admin' => false];
-    Utils::$context['lp_selected_page_type'] = EntryType::DEFAULT->name();
+    Utils::$context['lp_selected_page_type'] = EntryType::DEFAULT->value;
 });
 
 describe('PageTypeSelectRow', function () {

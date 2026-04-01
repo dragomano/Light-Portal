@@ -17,7 +17,7 @@ beforeEach(function () {
 it('populates missing fields with default values', function () {
     $result = $this->reflection->callMethod('populate', [[]]);
 
-    expect($result['placement'])->toBe(Placement::TOP->name())
+    expect($result['placement'])->toBe(Placement::TOP->value)
         ->and($result['status'])->toBe(Status::ACTIVE->value)
         ->and($result['areas'])->toBe(Action::ALL->value);
 });
@@ -38,13 +38,13 @@ it('creates block with custom data and handles bbcode', function () {
 it('preserves existing values', function () {
     $data = [
         'title'       => 'Test',
-        'placement'   => Placement::RIGHT->name(),
+        'placement'   => Placement::RIGHT->value,
         'permissions' => Permission::MOD->value,
     ];
 
     $result = $this->reflection->callMethod('populate', [$data]);
 
-    expect($result['placement'])->toBe(Placement::RIGHT->name())
+    expect($result['placement'])->toBe(Placement::RIGHT->value)
         ->and($result['permissions'])->toBe(Permission::MOD->value)
         ->and($result['title'])->toBe('Test');
 });

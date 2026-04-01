@@ -122,11 +122,11 @@ class Blade extends AbstractRenderer
 		$blade->directiveRT('portalTab', static function (array $fields, Tab|string $tab = 'content') {
 			$fields['subject'] = ['no'];
 
-			$tabName = is_string($tab) ? $tab : $tab->name();
+			$tabName = is_string($tab) ? $tab : $tab->value;
 
 			foreach ($fields as $pfid => $pf) {
 				if (empty($pf['input']['tab'])) {
-					$pf['input']['tab'] = Tab::TUNING->name();
+					$pf['input']['tab'] = Tab::TUNING->value;
 				}
 
 				if ($pf['input']['tab'] != $tabName) {

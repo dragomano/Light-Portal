@@ -19,7 +19,7 @@ describe('Content::parse', function () {
 
     it('decodes HTML content', function () {
         $encoded = htmlspecialchars('<strong>Test</strong>', ENT_QUOTES);
-        $result = Content::parse($encoded, ContentType::HTML->name());
+        $result = Content::parse($encoded, ContentType::HTML->value);
 
         expect($result)->toBe(Utils::htmlspecialcharsDecode($encoded));
     });
@@ -33,7 +33,7 @@ describe('Content::parse', function () {
 
         AppMockRegistry::set('PurePHP', $renderer);
 
-        $result = Content::parse('echo "ok";', ContentType::PHP->name());
+        $result = Content::parse('echo "ok";', ContentType::PHP->value);
 
         expect($result)->toBe('<div>ok</div>');
     });

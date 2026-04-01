@@ -92,7 +92,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if ($filter === 'list') {
 			$select->where([
 				'p.status = ?'      => Status::ACTIVE->value,
-				'p.entry_type = ?'  => EntryType::DEFAULT->name(),
+				'p.entry_type = ?'  => EntryType::DEFAULT->value,
 				'p.deleted_at = ?'  => 0,
 				'p.created_at <= ?' => time(),
 			]);
@@ -199,7 +199,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$result = $this->sql->execute($select);
 
 		foreach ($result as $row) {
-			if ($row['type'] === ContentType::BBC->name()) {
+			if ($row['type'] === ContentType::BBC->value) {
 				$row['content'] = Parser::getEditableString($row['content'] ?? '');
 			}
 
@@ -488,7 +488,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			|| User::$me->allowedTo('light_portal_manage_pages_any')
 			|| (User::$me->allowedTo('light_portal_manage_pages_own') && $isAuthor);
 
-		if ($data['type'] === ContentType::BBC->name()) {
+		if ($data['type'] === ContentType::BBC->value) {
 			$data['content'] = Parser::getEditableString($data['content']);
 		}
 
@@ -573,7 +573,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			];
 
 			if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
-				$this->notifier->notify(NotifyType::NEW_PAGE->name(), AlertAction::PAGE_UNAPPROVED->name(), $options);
+				$this->notifier->notify(NotifyType::NEW_PAGE->value, AlertAction::PAGE_UNAPPROVED->value, $options);
 			}
 
 			return $item;
@@ -735,7 +735,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$baseWhere = [
 			'p.page_id != ?'    => $page['id'],
 			'p.created_at <= ?' => time(),
-			'p.entry_type = ?'  => EntryType::DEFAULT->name(),
+			'p.entry_type = ?'  => EntryType::DEFAULT->value,
 			'p.status = ?'      => Status::ACTIVE->value,
 			'p.deleted_at = ?'  => 0,
 			'p.permissions'     => Permission::all(),

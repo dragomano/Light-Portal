@@ -31,7 +31,7 @@ class BlockFactory extends AbstractFactory
 
 	protected function populate(array $data): array
 	{
-		$data['placement'] ??= Placement::TOP->name();
+		$data['placement'] ??= Placement::TOP->value;
 
 		$data['permissions'] ??= Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
 

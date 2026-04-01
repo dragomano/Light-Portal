@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.10.25
+ * @version 01.04.26
  */
 
 namespace LightPortal\Plugins\RecentComments;
@@ -123,7 +123,7 @@ class RecentComments extends Block
 				'p.status'          => 1,
 				'p.deleted_at'      => 0,
 				'p.created_at <= ?' => time(),
-				'p.entry_type'      => EntryType::DEFAULT->name(),
+				'p.entry_type'      => EntryType::DEFAULT->value,
 				'p.permissions'     => Permission::all(),
 				'par.value > ?'     => 0,
 			])

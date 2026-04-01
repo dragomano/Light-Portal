@@ -58,9 +58,9 @@ class Actions
 
 		if ($this->request()->is(LP_ACTION)) {
 			match ($sa) {
-				PortalSubAction::CATEGORIES->name() => app(Category::class)->show(),
-				PortalSubAction::TAGS->name()       => app(Tag::class)->show(),
-				PortalSubAction::PROMOTE->name()    => $this->promoteTopic(),
+				PortalSubAction::CATEGORIES->value => app(Category::class)->show(),
+				PortalSubAction::TAGS->value       => app(Tag::class)->show(),
+				PortalSubAction::PROMOTE->value    => $this->promoteTopic(),
 				default                             => null,
 			};
 		}

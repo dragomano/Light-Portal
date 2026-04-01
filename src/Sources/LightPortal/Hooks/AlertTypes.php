@@ -32,7 +32,7 @@ class AlertTypes
 
 		if (Setting::getCommentBlock() === 'default') {
 			$types['light_portal'] = [
-				AlertAction::PAGE_COMMENT->name() => [
+				AlertAction::PAGE_COMMENT->value => [
 					'alert' => self::YES,
 					'email' => self::NEVER,
 					'permission' => [
@@ -40,7 +40,7 @@ class AlertTypes
 						'is_board' => false,
 					]
 				],
-				AlertAction::PAGE_COMMENT_REPLY->name() => [
+				AlertAction::PAGE_COMMENT_REPLY->value => [
 					'alert' => self::YES,
 					'email' => self::NEVER,
 					'permission' => [
@@ -48,7 +48,7 @@ class AlertTypes
 						'is_board' => false,
 					]
 				],
-				AlertAction::PAGE_COMMENT_MENTION->name() => [
+				AlertAction::PAGE_COMMENT_MENTION->value => [
 					'alert' => self::YES,
 					'email' => self::NEVER,
 					'permission' => [
@@ -60,10 +60,10 @@ class AlertTypes
 		}
 
 		if (empty(Config::$modSettings['enable_mentions'])) {
-			unset($types['light_portal'][AlertAction::PAGE_COMMENT_MENTION->name()]);
+			unset($types['light_portal'][AlertAction::PAGE_COMMENT_MENTION->value]);
 		}
 
-		$types['light_portal'][AlertAction::PAGE_UNAPPROVED->name()] = [
+		$types['light_portal'][AlertAction::PAGE_UNAPPROVED->value] = [
 			'alert' => self::YES,
 			'email' => self::YES,
 			'permission' => [

@@ -12,19 +12,15 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
-
-enum BlockAreaType
+enum BlockAreaType: string
 {
-	use HasNames;
-
-	case CUSTOM_ACTION;
-	case CUSTOM_ACTION_EXCEPT;
-	case PAGE_SLUG;
-	case BOARD_ID;
-	case BOARD_RANGE;
-	case BOARD_SET;
-	case TOPIC_ID;
-	case TOPIC_RANGE;
-	case TOPIC_SET;
+	case CUSTOM_ACTION        = 'custom_action';
+	case CUSTOM_ACTION_EXCEPT = 'custom_action_except';
+	case PAGE_SLUG            = 'page_slug';
+	case BOARD_ID             = 'board_id';
+	case BOARD_RANGE          = 'board_range';
+	case BOARD_SET            = 'board_set';
+	case TOPIC_ID             = 'topic_id';
+	case TOPIC_RANGE          = 'topic_range';
+	case TOPIC_SET            = 'topic_set';
 }

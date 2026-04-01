@@ -255,8 +255,8 @@ describe('prepareSpecificFields', function () {
                     ? expect(isset(Utils::$context['post_box_name']))->toBeFalse()
                     : expect(Utils::$context['post_box_name'])->toBe($checks),
                 'tag_in_seo_tab' => $checks
-                    ? expect(Utils::$context['posting_fields']['tags']['input']['tab'])->toBe(Tab::SEO->name())
-                    : expect(Utils::$context['posting_fields']['tags']['input']['tab'])->not->toBe(Tab::SEO->name()),
+                    ? expect(Utils::$context['posting_fields']['tags']['input']['tab'])->toBe(Tab::SEO->value)
+                    : expect(Utils::$context['posting_fields']['tags']['input']['tab'])->not->toBe(Tab::SEO->value),
                 default => null,
             };
         }

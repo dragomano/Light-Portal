@@ -116,7 +116,7 @@ class PageImport extends AbstractDatabasePageImport
 				'description'     => '',
 				'content'         => $row['content'],
 				'type'            => 'html',
-				'entry_type'      => EntryType::DEFAULT->name(),
+				'entry_type'      => EntryType::DEFAULT->value,
 				'permissions'     => $this->getPermission($row),
 				'status'          => 1,
 				'num_views'       => $row['views'],

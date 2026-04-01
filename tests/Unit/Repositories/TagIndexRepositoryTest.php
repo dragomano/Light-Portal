@@ -57,7 +57,7 @@ it('returns tag list with frequency', function () {
             page_id, category_id, author_id, slug, type, entry_type, permissions,
             status, num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (1, 0, 1, 'page-one', 'bbc', ?, ?, ?, 0, 0, ?, 0, 0, 0)
-    ", [EntryType::DEFAULT->name(), Permission::ALL->value, Status::ACTIVE->value, $now - 5]);
+    ", [EntryType::DEFAULT->value, Permission::ALL->value, Status::ACTIVE->value, $now - 5]);
 
     $this->sql->getAdapter()->query(/** @lang text */ "
         INSERT INTO lp_page_tag (page_id, tag_id)
@@ -92,7 +92,7 @@ it('returns total count', function () {
             page_id, category_id, author_id, slug, type, entry_type, permissions,
             status, num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (1, 0, 1, 'page-one', 'bbc', ?, ?, ?, 0, 0, ?, 0, 0, 0)
-    ", [EntryType::DEFAULT->name(), Permission::ALL->value, Status::ACTIVE->value, $now - 5]);
+    ", [EntryType::DEFAULT->value, Permission::ALL->value, Status::ACTIVE->value, $now - 5]);
 
     $this->sql->getAdapter()->query(/** @lang text */ "
         INSERT INTO lp_page_tag (page_id, tag_id)

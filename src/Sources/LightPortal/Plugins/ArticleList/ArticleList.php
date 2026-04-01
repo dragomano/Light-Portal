@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 01.04.26
  */
 
 namespace LightPortal\Plugins\ArticleList;
@@ -232,7 +232,7 @@ class ArticleList extends Block
 			->columns(['page_id', 'slug', 'type'])
 			->where([
 				'p.status'          => Status::ACTIVE->value,
-				'p.entry_type'      => EntryType::DEFAULT->name(),
+				'p.entry_type'      => EntryType::DEFAULT->value,
 				'p.deleted_at'      => 0,
 				'p.created_at <= ?' => time(),
 			])

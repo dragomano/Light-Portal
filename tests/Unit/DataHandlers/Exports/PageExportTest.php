@@ -17,8 +17,8 @@ use Tests\DataHandlerTestTrait;
 uses(DataHandlerTestTrait::class);
 
 dataset('page export scenarios', function () {
-    $types = [...ContentType::names(), 'markdown'];
-    $entityTypes = EntryType::names();
+    $types = [...ContentType::values(), 'markdown'];
+    $entityTypes = EntryType::values();
     $permissions = Permission::values();
     $hasCommentsOptions = [true, false];
 

@@ -127,11 +127,11 @@ class Generator
 	private function getPluginType(): Literal|array|null
 	{
 		$excludes = [
-			PluginType::BLOCK->name(),
-			PluginType::EDITOR->name(),
-			PluginType::GAMES->name(),
-			PluginType::OTHER->name(),
-			PluginType::SSI->name(),
+			PluginType::BLOCK->value,
+			PluginType::EDITOR->value,
+			PluginType::GAMES->value,
+			PluginType::OTHER->value,
+			PluginType::SSI->value,
 		];
 
 		$filteredTypes = array_values(array_filter(
@@ -600,8 +600,8 @@ class Generator
 	{
 		$this->plugin['options'] = array_diff_key(
 			$this->plugin['options'] ?? [],
-			$this->plugin[PluginType::BLOCK_OPTIONS->name()] ?? [],
-			$this->plugin[PluginType::PAGE_OPTIONS->name()] ?? []
+			$this->plugin[PluginType::BLOCK_OPTIONS->value] ?? [],
+			$this->plugin[PluginType::PAGE_OPTIONS->value] ?? []
 		);
 	}
 
@@ -740,8 +740,8 @@ class Generator
 
 		$this->plugin['options'] = array_merge(
 			$this->plugin['options'] ?? [],
-			$this->plugin[PluginType::BLOCK_OPTIONS->name()] ?? [],
-			$this->plugin[PluginType::PAGE_OPTIONS->name()] ?? [],
+			$this->plugin[PluginType::BLOCK_OPTIONS->value] ?? [],
+			$this->plugin[PluginType::PAGE_OPTIONS->value] ?? [],
 		);
 
 		foreach ($this->plugin['options'] as $option) {
@@ -772,7 +772,7 @@ class Generator
 	private function hasType(PluginType|array $type): bool
 	{
 		$types = is_array($type) ? $type : [$type];
-		$typeNames = array_map(fn(PluginType $t) => $t->name(), $types);
+		$typeNames = array_map(fn(PluginType $t) => $t->value, $types);
 
 		return (bool) array_intersect($typeNames, $this->plugin['types']);
 	}

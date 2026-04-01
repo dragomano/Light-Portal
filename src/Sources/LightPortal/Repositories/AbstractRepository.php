@@ -79,7 +79,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected function prepareBbcContent(array &$entity): void
 	{
-		if ($entity['type'] !== ContentType::BBC->name())
+		if ($entity['type'] !== ContentType::BBC->value)
 			return;
 
 		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);

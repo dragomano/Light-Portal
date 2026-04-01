@@ -17,8 +17,8 @@ beforeEach(function () {
 it('populates missing fields with default values', function () {
     $result = $this->reflection->callMethod('populate', [[]]);
 
-    expect($result['type'])->toBe(ContentType::BBC->name())
-        ->and($result['entry_type'])->toBe(EntryType::DEFAULT->name())
+    expect($result['type'])->toBe(ContentType::BBC->value)
+        ->and($result['entry_type'])->toBe(EntryType::DEFAULT->value)
         ->and($result['permissions'])->toBe(Permission::MEMBER->value)
         ->and($result['status'])->toBe(Status::UNAPPROVED->value)
         ->and($result['created_at'])->toBeGreaterThan(0)
@@ -43,16 +43,16 @@ it('creates page with custom data and handles bbcode', function () {
 it('preserves existing values', function () {
     $data = [
         'title'       => 'Test',
-        'type'        => ContentType::HTML->name(),
-        'entry_type'  => EntryType::INTERNAL->name(),
+        'type'        => ContentType::HTML->value,
+        'entry_type'  => EntryType::INTERNAL->value,
         'permissions' => Permission::ADMIN->value,
         'status'      => Status::ACTIVE->value,
     ];
 
     $result = $this->reflection->callMethod('populate', [$data]);
 
-    expect($result['type'])->toBe(ContentType::HTML->name())
-        ->and($result['entry_type'])->toBe(EntryType::INTERNAL->name())
+    expect($result['type'])->toBe(ContentType::HTML->value)
+        ->and($result['entry_type'])->toBe(EntryType::INTERNAL->value)
         ->and($result['permissions'])->toBe(Permission::ADMIN->value)
         ->and($result['status'])->toBe(Status::ACTIVE->value)
         ->and($result['title'])->toBe('Test');

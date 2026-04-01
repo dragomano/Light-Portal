@@ -63,7 +63,7 @@ describe('Portal route', function () {
 
         $params = [
             'action' => LP_ACTION,
-            'sa' => PortalSubAction::CATEGORIES->name(),
+            'sa' => PortalSubAction::CATEGORIES->value,
             'id' => '5',
             'start' => 10,
             'foo' => 'bar',
@@ -74,7 +74,7 @@ describe('Portal route', function () {
         $route = $result['route'];
 
         expect($route[0])->toBe(LP_ACTION)
-            ->and($route[1])->toBe(PortalSubAction::CATEGORIES->name())
+            ->and($route[1])->toBe(PortalSubAction::CATEGORIES->value)
             ->and(in_array($route[2], ['tech', '5'], true))->toBeTrue()
             ->and($route[3])->toBe(10)
             ->and($result['params'])->toBe(['foo' => 'bar']);
@@ -113,20 +113,20 @@ describe('Portal route', function () {
         AppMockRegistry::set(CacheInterface::class, $cache);
         AppMockRegistry::set('\\' . CacheInterface::class, $cache);
 
-        $params = Portal::parseRoute([LP_ACTION, PortalSubAction::CATEGORIES->name(), 'cats', '30']);
+        $params = Portal::parseRoute([LP_ACTION, PortalSubAction::CATEGORIES->value, 'cats', '30']);
 
         expect($params['action'])->toBe(LP_ACTION)
-            ->and($params['sa'])->toBe(PortalSubAction::CATEGORIES->name())
+            ->and($params['sa'])->toBe(PortalSubAction::CATEGORIES->value)
             ->and(in_array($params['id'], ['3', 'cats'], true))->toBeTrue()
             ->and($params['start'])->toBe('30');
     });
 
     it('parses promote route with topic id', function () {
-        $params = Portal::parseRoute([LP_ACTION, PortalSubAction::PROMOTE->name(), '42']);
+        $params = Portal::parseRoute([LP_ACTION, PortalSubAction::PROMOTE->value, '42']);
 
         expect($params)->toBe([
             'action' => LP_ACTION,
-            'sa' => PortalSubAction::PROMOTE->name(),
+            'sa' => PortalSubAction::PROMOTE->value,
             't' => '42',
         ]);
     });

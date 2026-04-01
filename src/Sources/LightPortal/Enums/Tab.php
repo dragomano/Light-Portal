@@ -12,15 +12,11 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
-
-enum Tab
+enum Tab: string
 {
-	use HasNames;
-
-	case CONTENT;
-	case ACCESS_PLACEMENT;
-	case APPEARANCE;
-	case SEO;
-	case TUNING;
+	case CONTENT          = 'content';
+	case ACCESS_PLACEMENT = 'access_placement';
+	case APPEARANCE       = 'appearance';
+	case SEO              = 'seo';
+	case TUNING           = 'tuning';
 }

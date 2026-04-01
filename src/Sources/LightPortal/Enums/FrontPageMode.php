@@ -23,11 +23,11 @@ enum FrontPageMode: string
 {
 	use HasValues;
 
-	case DEFAULT = '';
-	case CHOSEN_PAGE = 'chosen_page';
-	case ALL_PAGES = 'all_pages';
-	case CHOSEN_PAGES = 'chosen_pages';
-	case ALL_TOPICS = 'all_topics';
+	case DEFAULT       = '';
+	case CHOSEN_PAGE   = 'chosen_page';
+	case ALL_PAGES     = 'all_pages';
+	case CHOSEN_PAGES  = 'chosen_pages';
+	case ALL_TOPICS    = 'all_topics';
 	case CHOSEN_TOPICS = 'chosen_topics';
 	case CHOSEN_BOARDS = 'chosen_boards';
 

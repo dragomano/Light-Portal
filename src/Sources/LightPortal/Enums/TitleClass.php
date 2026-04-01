@@ -19,16 +19,16 @@ enum TitleClass: string
 {
 	use HasHtml;
 
-	case CAT_BAR = 'cat_bar';
-	case TITLE_BAR = 'title_bar';
-	case SUB_BAR = 'sub_bar';
-	case NOTICEBOX = 'noticebox';
-	case INFOBOX = 'infobox';
-	case DESCBOX = 'descbox';
+	case CAT_BAR              = 'cat_bar';
+	case TITLE_BAR            = 'title_bar';
+	case SUB_BAR              = 'sub_bar';
+	case NOTICEBOX            = 'noticebox';
+	case INFOBOX              = 'infobox';
+	case DESCBOX              = 'descbox';
 	case GENERIC_LIST_WRAPPER = 'generic_list_wrapper';
-	case PROGRESS_BAR = 'progress_bar';
-	case POPUP_CONTENT = 'popup_content';
-	case EMPTY = '';
+	case PROGRESS_BAR         = 'progress_bar';
+	case POPUP_CONTENT        = 'popup_content';
+	case EMPTY                = '';
 
 	public function getList(): string
 	{

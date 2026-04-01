@@ -28,7 +28,7 @@ abstract class AbstractIndexRepository extends AbstractRepository
 		$where
 			->equalTo('p.status', Status::ACTIVE->value)
 			->equalTo('p.deleted_at', 0)
-			->equalTo('p.entry_type', EntryType::DEFAULT->name())
+			->equalTo('p.entry_type', EntryType::DEFAULT->value)
 			->lessThanOrEqualTo('p.created_at', time())
 			->in('p.permissions', Permission::all());
 

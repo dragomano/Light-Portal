@@ -35,8 +35,8 @@ class PagesTableCreator extends AbstractTableCreator
 		$categoryId  = new UnsignedInteger('category_id');
 		$authorId    = new MediumInteger('author_id');
 		$slug        = new Varchar('slug', 255);
-		$type        = new Varchar('type', 10, default: ContentType::BBC->name());
-		$entryType   = new Varchar('entry_type', 10, default: EntryType::DEFAULT->name());
+		$type        = new Varchar('type', 10, default: ContentType::BBC->value);
+		$entryType   = new Varchar('entry_type', 10, default: EntryType::DEFAULT->value);
 		$permissions = new TinyInteger('permissions');
 		$status      = new TinyInteger('status', default: 1);
 		$numViews    = new UnsignedInteger('num_views');

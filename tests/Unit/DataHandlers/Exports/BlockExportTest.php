@@ -43,8 +43,8 @@ afterEach(function () {
 
 dataset('block export scenarios', function () {
     $scenarios = [];
-    $types = [...ContentType::names(), 'markdown'];
-    $placements = Placement::names();
+    $types = [...ContentType::values(), 'markdown'];
+    $placements = Placement::values();
     $contents = [
         'html'     => '<p>' . fake()->paragraph(2) . '</p>',
         'bbc'      => '[b]' . fake()->sentence(4) . '[/b]',

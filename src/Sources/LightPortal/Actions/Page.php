@@ -181,7 +181,7 @@ final readonly class Page implements ActionInterface
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
-		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$me->id) {
+		if ($page['entry_type'] === EntryType::DRAFT->value && $page['author_id'] !== User::$me->id) {
 			$this->changeErrorPage();
 
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
@@ -241,7 +241,7 @@ final readonly class Page implements ActionInterface
 
 	private function handlePromoteAction(): void
 	{
-		if (empty(User::$me->is_admin) || $this->request()->hasNot(PortalSubAction::PROMOTE->name()))
+		if (empty(User::$me->is_admin) || $this->request()->hasNot(PortalSubAction::PROMOTE->value))
 			return;
 
 		$page = Utils::$context['lp_page']['id'];
@@ -331,7 +331,7 @@ final readonly class Page implements ActionInterface
 
 		$withinCategory = str_contains(
 			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '',
-			'action=' . LP_ACTION . ';sa=' . PortalSubAction::CATEGORIES->name() . ';id'
+			'action=' . LP_ACTION . ';sa=' . PortalSubAction::CATEGORIES->value . ';id'
 		);
 		$withinCategory = $this->request()->has('from_category') ? true : $withinCategory;
 

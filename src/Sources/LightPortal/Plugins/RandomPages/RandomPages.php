@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 01.04.26
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -102,7 +102,7 @@ class RandomPages extends Block
 		$params = [
 			'guest'          => __('guest_title'),
 			'status'         => Status::ACTIVE->value,
-			'entry_type'     => EntryType::DEFAULT->name(),
+			'entry_type'     => EntryType::DEFAULT->value,
 			'current_time'   => time(),
 			'permissions'    => Permission::all(),
 		];

@@ -89,7 +89,7 @@ trait HasPageFilters
 			$whereConditions['p.deleted_at'] = 0;
 		}
 
-		$whereConditions['p.entry_type'] = $this->entryType ?? EntryType::DEFAULT->name();
+		$whereConditions['p.entry_type'] = $this->entryType ?? EntryType::DEFAULT->value;
 
 		$this->params = ['', $whereConditions];
 	}
