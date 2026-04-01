@@ -52,6 +52,7 @@ class RoboFile extends Tasks
 		'Snowflakes',
 		'Sudoku',
 		'TagList',
+		'TelegramComments',
 		'TinyPortalMigration',
 		'TopicRatingBar',
 		'TwentyFortyEight',
