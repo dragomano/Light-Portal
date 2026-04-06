@@ -80,6 +80,8 @@ beforeEach(function () {
     $this->testArea = new TestableAbstractArea($this->repositoryMock, $this->dispatcherMock);
     $this->accessor = new ReflectionAccessor($this->testArea);
 
+    Utils::$context['user'] = ['is_admin' => false];
+
     Lang::$txt += [
         'lp_test_entities'                    => 'Test entities',
         'lp_test_entities_manage'             => 'Manage Test Entities',
@@ -340,7 +342,7 @@ describe('buildTable', function () {
         $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
         $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
 
-        Utils::$context['session_id'] = '';
+        Utils::$context['session_id']  = '';
         Utils::$context['session_var'] = '';
 
         $result = $this->accessor->callMethod('buildTable');

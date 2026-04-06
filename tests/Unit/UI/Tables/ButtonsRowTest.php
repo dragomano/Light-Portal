@@ -6,7 +6,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Enums\FrontPageMode;
-use LightPortal\UI\Tables\PageButtonsRow;
+use LightPortal\UI\Tables\ButtonsRow;
 
 beforeEach(function () {
     Lang::$txt['remove'] = 'Remove';
@@ -18,19 +18,16 @@ beforeEach(function () {
     Lang::$txt['quickmod_confirm'] = 'Confirm';
 });
 
-describe('PageButtonsRow', function () {
+describe('ButtonsRow', function () {
     it('renders actions based on permissions and frontpage mode', function () {
         User::$me->permissions = ['light_portal_approve_pages'];
         Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
 
-        $row = PageButtonsRow::make();
+        $row   = ButtonsRow::massActions(actionName: 'page_actions');
         $value = $row->toArray()['value'];
 
         expect($value)
             ->toContain('page_actions')
-            ->toContain('toggle')
-            ->toContain('promote_up')
-            ->toContain('promote_down')
             ->toContain('name="mass_actions"')
             ->toContain('value="Go"');
     });
@@ -39,32 +36,24 @@ describe('PageButtonsRow', function () {
         User::$me->permissions = ['light_portal_approve_pages'];
         Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
 
-        $row = PageButtonsRow::make();
+        $row   = ButtonsRow::massActions(options: ['toggle' => 'lp_action_toggle']);
         $value = $row->toArray()['value'];
 
         expect($value)->toContain('toggle')
             ->and($value)->toContain('Toggle');
     });
 
-    it('renders promote_up option when frontpage mode is chosen_pages', function () {
+    it('renders promote options when frontpage mode is chosen_pages', function () {
         User::$me->permissions = ['light_portal_approve_pages'];
         Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
 
-        $row = PageButtonsRow::make();
+        $row   = ButtonsRow::massActions(options: [
+            'promote_up'   => 'lp_promote_to_fp',
+            'promote_down' => 'lp_promote_from_fp',
+        ]);
         $value = $row->toArray()['value'];
 
         expect($value)->toContain('promote_up')
-            ->and($value)->toContain('Promote');
-    });
-
-    it('renders promote_down option when frontpage mode is chosen_pages', function () {
-        User::$me->permissions = ['light_portal_approve_pages'];
-        Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
-
-        $row = PageButtonsRow::make();
-        $value = $row->toArray()['value'];
-
-        expect($value)->toContain('promote_down')
-            ->and($value)->toContain('Remove');
+            ->and($value)->toContain('promote_down');
     });
 });

@@ -19,15 +19,23 @@ class CheckboxColumn extends Column
 {
 	public static function make(string $name = 'actions', string $title = '', ?string $entity = null): static
 	{
+		$dispatchSelection = self::getDispatchSelectionScript();
+
 		return parent::make($name, $title ?: Str::html('input', [
-			'type' => 'checkbox',
-			'onclick' => 'invertAll(this, this.form);',
+			'type'    => 'checkbox',
+			'onclick' => "invertAll(this, this.form); $dispatchSelection",
 		])->toHtml())
 			->setStyle('width: 5%')
 			->setData(static fn($entry) => Str::html('input', [
-				'type' => 'checkbox',
-				'value' => $entry['id'],
-				'name' => $entity . '[]',
+				'type'    => 'checkbox',
+				'value'   => $entry['id'],
+				'name'    => $entity . '[]',
+				'onclick' => $dispatchSelection,
 			]), 'centertext');
+	}
+
+	private static function getDispatchSelectionScript(): string
+	{
+		return "window.dispatchEvent(new CustomEvent('lp-mass-selection', { detail: { formName: this.form?.getAttribute('name') } }));";
 	}
 }
