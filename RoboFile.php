@@ -128,7 +128,7 @@ class RoboFile extends Tasks
 		$this->taskPack($file)
 			->addDir('.', 'src')
 			->addFile('./LICENSE', 'LICENSE')
-			->exclude(['.meta-storm.xml', 'composer.json', 'composer.lock', 'create_index.php', 'update_plugins.php', 'debug.blade.php'])
+			->exclude(['.meta-storm.xml', 'composer.json', 'composer.lock', 'create_index.php', 'update_plugins.php'])
 			->exclude([...$this->baseExclusions, ...$this->premiumPlugins, ...$this->remotePlugins])
 			->exclude(['*(' . implode('|', $this->partialTranslations) . ').php'])
 			->run();
@@ -143,7 +143,7 @@ class RoboFile extends Tasks
 		$this->taskPack($file)
 			->addDir('.', 'src')
 			->addFile('./LICENSE', 'LICENSE')
-			->exclude(['.meta-storm.xml', 'composer.json', 'composer.lock', 'create_index.php', 'update_plugins.php', 'debug.blade.php'])
+			->exclude(['.meta-storm.xml', 'composer.json', 'composer.lock', 'create_index.php', 'update_plugins.php'])
 			->exclude([...$this->baseExclusions, ...$this->premiumPlugins])
 			->exclude($this->getChildren())
 			->exclude(['langs/(?!index|english).*\.php'])
