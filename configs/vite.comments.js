@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: dist,
     emptyOutDir: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: 'resources/js/app_comments.js',
       output: {
         entryFileNames: 'bundle_comments.js',

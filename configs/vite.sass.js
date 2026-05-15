@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     outDir: dist,
     emptyOutDir: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: 'resources/sass/portal.scss',
       output: {
         assetFileNames: 'portal.css',

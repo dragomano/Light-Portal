@@ -22,7 +22,7 @@ async function buildMemory() {
     build: {
       ...sharedConfig.build,
       outDir: resolve(dist, 'Memory'),
-      rollupOptions: {
+      rolldownOptions: {
         input: 'resources/js/apps/memory_plugin.js',
         output: {
           entryFileNames: 'memory.js',
@@ -38,7 +38,7 @@ async function buildChessBoard() {
     build: {
       ...sharedConfig.build,
       outDir: resolve(dist, 'ChessBoard'),
-      rollupOptions: {
+      rolldownOptions: {
         input: 'resources/js/apps/chessboard_plugin.js',
         output: {
           entryFileNames: 'chessboard.js',
