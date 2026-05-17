@@ -3,11 +3,11 @@
   "devDependencies": {
     "@miletorix/vitepress-back-to-top-button": "^1.0.3",
     "release-timeline": "^0.6.0",
-    "rolldown": "1.0.0-rc.10",
-    "sass": "^1.98.0",
+    "rolldown": "^1.0.1",
+    "sass": "^1.99.0",
     "vitepress": "2.0.0-alpha.17",
     "vitepress-plugin-comment-with-giscus": "^1.1.15",
-    "vitepress-sidebar": "^1.33.1"
+    "vitepress-sidebar": "^1.33.2"
   },
   "scripts": {
     "docs:dev": "vitepress dev",
