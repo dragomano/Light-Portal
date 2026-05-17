@@ -34,7 +34,7 @@ readonly class TaggableService
 		$this->container->registerFactory(
 			$this->className,
 			function () use ($dependencies) {
-				$args = array_map(fn($dep) => $this->container->get($dep), $dependencies);
+				$args = array_map($this->container->get(...), $dependencies);
 
 				return new $this->className(...$args);
 			}

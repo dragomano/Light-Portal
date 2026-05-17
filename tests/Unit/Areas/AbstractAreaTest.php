@@ -344,6 +344,7 @@ describe('buildTable', function () {
 
         Utils::$context['session_id']  = '';
         Utils::$context['session_var'] = '';
+        Utils::$context['form_action'] = 'https://example.com';
 
         $result = $this->accessor->callMethod('buildTable');
 
