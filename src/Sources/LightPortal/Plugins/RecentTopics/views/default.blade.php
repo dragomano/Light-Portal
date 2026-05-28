@@ -19,7 +19,7 @@
 				@endif
 
 				<span>
-                    @if (! empty($parameters['show_icons']))
+					@if (! empty($parameters['show_icons']))
 						{!! $topic['icon'] !!}
 					@endif
 
@@ -28,13 +28,13 @@
 					@if (empty($parameters['show_avatars']))
 						<br>
 						<span class="smalltext">
-                            {{ $txt['by'] }} {!! $topic['poster']['link'] !!}
-                        </span>
+							{{ $txt['by'] }} {!! $topic['poster']['link'] !!}
+						</span>
 					@endif
 
-                    <br>
-                    <span class="smalltext">{{ $topic['timestamp'] }}</span>
-                </span>
+					<br>
+					<span class="smalltext">{!! $topic['timestamp'] !!}</span>
+				</span>
 			</div>
 		@endforeach
 	@else

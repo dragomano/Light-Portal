@@ -19,18 +19,18 @@
 				@endif
 
 				<span>
-                    {!! $post[$parameters['link_type']] !!}
+					{!! $post[$parameters['link_type']] !!}
 
 					@if (empty($parameters['show_avatars']))
 						<br>
 						<span class="smalltext">
-                            {{ $txt['by'] }} {!! $post['poster']['link'] !!}
-                        </span>
+							{{ $txt['by'] }} {!! $post['poster']['link'] !!}
+						</span>
 					@endif
 
-                    <br>
-                    <span class="smalltext">{{ $post['timestamp'] }}</span>
-                </span>
+					<br>
+					<span class="smalltext">{!! $post['timestamp'] !!}</span>
+				</span>
 
 				@if (! empty($parameters['show_body']))
 					<div>{!! $post['body'] !!}</div>
