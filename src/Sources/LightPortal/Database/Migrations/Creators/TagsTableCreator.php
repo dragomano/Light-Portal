@@ -28,7 +28,7 @@ class TagsTableCreator extends AbstractTableCreator
 	protected function defineColumns(ExtendedTable $table): void
 	{
 		$tagId  = new AutoIncrementInteger('tag_id');
-		$slug   = new Varchar('slug', 255);
+		$slug   = new Varchar('slug', 191);
 		$icon   = new Varchar('icon', 60, true);
 		$status = new TinyInteger('status', default: 1);
 

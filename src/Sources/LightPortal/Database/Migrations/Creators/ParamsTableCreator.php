@@ -32,7 +32,7 @@ class ParamsTableCreator extends AbstractTableCreator
 		$id     = new AutoIncrementInteger();
 		$itemId = new UnsignedInteger('item_id');
 		$type   = new Varchar('type', 30, default: 'block');
-		$name   = new Varchar('name', 255);
+		$name   = new Varchar('name', 191);
 		$value  = new Text('value');
 
 		$table->addAutoIncrementColumn($id);
@@ -48,9 +48,9 @@ class ParamsTableCreator extends AbstractTableCreator
 	protected function getDefaultData(): array
 	{
 		return [
-			['id' => 1, 'item_id' => 1, 'type' => 'page', 'name' => 'show_author_and_date'],
-			['id', 'item_id', 'type', 'name', 'value'],
-			[1, 1, 'page', 'show_author_and_date', 0],
+			['item_id' => 1, 'type' => 'page', 'name' => 'show_author_and_date'],
+			['item_id', 'type', 'name', 'value'],
+			[1, 'page', 'show_author_and_date', 0],
 		];
 	}
 }
