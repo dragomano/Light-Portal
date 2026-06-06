@@ -10,10 +10,10 @@
   @if $topRight == null and $bottomRight == null and $bottomLeft == null and $topLeft != null and $topLeft >= 0 {
     border-radius: $topLeft;
   } @else {
-    $tl: if($topLeft == null or $topLeft < 0, 0, $topLeft);
-    $tr: if($topRight == null or $topRight < 0, 0, $topRight);
-    $br: if($bottomRight == null or $bottomRight < 0, 0, $bottomRight);
-    $bl: if($bottomLeft == null or $bottomLeft < 0, 0, $bottomLeft);
+    $tl: if(sass($topLeft == null or $topLeft < 0): 0; else: $topLeft);
+    $tr: if(sass($topRight == null or $topRight < 0): 0; else: $topRight);
+    $br: if(sass($bottomRight == null or $bottomRight < 0): 0; else: $bottomRight);
+    $bl: if(sass($bottomLeft == null or $bottomLeft < 0): 0; else: $bottomLeft);
 
     @if $tl == $tr and $tr == $br and $br == $bl {
       border-radius: $tl;
