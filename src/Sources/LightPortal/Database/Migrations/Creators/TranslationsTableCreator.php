@@ -53,10 +53,9 @@ class TranslationsTableCreator extends AbstractTableCreator
 	protected function getDefaultData(): array
 	{
 		return [
-			['id' => 1, 'item_id' => 1, 'type' => 'page', 'lang' => Config::$language],
-			['id', 'item_id', 'type', 'lang', 'title', 'content'],
+			['item_id' => 1, 'type' => 'page', 'lang' => Config::$language],
+			['item_id', 'type', 'lang', 'title', 'content'],
 			[
-				1,
 				1,
 				'page',
 				Config::$language,

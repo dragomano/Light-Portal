@@ -11,6 +11,11 @@ $icon_color: #155724;
   padding: 10px;
   @include functions.bRadius(5px);
 }
+
+.forum-list {
+  width: 100%;
+}
+
 .forum-item {
   display: flex;
   align-items: flex-start;

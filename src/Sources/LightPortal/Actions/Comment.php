@@ -173,7 +173,7 @@ final class Comment implements ActionInterface
 				false => [NotifyType::NEW_REPLY, AlertAction::PAGE_COMMENT_REPLY],
 			};
 
-			$this->notifier->notify($type->name(), $action->name(), $options);
+			$this->notifier->notify($type->value, $action->value, $options);
 
 			$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 		}
@@ -218,8 +218,8 @@ final class Comment implements ActionInterface
 			$options['author_id'] = (int) $member['id'];
 
 			$this->notifier->notify(
-				NotifyType::NEW_MENTION->name(),
-				AlertAction::PAGE_COMMENT_MENTION->name(),
+				NotifyType::NEW_MENTION->value,
+				AlertAction::PAGE_COMMENT_MENTION->value,
 				$options
 			);
 		}

@@ -4,6 +4,7 @@
 
 <script>
 	window['VirtualSelect'].init(Object.assign({!! $initJs !!}, {
+		hideClearButton: false,
 		labelRenderer: function (data) {
 			return `<i class="${data.value}"></i> ${data.value}`;
 		},

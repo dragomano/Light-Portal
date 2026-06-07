@@ -159,7 +159,7 @@ dataset('block scenarios', [
     'minimal' => [[
         'block_id'      => 6,
         'type'          => 'user_info',
-        'placement'     => Placement::BOTTOM->name(),
+        'placement'     => Placement::BOTTOM->value,
         'priority'      => 5,
         'permissions'   => 0,
         'status'        => Status::ACTIVE->value,

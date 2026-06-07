@@ -25,9 +25,9 @@ class FetchAlerts
 	public function __invoke(array &$alerts): void
 	{
 		foreach ($alerts as $id => $alert) {
-			if (in_array($alert['content_action'], AlertAction::names())) {
-				$icon = $alert['content_action'] === AlertAction::PAGE_COMMENT->name() ? 'im_off' : 'im_on';
-				$icon = $alert['content_action'] === AlertAction::PAGE_UNAPPROVED->name() ? 'news' : $icon;
+			if (in_array($alert['content_action'], AlertAction::values())) {
+				$icon = $alert['content_action'] === AlertAction::PAGE_COMMENT->value ? 'im_off' : 'im_on';
+				$icon = $alert['content_action'] === AlertAction::PAGE_UNAPPROVED->value ? 'news' : $icon;
 
 				if ($alert['sender_id'] !== User::$me->id) {
 					$alerts[$id]['icon'] = Str::html('span', ['class' => 'alert_icon main_icons ' . $icon]);

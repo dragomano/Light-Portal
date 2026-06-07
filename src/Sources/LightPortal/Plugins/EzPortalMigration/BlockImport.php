@@ -156,11 +156,11 @@ class BlockImport extends AbstractDatabaseBlockImport
 	protected function getPlacement(int $col): string
 	{
 		return match ($col) {
-			1       => Placement::LEFT->name(),
-			2       => Placement::TOP->name(),
-			3       => Placement::RIGHT->name(),
-			5       => Placement::BOTTOM->name(),
-			default => Placement::HEADER->name(),
+			1       => Placement::LEFT->value,
+			2       => Placement::TOP->value,
+			3       => Placement::RIGHT->value,
+			5       => Placement::BOTTOM->value,
+			default => Placement::HEADER->value,
 		};
 	}
 

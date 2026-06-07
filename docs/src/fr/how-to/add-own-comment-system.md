@@ -4,7 +4,7 @@ description: Instructions sur la façon d'ajouter des commentaires personnalisé
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 Choisissez et activez l'un des plugins du widget de commentaire :
 

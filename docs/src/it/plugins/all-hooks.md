@@ -240,7 +240,7 @@ public function preparePageFields(Event $e): void
 
 ### onCustomPageImport
 
-> custom actions on custom page import
+> azioni personalizzate su importazione di pagine personalizzate
 
 ```php
 public function onCustomPageImport(Event $e): void
@@ -452,7 +452,7 @@ public function frontTopicsRow(Event $e): void
 
 ### frontPages
 
-> adding custom columns, joins, where conditions, params and orders to _init_ function
+> aggiunta di colonne e tabelle personalizzate, in base ai parametri ed ordinamenti della funzione _init_
 
 ```php
 public function frontPages(Event $e): void
@@ -648,7 +648,7 @@ public function credits(Event $e): void
 
 ### downloadRequest
 
-> handling download requests for portal attachments
+> gestione delle richieste di download per gli allegati del portale
 
 ```php
 public function downloadRequest(Event $e): void

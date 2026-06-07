@@ -57,13 +57,13 @@ it('can get all pages data with real database', function () {
             (0, 1, 'test-page-1', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0),
             (0, 1, 'test-page-2', ?, ?, ?, ?, 20, 3, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
@@ -84,7 +84,7 @@ it('can get all pages data with real database', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [],
         'permissions'          => Permission::ALL->value,
@@ -118,18 +118,18 @@ it('can get total count with real database', function () {
             (0, 1, 'test-page-2', ?, ?, ?, ?, 20, 3, ?, 0, 0, 0),
             (0, 2, 'test-page-3', ?, ?, ?, ?, 15, 7, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
@@ -146,7 +146,7 @@ it('can get total count with real database', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [],
         'permissions'          => Permission::ALL->value,
@@ -174,8 +174,8 @@ it('can handle pages with categories in real database', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (1, 1, 'category-page', ?, ?, ?, ?, 5, 2, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -194,7 +194,7 @@ it('can handle pages with categories in real database', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [],
         'permissions'          => Permission::ALL->value,
@@ -220,8 +220,8 @@ it('can handle pages with comments in real database', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'commented-page', ?, ?, ?, ?, 15, 1, ?, 0, 0, 1)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -255,7 +255,7 @@ it('can handle pages with comments in real database', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [],
         'permissions'          => Permission::ALL->value,
@@ -279,8 +279,8 @@ it('skips rows with empty title in getData with real database', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'empty-title-page', ?, ?, ?, ?, 10, 0, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -299,7 +299,7 @@ it('skips rows with empty title in getData with real database', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [],
         'permissions'          => Permission::ALL->value,
@@ -349,23 +349,23 @@ it('filters pages by selected categories', function () {
             (0, 1, 'page-no-cat', ?, ?, ?, ?, 20, 2, ?, 0, 0, 0),
             (3, 1, 'page-in-cat-3', ?, ?, ?, ?, 25, 1, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         $now,
@@ -388,7 +388,7 @@ it('filters pages by selected categories', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [1, 2],
         'permissions'          => Permission::ALL->value,
@@ -411,7 +411,7 @@ it('applies base conditions correctly', function () {
     $this->query->init([
         'status'               => Status::ACTIVE->value,
         'deleted_at'           => 0,
-        'entry_type'           => EntryType::DEFAULT->name(),
+        'entry_type'           => EntryType::DEFAULT->value,
         'current_time'         => time(),
         'selected_categories'  => [1, 2],
         'permissions'          => Permission::ALL->value,

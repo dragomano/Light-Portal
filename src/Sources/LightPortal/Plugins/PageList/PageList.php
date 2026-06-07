@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 01.04.26
  */
 
 namespace LightPortal\Plugins\PageList;
@@ -48,7 +48,7 @@ class PageList extends Block
 	{
 		$e->args->params = [
 			'categories' => '',
-			'types'      => EntryType::DEFAULT->name(),
+			'types'      => EntryType::DEFAULT->value,
 			'sort'       => 'page_id',
 			'num_pages'  => 10,
 		];
@@ -101,7 +101,7 @@ class PageList extends Block
 		$categories = explode(',', $parameters['categories']);
 		$sort = $parameters->get('sort', 'page_id');
 		$numPages = $parameters->get('num_pages', 10);
-		$type = $parameters->get('types', EntryType::DEFAULT->name());
+		$type = $parameters->get('types', EntryType::DEFAULT->value);
 
 		$whereConditions = ['p.entry_type = ?' => $type];
 

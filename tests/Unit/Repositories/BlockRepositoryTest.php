@@ -94,7 +94,7 @@ it('returns block data with options', function () {
         INSERT INTO lp_blocks (
             block_id, icon, type, placement, priority, permissions, status, areas, title_class, content_class
         ) VALUES (1, '', ?, 'left', 1, 0, ?, 'all', '', '')
-    ", [ContentType::BBC->name(), Status::ACTIVE->value]);
+    ", [ContentType::BBC->value, Status::ACTIVE->value]);
 
     $this->sql->getAdapter()->query(/** @lang text */ "
         INSERT INTO lp_translations (item_id, type, lang, title, content, description)

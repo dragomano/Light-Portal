@@ -125,7 +125,7 @@ class PageImport extends AbstractDatabasePageImport
 				'description'     => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
 				'content'         => $row['body'],
 				'type'            => $row['type'],
-				'entry_type'      => EntryType::DEFAULT->name(),
+				'entry_type'      => EntryType::DEFAULT->value,
 				'permissions'     => $this->getPermission($row),
 				'status'          => empty($row['off']),
 				'num_views'       => $row['views'],

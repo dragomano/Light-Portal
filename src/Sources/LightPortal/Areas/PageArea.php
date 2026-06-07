@@ -24,6 +24,7 @@ use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasPageBrowseTypes;
 use LightPortal\Areas\Traits\HasPageFilters;
 use LightPortal\Enums\ContentType;
+use LightPortal\Enums\FrontPageMode;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
@@ -35,15 +36,12 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\TextareaField;
 use LightPortal\UI\Fields\TextField;
 use LightPortal\UI\Partials\SelectFactory;
-use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\NumViewsColumn;
-use LightPortal\UI\Tables\PageButtonsRow;
 use LightPortal\UI\Tables\PageContextMenuColumn;
 use LightPortal\UI\Tables\PageSearchRow;
 use LightPortal\UI\Tables\PageSlugColumn;
 use LightPortal\UI\Tables\PageStatusColumn;
 use LightPortal\UI\Tables\PageTypeSelectRow;
-use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\UI\Tables\TitleColumn;
 use LightPortal\Utils\Setting;
@@ -146,42 +144,56 @@ final class PageArea extends AbstractArea
 		];
 	}
 
-	protected function performMassActions(): void
+	protected function getMassActionOptions(): array
 	{
-		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
-			return;
+		$options = [];
 
-		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, [
+		if (User::$me->allowedTo('light_portal_approve_pages')) {
+			$options['toggle'] = 'lp_action_toggle';
+		}
+
+		$options += $this->request()->has('deleted')
+			? ['delete_forever' => 'lp_action_remove_permanently']
+			: ['delete' => 'remove'];
+
+		if (Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)) {
+			$options['promote_up']   = 'lp_promote_to_fp';
+			$options['promote_down'] = 'lp_remove_from_fp';
+		}
+
+		return $options;
+	}
+
+	protected function getMassActionName(): string
+	{
+		return 'page_actions';
+	}
+
+	protected function getMassActionsRedirect(): string
+	{
+		return filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, [
 			'options' => ['default' => 'action=admin;area=lp_pages']
 		]);
+	}
 
-		$items = $this->request()->get('items') ?? [];
-
-		switch (filter_input(INPUT_POST, 'page_actions')) {
-			case 'delete':
-				$this->repository->remove($items);
-				break;
-
+	protected function handleMassAction(string $action, array $items): bool
+	{
+		switch ($action) {
 			case 'delete_forever':
 				$this->getRepository()->removePermanently($items);
-				break;
-
-			case 'toggle':
-				$this->repository->toggleStatus($items);
-				break;
+				return true;
 
 			case 'promote_up':
 				$this->promote($items);
-				break;
+				return true;
 
 			case 'promote_down':
 				$this->promote($items, 'down');
-				break;
+				return true;
+
+			default:
+				return parent::handleMassAction($action, $items);
 		}
-
-		$this->cache()->flush();
-
-		$this->response()->redirect($redirect);
 	}
 
 	protected function buildTable(): PortalTableBuilderInterface
@@ -194,9 +206,7 @@ final class PageArea extends AbstractArea
 		$params = empty(Utils::$context['search_params']) ? '' : ';params=' . Utils::$context['search_params'];
 		$action = Utils::$context['form_action'] . $this->type . $params;
 
-		$builder = PortalTableBuilder::make('lp_pages', __('lp_pages_extra'))
-			->setScript('const entity = new Page();')
-			->withCreateButton($this->getEntityNamePlural())
+		$builder = $this->createTableBuilder(__('lp_pages_extra'))
 			->withParams(
 				action: $action,
 				defaultSortColumn: 'date'
@@ -225,21 +235,30 @@ final class PageArea extends AbstractArea
 				PageSearchRow::make(),
 				PageTypeSelectRow::make(),
 			])
-			->addFormData([
-				'name' => 'manage_pages',
-				'href' => Utils::$context['form_action'] . $this->type,
-				'include_sort' => true,
-				'hidden_fields' => [
-					Utils::$context['session_var'] => Utils::$context['session_id'],
-					'params' => Utils::$context['search_params'],
-				],
-			]);
+			->addFormData($this->getTableFormData());
 
-		Utils::$context['user']['is_admin'] && $builder
-			->addColumn(CheckboxColumn::make(name: 'mass', entity: 'items'))
-			->addRow(PageButtonsRow::make());
+		$this->addMassActionsToTable($builder);
 
 		return $builder;
+	}
+
+	protected function createTableBuilder(?string $title = null): PortalTableBuilderInterface
+	{
+		return parent::createTableBuilder($title)
+			->setScript('const entity = new Page();');
+	}
+
+	protected function getTableFormData(): array
+	{
+		return [
+			'name'          => 'manage_pages',
+			'href'          => Utils::$context['form_action'] . $this->type,
+			'include_sort'  => true,
+			'hidden_fields' => [
+				Utils::$context['session_var'] => Utils::$context['session_id'],
+				'params' => Utils::$context['search_params'],
+			],
+		];
 	}
 
 	protected function afterMain(): void
@@ -288,7 +307,7 @@ final class PageArea extends AbstractArea
 
 	protected function prepareSpecificFields(): void
 	{
-		if (Utils::$context['lp_page']['type'] !== ContentType::BBC->name()) {
+		if (Utils::$context['lp_page']['type'] !== ContentType::BBC->value) {
 			TextareaField::make('content', __('lp_content'))
 				->setTab(Tab::CONTENT)
 				->setAttribute('style', 'height: 300px')

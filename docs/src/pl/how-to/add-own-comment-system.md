@@ -4,7 +4,7 @@ description: Instrukcje dotyczące dodawania własnych komentarzy dla stron port
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 Wybierz i włącz jedną ze wtyczek widżetu komentarzy:
 

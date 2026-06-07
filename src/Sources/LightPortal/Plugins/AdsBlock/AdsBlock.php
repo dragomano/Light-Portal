@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 01.04.26
  */
 
 namespace LightPortal\Plugins\AdsBlock;
@@ -212,7 +212,7 @@ class AdsBlock extends Block
 					continue;
 				}
 
-				$this->showBlocks($placement->name());
+				$this->showBlocks($placement->value);
 
 				return;
 			}

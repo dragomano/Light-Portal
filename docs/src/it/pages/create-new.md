@@ -5,11 +5,11 @@ order: 2
 
 # Aggiungi pagina
 
-In this section, you can create a portal page with the content you need.
+In questa sezione, puoi creare una pagina del portale con il contenuto di cui hai bisogno.
 
-## Page types
+## Tipi di pagina
 
-### Built-in content types
+### Tipi di contenuto incorporati
 
 - **BBC**: Abilita il BBCode per il contenuto
 - **HTML**: Contenuto raw HTML
@@ -17,10 +17,10 @@ In this section, you can create a portal page with the content you need.
 
 ### Blocchi basati su plugin
 
-Plugins can extend the functionality by adding new page types or statuses. Esempi:
+I plugin possono estendere la funzionalità aggiungendo nuovi tipi di pagine o stati. Esempi:
 
 - **Markdown**: Abilitata Markdown per il contenuto
-- **BlogMode**: Adds a new "Blog entry" type for displaying pages in a separate menu section
+- **BlogMode**: aggiunge un nuova voce di "blog" per visualizzare le pagine in una sezione di menu separata
 
 ## Scheda contenuto
 
@@ -35,10 +35,10 @@ Qui puoi configurare:
 
 Qui puoi configurare:
 
-- status — inactive, active, or unapproved
+- stato — inattivo, attivo o non approvato
 - permessi — specifica chi può vedere questa pagina
 - categoria — se ti piace mantenere le cose organizzate
-- type — default, internal, or draft
+- tipo — predefinito, interno o bozza
 
 ![Access tab](access_tab.png)
 

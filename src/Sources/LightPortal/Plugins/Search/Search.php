@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 01.04.26
  */
 
 namespace LightPortal\Plugins\Search;
@@ -186,7 +186,7 @@ class Search extends Block
 				'status'          => 1,
 				'deleted_at'      => 0,
 				'created_at <= ?' => time(),
-				'p.entry_type'    => EntryType::DEFAULT->name(),
+				'p.entry_type'    => EntryType::DEFAULT->value,
 				'permissions'     => Permission::all(),
 			])
 			->order('related DESC')

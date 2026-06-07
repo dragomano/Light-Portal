@@ -5,9 +5,9 @@ order: 1
 
 # Gestisci pagine
 
-This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
+Questa sezione mostra tutte le pagine che hai creato che puoi modificare. Puoi cercarli con il loro titolo o slug.
 
-Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
+Ogni pagina mostra il suo ID, la creazione o l'ultima data aggiornata, il conteggio delle visualizzazioni, il conteggio dei commenti, il tipo di pagina, lo slug e il titolo. Vedi anche un elenco di azioni che puoi fare con esso.
 
 ![Manage pages](manage_pages.png)
 

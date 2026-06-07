@@ -58,7 +58,7 @@ class WhosOnline
 		if ($actions['action'] === LP_ACTION) {
 			$result = sprintf(__('lp_who_viewing_frontpage'), LP_BASE_URL);
 
-			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::TAGS->name()) {
+			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::TAGS->value) {
 				$tags = app(TagList::class)();
 
 				$result = isset($actions['id'])
@@ -72,7 +72,7 @@ class WhosOnline
 					);
 			}
 
-			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::CATEGORIES->name()) {
+			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::CATEGORIES->value) {
 				$categories = app(CategoryList::class)();
 
 				$result = isset($actions['id'])

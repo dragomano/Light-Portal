@@ -130,21 +130,21 @@ class BlockImport extends AbstractDatabaseBlockImport
 	protected function getType(mixed $type): string
 	{
 		return match ($type) {
-			5       => ContentType::BBC->name(),
-			10      => ContentType::PHP->name(),
-			default => ContentType::HTML->name(),
+			5       => ContentType::BBC->value,
+			10      => ContentType::PHP->value,
+			default => ContentType::HTML->value,
 		};
 	}
 
 	protected function getPlacement(int $col): string
 	{
 		return match ($col) {
-			1       => Placement::LEFT->name(),
-			2       => Placement::RIGHT->name(),
-			5       => Placement::FOOTER->name(),
-			6       => Placement::HEADER->name(),
-			7       => Placement::BOTTOM->name(),
-			default => Placement::TOP->name(),
+			1       => Placement::LEFT->value,
+			2       => Placement::RIGHT->value,
+			5       => Placement::FOOTER->value,
+			6       => Placement::HEADER->value,
+			7       => Placement::BOTTOM->value,
+			default => Placement::TOP->value,
 		};
 	}
 

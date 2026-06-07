@@ -65,10 +65,10 @@ describe('Notifier task', function () {
     it('collects notify recipients by preference bits', function () {
         $prefs = [
             1 => [
-                AlertAction::PAGE_COMMENT->name() => Notifier::RECEIVE_NOTIFY_ALERT | Notifier::RECEIVE_NOTIFY_EMAIL,
+                AlertAction::PAGE_COMMENT->value => Notifier::RECEIVE_NOTIFY_ALERT | Notifier::RECEIVE_NOTIFY_EMAIL,
             ],
             2 => [
-                AlertAction::PAGE_UNAPPROVED->name() => Notifier::RECEIVE_NOTIFY_ALERT,
+                AlertAction::PAGE_UNAPPROVED->value => Notifier::RECEIVE_NOTIFY_ALERT,
             ],
         ];
 

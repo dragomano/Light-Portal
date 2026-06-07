@@ -12,14 +12,14 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
+use LightPortal\Enums\Traits\HasValues;
 
-enum AlertAction
+enum AlertAction: string
 {
-	use HasNames;
+	use HasValues;
 
-	case PAGE_COMMENT_MENTION;
-	case PAGE_COMMENT_REPLY;
-	case PAGE_COMMENT;
-	case PAGE_UNAPPROVED;
+	case PAGE_COMMENT_MENTION = 'page_comment_mention';
+	case PAGE_COMMENT_REPLY   = 'page_comment_reply';
+	case PAGE_COMMENT         = 'page_comment';
+	case PAGE_UNAPPROVED      = 'page_unapproved';
 }

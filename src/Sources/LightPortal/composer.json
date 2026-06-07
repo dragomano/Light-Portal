@@ -1,6 +1,6 @@
 {
   "require": {
-    "php": "~8.2",
+    "php": "^8.2",
     "ext-dom": "*",
     "ext-intl": "*",
     "ext-pdo": "*",
@@ -8,7 +8,7 @@
     "ext-zip": "*",
     "bugo/fa-icon-builder": "^0.4",
     "bugo/laminas-db-extra": "dev-main",
-    "bugo/smf-bricks": "^0.8",
+    "bugo/smf-bricks": "dev-main",
     "bugo/smf-compat": "dev-main",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.18",

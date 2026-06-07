@@ -12,23 +12,23 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
+use LightPortal\Enums\Traits\HasValues;
 
-enum EntryType
+enum EntryType: string
 {
-	use HasNames;
+	use HasValues;
 
-	case DEFAULT;
-	case INTERNAL;
-	case DRAFT;
+	case DEFAULT  = 'default';
+	case INTERNAL = 'internal';
+	case DRAFT    = 'draft';
 
 	public static function all(): array
 	{
-		return array_combine(self::names(), __('lp_page_type_set'));
+		return array_combine(self::values(), __('lp_page_type_set'));
 	}
 
 	public static function withoutDrafts(): array
 	{
-		return array_filter(self::names(), fn($item) => $item !== self::DRAFT->name());
+		return array_filter(self::values(), fn($item) => $item !== self::DRAFT->value);
 	}
 }

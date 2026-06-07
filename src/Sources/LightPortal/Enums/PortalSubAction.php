@@ -12,20 +12,16 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
-
 use const LP_BASE_URL;
 
-enum PortalSubAction
+enum PortalSubAction: string
 {
-	use HasNames;
-
-	case CATEGORIES;
-	case TAGS;
-	case PROMOTE;
+	case CATEGORIES = 'categories';
+	case TAGS       = 'tags';
+	case PROMOTE    = 'promote';
 
 	public function url(): string
 	{
-		return LP_BASE_URL . ';sa=' . $this->name();
+		return LP_BASE_URL . ';sa=' . $this->value;
 	}
 }

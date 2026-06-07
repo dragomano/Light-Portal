@@ -206,7 +206,9 @@ class Filesystem implements FilesystemInterface
 
 	public function isEndOfFile($handle): bool
 	{
-		return feof($handle);
+		$stat = fstat($handle);
+
+		return $stat !== false && ftell($handle) >= $stat['size'];
 	}
 
 	public function closeFile($handle): bool

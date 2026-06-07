@@ -1,51 +1,51 @@
 ---
-description: Comprehensive guide to Light Portal's template system, Blade templating, layouts, and themes
+description: Guida completa al sistema di modelli di Light Portal, modellazione Blade, layout e temi
 ---
 
-# Create custom layouts
+# Crea layout personalizzati
 
-Light Portal uses a flexible template system based on [BladeOne](https://github.com/EFTEC/BladeOne), a standalone implementation of Laravel's Blade templating engine. This system allows you to customize the appearance and structure of your portal through layouts, themes, and reusable components.
+Light Portal utilizza un sistema di modelli flessibile basato su [BladeOne] (https://github.com/EFTEC/BladeOne), un'implementazione standalone del motore di modellazione Blade di Laravel. Questo sistema ti consente di personalizzare l'aspetto e la struttura del tuo portale attraverso layout, temi e componenti riutilizzabili.
 
-## Template system
+## Sistema del template
 
-### Blade templating engine
+### Motore del template di Blade
 
-Blade is a powerful templating engine that provides clean, readable syntax for mixing PHP with HTML. Key features:
+Blade è un potente motore di modellazione che fornisce una sintassi pulita e leggibile per mescolare PHP con HTML. Funzionalità chiave:
 
-- **Template Inheritance**: Use `@extends` and `@section` directives to create layout hierarchies
-- **Includes**: Reuse components with `@include` directives
-- **Control Structures**: PHP-like syntax with `@if`, `@foreach`, `@while`, etc.
+- **Ereditarietà template**: utilizza le direttive `@extends` e `@section` per creare gerarchie di layout
+- **Inclusioni**: Riutilizzare i componenti con le direttive `@include`
+- **Controllo della struttura**: sintassi simile a PHP con `@if`, `@foreach`, `@while`, ecc.
 
-See detailed information about Blade markup [here](https://github.com/EFTEC/BladeOne/wiki/Template-variables).
+Puoi vedere informazioni dettagliate sul markup Blade [qui](https://github.com/EFTEC/BladeOne/wiki/Template-variables).
 
 ### Layouts
 
-Layouts define the overall structure of your front page. Located in `/Themes/default/LightPortal/layouts/`, they determine how front page articles are arranged. Examples include:
+I layout definiscono la struttura generale della tua prima pagina. Situato in `/Themes/default/LightPortal/layouts/`, determinano come sono disposti gli articoli in prima pagina. Ad esempio:
 
-- `default.blade.php` - Standard grid layout
-- `simple.blade.php` - Minimalist design
-- `modern.blade.php` - Contemporary styling
-- `featured_grid.blade.php` - Highlighted content grid
+- `default.blade.php` - Layout standard della griglia
+- `simple.blade.php` - Design minimalista
+- `modern.blade.php` - Stile contemporaneo
+- `featured_grid.blade.php` - Griglia di contenuto evidenziata
 
-### Partials
+### Parziali
 
-Reusable template components stored in `/Themes/default/LightPortal/layouts/partials/`:
+Componenti di template riutilizzabili salvati in `/Themes/default/LightPortal/layouts/partials/`:
 
-- `base.blade.php` - Main layout wrapper
-- `card.blade.php` - Article card template
-- `pagination.blade.php` - Page navigation
-- `image.blade.php` - Image display component
+- `base.blade.php` - wrapper del layout principale
+- `card.blade.php` - Modello della scheda dell'articolo
+- `pagination.blade.php` - Navigazione della pagina
+- `image.blade.php` - Componente di visualizzazione dell'immagine
 
-### Themes and assets
+### Temi e risorse
 
-- `/Themes/default/LightPortal`: Portal templates files
-- `/languages/LightPortal`: Localization files
-- `/css/light_portal`: CSS enhancements
-- `/scripts/light_portal`: JavaScript enhancements
+- `/Themes/default/LightPortal`: File del template del portale
+- `/languages/LightPortal`: File di localizzazione
+- `/css/light_portal`: Miglioramenti CSS
+- `/css/light_portal`: Miglioramenti JavaScript
 
-## Layout example
+## Esempio layout
 
-In addition to existing front page layouts, you can always add your own.
+Oltre ai layout della prima pagina già esistenti, puoi sempre aggiungerne i tuoi.
 
 Per farlo, crea un file `custom.blade.php` nella cartella `/Themes/default/portal_layouts`:
 
@@ -81,18 +81,18 @@ Per farlo, crea un file `custom.blade.php` nella cartella `/Themes/default/porta
 </style>
 ```
 
-After that you will see a new front page layout - `Custom` - on the portal settings:
+Dopo di che si vedrà un nuovo layout per la prima pagina - `Custom` - sulle impostazioni del portale:
 
 ![Select custom template](set_custom_template.png)
 
 Puoi creare tutti i layout che desideri. Utilizza `debug.blade.php` e altri layout nella cartella `/Themes/default/LightPortal/layouts` come esempi.
 
-## CSS customizing
+## Personalizzazione CSS
 
-You can easily change the look of anything by adding your own styles. Just create a new file called `portal_custom.css` in the `Themes/default/css` directory and put your CSS there.
+Puoi facilmente cambiare l'aspetto di qualsiasi cosa aggiungendo i tuoi stili. Basta creare un nuovo file chiamato `portal_custom.css` nella cartella `Themes/default/css` e mettere il CSS lì.
 
 :::tip Suggerimento
 
-If you have created your own front page template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
+Se hai creato il tuo modello di prima pagina e vuoi condividerlo con lo sviluppatore e altri utenti, utilizza https://codepen.io/pen/ o altre risorse simili.
 
 :::

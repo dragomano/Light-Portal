@@ -170,7 +170,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		$result = $this->sql->execute($select);
 
 		foreach ($result as $row) {
-			if ($row['type'] === ContentType::BBC->name()) {
+			if ($row['type'] === ContentType::BBC->value) {
 				$row['content'] = Parser::getEditableString($row['content'] ?? '');
 			}
 

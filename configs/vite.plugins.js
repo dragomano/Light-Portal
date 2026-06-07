@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: dist,
     emptyOutDir: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: 'resources/js/app_plugins.js',
       output: {
         entryFileNames: 'bundle_plugins.js',

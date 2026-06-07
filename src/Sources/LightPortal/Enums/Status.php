@@ -18,7 +18,7 @@ enum Status: int
 {
 	use HasValues;
 
-	case INACTIVE = 0;
-	case ACTIVE = 1;
+	case INACTIVE   = 0;
+	case ACTIVE     = 1;
 	case UNAPPROVED = 2;
 }

@@ -3,7 +3,7 @@ description: Breve descrizione dell'interfaccia di creazione del plugin
 order: 2
 ---
 
-# Aggiungi Plugin
+# Aggiungi blocco
 
 Per aggiungere un blocco, fai clic su di esso. Inizialmente, è possibile creare blocchi di tre tipi: PHP, HTML e BBCode. Se hai vuoi altri, [abilita i plugin necessari] (../plugins/manage) di tipo `blocco`.
 

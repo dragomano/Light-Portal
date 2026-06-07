@@ -10,4 +10,4 @@ Benvenuti nella documentazione italiana di Light Portal!
 
 ---
 
-Hai domande o suggerimenti? Sentiti libero di pubblicarli sulla [discussione di supporto](https://www.simplemachines.org/community/index.php? topic=572393.0) o proprio qui — Ti risponderò il prima possibile.
+Hai domande o suggerimenti? Sentiti libero di pubblicarli sulla [discussione di supporto](https://www.simplemachines.org/community/index.php?topic=572393.0) o proprio qui — Ti risponderò il prima possibile.

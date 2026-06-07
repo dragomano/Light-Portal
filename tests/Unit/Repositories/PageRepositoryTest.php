@@ -90,8 +90,8 @@ it('can get all pages with default parameters', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -141,8 +141,8 @@ it('can get all pages with list filter', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -178,8 +178,8 @@ it('can get total count', function () {
             (0, 1, ?, ?, ?, ?, 10, 5, ?, ?, 0, 0, 0),
             (0, 1, ?, ?, ?, ?, 10, 5, ?, ?, 0, 0, 0)
     ", [
-        'test-page1', ContentType::BBC->name(), EntryType::DEFAULT->name(), Permission::ALL->value, $now, $now,
-        'test-page2', ContentType::BBC->name(), EntryType::DEFAULT->name(), Permission::ALL->value, $now, $now,
+        'test-page1', ContentType::BBC->value, EntryType::DEFAULT->value, Permission::ALL->value, $now, $now,
+        'test-page2', ContentType::BBC->value, EntryType::DEFAULT->value, Permission::ALL->value, $now, $now,
     ]);
 
     $result = $this->repository->getTotalCount();
@@ -195,8 +195,8 @@ it('can get data by id', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 1)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -247,8 +247,8 @@ it('can get data by slug', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),
@@ -301,8 +301,8 @@ it('returns empty array when translations are missing', function () {
             num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
         ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0)
     ", [
-        ContentType::BBC->name(),
-        EntryType::DEFAULT->name(),
+        ContentType::BBC->value,
+        EntryType::DEFAULT->value,
         Permission::ALL->value,
         Status::ACTIVE->value,
         time(),

@@ -30,7 +30,7 @@ class CategoriesTableCreator extends AbstractTableCreator
 	{
 		$id       = new AutoIncrementInteger('category_id');
 		$parentId = new UnsignedInteger('parent_id');
-		$slug     = new Varchar('slug', 255);
+		$slug     = new Varchar('slug', 191);
 		$icon     = new Varchar('icon', 60, true);
 		$priority = new TinyInteger('priority');
 		$status   = new TinyInteger('status', default: 1);

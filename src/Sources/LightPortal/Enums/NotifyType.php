@@ -12,14 +12,10 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
-
-enum NotifyType
+enum NotifyType: string
 {
-	use HasNames;
-
-	case NEW_COMMENT;
-	case NEW_MENTION;
-	case NEW_PAGE;
-	case NEW_REPLY;
+	case NEW_COMMENT = 'new_comment';
+	case NEW_MENTION = 'new_mention';
+	case NEW_PAGE    = 'new_page';
+	case NEW_REPLY   = 'new_reply';
 }

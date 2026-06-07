@@ -342,7 +342,7 @@ class AdminAreas extends AbstractHook
 
 		Utils::$context['sub_template'] = 'show_settings';
 
-		$sa = $this->request()->get('sa');
+		$sa = $this->request()->get('sa') ?? '';
 
 		Utils::$context['sub_action'] = isset($areas[$sa]) ? $sa : $defaultAction;
 

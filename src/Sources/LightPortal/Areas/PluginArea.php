@@ -156,7 +156,7 @@ final readonly class PluginArea
 	{
 		$snakeName     = Str::getSnakeName($pluginName);
 		$pluginData    = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
-		$isBlockPlugin = ($pluginData['type'] ?? '') === PluginType::BLOCK->name();
+		$isBlockPlugin = ($pluginData['type'] ?? '') === PluginType::BLOCK->value;
 
 		if ($data['status'] === 'on' && $isBlockPlugin) {
 			app(BlockRepositoryInterface::class)->updateStatusByType($snakeName, Status::INACTIVE->value);
@@ -235,7 +235,7 @@ final readonly class PluginArea
 				$key = array_search($type, __('lp_plugins_types'), true);
 
 				if ($key === false) {
-					$key = PluginType::OTHER->name();
+					$key = PluginType::OTHER->value;
 				}
 
 				$typeCount[$key] ??= 0;

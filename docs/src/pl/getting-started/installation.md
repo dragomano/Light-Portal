@@ -26,4 +26,4 @@ Wystarczy pobrać pakiet z plikami portalu z [oficjalnego katalogu](https://cust
 
 ## Testing
 
-You can try our [Docker files](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) or your preffered LAMP/WAMP/MAMP app.
+You can try our [Docker files](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) or your preferred LAMP/WAMP/MAMP app.

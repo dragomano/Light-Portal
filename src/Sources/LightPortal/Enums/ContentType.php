@@ -13,22 +13,22 @@
 namespace LightPortal\Enums;
 
 use Bugo\Compat\User;
-use LightPortal\Enums\Traits\HasNames;
+use LightPortal\Enums\Traits\HasValues;
 
-enum ContentType
+enum ContentType: string
 {
-	use HasNames;
+	use HasValues;
 
-	case BBC;
-	case HTML;
-	case PHP;
+	case BBC  = 'bbc';
+	case HTML = 'html';
+	case PHP  = 'php';
 
 	public static function all(): array
 	{
 		$types = [
-			self::BBC->name()  => __('lp_bbc')['title'],
-			self::HTML->name() => __('lp_html')['title'],
-			self::PHP->name()  => __('lp_php')['title'],
+			self::BBC->value  => __('lp_bbc')['title'],
+			self::HTML->value => __('lp_html')['title'],
+			self::PHP->value  => __('lp_php')['title'],
 		];
 
 		return User::$me->is_admin ? $types : array_slice($types, 0, 2);
@@ -37,10 +37,10 @@ enum ContentType
 	public static function icon(string $type): string
 	{
 		return match($type) {
-			self::BBC->name()  => 'fab fa-bimobject',
-			self::HTML->name() => 'fab fa-html5',
-			self::PHP->name()  => 'fab fa-php',
-			default            => '',
+			self::BBC->value  => 'fab fa-bimobject',
+			self::HTML->value => 'fab fa-html5',
+			self::PHP->value  => 'fab fa-php',
+			default           => '',
 		};
 	}
 

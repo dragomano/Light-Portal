@@ -35,8 +35,8 @@ it('initializes with custom data', function () {
     $data = [
         'id'            => 123,
         'icon'          => 'fas fa-star',
-        'type'          => ContentType::HTML->name(),
-        'placement'     => Placement::RIGHT->name(),
+        'type'          => ContentType::HTML->value,
+        'placement'     => Placement::RIGHT->value,
         'priority'      => 5,
         'permissions'   => Permission::ALL->value,
         'status'        => Status::ACTIVE->value,

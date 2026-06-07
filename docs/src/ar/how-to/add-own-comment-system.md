@@ -4,7 +4,7 @@ description: تعليمات حول كيفية إضافة تعليقات مخصص
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 اختر و قم بتفعيل واحدة من الملحقات المصغرة للتعليق:
 

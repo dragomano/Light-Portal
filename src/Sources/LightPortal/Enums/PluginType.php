@@ -12,26 +12,22 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Enums\Traits\HasNames;
-
-enum PluginType
+enum PluginType: string
 {
-	use HasNames;
-
-	case ARTICLE;
-	case BLOCK;
-	case BLOCK_OPTIONS;
-	case COMMENT;
-	case EDITOR;
-	case FRONTPAGE;
-	case GAMES;
-	case ICONS;
-	case IMPEX;
-	case OTHER;
-	case PAGE_OPTIONS;
-	case PARSER;
-	case SEO;
-	case SSI;
+	case ARTICLE       = 'article';
+	case BLOCK         = 'block';
+	case BLOCK_OPTIONS = 'block_options';
+	case COMMENT       = 'comment';
+	case EDITOR        = 'editor';
+	case FRONTPAGE     = 'frontpage';
+	case GAMES         = 'games';
+	case ICONS         = 'icons';
+	case IMPEX         = 'impex';
+	case OTHER         = 'other';
+	case PAGE_OPTIONS  = 'page_options';
+	case PARSER        = 'parser';
+	case SEO           = 'seo';
+	case SSI           = 'ssi';
 
 	public function color(): string
 	{
@@ -56,7 +52,7 @@ enum PluginType
 	public static function colors(): array
 	{
 		return array_column(
-			array_map(fn(self $type) => [$type->name(), $type->color()], self::cases()),
+			array_map(fn(self $type) => [$type->value, $type->color()], self::cases()),
 			1,
 			0
 		);

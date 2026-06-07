@@ -458,7 +458,7 @@ class ServiceProvider
 					$c->get(BreadcrumbRenderer::class)
 				),
 
-				BreadcrumbBuilder::class => fn() => BreadcrumbBuilder::make(),
+				BreadcrumbBuilder::class => BreadcrumbBuilder::make(...),
 
 				BreadcrumbWrapper::class => fn($c) => new BreadcrumbWrapper(
 					$c->get(BreadcrumbBuilder::class),

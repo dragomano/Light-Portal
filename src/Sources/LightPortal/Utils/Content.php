@@ -54,15 +54,15 @@ class Content
 
 	public static function parse(string $content, string $type = 'bbc'): string
 	{
-		if ($type === ContentType::BBC->name()) {
+		if ($type === ContentType::BBC->value) {
 			$content = BBCodeParser::load()->parse($content);
 
 			IntegrationHook::call('integrate_paragrapher_string', [&$content]);
 
 			return $content;
-		} elseif ($type === ContentType::HTML->name()) {
+		} elseif ($type === ContentType::HTML->value) {
 			return Utils::htmlspecialcharsDecode($content);
-		} elseif ($type === ContentType::PHP->name()) {
+		} elseif ($type === ContentType::PHP->value) {
 			$renderer = app(PurePHP::class);
 
 			return $renderer->renderString($content);

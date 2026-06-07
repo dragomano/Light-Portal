@@ -58,7 +58,7 @@ class EventManager
 		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
-				$listener->type !== PluginType::BLOCK_OPTIONS->name()
+				$listener->type !== PluginType::BLOCK_OPTIONS->value
 				&& in_array($hook, $this->contentHooks)
 				&& isset($args->type)
 			) {

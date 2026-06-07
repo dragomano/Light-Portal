@@ -48,7 +48,7 @@ abstract class AbstractField
 
 	public function setTab(Tab|string $tab): self
 	{
-		$this->tab = is_string($tab) ? $tab : $tab->name();
+		$this->tab = is_string($tab) ? $tab : $tab->value;
 
 		return $this;
 	}
@@ -134,4 +134,3 @@ abstract class AbstractField
 		];
 	}
 }
-

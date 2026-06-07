@@ -39,8 +39,8 @@ final class Notifier extends BackgroundTask
 
 	public function execute(): bool
 	{
-		$members = match ($this->_details['content_type']) {
-			NotifyType::NEW_PAGE->name() => User::getAllowedTo('light_portal_manage_pages_any'),
+			$members = match ($this->_details['content_type']) {
+				NotifyType::NEW_PAGE->value => User::getAllowedTo('light_portal_manage_pages_any'),
 			default => array_intersect(
 				User::getAllowedTo('light_portal_view'), [$this->_details['content_author_id']]
 			)
@@ -51,12 +51,12 @@ final class Notifier extends BackgroundTask
 			$members = array_diff($members, [$this->_details['sender_id']]);
 		}
 
-		$prefs = Notify::getNotifyPrefs($members, match ($this->_details['content_type']) {
-			NotifyType::NEW_COMMENT->name() => AlertAction::PAGE_COMMENT->name(),
-			NotifyType::NEW_MENTION->name() => AlertAction::PAGE_COMMENT_MENTION->name(),
-			NotifyType::NEW_REPLY->name()   => AlertAction::PAGE_COMMENT_REPLY->name(),
-			default                         => AlertAction::PAGE_UNAPPROVED->name()
-		}, true);
+			$prefs = Notify::getNotifyPrefs($members, match ($this->_details['content_type']) {
+				NotifyType::NEW_COMMENT->value => AlertAction::PAGE_COMMENT->value,
+				NotifyType::NEW_MENTION->value => AlertAction::PAGE_COMMENT_MENTION->value,
+				NotifyType::NEW_REPLY->value   => AlertAction::PAGE_COMMENT_REPLY->value,
+				default                        => AlertAction::PAGE_UNAPPROVED->value
+			}, true);
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
 			User::load($this->_details['sender_id'], dataset: 'minimal');
@@ -84,7 +84,7 @@ final class Notifier extends BackgroundTask
 		$notifies = [];
 		foreach ($prefs as $member => $prefOption) {
 			foreach ($alertBits as $type => $bitvalue) {
-				foreach (AlertAction::names() as $action) {
+					foreach (AlertAction::values() as $action) {
 					if (isset($prefOption[$action]) && ($prefOption[$action] & $bitvalue)) {
 						$notifies[$type][] = $member;
 					}
@@ -142,7 +142,7 @@ final class Notifier extends BackgroundTask
 			Lang::load('LightPortal/LightPortal', $lang);
 
 			$emaildata = Mail::loadEmailTemplate(
-				AlertAction::PAGE_UNAPPROVED->name(),
+				AlertAction::PAGE_UNAPPROVED->value,
 				$replacements,
 				empty(Config::$modSettings['userLanguage']) ? Config::$language : $lang,
 				false

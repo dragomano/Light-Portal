@@ -21,8 +21,14 @@ if (! defined('SMF'))
 
 class PortalAdapterFactory extends AdapterFactory
 {
+	private static ?PortalAdapterInterface $instance = null;
+
 	public static function create(array $config = []): PortalAdapterInterface
 	{
+		if (self::$instance !== null && empty($config)) {
+			return self::$instance;
+		}
+
 		$driver   = self::getDriver();
 		$profiler = new ExtendedProfiler(self::getPlatform($driver));
 
@@ -36,7 +42,13 @@ class PortalAdapterFactory extends AdapterFactory
 			'profiler' => $profiler,
 		];
 
-		return new PortalAdapter(array_merge($baseConfig, $config));
+		$adapter = new PortalAdapter(array_merge($baseConfig, $config));
+
+		if (empty($config)) {
+			self::$instance = $adapter;
+		}
+
+		return $adapter;
 	}
 
 	protected static function getDriver(): string

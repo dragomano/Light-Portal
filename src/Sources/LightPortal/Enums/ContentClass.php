@@ -19,18 +19,18 @@ enum ContentClass: string
 {
 	use HasHtml;
 
-	case ROUNDFRAME = 'roundframe';
-	case ROUNDFRAME2 = 'roundframe2';
-	case WINDOWBG = 'windowbg';
-	case WINDOWBG2 = 'windowbg2';
-	case INFORMATION = 'information';
-	case ERRORBOX = 'errorbox';
-	case NOTICEBOX = 'noticebox';
-	case INFOBOX = 'infobox';
-	case DESCBOX = 'descbox';
-	case BBC_CODE = 'bbc_code';
+	case ROUNDFRAME           = 'roundframe';
+	case ROUNDFRAME2          = 'roundframe2';
+	case WINDOWBG             = 'windowbg';
+	case WINDOWBG2            = 'windowbg2';
+	case INFORMATION          = 'information';
+	case ERRORBOX             = 'errorbox';
+	case NOTICEBOX            = 'noticebox';
+	case INFOBOX              = 'infobox';
+	case DESCBOX              = 'descbox';
+	case BBC_CODE             = 'bbc_code';
 	case GENERIC_LIST_WRAPPER = 'generic_list_wrapper';
-	case EMPTY = '';
+	case EMPTY                = '';
 
 	public function getList(): string
 	{

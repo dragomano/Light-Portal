@@ -28,6 +28,8 @@ use LightPortal\UI\TemplateLoader;
 use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\TextField;
 use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\UI\Tables\ButtonsRow;
+use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\Content;
@@ -163,8 +165,8 @@ abstract class AbstractArea implements AreaInterface
 			return;
 
 		$data = $this->request()->json();
-		$this->processActions($data);
 
+		$this->processActions($data);
 		$this->clearCache();
 
 		exit;
@@ -187,8 +189,6 @@ abstract class AbstractArea implements AreaInterface
 			'toggle_item' => fn($data) => $this->repository->toggleStatus($data['toggle_item']),
 		], $this->getCustomActionHandlers());
 	}
-
-	protected function performMassActions(): void {}
 
 	protected function clearCache(): void
 	{
@@ -214,13 +214,122 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function buildTable(): PortalTableBuilderInterface
 	{
-		return PortalTableBuilder::make('lp_' . $this->getEntityNamePlural(), $this->getTableTitle())
-			->setDefaultSortColumn($this->getDefaultSortColumn())
-			->setScript($this->getTableScript())
-			->withCreateButton($this->getEntityNamePlural())
+		return $this->buildTableWithMassActions();
+	}
+
+	protected function buildTableWithMassActions(): PortalTableBuilderInterface
+	{
+		$builder = $this->createTableBuilder()
 			->setItems($this->repository->getAll(...))
 			->setCount($this->repository->getTotalCount(...))
-			->addColumns($this->getTableColumns());
+			->addColumns($this->getTableColumns())
+			->addFormData($this->getTableFormData());
+
+		$this->addMassActionsToTable($builder);
+
+		return $builder;
+	}
+
+	protected function createTableBuilder(?string $title = null): PortalTableBuilderInterface
+	{
+		return PortalTableBuilder::make(
+			'lp_' . $this->getEntityNamePlural(),
+			$title ?? $this->getTableTitle()
+		)
+			->setDefaultSortColumn($this->getDefaultSortColumn())
+			->setScript($this->getTableScript())
+			->withCreateButton($this->getEntityNamePlural());
+	}
+
+	protected function getTableFormData(): array
+	{
+		return [
+			'name'          => 'manage_' . $this->getEntityNamePlural(),
+			'href'          => Utils::$context['form_action'],
+			'include_sort'  => true,
+			'hidden_fields' => [
+				Utils::$context['session_var'] => Utils::$context['session_id'],
+			],
+		];
+	}
+
+	protected function addMassActionsToTable(PortalTableBuilderInterface $builder): void
+	{
+		if (! $this->canManageMassActions())
+			return;
+
+		$builder
+			->addColumn(CheckboxColumn::make(name: 'mass', entity: 'items'))
+			->addRow($this->getMassActionsButtonsRow());
+	}
+
+	protected function canManageMassActions(): bool
+	{
+		return Utils::$context['user']['is_admin'];
+	}
+
+	protected function getMassActionsButtonsRow(): ButtonsRow
+	{
+		$entityPlural = $this->getEntityNamePlural();
+		$formName     = 'manage_' . $entityPlural;
+		$actionName   = $this->getMassActionName();
+
+		return ButtonsRow::massActions(
+			formName: $formName,
+			actionName: $actionName,
+			options: $this->getMassActionOptions()
+		);
+	}
+
+	protected function getMassActionOptions(): array
+	{
+		return [
+			'toggle' => 'lp_action_toggle',
+			'delete' => 'remove',
+		];
+	}
+
+	protected function getMassActionName(): string
+	{
+		return $this->getEntityNamePlural() . '_actions';
+	}
+
+	protected function getMassActionsRedirect(): string
+	{
+		return filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, [
+			'options' => ['default' => 'action=admin;area=lp_' . $this->getEntityNamePlural()]
+		]);
+	}
+
+	protected function handleMassAction(string $action, array $items): bool
+	{
+		switch ($action) {
+			case 'delete':
+				$this->repository->remove($items);
+				return true;
+
+			case 'toggle':
+				$this->repository->toggleStatus($items);
+				return true;
+
+			default:
+				return false;
+		}
+	}
+
+	protected function performMassActions(): void
+	{
+		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
+			return;
+
+		$redirect = $this->getMassActionsRedirect();
+		$items    = (array) ($this->request()->get('items') ?? []);
+		$action   = (string) filter_input(INPUT_POST, $this->getMassActionName());
+
+		$this->handleMassAction($action, $items);
+
+		$this->cache()->flush();
+		$this->response()->redirect($redirect);
 	}
 
 	protected function getTableTitle(): string
@@ -406,7 +515,7 @@ abstract class AbstractArea implements AreaInterface
 				$entity['content'] ?? $entity['description'] ?? '',
 				ENT_QUOTES
 			),
-			$entity['type'] ?? ContentType::HTML->name()
+			$entity['type'] ?? ContentType::HTML->value
 		);
 
 		Lang::censorText(Utils::$context['preview_content']);
@@ -507,8 +616,8 @@ abstract class AbstractArea implements AreaInterface
 	protected function updateEditContextTitle(): void
 	{
 		$entityPlural = $this->getEntityNamePlural();
-		$entity = $this->getContextEntity();
-		$title = $entity['title'] ?? '';
+		$entity       = $this->getContextEntity();
+		$title        = $entity['title'] ?? '';
 
 		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_edit_title") . ($title ? ' - ' . $title : '');
 

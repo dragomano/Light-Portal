@@ -44,7 +44,7 @@ trait HasArea
 
 	public function prepareContent(array $object): string
 	{
-		if ($object['type'] === ContentType::HTML->name()) {
+		if ($object['type'] === ContentType::HTML->value) {
 			$object['content'] = Utils::htmlspecialchars($object['content']);
 		}
 

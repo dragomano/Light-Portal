@@ -128,7 +128,7 @@ class Handler
 
 		Utils::$context['lp_plugin'] = [
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
-			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? PluginType::BLOCK->name(),
+			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? PluginType::BLOCK->value,
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
 			'author'     => $postData['author']
 								?? Utils::$context['lp_plugin']['author']
@@ -361,8 +361,8 @@ class Handler
 	{
 		$types = explode(',', Utils::$context['lp_plugin']['type']);
 
-		if (in_array(PluginType::GAMES->name(), $types) || in_array(PluginType::SSI->name(), $types)) {
-			$types = array_unique(array_merge([PluginType::BLOCK->name()], $types));
+		if (in_array(PluginType::GAMES->value, $types) || in_array(PluginType::SSI->value, $types)) {
+			$types = array_unique(array_merge([PluginType::BLOCK->value], $types));
 		}
 
 		Utils::$context['lp_plugin']['types'] = $types;
@@ -374,9 +374,9 @@ class Handler
 		$icon  = Utils::$context['lp_plugin']['icon'];
 
 		$excludes = [
-			PluginType::BLOCK->name(),
-			PluginType::GAMES->name(),
-			PluginType::SSI->name(),
+			PluginType::BLOCK->value,
+			PluginType::GAMES->value,
+			PluginType::SSI->value,
 		];
 
 		if (empty(array_intersect($types, $excludes)) || $icon === 'undefined') {

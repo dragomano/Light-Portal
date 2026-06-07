@@ -50,9 +50,9 @@ class PageImport extends XmlImporter
 			$status = intval($item['status']);
 
 			$entryType = match ($status) {
-				3       => EntryType::INTERNAL->name(),
+				3       => EntryType::INTERNAL->value,
 				4       => 'blog', // Deprecated status
-				default => (string) ($item['entry_type'] ?? EntryType::DEFAULT->name()),
+				default => (string) ($item['entry_type'] ?? EntryType::DEFAULT->value),
 			};
 
 			$slug = $this->initializeSlugAndTranslations($item, $pageId, $pageTitles);

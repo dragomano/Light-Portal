@@ -80,6 +80,6 @@ it('builds common page where conditions', function () {
     }
     expect($params)->toContain(Status::ACTIVE->value)
         ->and($params)->toContain(0)
-        ->and($params)->toContain(EntryType::DEFAULT->name())
+        ->and($params)->toContain(EntryType::DEFAULT->value)
         ->and($params)->toContain(Permission::ALL->value);
 });

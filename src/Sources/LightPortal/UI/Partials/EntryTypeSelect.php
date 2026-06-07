@@ -26,7 +26,7 @@ final class EntryTypeSelect extends AbstractSelect
 
 		$data = [];
 		foreach ($pageTypes as $value => $label) {
-			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->name()) {
+			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->value) {
 				continue;
 			}
 
@@ -47,7 +47,7 @@ final class EntryTypeSelect extends AbstractSelect
 			'search'   => false,
 			'wide'     => false,
 			'hint'     => '',
-			'value'    => Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->name(),
+			'value'    => Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->value,
 		];
 	}
 }

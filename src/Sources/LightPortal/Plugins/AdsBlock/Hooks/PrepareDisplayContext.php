@@ -65,27 +65,27 @@ class PrepareDisplayContext
 
 	private function handleBeforeFirstPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::BEFORE_FIRST_POST->name()))
+		if (! $this->hasBlock(Placement::BEFORE_FIRST_POST->value))
 			return;
 
 		if ($context['current_counter'] === $context['output']['counter'] && empty(Utils::$context['start'])) {
-			$this->showBlocks(Placement::BEFORE_FIRST_POST->name());
+			$this->showBlocks(Placement::BEFORE_FIRST_POST->value);
 		}
 	}
 
 	private function handleBeforeEveryFirstPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::BEFORE_EVERY_FIRST_POST->name()))
+		if (! $this->hasBlock(Placement::BEFORE_EVERY_FIRST_POST->value))
 			return;
 
 		if ($context['current_counter'] === $context['output']['counter']) {
-			$this->showBlocks(Placement::BEFORE_EVERY_FIRST_POST->name());
+			$this->showBlocks(Placement::BEFORE_EVERY_FIRST_POST->value);
 		}
 	}
 
 	private function handleAfterFirstPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::AFTER_FIRST_POST->name()))
+		if (! $this->hasBlock(Placement::AFTER_FIRST_POST->value))
 			return;
 
 		$targetCounter = $context['show_oldest_first']
@@ -93,13 +93,13 @@ class PrepareDisplayContext
 			: Utils::$context['total_visible_posts'] - 2;
 
 		if ($context['counter'] === $targetCounter) {
-			$this->showBlocks(Placement::AFTER_FIRST_POST->name());
+			$this->showBlocks(Placement::AFTER_FIRST_POST->value);
 		}
 	}
 
 	private function handleAfterEveryFirstPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::AFTER_EVERY_FIRST_POST->name()))
+		if (! $this->hasBlock(Placement::AFTER_EVERY_FIRST_POST->value))
 			return;
 
 		$targetCounter = $context['show_oldest_first']
@@ -107,17 +107,17 @@ class PrepareDisplayContext
 			: $context['current_counter'] - 1;
 
 		if ($context['output']['counter'] === $targetCounter) {
-			$this->showBlocks(Placement::AFTER_EVERY_FIRST_POST->name());
+			$this->showBlocks(Placement::AFTER_EVERY_FIRST_POST->value);
 		}
 	}
 
 	private function handleBeforeEveryLastPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::BEFORE_EVERY_LAST_POST->name()))
+		if (! $this->hasBlock(Placement::BEFORE_EVERY_LAST_POST->value))
 			return;
 
 		if ($this->isBeforeEveryLastPost($context)) {
-			$this->showBlocks(Placement::BEFORE_EVERY_LAST_POST->name());
+			$this->showBlocks(Placement::BEFORE_EVERY_LAST_POST->value);
 		}
 	}
 
@@ -136,7 +136,7 @@ class PrepareDisplayContext
 
 	private function handleBeforeLastPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::BEFORE_LAST_POST->name()))
+		if (! $this->hasBlock(Placement::BEFORE_LAST_POST->value))
 			return;
 
 		$targetMessage = $context['show_oldest_first']
@@ -144,13 +144,13 @@ class PrepareDisplayContext
 			: Utils::$context['topic_first_message'];
 
 		if ($context['output']['id'] === $targetMessage) {
-			$this->showBlocks(Placement::BEFORE_LAST_POST->name());
+			$this->showBlocks(Placement::BEFORE_LAST_POST->value);
 		}
 	}
 
 	private function handleAfterEveryLastPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::AFTER_EVERY_LAST_POST->name()))
+		if (! $this->hasBlock(Placement::AFTER_EVERY_LAST_POST->value))
 			return;
 
 		$counter = $context['counter'];
@@ -159,7 +159,7 @@ class PrepareDisplayContext
 		if ($counter === Utils::$context['total_visible_posts'] || $counter % $messagesPerPage === 0) {
 			$this->injectBlockWithJs(
 				$context['output']['id'],
-				Placement::AFTER_EVERY_LAST_POST->name(),
+				Placement::AFTER_EVERY_LAST_POST->value,
 				'afterend',
 				'quickModForm > div.windowbg:last-of-type'
 			);
@@ -168,7 +168,7 @@ class PrepareDisplayContext
 
 	private function handleAfterLastPost(array $context): void
 	{
-		if (! $this->hasBlock(Placement::AFTER_LAST_POST->name()))
+		if (! $this->hasBlock(Placement::AFTER_LAST_POST->value))
 			return;
 
 		$targetMessage = $context['show_oldest_first']
@@ -178,7 +178,7 @@ class PrepareDisplayContext
 		if ($context['output']['id'] === $targetMessage) {
 			$this->injectBlockWithJs(
 				$context['output']['id'],
-				Placement::AFTER_LAST_POST->name(),
+				Placement::AFTER_LAST_POST->value,
 				'beforeend',
 				'quickModForm',
 				true

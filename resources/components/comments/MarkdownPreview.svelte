@@ -1,36 +1,48 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-  import { SvelteShowdown } from 'svelte-showdown';
-  import type { ShowdownExtension } from 'showdown';
+  import { Marked } from 'marked';
+  import DOMPurify from 'dompurify';
 
-  const classMap = {
+  const classMap: Record<string, string> = {
     blockquote: 'bbc_standard_quote',
     code: 'bbc_code',
     h1: 'titlebg',
     h2: 'titlebg',
     h3: 'titlebg',
-    image: 'bbc_img',
+    img: 'bbc_img',
     a: 'bbc_link',
     ul: 'bbc_list',
     table: 'table_grid',
     tr: 'windowbg'
   };
 
-  const bindings: ShowdownExtension[] = Object.keys(classMap).map((key) => ({
-    type: 'output',
-    regex: new RegExp(`<${key}(.*)>`, 'g'),
-    replace: `<${key} class="${classMap[key]}" $1>`
-  }));
+  const marked = new Marked();
 
-  const options = {
-    emoji: true,
-    encodeEmails: true,
-    openLinksInNewWindow: true
-  };
+  marked.use({
+    gfm: true,
+    hooks: {
+      postprocess: (html) =>
+        Object.entries(classMap).reduce(
+          (acc, [tag, cls]) =>
+            acc.replace(new RegExp(`<${tag}([ >])`, 'g'), `<${tag} class="${cls}"$1`),
+          html
+        )
+    },
+    renderer: {
+      link: ({ href, title, text }) =>
+        `<a href="${href}"${title ? ` title="${title}"` : ''} class="bbc_link" target="_blank" rel="noopener noreferrer">${text}</a>`
+    }
+  });
 
   let { content = '', ...rest } = $props();
+
+  let html = $derived(
+    DOMPurify.sanitize(marked.parse(content) as string, {
+      ADD_ATTR: ['target', 'rel']
+    })
+  );
 </script>
 
 <fieldset transition:slide {...rest}>
-  <SvelteShowdown {content} extensions={bindings} {options} />
+  {@html html}
 </fieldset>

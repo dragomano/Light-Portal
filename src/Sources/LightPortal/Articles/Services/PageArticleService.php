@@ -52,7 +52,7 @@ class PageArticleService extends AbstractArticleService
 			'lang'                => User::$me->language,
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
-			'entry_type'          => EntryType::DEFAULT->name(),
+			'entry_type'          => EntryType::DEFAULT->value,
 			'current_time'        => time(),
 			'deleted_at'          => 0,
 			'permissions'         => Permission::all(),

@@ -161,7 +161,7 @@ final class BlockArea extends AbstractArea
 			->setValue(Utils::$context['lp_block']['description'] ?? '');
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
-			if (Utils::$context['lp_block']['type'] !== ContentType::BBC->name()) {
+			if (Utils::$context['lp_block']['type'] !== ContentType::BBC->value) {
 				TextareaField::make('content', __('lp_content'))
 					->setTab(Tab::CONTENT)
 					->setValue($this->prepareContent(Utils::$context['lp_block']));
@@ -311,16 +311,16 @@ final class BlockArea extends AbstractArea
 		];
 
 		Lang::setTxt(
-			['lp_block_areas_values', BlockAreaType::CUSTOM_ACTION->name()],
+			['lp_block_areas_values', BlockAreaType::CUSTOM_ACTION->value],
 			sprintf(
-				__('lp_block_areas_values')[BlockAreaType::CUSTOM_ACTION->name()],
+				__('lp_block_areas_values')[BlockAreaType::CUSTOM_ACTION->value],
 				'pm,agreement,search'
 			)
 		);
 
 		$descriptions = [];
 		foreach (BlockAreaType::cases() as $type) {
-			$descriptions[] = __('lp_block_areas_values')[$type->name()];
+			$descriptions[] = __('lp_block_areas_values')[$type->value];
 		}
 
 		Utils::$context['lp_possible_areas'] = array_combine($exampleAreas, $descriptions);

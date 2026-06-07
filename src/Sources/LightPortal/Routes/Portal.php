@@ -55,7 +55,7 @@ class Portal implements Routable
 		if (isset($params['sa'])) {
 			$route[] = $params['sa'];
 
-			if ($params['sa'] === PortalSubAction::PROMOTE->name() && isset($params['t'])) {
+				if ($params['sa'] === PortalSubAction::PROMOTE->value && isset($params['t'])) {
 				$route[] = $params['t'];
 
 				unset($params['t'], $params['start']);
@@ -101,9 +101,9 @@ class Portal implements Routable
 			$params['sa'] = array_shift($route);
 
 			if (! empty($route)) {
-				if ($params['sa'] === PortalSubAction::PROMOTE->name()) {
-					$params['t'] = array_shift($route);
-				} elseif (in_array($params['sa'], [PortalSubAction::CATEGORIES->name(), PortalSubAction::TAGS->name()])) {
+					if ($params['sa'] === PortalSubAction::PROMOTE->value) {
+						$params['t'] = array_shift($route);
+					} elseif (in_array($params['sa'], [PortalSubAction::CATEGORIES->value, PortalSubAction::TAGS->value])) {
 					if (is_numeric($route[0])) {
 						$params['start'] = array_shift($route);
 					} else {
