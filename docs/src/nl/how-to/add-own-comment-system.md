@@ -4,7 +4,7 @@ description: Instructies voor het toevoegen van aangepaste commentaren voor port
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 Kies en activeer een van de reacties widget plugins:
 

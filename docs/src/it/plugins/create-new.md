@@ -9,7 +9,7 @@ I plugin sono le estensioni che espandono le capacità del Light Portal. Per cre
 
 ## PluginType enum
 
-For better type safety and IDE support, you can use the `PluginType` enum instead of string values for the `type` parameter:
+Per una migliore sicurezza del tipo e supporto IDE, è possibile utilizzare l'enum `PluginType` invece dei valori delle stringhe per il parametro `type`:
 
 ```php
 use LightPortal\Enums\PluginType;
@@ -28,24 +28,24 @@ use LightPortal\Plugins\PluginAttribute;
 #[PluginAttribute]
 ```
 
-Available PluginType values:
+Valori PluginType disponibili:
 
-- `PluginType::ARTICLE` - For processing article content
-- `PluginType::BLOCK` - For blocks
-- `PluginType::BLOCK_OPTIONS` - For block options
-- `PluginType::COMMENT` - For comment systems
-- `PluginType::EDITOR` - For editors
-- `PluginType::FRONTPAGE` - For frontpage modifications
-- `PluginType::GAMES` - For games
-- `PluginType::ICONS` - For icon libraries
-- `PluginType::IMPEX` - For import/export
-- `PluginType::OTHER` - Default type (can be omitted)
-- `PluginType::PAGE_OPTIONS` - For page options
-- `PluginType::PARSER` - For parsers
-- `PluginType::SEO` - For SEO
-- `PluginType::SSI` - For blocks with SSI functions
+- `PluginType::ARTICLE` - Per l'elaborazione del contenuto dell'articolo
+- `PluginType::BLOCK` - Per i blocchi
+- `PluginType::BLOCK_OPTIONS` - Per le opzioni dei blocchi
+- `PluginType::COMMENT` - Per il sistema dei commenti
+- `PluginType::EDITOR` - Per gli editor
+- `PluginType::FRONTPAGE` - Per la modifica del frontpage
+- `PluginType::GAMES` - Per i giochi
+- `PluginType::ICONS` - Per la libreria icone
+- `PluginType::IMPEX` - Per l'importazione/esportazione
+- `PluginType::OTHER` - Tipo predefinito (può essere omesso)
+- `PluginType::PAGE_OPTIONS` - Per le opzioni delle pagine
+- `PluginType::PARSER` - Per i parser
+- `PluginType::SEO` - Per il SEO
+- `PluginType::SSI` - Per i blocchi con funzioni SSI
 
-For plugins extending `Block`, `Editor`, `GameBlock`, or `SSIBlock` classes, the type is automatically inherited and doesn't need to be specified explicitly.
+Per i plugin che estendono le classi `Block`, `Editor`, `GameBlock`, o `SSIBlock`, il tipo viene ereditato automaticamente e non deve essere specificato esplicitamente.
 
 :::info Note
 
@@ -73,7 +73,7 @@ Scelta del tipo di plugin
 | `icons`                         | Plugin che aggiungono nuove librerie di icone per sostituire gli elementi dell'interfaccia o da utilizzare nelle intestazioni dei blocchi |
 | `seo`                           |                                                   Plugin che in qualche modo influenzano la visibilità del forum in rete. |
 | `other`                         |                                                   Plugin che non sono correlati a nessuna delle categorie sopra indicate. |
-| `games`                         |                                                                Plugins that typically add a block with some kind of game. |
+| `games`                         |                                                      Plugin che in genere aggiungono un blocco con qualche tipo di gioco. |
 
 ## Creazione della cartella del plugin
 
@@ -147,9 +147,9 @@ class TopTopics extends SsiBlock
 }
 ```
 
-## Blade templates
+## Template Blade
 
-Your plugin can use a template with Blade markup. Ad esempio:
+Il plugin può utilizzare un template con il markup Blade. Ad esempio:
 
 ```php:line-numbers {16,20}
 <?php declare(strict_types=1);
@@ -176,22 +176,22 @@ class Calculator extends Block
 }
 ```
 
-**Instructions:**
+**Istruzioni:**
 
-1. Create the `views` subdirectory inside your plugin directory if it doesn't exist.
-2. Create the file `default.blade.php` with the following content:
+1. Crea la sottodirectory `views` all'interno della directory del plugin se non esiste.
+2. Creare il file `default.blade.php` con il seguente contenuto:
 
 ```blade
 <div class="some-class-{{ $id }}">
-    {{-- Your blade markup --}}
+    {{-- Il tuo markup blade  --}}
 </div>
 
 <style>
-// Your CSS
+// il tuo CSS
 </style>
 
 <script>
-// Your JS
+// il tuo JS
 </script>
 ```
 

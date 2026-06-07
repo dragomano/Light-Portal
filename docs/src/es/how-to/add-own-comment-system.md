@@ -4,7 +4,7 @@ description: Instrucciones sobre cómo añadir comentarios personalizados para l
 
 # Add own comment system
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Suppose you're not happy with the default commenting system and you decide to integrate an external service.
 
 Elija y habilite uno de los plugins de widgets:
 

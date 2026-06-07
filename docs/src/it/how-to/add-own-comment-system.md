@@ -2,9 +2,9 @@
 description: Istruzioni su come aggiungere commenti personalizzati per le pagine del portale
 ---
 
-# Add own comment system
+# Aggiungi il proprio sistema di commento
 
-Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
+Supponiamo che tu non sia soddisfatto del sistema di commento predefinito e decidi di integrare un servizio esterno.
 
 Scegli e attiva uno dei plugin dei commenti:
 
@@ -13,4 +13,4 @@ Scegli e attiva uno dei plugin dei commenti:
 - Giscus
 - VkComments
 
-Change plugin settings to suit your needs, then go to _Portal => Settings => Pages and blocks_ area, look for the option labelled **Show page comments** and select your desired variant. Infine, salva le impostazioni.
+Modifica le impostazioni del plugin per soddisfare le tue esigenze, quindi vai su _Portale => Impostazioni => Pagine e blocchi_ , cerca l'opzione etichettata **Mostra i commenti della pagina** e seleziona la variante desiderata. Infine, salva le impostazioni.

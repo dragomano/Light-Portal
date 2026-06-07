@@ -19,4 +19,4 @@ Alcuni plugin non sono inclusi nel portale, devono essere installati separatamen
 
 ![Download additional plugins](download_plugins.png)
 
-The separate plugin package can be installed in the Plugin Import section. Ma puoi anche semplicemente estrarre la cartella del plugin dall'archivio scaricato e spostarla nella cartella "Sources/LightPortal/Plugins".
+Il pacchetto del plugin può essere installato nella sezione Importazione plugin. Ma puoi anche semplicemente estrarre la cartella del plugin dall'archivio scaricato e spostarla nella cartella "Sources/LightPortal/Plugins".
