@@ -1,0 +1,12 @@
+packages:
+  - '.'
+  - 'docs'
+
+allowBuilds:
+  '@parcel/watcher': true
+  es5-ext: true
+  esbuild: true
+  stockfish: true
+
+minimumReleaseAgeExclude:
+  - vite-plugin-static-copy@4.1.1
