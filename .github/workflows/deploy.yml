@@ -33,9 +33,9 @@ jobs:
           node-version: lts/*
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 11
           run_install: false
 
       - name: Get pnpm store directory
@@ -52,18 +52,16 @@ jobs:
             ${{ runner.os }}
 
       - name: Install dependencies
-        run: |
-          cd docs
-          pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
       - name: Build with VitePress
-        run: |
-          cd docs
-          pnpm run docs:build
-          touch .vitepress/dist/.nojekyll
+        run: pnpm --filter docs docs:build
+
+      - name: Add .nojekyll
+        run: touch docs/.vitepress/dist/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
