@@ -43,7 +43,7 @@
 				$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
 			@endphp
 			<div class="windowbg">
-				<div class="smalltext">{{ $topic['time'] }}</div>
+				<div class="smalltext">{!! $topic['time'] !!}</div>
 				{!! $topic[$parameters['link_type']] !!}
 
 				<div class="smalltext{{ $context['right_to_left'] ? ' floatright' : '' }}">
