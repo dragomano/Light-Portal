@@ -36,6 +36,6 @@ class CheckboxColumn extends Column
 
 	private static function getDispatchSelectionScript(): string
 	{
-		return "window.dispatchEvent(new CustomEvent('lp-mass-selection', { detail: { formName: this.form?.getAttribute('name') } }));";
+		return "window.dispatchEvent(new CustomEvent('lp-bulk-selection', { detail: { formName: this.form?.getAttribute('name') } }));";
 	}
 }

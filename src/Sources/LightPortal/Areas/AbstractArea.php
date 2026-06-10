@@ -64,7 +64,7 @@ abstract class AbstractArea implements AreaInterface
 		$this->beforeMain();
 		$this->setupMainContext();
 		$this->performActions();
-		$this->performMassActions();
+		$this->performBulkActions();
 		$this->showMainContent();
 		$this->afterMain();
 	}
@@ -214,10 +214,10 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function buildTable(): PortalTableBuilderInterface
 	{
-		return $this->buildTableWithMassActions();
+		return $this->buildTableWithBulkActions();
 	}
 
-	protected function buildTableWithMassActions(): PortalTableBuilderInterface
+	protected function buildTableWithBulkActions(): PortalTableBuilderInterface
 	{
 		$builder = $this->createTableBuilder()
 			->setItems($this->repository->getAll(...))
@@ -225,7 +225,7 @@ abstract class AbstractArea implements AreaInterface
 			->addColumns($this->getTableColumns())
 			->addFormData($this->getTableFormData());
 
-		$this->addMassActionsToTable($builder);
+		$this->addBulkActionsToTable($builder);
 
 		return $builder;
 	}
@@ -253,35 +253,35 @@ abstract class AbstractArea implements AreaInterface
 		];
 	}
 
-	protected function addMassActionsToTable(PortalTableBuilderInterface $builder): void
+	protected function addBulkActionsToTable(PortalTableBuilderInterface $builder): void
 	{
-		if (! $this->canManageMassActions())
+		if (! $this->canManageBulkActions())
 			return;
 
 		$builder
-			->addColumn(CheckboxColumn::make(name: 'mass', entity: 'items'))
-			->addRow($this->getMassActionsButtonsRow());
+			->addColumn(CheckboxColumn::make(name: 'bulk', entity: 'items'))
+			->addRow($this->getBulkActionsButtonsRow());
 	}
 
-	protected function canManageMassActions(): bool
+	protected function canManageBulkActions(): bool
 	{
 		return Utils::$context['user']['is_admin'];
 	}
 
-	protected function getMassActionsButtonsRow(): ButtonsRow
+	protected function getBulkActionsButtonsRow(): ButtonsRow
 	{
 		$entityPlural = $this->getEntityNamePlural();
 		$formName     = 'manage_' . $entityPlural;
-		$actionName   = $this->getMassActionName();
+		$actionName   = $this->getBulkActionName();
 
-		return ButtonsRow::massActions(
+		return ButtonsRow::bulkActions(
 			formName: $formName,
 			actionName: $actionName,
-			options: $this->getMassActionOptions()
+			options: $this->getBulkActionOptions()
 		);
 	}
 
-	protected function getMassActionOptions(): array
+	protected function getBulkActionOptions(): array
 	{
 		return [
 			'toggle' => 'lp_action_toggle',
@@ -289,19 +289,19 @@ abstract class AbstractArea implements AreaInterface
 		];
 	}
 
-	protected function getMassActionName(): string
+	protected function getBulkActionName(): string
 	{
 		return $this->getEntityNamePlural() . '_actions';
 	}
 
-	protected function getMassActionsRedirect(): string
+	protected function getBulkActionsRedirect(): string
 	{
 		return filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, [
 			'options' => ['default' => 'action=admin;area=lp_' . $this->getEntityNamePlural()]
 		]);
 	}
 
-	protected function handleMassAction(string $action, array $items): bool
+	protected function handleBulkAction(string $action, array $items): bool
 	{
 		switch ($action) {
 			case 'delete':
@@ -317,16 +317,16 @@ abstract class AbstractArea implements AreaInterface
 		}
 	}
 
-	protected function performMassActions(): void
+	protected function performBulkActions(): void
 	{
-		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
+		if ($this->request()->hasNot('bulk_actions') || $this->request()->isEmpty('items'))
 			return;
 
-		$redirect = $this->getMassActionsRedirect();
+		$redirect = $this->getBulkActionsRedirect();
 		$items    = (array) ($this->request()->get('items') ?? []);
-		$action   = (string) filter_input(INPUT_POST, $this->getMassActionName());
+		$action   = (string) filter_input(INPUT_POST, $this->getBulkActionName());
 
-		$this->handleMassAction($action, $items);
+		$this->handleBulkAction($action, $items);
 
 		$this->cache()->flush();
 		$this->response()->redirect($redirect);
