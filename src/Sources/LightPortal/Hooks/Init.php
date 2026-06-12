@@ -32,7 +32,7 @@ class Init
 
 		define('LP_NAME', DateTime::getValueForDate());
 		define('LP_VERSION', '3.0');
-		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/json');
+		define('LP_PLUGIN_LIST', 'https://github.com/dragomano/Light-Portal/releases/download/v3.0/addons.json');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
 		define('LP_CACHE_TIME', Setting::get('lp_cache_interval', 'int', 72000));

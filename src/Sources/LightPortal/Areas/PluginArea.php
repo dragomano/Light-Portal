@@ -368,8 +368,16 @@ final readonly class PluginArea
 		if (($xml = $this->cache()->get('custom_addon_list', $cacheTTL)) === null) {
 			$addonList = WebFetchApi::fetch(LP_PLUGIN_LIST);
 
-			if (empty($addonList))
+			if (empty($addonList)) {
+				$localFile = dirname(__DIR__, 2) . '/addons.json';
+				if (file_exists($localFile)) {
+					$addonList = file_get_contents($localFile);
+				}
+			}
+
+			if (empty($addonList)) {
 				return;
+			}
 
 			$xml = Utils::jsonDecode($addonList, true);
 
