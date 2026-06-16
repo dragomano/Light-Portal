@@ -6,7 +6,7 @@
   import 'cm-chessboard/assets/chessboard.css';
   import 'cm-chessboard/assets/extensions/markers/markers.css';
 
-  type InputEventType = typeof INPUT_EVENT_TYPE[keyof typeof INPUT_EVENT_TYPE];
+  type InputEventType = (typeof INPUT_EVENT_TYPE)[keyof typeof INPUT_EVENT_TYPE];
 
   interface MoveInputEvent {
     type: InputEventType;
@@ -14,6 +14,18 @@
     square?: string;
     squareFrom?: string;
     squareTo?: string;
+  }
+
+  interface Props {
+    id: string;
+    engineUrl: string;
+    assetsUrl: string;
+    boardStyle: string;
+    pieceStyle: string;
+    borderType: keyof typeof BORDER_TYPE;
+    markerType: keyof typeof MARKER_TYPE;
+    skillLevel: number;
+    depth: number;
   }
 
   let {
@@ -26,7 +38,7 @@
     markerType,
     skillLevel,
     depth
-  } = $props();
+  }: Props = $props();
 
   const createStockfish = function () {
     const worker = new Worker(`${engineUrl}`);
@@ -37,10 +49,10 @@
     return worker;
   };
 
-  let boardEl: HTMLDivElement = $state();
-  let game = $state(null);
-  let board = $state(null);
-  let stockfish = $state(null);
+  let boardEl = $state<HTMLDivElement>();
+  let game = $state<Chess | null>(null);
+  let board = $state<InstanceType<typeof Chessboard> | null>(null);
+  let stockfish = $state<Worker | null>(null);
   let isThinking = $state(false);
   let playerColor = $state(COLOR.white);
   let computerColor = $state(COLOR.black);
@@ -69,6 +81,8 @@
   });
 
   function startGame() {
+    if (!boardEl) return;
+
     game = new Chess();
     isThinking = false;
 
@@ -113,12 +127,13 @@
   }
 
   function handleMoveInput(event: MoveInputEvent) {
-    if (isThinking) return false;
+    if (isThinking || !game || !board) return false;
 
     const currentBoard = event.chessboard || board;
 
     switch (event.type) {
       case INPUT_EVENT_TYPE.moveInputStarted:
+        if (!event.square) return false;
         if (game.isGameOver()) return false;
 
         const piece = game.get(event.square);
@@ -137,6 +152,8 @@
         return moves.length > 0;
 
       case INPUT_EVENT_TYPE.validateMoveInput:
+        if (!event.squareFrom || !event.squareTo) return false;
+
         const possibleMoves = game.moves({
           square: event.squareFrom,
           verbose: true
@@ -191,18 +208,21 @@
 
       if (text.startsWith('best' + 'move')) {
         const bestMove = text.split(' ')[1];
+        const currentGame = game;
+        const currentBoard = board;
 
         if (
           bestMove &&
           bestMove !== 'null' &&
-          !game.isGameOver() &&
+          currentGame &&
+          !currentGame.isGameOver() &&
           isThinking &&
-          game.turn() === computerColor
+          currentGame.turn() === computerColor
         ) {
-          const move = game.move(bestMove, { sloppy: true });
+          const move = currentGame.move(bestMove, { sloppy: true });
 
-          if (move) {
-            board.setPosition(game.fen(), true);
+          if (move && currentBoard) {
+            currentBoard.setPosition(currentGame.fen(), true);
 
             updateStatus();
           }
@@ -220,14 +240,18 @@
   }
 
   function makeComputerMove() {
-    if (game.isGameOver() || isThinking || game.turn() !== computerColor) return;
+    const currentGame = game;
+    const currentStockfish = stockfish;
+
+    if (!currentGame || !currentStockfish) return;
+
+    if (currentGame.isGameOver() || isThinking || currentGame.turn() !== computerColor) return;
 
     isThinking = true;
-
     status = $_('thinking');
 
-    stockfish.postMessage(`position fen ${game.fen()}`);
-    stockfish.postMessage(`go depth ${depth}`);
+    currentStockfish.postMessage(`position fen ${currentGame.fen()}`);
+    currentStockfish.postMessage(`go depth ${depth}`);
 
     setTimeout(() => {
       if (isThinking) {
@@ -239,22 +263,26 @@
   }
 
   function updateStatus() {
-    if (game.isGameOver()) {
-      if (game.isCheckmate()) {
-        const winner = game.turn() === COLOR.white ? $_('black_won') : $_('white_won');
+    const currentGame = game;
+
+    if (!currentGame) return;
+
+    if (currentGame.isGameOver()) {
+      if (currentGame.isCheckmate()) {
+        const winner = currentGame.turn() === COLOR.white ? $_('black_won') : $_('white_won');
 
         status = $_('checkmate') + ` ${winner}`;
-      } else if (game.isDraw()) {
+      } else if (currentGame.isDraw()) {
         status = $_('game_draw');
       } else {
         status = $_('game_over');
       }
     } else {
-      const turn = game.turn() === COLOR.white ? 'white_turn' : 'black_turn';
+      const turn = currentGame.turn() === COLOR.white ? 'white_turn' : 'black_turn';
 
       status = $_(turn);
 
-      if (game.isCheck()) status += $_('check');
+      if (currentGame.isCheck()) status += $_('check');
     }
   }
 

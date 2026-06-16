@@ -56,15 +56,15 @@ export interface Pagination {
 }
 
 export interface Plugin {
-  name?: string
+  name: string
   version?: string
   outdated?: string
-  snakeName?: string
+  snakeName: string
   desc?: string
   status?: string
-  types?: string[]
+  types?: Record<string, string>
   special?: string
-  settings?: string[]
+  settings?: any[]
   showSaveButton?: boolean
 }
 

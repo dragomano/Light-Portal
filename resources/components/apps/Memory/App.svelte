@@ -1,9 +1,11 @@
 <script lang="ts">
-  import MemoryCard from "./MemoryCard.svelte";
-  import { symbols } from "./symbols";
+  import MemoryCard from './MemoryCard.svelte';
+  import { symbols } from './symbols';
   import { _ } from 'svelte-i18n';
 
-  let cards = $state([]);
+  type CardSymbol = (typeof symbols)[number];
+
+  let cards = $state<CardSymbol[]>([]);
   let moves = $state(0);
   let matchedCards = $state.raw(new Set<number>());
   let openedCards = $state.raw(new Set<number>());
@@ -47,12 +49,12 @@
     openedCards = new Set();
   }
 
-  function getStatus(index: number): "opened" | "matched" | "closed" {
-    if (matchedCards.has(index)) return "matched";
+  function getStatus(index: number): 'opened' | 'matched' | 'closed' {
+    if (matchedCards.has(index)) return 'matched';
 
-    if (openedCards.has(index)) return "opened";
+    if (openedCards.has(index)) return 'opened';
 
-    return "closed";
+    return 'closed';
   }
 
   resetGame();

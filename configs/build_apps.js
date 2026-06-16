@@ -56,11 +56,41 @@ async function buildChessBoard() {
       ...sharedConfig.plugins,
       viteStaticCopy({
         targets: [
-          { src: 'node_modules/cm-chessboard/assets/pieces/standard.svg', dest: resolve(dist, 'ChessBoard/images') },
-          { src: 'node_modules/cm-chessboard/assets/pieces/staunty.svg', dest: resolve(dist, 'ChessBoard/images') },
-          { src: 'node_modules/cm-chessboard/assets/extensions/markers/markers.svg', dest: resolve(dist, 'ChessBoard/images') },
-          { src: 'node_modules/stockfish/bin/stockfish-18-lite-single.js', dest: resolve(dist, 'ChessBoard/stockfish') },
-          { src: 'node_modules/stockfish/bin/stockfish-18-lite-single.wasm', dest: resolve(dist, 'ChessBoard/stockfish') },
+          {
+            src: 'node_modules/cm-chessboard/assets/pieces/standard.svg',
+            dest: resolve(dist, 'ChessBoard/images'),
+            rename: {
+              stripBase: 4,
+            },
+          },
+          {
+            src: 'node_modules/cm-chessboard/assets/pieces/staunty.svg',
+            dest: resolve(dist, 'ChessBoard/images'),
+            rename: {
+              stripBase: 4,
+            },
+          },
+          {
+            src: 'node_modules/cm-chessboard/assets/extensions/markers/markers.svg',
+            dest: resolve(dist, 'ChessBoard/images'),
+            rename: {
+              stripBase: 5,
+            },
+          },
+          {
+            src: 'node_modules/stockfish/bin/stockfish-18-lite-single.js',
+            dest: resolve(dist, 'ChessBoard/stockfish'),
+            rename: {
+              stripBase: 3,
+            },
+          },
+          {
+            src: 'node_modules/stockfish/bin/stockfish-18-lite-single.wasm',
+            dest: resolve(dist, 'ChessBoard/stockfish'),
+            rename: {
+              stripBase: 3,
+            },
+          },
         ],
       }),
     ],

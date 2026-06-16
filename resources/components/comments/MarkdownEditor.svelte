@@ -6,7 +6,7 @@
   import Button from '../BaseButton.svelte';
 
   let { message = $bindable(''), ...rest } = $props();
-  let textarea: HTMLTextAreaElement = $state();
+  let textarea: HTMLTextAreaElement | undefined = $state();
 
   const generateUUID = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -28,7 +28,7 @@
     message = target.value;
   };
 
-  onMount(() => textarea.focus());
+  onMount(() => textarea?.focus());
 </script>
 
 {#if message}

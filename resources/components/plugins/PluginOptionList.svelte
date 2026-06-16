@@ -12,7 +12,7 @@
 
   let { item }: Props = $props();
   let success = $state(false);
-  let form: HTMLFormElement = $state();
+  let form: HTMLFormElement | undefined = $state();
 
   const { sessionId, sessionVar } = appState;
   const { postUrl } = contextState;
