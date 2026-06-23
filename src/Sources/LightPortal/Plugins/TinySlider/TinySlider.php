@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 23.06.26
  */
 
 namespace LightPortal\Plugins\TinySlider;
@@ -195,7 +195,7 @@ class TinySlider extends Block
 			[$link, $title] = [$image['link'], $image['title']];
 
 			$item = Str::html('div', ['class' => 'item']);
-			$img = Str::html('img', [
+			$img  = Str::html('img', [
 				'src'   => $link,
 				'alt'   => $title ?: '',
 				'class' => empty($parameters['lazyload']) ? null : 'tns-lazy-img',
@@ -296,8 +296,8 @@ class TinySlider extends Block
 				edgePadding: ' . (empty($parameters['edge_padding']) ? $this->params['edge_padding'] : $parameters['edge_padding']) . ',
 				fixedWidth: ' . (empty($parameters['fixed_width']) ? $this->params['fixed_width'] : $parameters['fixed_width']) . ',
 				slideBy: ' . (empty($parameters['slide_by']) ? $this->params['slide_by'] : $parameters['slide_by']) . ',
-				controls: ' . (empty($parameters['controls']) ? 'false' : 'true') . ',
-				controlsContainer: "#tiny_slider_controls' . $id . '",
+				controls: ' . (empty($parameters['controls']) ? 'false' : 'true') . (empty($parameters['controls']) ? '' : ',
+				controlsContainer: "#tiny_slider_controls' . $id . '"') . ',
 				nav: ' . (empty($parameters['nav']) ? 'false' : 'true') . ',
 				navPosition: "bottom",' . ($parameters['nav'] && $parameters['nav_as_thumbnails'] ? '
 				navContainer: "#tiny_slider_thumbnails' . $id . '",' : '') . '
@@ -335,9 +335,9 @@ class TinySlider extends Block
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [
-			'title' => 'Tiny Slider 2',
-			'link' => 'https://github.com/ganlanyuan/tiny-slider',
-			'author' => 'William Lin',
+			'title'   => 'Tiny Slider 2',
+			'link'    => 'https://github.com/ganlanyuan/tiny-slider',
+			'author'  => 'William Lin',
 			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://github.com/ganlanyuan/tiny-slider/blob/master/LICENSE'
