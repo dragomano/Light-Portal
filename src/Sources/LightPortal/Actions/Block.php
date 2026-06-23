@@ -67,7 +67,7 @@ class Block implements ActionInterface
 			return [];
 		}
 
-		return array_filter($blocks, static fn($b) => Permission::canViewItem($b['permissions']) !== false);
+		return array_filter($blocks, static fn($b) => Permission::canViewItem((int) $b['permissions']) !== false);
 	}
 
 	protected function prepareBlocks(array $blocks): void
