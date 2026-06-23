@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.04.26
+ * @version 23.06.26
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -47,7 +47,7 @@ class RandomPages extends Block
 			'exclude_categories' => '',
 			'include_categories' => '',
 			'num_pages'          => 10,
-			'show_num_views'   => false,
+			'show_num_views'     => false,
 		];
 	}
 
@@ -221,7 +221,7 @@ class RandomPages extends Block
 					->addHtml($author)
 					->addHtml(', ' . DateTime::relative($page['created_at']));
 
-				$parameters['show_num_views'] && $li
+				($parameters['show_num_views'] ?? false) && $li
 					->addText(' (' . __('lp_views_set', ['views' => $page['num_views']]) . ')');
 
 				$ul->addHtml($li);
