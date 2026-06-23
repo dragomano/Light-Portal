@@ -50,7 +50,8 @@ enum ContentType: string
 
 		return array_reduce(array_keys($types), function($carry, $type) {
 			$carry[$type] = [
-				'icon' => self::icon($type),
+				'icon'             => self::icon($type),
+				'showContentClass' => true,
 			];
 
 			return $carry;
