@@ -129,6 +129,7 @@ class RoboFile extends Tasks
 			->addDir('.', 'src')
 			->addFile('./LICENSE', 'LICENSE')
 			->exclude([
+				'layouts/debug.blade.php',
 				'addons.json',
 				'addons.php',
 				'.meta-storm.xml',
@@ -152,6 +153,7 @@ class RoboFile extends Tasks
 			->addDir('.', 'src')
 			->addFile('./LICENSE', 'LICENSE')
 			->exclude([
+				'layouts/debug.blade.php',
 				'addons.json',
 				'addons.php',
 				'.meta-storm.xml',
