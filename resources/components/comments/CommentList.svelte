@@ -85,7 +85,7 @@
     }
   };
 
-  const setCommentHash = (comment?: number) => {
+  const setCommentHash = (comment = 0) => {
     if (comment) {
       window.location.hash = 'comment=' + comment;
     } else {
