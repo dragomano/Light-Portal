@@ -31,7 +31,6 @@ $links = [
 		'ChessBoard'          => 'https://drive.proton.me/urls/AM8C1MHRN8#Huduk8XSixl0',
 		'CodeMirror'          => 'https://drive.proton.me/urls/361V1G0TSG#8h9dEjzmGYih',
 		'CurrentMonth'        => 'https://drive.proton.me/urls/JTTEBXPJCG#USTO93SSkWGw',
-		'CustomTranslate'     => 'https://drive.proton.me/urls/NNJFK5JBDW#StEgo5wnCIfO',
 		'Disqus'              => 'https://drive.proton.me/urls/FYJWEHDBPM#SALWktzQstxx',
 		'Dragula'             => 'https://drive.proton.me/urls/N7Y9VNSWP0#3Zn4cPhOBAF1',
 		'DummyArticleCards'   => 'https://drive.proton.me/urls/HNRCHB71CR#r8H4C74Gr3xb',
