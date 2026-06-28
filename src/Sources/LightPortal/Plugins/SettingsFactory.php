@@ -24,13 +24,6 @@ class SettingsFactory
 		return new self();
 	}
 
-	private function add(string $type, string $key, ...$args): self
-	{
-		$this->settings[] = [$type, $key, ...$args];
-
-		return $this;
-	}
-
 	public function toArray(): array
 	{
 		return $this->settings;
@@ -94,5 +87,12 @@ class SettingsFactory
 	public function custom(string $key, string $text): self
 	{
 		return $this->add('callback', $key, $text);
+	}
+
+	private function add(string $type, string $key, ...$args): self
+	{
+		$this->settings[] = [$type, $key, ...$args];
+
+		return $this;
 	}
 }

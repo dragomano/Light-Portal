@@ -19,7 +19,7 @@ use LightPortal\Enums\ContentType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventManagerFactory;
 use LightPortal\Renderers\PurePHP;
-use Ramsey\Collection\Map\NamedParameterMap;
+use LightPortal\Utils\Params;
 
 use function LightPortal\app;
 
@@ -37,7 +37,7 @@ class Content
 	{
 		ob_start();
 
-		$parameters = new NamedParameterMap(array_keys($parameters), $parameters);
+		$parameters = new Params($parameters);
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareContent,

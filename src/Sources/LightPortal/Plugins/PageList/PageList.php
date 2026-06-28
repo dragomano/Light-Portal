@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.04.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\PageList;
@@ -27,10 +27,9 @@ use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\VirtualSelectField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
-
-use Ramsey\Collection\Map\NamedParameterMap;
 
 use function LightPortal\app;
 
@@ -94,7 +93,7 @@ class PageList extends Block
 			->setValue($options['num_pages']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$allCategories = app(CategoryList::class)();
 

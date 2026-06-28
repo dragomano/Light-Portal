@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\TrendingTopics;
 
 use Bugo\Compat\Config;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
@@ -23,10 +25,8 @@ use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\SelectField;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -79,7 +79,7 @@ class TrendingTopics extends Block
 			->setValue($options['num_topics']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$timePeriod = $parameters->get('time_period', $this->timePeriod[1]);
 		$numTopics  = $parameters->get('num_topics', 10);

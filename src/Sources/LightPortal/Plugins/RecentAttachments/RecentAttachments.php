@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\RecentAttachments;
@@ -19,8 +19,8 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\SsiBlock;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -59,7 +59,7 @@ class RecentAttachments extends SsiBlock
 			->setValue($options['extensions']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$extensions = array_filter(explode(',', $parameters['extensions'] ?? ''));
 

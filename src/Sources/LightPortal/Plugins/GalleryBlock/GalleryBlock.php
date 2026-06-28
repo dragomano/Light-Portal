@@ -8,22 +8,22 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\GalleryBlock;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Select;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -63,7 +63,7 @@ class GalleryBlock extends Block
 			->setValue($e->args->options['num_images']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		if (! $this->sql->tableExists('gallery_pic')) {
 			return [];

@@ -13,7 +13,7 @@
 namespace LightPortal\Enums;
 
 use LightPortal\Renderers\RendererInterface;
-use Ramsey\Collection\Map\MapInterface;
+use LightPortal\Utils\Params;
 
 enum PortalHook
 {
@@ -172,7 +172,7 @@ enum PortalHook
 					public readonly string $type,
 					public readonly int $id,
 					public readonly int $cacheTime,
-					public readonly MapInterface $parameters
+					public readonly Params $parameters
 				) {}
 			},
 			self::prepareEditor => new class(...$data) {

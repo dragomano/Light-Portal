@@ -245,7 +245,10 @@ if (! function_exists('smf_chmod')) {
 }
 
 if (! function_exists('censorText')) {
-    function censorText(&$text) {}
+    function censorText(&$text, bool $force = false): string
+    {
+        return $text;
+    }
 }
 
 if (! function_exists('parse_bbc')) {
@@ -365,8 +368,9 @@ if (! function_exists('getLanguages')) {
 }
 
 if (! function_exists('loadLanguage')) {
-    function loadLanguage($filename, $lang = '', $fatal = true, $force_reload = false)
+    function loadLanguage($filename, $lang = '', $fatal = true, $force_reload = false): string
     {
+        return '';
     }
 }
 

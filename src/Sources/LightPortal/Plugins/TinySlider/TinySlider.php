@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.06.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\TinySlider;
@@ -25,9 +25,9 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -181,7 +181,7 @@ class TinySlider extends Block
 			->setValue($options['mouse_drag']);
 	}
 
-	public function getData(int $id, NamedParameterMap $parameters): array
+	public function getData(int $id, Params $parameters): array
 	{
 		if (empty($parameters['images'])) {
 			return [];

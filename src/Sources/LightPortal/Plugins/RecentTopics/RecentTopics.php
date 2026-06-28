@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\RecentTopics;
@@ -25,9 +25,9 @@ use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -118,7 +118,7 @@ class RecentTopics extends SsiBlock
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$excludeBoards = array_filter(explode(',', $parameters['exclude_boards'] ?? ''));
 		$includeBoards = array_filter(explode(',', $parameters['include_boards'] ?? ''));

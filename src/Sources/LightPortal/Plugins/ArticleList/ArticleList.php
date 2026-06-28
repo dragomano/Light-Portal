@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.04.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\ArticleList;
@@ -30,10 +30,10 @@ use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\ForumPermissions;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasTranslationJoins;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -177,7 +177,7 @@ class ArticleList extends Block
 		}
 	}
 
-	public function getTopics(NamedParameterMap $parameters): array
+	public function getTopics(Params $parameters): array
 	{
 		if (empty($parameters['include_topics'])) {
 			return [];
@@ -221,7 +221,7 @@ class ArticleList extends Block
 		return $topics;
 	}
 
-	public function getPages(NamedParameterMap $parameters): array
+	public function getPages(Params $parameters): array
 	{
 		if (empty($parameters['include_pages'])) {
 			return [];
