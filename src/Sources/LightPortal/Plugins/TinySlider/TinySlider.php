@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.06.26
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\TinySlider;
@@ -16,7 +16,6 @@ namespace LightPortal\Plugins\TinySlider;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
@@ -266,10 +265,8 @@ class TinySlider extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
-		$builder->css()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->scripts()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
+		$e->args->builder->css()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
 	}
 
 	public function prepareContent(Event $e): void

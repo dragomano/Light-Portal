@@ -74,7 +74,12 @@ final readonly class PluginHandler
 	{
 		$assets = [];
 
-		$this->manager->dispatch(PortalHook::prepareAssets, ['assets' => &$assets]);
+		foreach ($this->manager->getAll(PortalHook::prepareAssets->name) as $listener) {
+			$builder = new AssetBuilder($listener);
+			$event = new Event((object) ['builder' => $builder]);
+			$listener->prepareAssets($event);
+			$builder->appendTo($assets);
+		}
 
 		$this->assetHandler->prepare($assets);
 	}

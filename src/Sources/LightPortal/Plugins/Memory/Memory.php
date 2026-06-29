@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.02.26
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\Memory;
 
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
 use LightPortal\Plugins\PluginAttribute;
@@ -29,9 +28,7 @@ class Memory extends GameBlock
 {
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-		$builder->scripts()->add('memory.js');
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->scripts()->add('memory.js');
 	}
 
 	public function prepareContent(Event $e): void
@@ -48,9 +45,9 @@ class Memory extends GameBlock
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [
-			'title' => 'Emoji One (v1)',
-			'link' => 'https://icon-sets.iconify.design/emojione-v1',
-			'author' => 'Emoji One',
+			'title'   => 'Emoji One (v1)',
+			'link'    => 'https://icon-sets.iconify.design/emojione-v1',
+			'author'  => 'Emoji One',
 			'license' => [
 				'name' => 'CC BY-SA 4.0',
 				'link' => 'https://creativecommons.org/licenses/by-sa/4.0/'

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.04.26
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\Search;
@@ -20,7 +20,6 @@ use Bugo\Compat\Utils;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\ForumHook;
 use LightPortal\Enums\Permission;
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
@@ -53,10 +52,8 @@ class Search extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js');
-		$builder->css()->add('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css');
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->scripts()->add('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js');
+		$e->args->builder->css()->add('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css');
 	}
 
 	public function prepareContent(): void

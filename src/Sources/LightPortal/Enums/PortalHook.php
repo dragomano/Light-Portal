@@ -12,6 +12,7 @@
 
 namespace LightPortal\Enums;
 
+use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Renderers\RendererInterface;
 use LightPortal\Utils\Params;
 
@@ -153,7 +154,7 @@ enum PortalHook
 				public function __construct(public array $styles) {}
 			},
 			self::prepareAssets => new class(...$data) {
-				public function __construct(public array &$assets) {}
+				public function __construct(public AssetBuilder $builder) {}
 			},
 			self::prepareBlockFields,
 			self::preparePageFields => new class(...$data) {
