@@ -89,7 +89,6 @@
 <style lang="scss">
   .memory_container {
     width: 100%;
-    max-width: 800px;
     text-align: center;
 
     .game-info {
