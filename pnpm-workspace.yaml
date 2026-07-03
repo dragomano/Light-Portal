@@ -9,4 +9,16 @@ allowBuilds:
   stockfish: true
 
 minimumReleaseAgeExclude:
+  - '@oxfmt/*'
+  - '@rolldown/*'
+  - '@sveltejs/load-config@0.2.0'
+  - cm-chessboard@8.12.12
+  - oxfmt@0.55.0 || 0.58.0
+  - rolldown@1.1.4
+  - stockfish@18.0.8
+  - svelte-check@4.7.1 || 4.7.2
+  - svelte@5.56.4
   - vite-plugin-static-copy@4.1.1
+  - vite@8.1.0 || 8.1.3
+  - '@sveltejs/vite-plugin-svelte@7.1.4 || 7.2.0'
+  - vitepress@2.0.0-alpha.18

@@ -4,9 +4,8 @@
   "devDependencies": {
     "@miletorix/vitepress-back-to-top-button": "^1.0.3",
     "release-timeline": "^0.6.0",
-    "rolldown": "^1.1.0",
-    "sass": "^1.100.0",
-    "vitepress": "2.0.0-alpha.17",
+    "rolldown": "^1.1.4",
+    "vitepress": "2.0.0-alpha.18",
     "vitepress-plugin-comment-with-giscus": "^1.1.15",
     "vitepress-sidebar": "^1.36.1"
   },
