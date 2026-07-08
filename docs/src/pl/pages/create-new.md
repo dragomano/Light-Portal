@@ -5,22 +5,22 @@ order: 2
 
 # Dodaj stronę
 
-In this section, you can create a portal page with the content you need.
+W tej sekcji możesz utworzyć stronę portalu zawierającą potrzebne treści.
 
-## Page types
+## Typy stron
 
-### Built-in content types
+### Wbudowane typy treści
 
-- **BBC**: Allows BBCode markup for content
-- **HTML**: Raw HTML content
-- **PHP**: Executable PHP code (admin only)
+- **BBC**: Umożliwia stosowanie znaczników BBCode w treści
+- **HTML**: Nieprzetworzona treść HTML
+- **PHP**: Kod PHP do wykonania (tylko dla administratorów)
 
-### Plugin-based pages
+### Strony oparte na wtyczkach
 
-Plugins can extend the functionality by adding new page types or statuses. Examples:
+Wtyczki mogą rozszerzać funkcjonalność poprzez dodawanie nowych typów stron lub statusów. Przykłady:
 
-- **Markdown**: Enables Markdown syntax for content
-- **BlogMode**: Adds a new "Blog entry" type for displaying pages in a separate menu section
+- **Markdown**: Włącza obsługę składni Markdown dla treści
+- **BlogMode**: Dodaje nowy typ „Wpis na blogu” służący do wyświetlania stron w osobnej sekcji menu
 
 ## Karta zawartości
 
@@ -35,10 +35,10 @@ Tutaj możesz skonfigurować:
 
 Tutaj możesz skonfigurować:
 
-- status — inactive, active, or unapproved
+- status — nieaktywny, aktywny lub niezatwierdzony
 - uprawnienia — określ kto uzyska dostęp do Twojej strony
 - kategoria — jeśli chcesz, aby rzeczy były zorganizowane
-- type — default, internal, or draft
+- typ — domyślny, wewnętrzny lub roboczy
 
 ![Access tab](access_tab.png)
 

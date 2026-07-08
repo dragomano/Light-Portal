@@ -2,9 +2,9 @@
 description: Instrukcje dotyczące dodawania własnych komentarzy dla stron portalu
 ---
 
-# Add own comment system
+# Dodaj własny system komentarzy
 
-Suppose you're not happy with the default commenting system and you decide to integrate an external service.
+Załóżmy, że nie odpowiada ci domyślny system komentarzy i postanawiasz zintegrować z nim usługę zewnętrzną.
 
 Wybierz i włącz jedną ze wtyczek widżetu komentarzy:
 
@@ -13,4 +13,4 @@ Wybierz i włącz jedną ze wtyczek widżetu komentarzy:
 - Giscus
 - VkComments
 
-Change plugin settings to suit your needs, then go to _Portal => Settings => Pages and blocks_ area, look for the option labelled **Show page comments** and select your desired variant. Na koniec zapisz swoje ustawienia.
+Dostosuj ustawienia wtyczki do swoich potrzeb, a następnie przejdź do sekcji _Portal => Ustawienia => Strony i bloki_, znajdź opcję o nazwie **Pokaż komentarze na stronie** i wybierz żądaną opcję. Na koniec zapisz swoje ustawienia.

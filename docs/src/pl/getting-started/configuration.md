@@ -12,11 +12,11 @@ Nie opiszemy szczegółowo każdego z dostępnych ustawień, wymienimy tylko te 
 
 ## Ustawienia ogólne
 
-In this section, you can fully customize the portal front page, enable standalone mode, and change user permissions to access portal items.
+W tej sekcji można w pełni dostosować stronę główną portalu, włączyć tryb autonomiczny oraz zmienić uprawnienia użytkowników dotyczące dostępu do elementów portalu.
 
-### Settings for the front page and articles
+### Ustawienia strony głównej i artykułów
 
-To change the content of the portal home page, select the appropriate "the portal front page" mode:
+Aby zmienić zawartość strony głównej portalu, wybierz odpowiedni tryb „strona główna portalu”:
 
 - Wyłącz
 - Określona strona (tylko wybrana strona będzie wyświetlana)
@@ -51,7 +51,7 @@ W tej sekcji możesz zmienić różne ustawienia pomocnicze portalu, które mog�
 ### Tryb kompatybilności
 
 - Wartość parametru **akcji** portalu, można zmienić to ustawienie na Portal Światła w połączeniu z innymi podobnymi modyfikacjami. Następnie strona główna zostanie otwarta pod podanym adres.
-- Parametr **strony** dla stron portalu, patrz powyżej. Similarly, for portal pages - change the parameter and they will open with different URLs.
+- Parametr **strony** dla stron portalu, patrz powyżej. Podobnie jest w przypadku stron portalu – wystarczy zmienić parametr, a strony otworzą się pod innymi adresami URL.
 
 ### Konserwacja
 

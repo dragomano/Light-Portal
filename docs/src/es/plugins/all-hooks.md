@@ -367,10 +367,15 @@ public function saveSettings(Event $e): void
 ```php
 public function prepareAssets(Event $e): void
 {
-    $builder = new AssetBuilder($this);
-    $builder->scripts()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.js');
-    $builder->css()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.css');
-    $builder->appendTo($e->args->assets);
+    $e->args->builder->scripts()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.js');
+
+    $e->args->builder->css()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.css');
+
+    $e->args->builder->images()->addMultiple([
+        'images/1.png',
+        'images/2.png',
+        'images/3.png',
+    ]);
 }
 ```
 
@@ -383,7 +388,7 @@ public function prepareAssets(Event $e): void
 ```php
 public function frontModes(Event $e): void
 {
-    $$e->args->modes[$this->mode] = CustomArticle::class;
+    $e->args->modes[$this->mode] = CustomArticle::class;
 
     $e->args->currentMode = $this->mode;
 }
@@ -523,7 +528,7 @@ public function prepareIconList(Event $e): void
         $this->cache()->put('all_main_icons', $mainIcons, 30 * 24 * 60 * 60);
     }
 
-    $$e->args->icons = array_merge($$e->args->icons, $mainIcons);
+    $e->args->icons = array_merge($e->args->icons, $mainIcons);
 }
 ```
 

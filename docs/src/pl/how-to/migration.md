@@ -1,29 +1,29 @@
 ---
-description: Guide to migrating to Light Portal from other portals
+description: Przewodnik po migracji do serwisu Light Portal z innych portali
 ---
 
-# Migrating to Light Portal
+# Przejście na Light Portal
 
-Moving to a new portal is an important step. This guide will help you migrate content from other SMF portals to Light Portal.
+Przejście na nowy portal to ważny krok. Ten przewodnik pomoże Ci przenieść treści z innych portali SMF do Light Portal.
 
-## Preparation
+## Przygotowanie
 
-### Backup
+### Kopia zapasowa
 
-Before starting migration, make a full backup:
+Przed rozpoczęciem migracji należy wykonać pełną kopię zapasową:
 
-- Forum database
-- Forum files (`Themes`, `Sources`)
+- Baza danych forum
+- Pliki z forum (`Themes`, `Sources`)
 
-:::warning Warning
+:::warning Ostrzeżenie
 
-Never start migration on a live forum without first testing on a local server or test site.
+Nigdy nie należy rozpoczynać migracji na działającym forum bez uprzedniego przetestowania jej na serwerze lokalnym lub stronie testowej.
 
 :::
 
-### Audit your current content
+### Przeanalizuj swoje obecne treści
 
-Make a list of what needs to be migrated:
+Sporządź listę elementów, które należy przenieść:
 
 - Bloki
 - Strony
@@ -31,35 +31,35 @@ Make a list of what needs to be migrated:
 
 :::info Uwaga
 
-Only blocks and pages with PHP/HTML/BBCode content types are supported for import. Other block types will need to be created manually.
+Importowane mogą być wyłącznie bloki i strony o typach zawartości PHP, HTML lub BBCode. Pozostałe typy bloków trzeba będzie utworzyć ręcznie.
 
 :::
 
-### Removing previous portal
+### Usunięcie poprzedniego portalu
 
-Leave the tables created by the previous portal in the database — they are needed for import.
+Proszę pozostawić w bazie danych tabele utworzone przez poprzedni portal — są one potrzebne do importu.
 
-## Migrating from TinyPortal
+## Migracja z TinyPortal
 
-1. Install and activate the TinyPortalMigration plugin
-2. Go to the desired section — **Blocks**, **Pages**, or **Categories**, then select **Import from TinyPortal**
+1. Zainstaluj i aktywuj wtyczkę TinyPortalMigration
+2. Przejdź do wybranej sekcji — **Bloki**, **Strony** lub **Kategorie**, a następnie wybierz opcję **Importuj z TinyPortal**
 
-## Migrating from EhPortal (SimplePortal)
+## Migracja z EhPortal (SimplePortal)
 
-1. Install and activate the EhPortalMigration plugin
-2. Go to the desired section — **Blocks**, **Pages**, or **Categories**, then select **Import from EhPortal**
+1. Zainstaluj i aktywuj wtyczkę EhPortalMigration
+2. Przejdź do wybranej sekcji — **Bloki**, **Strony** lub **Kategorie**, a następnie wybierz opcję **Importuj z EhPortal**
 
-## Migrating from EzPortal
+## Migracja z EzPortal
 
-1. Install and activate the EzPortalMigration plugin
-2. Go to the desired section — **Blocks** or **Pages**, then select **Import from EzPortal**
+1. Zainstaluj i aktywuj wtyczkę EzPortalMigration
+2. Przejdź do wybranej sekcji — **Bloki** lub **Strony**, a następnie wybierz opcję **Importuj z EzPortal**
 
-## Additional Help
+## Dodatkowa pomoc
 
-If you encounter difficulties during migration:
+Jeśli podczas migracji napotkasz trudności:
 
-1. Search for a solution in the [support forum](https://www.simplemachines.org/community/index.php?topic=572393.0)
-2. Create a new post describing your problem
-3. Attach screenshots and error logs
+1. Poszukaj rozwiązania na [forum pomocy technicznej](https://www.simplemachines.org/community/index.php?topic=572393.0)
+2. Utwórz nowy post opisujący swój problem
+3. Załącz zrzuty ekranu i logi błędów
 
-Or use the comment section right on this page.
+Możesz też skorzystać z sekcji komentarzy bezpośrednio na tej stronie.

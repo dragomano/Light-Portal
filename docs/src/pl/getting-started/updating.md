@@ -5,13 +5,13 @@ order: 2
 
 # Aktualizacja
 
-If the changelog contains no specific update instructions for the latest version, you can update by extracting the `Themes` and `Sources` directories to your forum root, overwriting existing files.
+Jeśli lista zmian nie zawiera konkretnych instrukcji dotyczących aktualizacji do najnowszej wersji, aktualizację można przeprowadzić, rozpakowując katalogi `Themes` i `Sources` do katalogu głównego forum, nadpisując istniejące pliki.
 
-However, for a clean installation, we recommend uninstalling the current version first.
+Jednak w celu przeprowadzenia czystej instalacji zalecamy najpierw odinstalować obecną wersję.
 
 :::info Uwaga
 
-If the new version can be installed without removing the previous one, the "Upgrade" button will appear instead of the "Install" button:
+Jeśli nową wersję można zainstalować bez usuwania poprzedniej, zamiast przycisku „Zainstaluj” pojawi się przycisk „Aktualizuj”:
 
 ![Updating](upgrade.png)
 

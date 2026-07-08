@@ -1,29 +1,29 @@
 ---
-description: Guide to migrating to Light Portal from other portals
+description: Diğer portallardan Light Portal'a taşınma rehberi
 ---
 
-# Migrating to Light Portal
+# Light Portal'a Taşınma
 
-Moving to a new portal is an important step. This guide will help you migrate content from other SMF portals to Light Portal.
+Yeni bir portala geçiş yapmak önemli bir adımdır. Bu rehber, içeriklerinizi diğer SMF portallarından Light Portal'a taşımak için size yardımcı olacak.
 
-## Preparation
+## Hazırlık
 
-### Backup
+### Yedekleme
 
-Before starting migration, make a full backup:
+Taşınmaya başlamadan önce, tam bir yedek alın:
 
-- Forum database
-- Forum files (`Themes`, `Sources`)
+- Forum veritabanı
+- Forum dosyaları (`Themes`, `Sources`)
 
-:::warning Warning
+:::warning Uyarı
 
-Never start migration on a live forum without first testing on a local server or test site.
+Önce yerelde ya da test ortamında denemeden asla faal bir forumda taşınma işlemi başlatmayın.
 
 :::
 
-### Audit your current content
+### Mevcut içeriğinizi denetleyin.
 
-Make a list of what needs to be migrated:
+Taşınması gereken şeylerin bir listesini yapın:
 
 - Bloklar
 - Sayfalar
@@ -31,35 +31,35 @@ Make a list of what needs to be migrated:
 
 :::info Not
 
-Only blocks and pages with PHP/HTML/BBCode content types are supported for import. Other block types will need to be created manually.
+Sadece PHP/HTML/BBCode içerik türlerindeki bloklar ve sayfalar içeri aktarma için desteklenir. Diğer blok türlerinin manuel olarak oluşturulması gerekir.
 
 :::
 
-### Removing previous portal
+### Önceki portalı kaldırmak
 
-Leave the tables created by the previous portal in the database — they are needed for import.
+Önceki portal tarafından oluşturulmuş tabloları veritabanında bırakın — içe aktarım için onlara ihtiyaç olacak.
 
-## Migrating from TinyPortal
+## TinyPortal'dan Geçiş
 
-1. Install and activate the TinyPortalMigration plugin
-2. Go to the desired section — **Blocks**, **Pages**, or **Categories**, then select **Import from TinyPortal**
+1. TinyPortalMigration eklentisini kurup etkinleştirin
+2. İstediğiniz alana gidin — **Bloklar**, **Sayfalar** veya **Kategoriler**, sonra **TinyPortal'dan Aktar**ı seçin.
 
-## Migrating from EhPortal (SimplePortal)
+## EhPortal'dan (SimplePortal) Geçiş
 
-1. Install and activate the EhPortalMigration plugin
-2. Go to the desired section — **Blocks**, **Pages**, or **Categories**, then select **Import from EhPortal**
+1. EhPortalMigration eklentisini kurup etkinleştirin
+2. İstediğiniz alana gidin — **Bloklar**, **Sayfalar** veya **Kategoriler**, sonra **EhPortal'dan Aktar**ı seçin.
 
-## Migrating from EzPortal
+## EzPortal'dan Geçiş
 
-1. Install and activate the EzPortalMigration plugin
-2. Go to the desired section — **Blocks** or **Pages**, then select **Import from EzPortal**
+1. EzPortalMigration eklentisini kurup etkinleştirin
+2. İstediğiniz alana gidin — **Bloklar**, **Sayfalar** veya **Kategoriler**, sonra **EzPortal'dan Aktar**ı seçin.
 
-## Additional Help
+## İlave Yardım
 
-If you encounter difficulties during migration:
+Eğer taşınma esnasında zorluk yaşarsınız:
 
-1. Search for a solution in the [support forum](https://www.simplemachines.org/community/index.php?topic=572393.0)
-2. Create a new post describing your problem
-3. Attach screenshots and error logs
+1. [Destek forumunda](https://www.simplemachines.org/community/index.php?topic=572393.0) olası çözümleri arayın
+2. Sorununuzu tarif eden yeni bir konu açın
+3. Ekran görüntüleri ve hata günlüklerini ekleyin
 
-Or use the comment section right on this page.
+Ya da bu sayfadaki yorum alanını kullanın.

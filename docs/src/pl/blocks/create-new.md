@@ -9,27 +9,27 @@ Aby dodać blok, po prostu kliknij. Na początku możesz tworzyć bloki trzech t
 
 W zależności od typu bloku dostępne będą różne ustawienia, rozprzestrzeniane na różne karty.
 
-## Block types
+## Typy bloków
 
-### Built-in content types
+### Wbudowane typy treści
 
-- **BBC**: Allows BBCode markup for content
-- **HTML**: Raw HTML content
-- **PHP**: Executable PHP code (admin only)
+- **BBC**: Umożliwia stosowanie znaczników BBCode w treści
+- **HTML**: Nieprzetworzona treść HTML
+- **PHP**: Kod PHP do wykonania (tylko dla administratorów)
 
-### Plugin-based blocks
+### Bloki oparte na wtyczkach
 
-Blocks from plugins extend functionality. Examples:
+Bloki ze wtyczek rozszerzają funkcjonalność. Przykłady:
 
-- **Markdown**: Enables Markdown syntax for content
-- **ArticleList**: Displays articles from topics/pages with customizable display options
-- **Calculator**: Interactive calculator widget
-- **BoardStats**: Forum board statistics
-- **News**: Latest announcements
-- **Polls**: Active forum polls
-- **RecentPosts**: Recent forum activity
-- **UserInfo**: Current user details
-- **WhosOnline**: Online users list
+- **Markdown**: Włącza obsługę składni Markdown dla treści
+- **ArticleList**: Wyświetla artykuły z kategorii/stron z możliwością dostosowania opcji wyświetlania
+- **Kalkulator**: Interaktywny widget kalkulatora
+- **Statystyki**: Statystyki forum
+- **Aktualności**: Najnowsze komunikaty
+- **Ankiety**: Aktywne ankiety na forum
+- **Najnowsze posty**: Najnowsze wpisy na forum
+- **Informacje o użytkowniku**: Dane aktualnego użytkownika
+- **Kto jest online**: Lista użytkowników online
 
 ## Karta zawartości
 
@@ -53,7 +53,7 @@ Tutaj możesz skonfigurować:
 
 ## Karta wyglądu
 
-Here you can configure the block appearance options.
+W tym miejscu można skonfigurować opcje wyglądu bloku.
 
 ![Appearance tab](appearance_tab.png)
 

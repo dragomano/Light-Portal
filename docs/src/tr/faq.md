@@ -1,78 +1,78 @@
 ---
-title: FAQ
-description: Frequently Asked Questions about Light Portal
+title: SSS
+description: Light Portal hakkında Sık Sorulan Sorular
 ---
 
-# Frequently Asked Questions
+# Sık Sorulan Sorular
 
-Here are answers to the most popular questions about Light Portal.
+Light Portal hakkında çok sorulan soruların cevapları burada.
 
-## General questions
+## Genel sorular
 
-### Which versions of SMF are supported?
+### Hangi SMF sürümleri destekleniyor?
 
-See [Installation](./getting-started/installation.md).
+[Kurulum](./getting-started/installation.md) bölümüne bakın.
 
-### Where can I download Light Portal?
+### Light Portal'ı nereden indirebilirim?
 
-See [Installation](./getting-started/installation.md).
+[Kurulum](./getting-started/installation.md) bölümüne bakın.
 
 ---
 
-## Installation and Setup
+## Kurulum ve Ayarlama
 
-### How do I install Light Portal?
+### Light Portal'ı nasıl kurabilirim?
 
-See [Installation](./getting-started/installation.md).
+[Kurulum](./getting-started/installation.md) bölümüne bakın.
 
-### How do I make the portal the front page?
+### Portal ön sayfasını nasıl yaparım?
 
-See [Portal Settings](./getting-started/configuration#settings-for-the-front-page-and-articles).
+[Portal Ayarları](./getting-started/configuration#settings-for-the-front-page-and-articles) bölümüne bakın.
 
-### Can I use Light Portal alongside another portal?
+### Light Portal'ı bir başka portal ile birlikte kullanabilir miyim?
 
-Yes, you can try combining two portals.
+Evet, iki portalı birleştirmeyi deneyebilirsiniz.
 
-1. Install Light Portal without removing the previous portal
-2. Go to **Settings** → **Miscellaneous** and change the `action`/`page` parameters to differ from the other portal
+1. Önceki portalı kaldırmadan Light Portal'ı kurun
+2. **Ayarlar** → **Diğer/çeşitli** bölümüne gidin ve `action`/`sayfa` parametrelerini diğer portaldan farklı olacak şekilde ayarlayın.
 
 ---
 
 ## Sayfalar
 
-### How do I create a new page?
+### Nasıl yeni sayfalar oluştururum?
 
-See [Add Page](./pages/create-new.md).
+[Sayfa Ekleme](./pages/create-new.md) bölümüne bakın.
 
-### How do I configure SEO for pages?
+### Sayfalar için nasış SEO ayarlarım?
 
-See [SEO Tab](./pages/create-new#seo-tab).
+[SEO Sekmesi](./pages/create-new#seo-tab)ne bakın.
 
-### What are categories and tags?
+### Kategoriler ve etiketler nedir?
 
-See [Glossary](./glossary.md)
+[Sözlüğe](./glossary.md) bakın
 
-You can create categories in **Portal** → **Categories** and tags in **Portal** → **Tags**.
+**Portal** → **Kategoriler** alanından kategori, **Portal** → **Etiketler** alanından etiket oluşturabilirsiniz.
 
 ---
 
 ## Bloklar
 
-### How do I add a block?
+### Blok eklemeyi nasıl yaparım?
 
-See [Add Block](./blocks/create-new.md).
+[Blok Ekleme](./blocks/create-new.md) bölümüne bakın.
 
-### How do I reorder blocks?
+### Blok sıralamasını nasıl değiştiririm?
 
-In the block management section, drag blocks to the desired order.
+Blok yönetim alanında blokları dilediğiniz sıraya göre sürükleyin.
 
-### Can I use JavaScript in blocks?
+### Bloklarda JavaScript kullanabilir miyim?
 
-Yes, use an HTML-type block for this.
+Evet, bunun için HTML-türü blok kullanın.
 
-:::warning Warning
+:::warning Uyarı
 
-Be careful with external scripts — they can slow down page loading or create security vulnerabilities.
+Harici betikler hakkında dikkat edin — sayfa yüklemesini yavaşlatabilir veya güvenlik zaafiyetleri oluşturabilirler.
 
 :::
 
@@ -80,79 +80,79 @@ Be careful with external scripts — they can slow down page loading or create s
 
 ## Eklentiler
 
-### What are plugins?
+### Eklentiler nedir?
 
-Plugins extend Light Portal functionality. They can add new block types, integrate with other modifications, and provide additional features.
+Eklentiler, Light Portal işlevlerini genişletir. Yeni blok türleri ekleyebilir, diğer modlarla entegre olabilir ve ek özellikler sunabilirler.
 
-See [Manage Plugins](./plugins/manage.md) for details.
+Ayrıntılar için [Eklenti Yönetimi](./plugins/manage.md)ne bakın.
 
-### How do I install an additional plugin?
+### Eklentileri nasıl kurabilirim?
 
-See [Installing additional plugins](./plugins/manage#installing-additional-plugins).
-
----
-
-## Design and Themes
-
-### How do I change the portal appearance?
-
-Light Portal uses the same theme as the rest of the forum. However, you can change the front page layout.
-
-1. **CSS**: Create a file `portal_custom.css` in the `Themes/default/css` folder
-2. **Layouts**: Create a custom front page layout in the `Themes/default/portal_layouts` folder
-
-See [Create Custom Layouts](./how-to/create-layout.md) for details.
+[Eklenti kurma](./plugins/manage#installing-additional-plugins) bölümüne bakın.
 
 ---
 
-## Troubleshooting
+## Tasarım ve Temalar
 
-### Page isn't displaying
+### Portal görünümünü nasıl değiştirebilirim?
 
-Check:
+Light Portal, forumun kullandığı temayı kullanır. Bununla birlikte, ön sayfa yerleşimini değiştirebilirsiniz.
 
-1. Page status (enabled/disabled)
-2. Correct URL (slug)
-3. Visibility settings (Access and placement tab in page settings)
+1. **CSS**: `Themes/default/css` klasöründe `portal_custom.css` isminde bir dosya oluşturun
+2. **Yerleşimler**: `Themes/default/portal_layouts` klasöründe özel bir sayfa yerleşimi oluşturun
 
-### Block isn't displaying
-
-Check:
-
-1. Whether the block is enabled
-2. Which panel it is assigned to
-3. Visibility settings (Access and placement tab in block settings)
-
-### Errors after update
-
-1. Clear the forum cache and browser cache
-2. Enable weekly table optimization in the **Miscellaneous** tab in portal settings
-3. Reinstall/update plugins if necessary
-
-### Where can I find error logs?
-
-Light Portal logs are in the standard SMF logs. You can also enable debug mode in the portal settings.
+Ayrıntılar için [Özel Yerleşim Oluşturma](./how-to/create-layout.md) bölümüne bakın.
 
 ---
 
-## Development
+## Sorun Giderme
 
-### How do I create my own plugin?
+### Sayfa görüntülenmiyor
 
-See [Add Plugin](./plugins/create-new.md).
+Kontrol Edin:
 
-### Where can I find documentation on hooks?
+1. Sayfa durumu (etkin/devr dışı)
+2. URL Doğru mu (rumuz)
+3. Görünürlük ayarları (Sayfa ayarlarında erişim ve yerleşim sekmesi)
 
-See [Portal Hooks](./plugins/all-hooks.md).
+### Blok görüntülenmiyor
+
+Kontrol Edin:
+
+1. Blok etkinleştirilmiş mi
+2. Hangi panele atanmış
+3. Görünürlük ayarları (Blok ayarlarında erişim ve yerleşim sekmesi)
+
+### Güncellemeden sonra oluşan hatalar
+
+1. Forum önbelleği ve tarayıcı öncelleğini temizleyin
+2. Portal ayarlarında **Çeşitli/diğer** sekmesinde haftalık tablo iyileştirmelerini etkinleştirin
+3. Gerekiyorsa eklentileri yeniden kurun/güncelleyin
+
+### Hata günlüklerini nerede bulabilirim?
+
+Light Portal günlükleri, standart SMF günlükleri içerisindedir. Ayrıca portal ayarlarında hata ayıklama modunu etkinleştirebilirsiniz.
 
 ---
 
-## Need Help?
+## Geliştirme
 
-If you didn't find the answer to your question:
+### Kendi eklentimi nasıl oluştururum?
 
-1. Search the [support forum](https://www.simplemachines.org/community/index.php?topic=572393.0)
-2. Create a new post describing your problem
-3. Attach screenshots and error logs
+[Eklenti Ekleme](./plugins/create-new.md) bölümüne bakın.
 
-Or use the comment section right on this page.
+### Kancalar hakkındaki dokümanları nerede bulabilirim?
+
+[Portal Kancaları](./plugins/all-hooks.md) bölümüne bakın.
+
+---
+
+## Yardıma İhtiyacınız Mı Var?
+
+Eper sorunuzun cevabını bulamadıysanız:
+
+1. [Destek forumu](https://www.simplemachines.org/community/index.php?topic=572393.0)nda arama yapın
+2. Sorununuzu tarif eden yeni bir konu açın
+3. Ekran görüntüleri ve hata günlüklerini ekleyin
+
+Ya da bu sayfadaki yorum alanını kullanın.

@@ -46,7 +46,7 @@ Guarda [Aggiungi pagina](./pages/create-new.md).
 
 ### Come faccio a configurare la SEO per le pagine?
 
-Guarda [Scheda SEO](./pages/create-new#seo-tab).
+Guarda [Scheda SEO](./pages/create-new#scheda-seo).
 
 ### Quali sono le categorie e i tag?
 
@@ -88,7 +88,7 @@ Guarda [Gestisci Plugins](./plugins/manage.md) per dettagli.
 
 ### Come si installa un plugin aggiuntivo?
 
-Guarda [Installazione di plugin aggiuntivi](./plugins/manage#installing-additional-plugins).
+Guarda [Installazione di plugin aggiuntivi](./plugins/manage#installazione-di-plugin-aggiuntivi).
 
 ---
 

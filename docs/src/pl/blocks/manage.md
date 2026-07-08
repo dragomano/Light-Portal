@@ -5,9 +5,9 @@ order: 1
 
 # Zarządzaj blokami
 
-This section shows all the portal blocks that are set up, whether they're enabled or disabled. The blocks are sorted by panel.
+W tej sekcji wyświetlane są wszystkie skonfigurowane bloki portalu, niezależnie od tego, czy są włączone, czy wyłączone. Bloki są posortowane według paneli.
 
-For each block, we see its icon, title or description, type, output panel, priority, and a list of available actions.
+W przypadku każdego bloku widzimy jego ikonę, tytuł lub opis, typ, panel wyjściowy, priorytet oraz listę dostępnych działań.
 
 ![Manage blocks](manage_blocks.png)
 
