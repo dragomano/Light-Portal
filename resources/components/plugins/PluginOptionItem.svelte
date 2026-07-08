@@ -60,7 +60,7 @@
     }
   });
 
-  const DynamicComponent = $derived<Component>(dynamicProps?.Component);
+  const DynamicComponent = $derived(dynamicProps?.Component);
 </script>
 
 <div>
@@ -74,7 +74,8 @@
   {/if}
 
   {#if dynamicProps}
-    <DynamicComponent {...dynamicProps} />
+    {@const { Component: _, ...restProps } = dynamicProps}
+    <DynamicComponent {...restProps as any} />
   {/if}
 
   {#if subtext}

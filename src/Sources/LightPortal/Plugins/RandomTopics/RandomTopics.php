@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\RandomTopics;
@@ -26,8 +26,8 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -38,10 +38,10 @@ class RandomTopics extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'exclude_boards'   => '',
-			'include_boards'   => '',
-			'num_topics'       => 10,
-			'show_num_views'   => false,
+			'exclude_boards' => '',
+			'include_boards' => '',
+			'num_topics'     => 10,
+			'show_num_views' => false,
 		];
 	}
 
@@ -84,7 +84,7 @@ class RandomTopics extends Block
 	}
 
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$excludeBoards = array_filter(array_map(intval(...), explode(',', $parameters['exclude_boards'] ?? '')));
 		$includeBoards = array_filter(array_map(intval(...), explode(',', $parameters['include_boards'] ?? '')));
@@ -212,7 +212,7 @@ class RandomTopics extends Block
 					->addHtml($author)
 					->addHtml(', ' . DateTime::relative($topic['time']));
 
-				$parameters['show_num_views'] && $li
+				($parameters['show_num_views'] ?? false) && $li
 					->addText(' (' . __('lp_views_set', ['views' => $topic['num_views']]) . ')');
 
 				$ul->addHtml($li);

@@ -5,9 +5,9 @@ order: 1
 
 # Zarządzaj stronami
 
-This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
+W tej sekcji wyświetlane są wszystkie utworzone przez Ciebie strony, które możesz edytować. Można je wyszukiwać według tytułu lub nazwy.
 
-Each page shows its ID, creation or last updated date, view count, comment count, page type, slug, and title. You also see a list of actions you can do with it.
+Na każdej stronie wyświetlane są: jej ID, data utworzenia lub ostatniej aktualizacji, liczba wyświetleń, liczba komentarzy, typ strony, nazwa oraz tytuł. Zobaczysz też listę czynności, które możesz dzięki temu wykonać.
 
 ![Manage pages](manage_pages.png)
 

@@ -488,7 +488,7 @@ it('beforeMain loads params and checks user', function () {
     $this->accessor->callMethod('beforeMain');
 });
 
-it('performMassActions handles delete action', function () {
+it('performBulkActions handles delete action', function () {
     $this->repositoryMock->shouldReceive('remove')->once()->with(['1', '2']);
     $this->repositoryMock->remove(['1', '2']);
 
@@ -503,16 +503,16 @@ it('performMassActions handles delete action', function () {
     $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
-    $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
+    $requestMock->shouldReceive('hasNot')->with('bulk_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['1', '2']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
     $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callMethod('performMassActions');
+    $this->accessor->callMethod('performBulkActions');
 });
 
-it('performMassActions handles delete_forever action', function () {
+it('performBulkActions handles delete_forever action', function () {
     $this->repositoryMock->shouldReceive('removePermanently')->once()->with(['1']);
     $this->repositoryMock->removePermanently(['1']);
 
@@ -527,16 +527,16 @@ it('performMassActions handles delete_forever action', function () {
     $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
-    $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
+    $requestMock->shouldReceive('hasNot')->with('bulk_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['1']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
     $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callMethod('performMassActions');
+    $this->accessor->callMethod('performBulkActions');
 });
 
-it('performMassActions handles toggle action', function () {
+it('performBulkActions handles toggle action', function () {
     $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(['1', '3']);
     $this->repositoryMock->toggleStatus(['1', '3']);
 
@@ -551,16 +551,16 @@ it('performMassActions handles toggle action', function () {
     $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
-    $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
+    $requestMock->shouldReceive('hasNot')->with('bulk_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['1', '3']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
     $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callMethod('performMassActions');
+    $this->accessor->callMethod('performBulkActions');
 });
 
-it('performMassActions handles promote actions', function () {
+it('performBulkActions handles promote actions', function () {
     $cacheMock = mock(CacheInterface::class);
     $cacheMock->shouldReceive('flush')->once();
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
@@ -572,22 +572,22 @@ it('performMassActions handles promote actions', function () {
     $this->accessor->setProperty('response', $responseMock);
 
     $requestMock = mock(RequestInterface::class);
-    $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(false);
+    $requestMock->shouldReceive('hasNot')->with('bulk_actions')->andReturn(false);
     $requestMock->shouldReceive('isEmpty')->with('items')->andReturn(false);
     $requestMock->shouldReceive('get')->with('items')->andReturn(['2', '4']);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
     $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callMethod('performMassActions');
+    $this->accessor->callMethod('performBulkActions');
 });
 
-it('performMassActions does nothing when no mass actions', function () {
+it('performBulkActions does nothing when no bulk actions', function () {
     $requestMock = mock(RequestInterface::class);
-    $requestMock->shouldReceive('hasNot')->with('mass_actions')->andReturn(true);
+    $requestMock->shouldReceive('hasNot')->with('bulk_actions')->andReturn(true);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
     $this->accessor->setProperty('request', $requestMock);
 
-    $this->accessor->callMethod('performMassActions');
+    $this->accessor->callMethod('performBulkActions');
 
     expect(true)->toBeTrue();
 });

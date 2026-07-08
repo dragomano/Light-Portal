@@ -12,8 +12,9 @@
 
 namespace LightPortal\Enums;
 
+use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Renderers\RendererInterface;
-use Ramsey\Collection\Map\MapInterface;
+use LightPortal\Utils\Params;
 
 enum PortalHook
 {
@@ -153,7 +154,7 @@ enum PortalHook
 				public function __construct(public array $styles) {}
 			},
 			self::prepareAssets => new class(...$data) {
-				public function __construct(public array &$assets) {}
+				public function __construct(public AssetBuilder $builder) {}
 			},
 			self::prepareBlockFields,
 			self::preparePageFields => new class(...$data) {
@@ -172,7 +173,7 @@ enum PortalHook
 					public readonly string $type,
 					public readonly int $id,
 					public readonly int $cacheTime,
-					public readonly MapInterface $parameters
+					public readonly Params $parameters
 				) {}
 			},
 			self::prepareEditor => new class(...$data) {

@@ -1,78 +1,78 @@
 ---
-title: FAQ
-description: Frequently Asked Questions about Light Portal
+title: Najczęściej zadawane pytania
+description: Najczęściej zadawane pytania dotyczące Light Portal
 ---
 
-# Frequently Asked Questions
+# Najczęściej zadawane pytania
 
-Here are answers to the most popular questions about Light Portal.
+Oto odpowiedzi na najczęściej zadawane pytania dotyczące Light Portal.
 
-## General questions
+## Pytania ogólne
 
-### Which versions of SMF are supported?
+### Które wersje SMF są obsługiwane?
 
-See [Installation](./getting-started/installation.md).
+Zobacz [Installation](./getting-started/installation.md).
 
-### Where can I download Light Portal?
+### Gdzie mogę pobrać program Light Portal?
 
-See [Installation](./getting-started/installation.md).
+Zobacz [Installation](./getting-started/installation.md).
 
 ---
 
-## Installation and Setup
+## Instalacja i konfiguracja
 
-### How do I install Light Portal?
+### Jak zainstalować Light Portal?
 
-See [Installation](./getting-started/installation.md).
+Zobacz [Installation](./getting-started/installation.md).
 
-### How do I make the portal the front page?
+### Jak ustawić portal jako stronę główną?
 
-See [Portal Settings](./getting-started/configuration#settings-for-the-front-page-and-articles).
+Zobacz [Portal Settings](./getting-started/configuration#settings-for-the-front-page-and-articles).
 
-### Can I use Light Portal alongside another portal?
+### Czy mogę korzystać z Light Portal równolegle z innym portalem?
 
-Yes, you can try combining two portals.
+Tak, możesz spróbować połączyć dwa portale.
 
-1. Install Light Portal without removing the previous portal
-2. Go to **Settings** → **Miscellaneous** and change the `action`/`page` parameters to differ from the other portal
+1. Zainstaluj Light Portal bez usuwania poprzedniej wersji portalu
+2. Przejdź do **Ustawienia** → **Różne** i zmień parametry `action`/`page` tak, aby różniły się od tych w pozostałych portalach
 
 ---
 
 ## Strony
 
-### How do I create a new page?
+### Jak utworzyć nową stronę?
 
-See [Add Page](./pages/create-new.md).
+Zobacz [Add Page](./pages/create-new.md).
 
-### How do I configure SEO for pages?
+### Jak skonfigurować SEO dla stron?
 
-See [SEO Tab](./pages/create-new#seo-tab).
+Zobacz [SEO Tab](./pages/create-new#seo-tab).
 
-### What are categories and tags?
+### Czym są kategorie i tagi?
 
-See [Glossary](./glossary.md)
+Zobacz [Glossary](./glossary.md)
 
-You can create categories in **Portal** → **Categories** and tags in **Portal** → **Tags**.
+Kategorie można tworzyć w sekcji **Portal** → **Kategorie**, a tagi w sekcji **Portal** → **Tagi**.
 
 ---
 
 ## Bloki
 
-### How do I add a block?
+### Jak dodać blok?
 
-See [Add Block](./blocks/create-new.md).
+Zobacz [Add Block](./blocks/create-new.md).
 
-### How do I reorder blocks?
+### Jak zmienić kolejność bloków?
 
-In the block management section, drag blocks to the desired order.
+W sekcji zarządzania blokami przeciągnij bloki, aby ustawić je w żądanej kolejności.
 
-### Can I use JavaScript in blocks?
+### Czy mogę używać JavaScriptu w blokach?
 
-Yes, use an HTML-type block for this.
+Tak, w tym celu użyj bloku typu HTML.
 
-:::warning Warning
+:::warning Uwaga
 
-Be careful with external scripts — they can slow down page loading or create security vulnerabilities.
+Należy zachować ostrożność w przypadku skryptów zewnętrznych — mogą one spowolnić ładowanie strony lub spowodować luki w zabezpieczeniach.
 
 :::
 
@@ -80,79 +80,79 @@ Be careful with external scripts — they can slow down page loading or create s
 
 ## Wtyczki
 
-### What are plugins?
+### Czym są wtyczki?
 
-Plugins extend Light Portal functionality. They can add new block types, integrate with other modifications, and provide additional features.
+Wtyczki rozszerzają funkcjonalność Light Portal. Mogą dodawać nowe typy bloków, integrować się z innymi modyfikacjami oraz zapewniać dodatkowe funkcje.
 
-See [Manage Plugins](./plugins/manage.md) for details.
+Zobacz [Manage Plugins](./plugins/manage.md) więcej informacji.
 
-### How do I install an additional plugin?
+### Jak zainstalować dodatkową wtyczkę?
 
-See [Installing additional plugins](./plugins/manage#installing-additional-plugins).
-
----
-
-## Design and Themes
-
-### How do I change the portal appearance?
-
-Light Portal uses the same theme as the rest of the forum. However, you can change the front page layout.
-
-1. **CSS**: Create a file `portal_custom.css` in the `Themes/default/css` folder
-2. **Layouts**: Create a custom front page layout in the `Themes/default/portal_layouts` folder
-
-See [Create Custom Layouts](./how-to/create-layout.md) for details.
+Zobacz [Installing additional plugins](./plugins/manage#installing-additional-plugins).
 
 ---
 
-## Troubleshooting
+## Projekt i motywy
 
-### Page isn't displaying
+### Jak mogę zmienić wygląd portalu?
 
-Check:
+Light Portal korzysta z tego samego motywu, co reszta forum. Można jednak zmienić układ strony głównej.
 
-1. Page status (enabled/disabled)
-2. Correct URL (slug)
-3. Visibility settings (Access and placement tab in page settings)
+1. **CSS**: Utwórz plik `portal_custom.css` w folderze `Themes/default/css`
+2. **Układ strony**: Utwórz własny układ strony głównej w folderze  `Themes/default/portal_layouts`
 
-### Block isn't displaying
-
-Check:
-
-1. Whether the block is enabled
-2. Which panel it is assigned to
-3. Visibility settings (Access and placement tab in block settings)
-
-### Errors after update
-
-1. Clear the forum cache and browser cache
-2. Enable weekly table optimization in the **Miscellaneous** tab in portal settings
-3. Reinstall/update plugins if necessary
-
-### Where can I find error logs?
-
-Light Portal logs are in the standard SMF logs. You can also enable debug mode in the portal settings.
+Zobacz [Tworzenie niestandardowych układów](./how-to/create-layout.md) Więcej informacji.
 
 ---
 
-## Development
+## Rozwiązywanie problemów
 
-### How do I create my own plugin?
+### Strona się nie wyświetla
 
-See [Add Plugin](./plugins/create-new.md).
+Sprawdź:
 
-### Where can I find documentation on hooks?
+1. Status strony (włączony/wyłączony)
+2. Prawidłowy adres URL (nazwa)
+3. Ustawienia widoczności (zakładka „Dostęp i rozmieszczenie” w ustawieniach strony)
 
-See [Portal Hooks](./plugins/all-hooks.md).
+### Blok się nie wyświetla
+
+Sprawdź:
+
+1. Czy blok jest włączony
+2. Do którego panelu jest przypisany
+3. Ustawienia widoczności (zakładka „Dostęp i rozmieszczenie” w ustawieniach bloku)
+
+### Błędy po aktualizacji
+
+1. Wyczyść pamięć podręczną forum i pamięć podręczną przeglądarki
+2. Włącz cotygodniową optymalizację tabeli w zakładce **Różne** w ustawieniach portalu
+3. W razie potrzeby zainstaluj ponownie lub zaktualizuj wtyczki
+
+### Gdzie mogę znaleźć dzienniki błędów?
+
+Logi serwisu Light Portal znajdują się w standardowych logach SMF. W ustawieniach portalu można również włączyć tryb debugowania.
 
 ---
 
-## Need Help?
+## Projektowanie
 
-If you didn't find the answer to your question:
+### Jak stworzyć własną wtyczkę?
 
-1. Search the [support forum](https://www.simplemachines.org/community/index.php?topic=572393.0)
-2. Create a new post describing your problem
-3. Attach screenshots and error logs
+Zobacz [Add Plugin](./plugins/create-new.md).
 
-Or use the comment section right on this page.
+### Gdzie mogę znaleźć dokumentację dotyczącą haków?
+
+Zobacz [Portal Hooks](./plugins/all-hooks.md).
+
+---
+
+## Potrzebujesz pomocy?
+
+Jeśli nie znalazłeś odpowiedzi na swoje pytanie:
+
+1. Przeszukaj [forum pomocy technicznej](https://www.simplemachines.org/community/index.php?topic=572393.0)
+2. Utwórz nowy wpis opisujący swój problem
+3. Załącz zrzuty ekranu i pliki dziennika błędów
+
+Możesz też skorzystać z sekcji komentarzy bezpośrednio na tej stronie.

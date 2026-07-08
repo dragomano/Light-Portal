@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\TopPosters;
@@ -21,8 +21,8 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\Utils\Avatar;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -63,7 +63,7 @@ class TopPosters extends Block
 			->setValue($options['show_numbers_only']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$numPosters = $parameters->get('num_posters', 10);
 

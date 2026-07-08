@@ -19,4 +19,4 @@ Niektóre wtyczki nie są dołączone do portalu, muszą być zainstalowane oddz
 
 ![Download additional plugins](download_plugins.png)
 
-The separate plugin package can be installed in the Plugin Import section. Możesz także po prostu wyodrębnić folder wtyczki z pobranego archiwum i przenieść go do katalogu "Sources/LightPortal/Plugins".
+Osobny pakiet wtyczek można zainstalować w sekcji Import wtyczek. Możesz także po prostu wyodrębnić folder wtyczki z pobranego archiwum i przenieść go do katalogu "Sources/LightPortal/Plugins".

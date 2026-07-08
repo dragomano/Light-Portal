@@ -12,7 +12,7 @@ Nie ma tutaj żadnych subtelności. Light Portal może być zainstalowany tak ja
 - [SMF 2.1.x](https://download.simplemachines.org)
 - Nowoczesna przeglądarka z włączonym JavaScript
 - Internet (portal i wiele wtyczek ładuje skrypty i style z CDN)
-- PHP 8.2 or higher
+- PHP 8.2 lub nowsze
 - Rozszerzenie PHP `intl` do poprawnej lokalizacji niektórych ciągów językowych
 - Rozszerzenia PHP `dom` i `simplexml` do eksportu/importu stron i bloków
 - Rozszerzenie PHP `zip` do eksportu/importu wtyczek
@@ -24,6 +24,6 @@ Wystarczy pobrać pakiet z plikami portalu z [oficjalnego katalogu](https://cust
 
 :::
 
-## Testing
+## Testowanie
 
-You can try our [Docker files](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) or your preferred LAMP/WAMP/MAMP app.
+Możesz wypróbować nasze [pliki Docker](https://github.com/dragomano/Light-Portal/tree/d1074c8486ed9eb2f9e89e3afebce2b914d4d570/_docker) lub swoją ulubioną aplikację LAMP/WAMP/MAMP.

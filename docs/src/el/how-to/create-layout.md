@@ -14,38 +14,38 @@ description: Πλήρης οδηγός για το σύστημα προτύπω
 
 - **Κληρονομικότητα προτύπου**: Χρησιμοποιήστε τις οδηγίες `@extends` και `@section` για να δημιουργήσετε ιεραρχίες διάταξης
 - **Περιλαμβάνει**: Επαναχρησιμοποίηση στοιχείων με οδηγίες `@include`
-- **Control Structures**: PHP-like syntax with `@if`, `@foreach`, `@while`, etc.
+- **Δομές Ελέγχου**: Σύνταξη τύπου PHP με `@if`, `@foreach`, `@while`, κ.λπ.
 
-See detailed information about Blade markup [here](https://github.com/EFTEC/BladeOne/wiki/Template-variables).
+Δείτε αναλυτικές πληροφορίες σχετικά με τη σήμανση Blade [εδώ](https://github.com/EFTEC/BladeOne/wiki/Template-variables).
 
-### Layouts
+### Διατάξεις
 
-Layouts define the overall structure of your front page. Located in `/Themes/default/LightPortal/layouts/`, they determine how front page articles are arranged. Examples include:
+Οι διατάξεις καθορίζουν τη συνολική δομή της αρχικής σας σελίδας. Βρίσκονται στο `/Themes/default/LightPortal/layouts/` και καθορίζουν τον τρόπο με τον οποίο ταξινομούνται τα άρθρα της πρώτης σελίδας. Τα παραδείγματα περιλαμβάνουν:
 
-- `default.blade.php` - Standard grid layout
-- `simple.blade.php` - Minimalist design
-- `modern.blade.php` - Contemporary styling
-- `featured_grid.blade.php` - Highlighted content grid
+- `default.blade.php` - Τυπική διάταξη πλέγματος
+- `simple.blade.php` - Μινιμαλιστικός σχεδιασμός
+- `modern.blade.php` - Σύγχρονο στυλ
+- `featured_grid.blade.php` - Πλέγμα επισημασμένου περιεχομένου
 
-### Partials
+### Μερικά ακόμα
 
-Reusable template components stored in `/Themes/default/LightPortal/layouts/partials/`:
+Επαναχρησιμοποιήσιμα στοιχεία προτύπου που είναι αποθηκευμένα στο `/Themes/default/LightPortal/layouts/partials/`:
 
-- `base.blade.php` - Main layout wrapper
-- `card.blade.php` - Article card template
-- `pagination.blade.php` - Page navigation
-- `image.blade.php` - Image display component
+- `base.blade.php` - Κύριο περιτύλιγμα διάταξης
+- `card.blade.php` - Πρότυπο κάρτας άρθρου
+- `pagination.blade.php` - Πλοήγηση σελίδας
+- `image.blade.php` - Στοιχείο εμφάνισης εικόνας
 
-### Themes and assets
+### Θέματα και στοιχεία
 
-- `/Themes/default/LightPortal`: Portal templates files
-- `/languages/LightPortal`: Localization files
-- `/css/light_portal`: CSS enhancements
-- `/scripts/light_portal`: JavaScript enhancements
+-
+- `/languages/LightPortal`: Αρχεία τοπικής προσαρμογής
+- `/css/light_portal`: Βελτιώσεις CSS
+- `/scripts/light_portal`: Βελτιώσεις JavaScript
 
-## Layout example
+## Παράδειγμα διάταξης
 
-In addition to existing front page layouts, you can always add your own.
+Εκτός από τις υπάρχουσες διατάξεις αρχικής σελίδας, μπορείτε πάντα να προσθέσετε τις δικές σας.
 
 Για να το κάνετε αυτό, δημιουργήστε ένα αρχείο «custom.blade.php» στον κατάλογο «/Themes/default/portal_layouts»:
 
@@ -81,18 +81,18 @@ In addition to existing front page layouts, you can always add your own.
 </style>
 ```
 
-After that you will see a new front page layout - `Custom` - on the portal settings:
+Στη συνέχεια, θα δείτε μια νέα διάταξη αρχικής σελίδας - `Προσαρμοσμένη` - στις ρυθμίσεις της πύλης:
 
 ![Select custom template](set_custom_template.png)
 
 Μπορείτε να δημιουργήσετε όσες τέτοιες διατάξεις θέλετε. Χρησιμοποιήστε το "debug.blade.php" και άλλες διατάξεις στον κατάλογο \`/Themes/default/LightPortal/layouts ως παραδείγματα.
 
-## CSS customizing
+## Προσαρμογή CSS
 
-You can easily change the look of anything by adding your own styles. Just create a new file called `portal_custom.css` in the `Themes/default/css` directory and put your CSS there.
+Μπορείτε εύκολα να αλλάξετε την εμφάνιση οποιουδήποτε πράγματος προσθέτοντας τα δικά σας στυλ. Απλώς δημιουργήστε ένα νέο αρχείο με το όνομα `portal_custom.css` στον κατάλογο `Themes/default/css` και τοποθετήστε το CSS σας εκεί.
 
 :::tip Συμβουλή
 
-If you have created your own front page template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
+Εάν έχετε δημιουργήσει το δικό σας πρότυπο αρχικής σελίδας και θέλετε να το μοιραστείτε με τον προγραμματιστή και άλλους χρήστες, χρησιμοποιήστε τη διεύθυνση https://codepen.io/pen/ ή άλλους παρόμοιους πόρους.
 
 :::

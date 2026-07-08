@@ -10,7 +10,7 @@
 		<li><a href="{{ $user['href'] }}">{!! $user['avatar']['image'] !!}</a></li>
 	@endunless
 
-	@unless (empty($zodiac))
+	@unless (empty($zodiac) || empty($show_zodiac))
 		<li><i class="fas fa-{{ $zodiac }} fa-2x"></i></li>
 	@endunless
 

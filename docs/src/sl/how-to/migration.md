@@ -1,16 +1,16 @@
 ---
-description: Guide to migrating to Light Portal from other portals
+description: Navodila za migracijo z drugih portalov na Light Portal
 ---
 
-# Migrating to Light Portal
+# Migracija na Light Portal
 
-Moving to a new portal is an important step. This guide will help you migrate content from other SMF portals to Light Portal.
+Prehod na nov portal je pomemben korak. Ta vodnik ti bo pomagal prenesti vsebino iz drugih portalov za SMF v Light Portal.
 
-## Preparation
+## Priprava
 
-### Backup
+### Varnostna kopija
 
-Before starting migration, make a full backup:
+Pred začetkom migracije naredi popolno varnostno kopijo:
 
 - Forum database
 - Forum files (`Themes`, `Sources`)

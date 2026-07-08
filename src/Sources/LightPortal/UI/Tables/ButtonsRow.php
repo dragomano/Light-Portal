@@ -23,7 +23,7 @@ class ButtonsRow extends Row
 			. ".some(el => el.name === 'items[]' && el.checked)";
 	}
 
-	public static function massActions(
+	public static function bulkActions(
 		string $formName = '',
 		string $actionName = '',
 		array $options = ['delete' => 'remove'],
@@ -41,7 +41,7 @@ class ButtonsRow extends Row
 
 		$submit = Str::html('input', [
 			'type'      => 'submit',
-			'name'      => 'mass_actions',
+			'name'      => 'bulk_actions',
 			'value'     => __('quick_mod_go'),
 			'class'     => 'button',
 			':disabled' => '!hasSelection',
@@ -57,7 +57,7 @@ class ButtonsRow extends Row
 		$wrapper = Str::html('span', [
 			'x-data'                        => '{ hasSelection: false }',
 			'x-init'                        => "hasSelection = $selectionExpr",
-			'x-on:lp-mass-selection.window' => "if (\$event.detail?.formName === '$formName') hasSelection = $selectionExpr",
+			'x-on:lp-bulk-selection.window' => "if (\$event.detail?.formName === '$formName') hasSelection = $selectionExpr",
 		])->setHtml($value ?: $select . ' ' . $submit)->toHtml();
 
 		return parent::make($wrapper)->setClass('floatright');

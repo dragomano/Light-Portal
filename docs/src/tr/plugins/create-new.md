@@ -187,11 +187,11 @@ class Calculator extends Block
 </div>
 
 <style>
-// Your CSS
+// CSS Kodlarınız
 </style>
 
 <script>
-// Your JS
+// JS Kodlarınız
 </script>
 ```
 

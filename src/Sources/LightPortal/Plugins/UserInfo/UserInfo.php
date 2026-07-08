@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.26
+ * @version 10.06.26
  */
 
 namespace LightPortal\Plugins\UserInfo;
@@ -17,6 +17,7 @@ use Bugo\Compat\User;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
@@ -32,11 +33,24 @@ class UserInfo extends Block
 		'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius',
 	];
 
-	public function getData(): array
+	public function prepareBlockParams(Event $e): void
 	{
-		User::load(User::$me->id);
+		$e->args->params = [
+			'show_zodiac' => 0,
+		];
+	}
 
-		return User::$loaded[User::$me->id]->format();
+	public function validateBlockParams(Event $e): void
+	{
+		$e->args->params = [
+			'show_zodiac' => FILTER_VALIDATE_BOOLEAN,
+		];
+	}
+
+	public function prepareBlockFields(Event $e): void
+	{
+		CheckboxField::make('show_zodiac', $this->txt['show_zodiac'])
+			->setValue($e->args->options['show_zodiac']);
 	}
 
 	public function prepareContent(Event $e): void
@@ -52,9 +66,17 @@ class UserInfo extends Block
 			->setFallback($this->getData(...));
 
 		echo $this->view(params: [
-			'user'   => $userData,
-			'zodiac' => $this->getZodiac($userData['birth_date']),
+			'user'        => $userData,
+			'zodiac'      => $this->getZodiac($userData['birth_date']),
+			'show_zodiac' => $e->args->parameters['show_zodiac'] ?? 1,
 		]);
+	}
+
+	public function getData(): array
+	{
+		User::load(User::$me->id);
+
+		return User::$loaded[User::$me->id]->format();
 	}
 
 	private function getZodiac(string $birth_date = ''): string

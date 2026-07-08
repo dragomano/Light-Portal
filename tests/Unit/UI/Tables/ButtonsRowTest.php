@@ -23,12 +23,12 @@ describe('ButtonsRow', function () {
         User::$me->permissions = ['light_portal_approve_pages'];
         Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
 
-        $row   = ButtonsRow::massActions(actionName: 'page_actions');
+        $row   = ButtonsRow::bulkActions(actionName: 'page_actions');
         $value = $row->toArray()['value'];
 
         expect($value)
             ->toContain('page_actions')
-            ->toContain('name="mass_actions"')
+            ->toContain('name="bulk_actions"')
             ->toContain('value="Go"');
     });
 
@@ -36,7 +36,7 @@ describe('ButtonsRow', function () {
         User::$me->permissions = ['light_portal_approve_pages'];
         Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
 
-        $row   = ButtonsRow::massActions(options: ['toggle' => 'lp_action_toggle']);
+        $row   = ButtonsRow::bulkActions(options: ['toggle' => 'lp_action_toggle']);
         $value = $row->toArray()['value'];
 
         expect($value)->toContain('toggle')
@@ -47,7 +47,7 @@ describe('ButtonsRow', function () {
         User::$me->permissions = ['light_portal_approve_pages'];
         Config::$modSettings['lp_frontpage_mode'] = FrontPageMode::CHOSEN_PAGES->value;
 
-        $row   = ButtonsRow::massActions(options: [
+        $row   = ButtonsRow::bulkActions(options: [
             'promote_up'   => 'lp_promote_to_fp',
             'promote_down' => 'lp_promote_from_fp',
         ]);

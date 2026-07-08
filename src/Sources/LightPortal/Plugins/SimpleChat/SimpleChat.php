@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 06.11.25
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\SimpleChat;
@@ -22,9 +22,8 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Traits\HasView;
-
-use Ramsey\Collection\Map\NamedParameterMap;
 
 use const LP_ACTION;
 use const LP_BASE_URL;
@@ -144,7 +143,7 @@ class SimpleChat extends Block
 		);
 	}
 
-	private function mergeWithDefaultParams(NamedParameterMap $parameters): NamedParameterMap
+	private function mergeWithDefaultParams(Params $parameters): Params
 	{
 		foreach ($this->defaultParams as $key => $value) {
 			if (! $parameters->containsKey($key)) {

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\TopPages;
@@ -16,6 +16,7 @@ namespace LightPortal\Plugins\TopPages;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\Status;
 use LightPortal\Plugins\Block;
@@ -24,10 +25,9 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,7 +69,7 @@ class TopPages extends Block
 			->setValue($options['show_numbers_only']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$type = $parameters->get('popularity_type', 'comments');
 		$numPages = $parameters->get('num_pages', 10);

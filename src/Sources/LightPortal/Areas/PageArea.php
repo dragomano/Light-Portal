@@ -144,7 +144,7 @@ final class PageArea extends AbstractArea
 		];
 	}
 
-	protected function getMassActionOptions(): array
+	protected function getBulkActionOptions(): array
 	{
 		$options = [];
 
@@ -164,19 +164,19 @@ final class PageArea extends AbstractArea
 		return $options;
 	}
 
-	protected function getMassActionName(): string
+	protected function getBulkActionName(): string
 	{
 		return 'page_actions';
 	}
 
-	protected function getMassActionsRedirect(): string
+	protected function getBulkActionsRedirect(): string
 	{
 		return filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, [
 			'options' => ['default' => 'action=admin;area=lp_pages']
 		]);
 	}
 
-	protected function handleMassAction(string $action, array $items): bool
+	protected function handleBulkAction(string $action, array $items): bool
 	{
 		switch ($action) {
 			case 'delete_forever':
@@ -192,7 +192,7 @@ final class PageArea extends AbstractArea
 				return true;
 
 			default:
-				return parent::handleMassAction($action, $items);
+				return parent::handleBulkAction($action, $items);
 		}
 	}
 
@@ -237,7 +237,7 @@ final class PageArea extends AbstractArea
 			])
 			->addFormData($this->getTableFormData());
 
-		$this->addMassActionsToTable($builder);
+		$this->addBulkActionsToTable($builder);
 
 		return $builder;
 	}

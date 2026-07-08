@@ -58,21 +58,21 @@ You can create categories in **Portal** → **Categories** and tags in **Portal*
 
 ## Bloki
 
-### How do I add a block?
+### Kako dodam blok?
 
-See [Add Block](./blocks/create-new.md).
+Glej [Dodaj blok](./blocks/create-new.md).
 
-### How do I reorder blocks?
+### Kako spremenim vrstni red blokov?
 
-In the block management section, drag blocks to the desired order.
+V razdelku za upravljanje blokov bloke povleci na želeni položaj.
 
-### Can I use JavaScript in blocks?
+### Ali lahko v blokih uporabljam JavaScript?
 
-Yes, use an HTML-type block for this.
+Da, za to uporabi blok tipa HTML
 
-:::warning Warning
+:::warning Opozorilo
 
-Be careful with external scripts — they can slow down page loading or create security vulnerabilities.
+Bodi previden pri uporabi zunanjih skript, saj lahko upočasnijo nalaganje strani ali povzročijo varnostne ranljivosti.
 
 :::
 
@@ -80,23 +80,23 @@ Be careful with external scripts — they can slow down page loading or create s
 
 ## Vtičniki
 
-### What are plugins?
+### Kaj so vtičniki?
 
-Plugins extend Light Portal functionality. They can add new block types, integrate with other modifications, and provide additional features.
+Vtičniki razširjajo funkcionalnost Light Portala. Dodajo lahko nove tipe blokov, omogočajo integracijo z drugimi modifikacijami in nudijo dodatne funkcije.
 
-See [Manage Plugins](./plugins/manage.md) for details.
+Glej [Upravljanje vtičnikov](./plugins/manage.md) za podrobnosti.
 
-### How do I install an additional plugin?
+### Kako namestim nov vtičnik?
 
-See [Installing additional plugins](./plugins/manage#installing-additional-plugins).
+Glej [Namestitev dodatnih vtičnikov](./plugins/manage#installing-additional-plugins).
 
 ---
 
-## Design and Themes
+## Oblikovanje in teme
 
-### How do I change the portal appearance?
+### Kako spremenim videz portala?
 
-Light Portal uses the same theme as the rest of the forum. However, you can change the front page layout.
+Light Portal uporablja isto temo kot preostali del foruma. Lahko pa spremeniš postavitev začetne strani.
 
 1. **CSS**: Create a file `portal_custom.css` in the `Themes/default/css` folder
 2. **Layouts**: Create a custom front page layout in the `Themes/default/portal_layouts` folder

@@ -23,7 +23,7 @@
   const showBottomPagination = $derived(totalOnPage > 5);
   const showReplyFormOnTop = settingState['lp_comment_sorting'] === '1';
 
-  const fetchComments = async (): Promise<ApiResponse> => {
+  const fetchComments = async (): Promise<ApiResponse | null | void> => {
     const data = await api.get($start);
 
     if (!data.total) return null;
@@ -33,7 +33,7 @@
     total = data.total;
     limit = data.limit;
 
-    if ($start > parentsCount) start.set(0);
+    if (Number($start) > parentsCount) start.set(0);
   };
 
   const addComment = async ({ content }: AddCommentType) => {
@@ -81,11 +81,11 @@
     total -= items.length;
 
     if (totalOnPage === 0) {
-      $start !== 0 ? start.set($start - limit) : await fetchComments();
+      Number($start) !== 0 ? start.set(Number($start) - limit) : await fetchComments();
     }
   };
 
-  const setCommentHash = (comment?: number) => {
+  const setCommentHash = (comment = 0) => {
     if (comment) {
       window.location.hash = 'comment=' + comment;
     } else {
@@ -99,11 +99,11 @@
   })
 </script>
 
-{#snippet pagination(totalItems, itemsPerPage)}
+{#snippet pagination(totalItems: number, itemsPerPage: number)}
   <Pagination bind:start={$start} {totalItems} {itemsPerPage} />
 {/snippet}
 
-{#snippet replies(submit)}
+{#snippet replies(submit: (comment: AddCommentType) => void)}
   <ReplyForm {submit} />
 {/snippet}
 
@@ -124,7 +124,7 @@
     {#if comments.length}
       <ul class="comment_list row">
         {#each comments as comment, index (comment.id)}
-          <CommentItem {comment} {index} addComment={addReply} {updateComment} {removeComment} />
+          <CommentItem {comment} {index} addComment={addReply as unknown as (comment: AddCommentType) => void} {updateComment} {removeComment} />
         {/each}
       </ul>
     {/if}

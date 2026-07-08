@@ -135,9 +135,10 @@ it('preloads images from articles using column method', function () {
     $frontPage = makeFrontPage();
     $accessor = new ReflectionAccessor($frontPage);
 
-    $articles = new \Ramsey\Collection\Collection('array');
-    $articles->add(['image' => 'https://example.com/image1.jpg']);
-    $articles->add(['image' => 'https://example.com/image2.jpg']);
+    $articles = [
+        ['image' => 'https://example.com/image1.jpg'],
+        ['image' => 'https://example.com/image2.jpg'],
+    ];
 
     $accessor->callMethod('preLoadImages', [$articles]);
 

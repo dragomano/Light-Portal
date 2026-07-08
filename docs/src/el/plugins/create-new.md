@@ -39,13 +39,13 @@ Available PluginType values:
 - `PluginType::GAMES` - For games
 - `PluginType::ICONS` - For icon libraries
 - `PluginType::IMPEX` - For import/export
-- `PluginType::OTHER` - Default type (can be omitted)
-- `PluginType::PAGE_OPTIONS` - For page options
-- `PluginType::PARSER` - For parsers
-- `PluginType::SEO` - For SEO
-- `PluginType::SSI` - For blocks with SSI functions
+- `PluginType::OTHER` - Προεπιλεγμένος τύπος (μπορεί να παραλειφθεί)
+- `PluginType::PAGE_OPTIONS` - Για επιλογές σελίδας
+- `PluginType::PARSER` - Για αναλυτές
+- `PluginType::SEO` - Για SEO
+- `PluginType::SSI` - Για μπλοκ με συναρτήσεις SSI
 
-For plugins extending `Block`, `Editor`, `GameBlock`, or `SSIBlock` classes, the type is automatically inherited and doesn't need to be specified explicitly.
+Για πρόσθετα που επεκτείνουν τις κλάσεις `Block`, `Editor`, `GameBlock` ή `SSIBlock`, ο τύπος κληρονομείται αυτόματα και δεν χρειάζεται να καθοριστεί ρητά.
 
 :::info Σημειώσεις
 

@@ -10,4 +10,4 @@ Witamy w szybkim rozpoczęciu Light Portal!
 
 ---
 
-Have any questions or suggestions? Feel free to post them on [the support topic](https://www.simplemachines.org/community/index.php?topic=572393.0) or right here — I’ll get back to you as soon as I can.
+Masz jakieś pytania lub sugestie? Możesz je śmiało zamieścić w [wątku pomocy technicznej](https://www.simplemachines.org/community/index.php?topic=572393.0) lub właśnie tutaj — odezwę się do Ciebie tak szybko, jak to możliwe.

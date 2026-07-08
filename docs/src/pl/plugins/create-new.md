@@ -7,9 +7,9 @@ order: 2
 
 Wtyczki to rozszerzenia, które rozszerzają możliwości Light Portal. Aby utworzyć własną wtyczkę, postępuj zgodnie z poniższymi instrukcjami.
 
-## PluginType enum
+## Wypis typów wtyczek
 
-For better type safety and IDE support, you can use the `PluginType` enum instead of string values for the `type` parameter:
+Aby zapewnić większe bezpieczeństwo typów i lepszą obsługę w środowisku IDE, zamiast wartości typu string w parametrze `type` można użyć wyliczenia `PluginType`:
 
 ```php
 use LightPortal\Enums\PluginType;
@@ -28,24 +28,24 @@ use LightPortal\Plugins\PluginAttribute;
 #[PluginAttribute]
 ```
 
-Available PluginType values:
+Dostępne wartości typu wtyczki:
 
-- `PluginType::ARTICLE` - For processing article content
-- `PluginType::BLOCK` - For blocks
-- `PluginType::BLOCK_OPTIONS` - For block options
-- `PluginType::COMMENT` - For comment systems
-- `PluginType::EDITOR` - For editors
-- `PluginType::FRONTPAGE` - For frontpage modifications
-- `PluginType::GAMES` - For games
-- `PluginType::ICONS` - For icon libraries
-- `PluginType::IMPEX` - For import/export
-- `PluginType::OTHER` - Default type (can be omitted)
-- `PluginType::PAGE_OPTIONS` - For page options
-- `PluginType::PARSER` - For parsers
-- `PluginType::SEO` - For SEO
-- `PluginType::SSI` - For blocks with SSI functions
+- `PluginType::ARTICLE` - do przetwarzania treści artykułów
+- `PluginType::BLOCK` – dla bloków
+- `PluginType::BLOCK_OPTIONS` – dla opcji bloku
+- `PluginType::COMMENT` – dla systemów komentarzy
+- `PluginType::EDITOR` – dla edytorów
+- PluginType::FRONTPAGE\` – do wprowadzania zmian na stronie głównej
+- `PluginType::GAMES` – dla gier
+- `PluginType::ICONS` – dla bibliotek ikon
+- `PluginType::IMPEX` – do importu/eksportu
+- `PluginType::OTHER` – typ domyślny (można pominąć)
+- `PluginType::PAGE_OPTIONS` – opcje strony
+- `PluginType::PARSER` – dla narzędzi analizujących
+- `PluginType::SEO` – do pozycjonowania stron
+- `PluginType::SSI` – dla bloków zawierających funkcje SSI
 
-For plugins extending `Block`, `Editor`, `GameBlock`, or `SSIBlock` classes, the type is automatically inherited and doesn't need to be specified explicitly.
+W przypadku wtyczek rozszerzających klasy `Blok`, `Editor`, `Gra` lub `SSIBlock` typ jest automatycznie dziedziczony i nie trzeba go określać jawnie.
 
 :::info Uwaga
 
@@ -73,7 +73,7 @@ Obecnie dostępne są następujące typy wtyczek:
 | `icons`                         |          Wtyczki, które dodają nowe biblioteki ikon do zastępowania elementów interfejsu lub do użytku w nagłówkach bloków |
 | `seo`                           |                                        Wtyczki, które w jakiś sposób wpływają na widoczność forum w sieci. |
 | `other`                         |                                             Wtyczki, które nie są związane z żadną z powyższych kategorii. |
-| `games`                         |                                                 Plugins that typically add a block with some kind of game. |
+| `games`                         |                                                Wtyczki, które zazwyczaj dodają blok zawierający jakąś grę. |
 
 ## Tworzenie katalogu wtyczek
 
@@ -147,9 +147,9 @@ class TopTopics extends SsiBlock
 }
 ```
 
-## Blade templates
+## Szablony Blade
 
-Your plugin can use a template with Blade markup. Na przykład:
+Twoja wtyczka może korzystać z szablonu z językiem znaczników Blade. Na przykład:
 
 ```php:line-numbers {16,20}
 <?php declare(strict_types=1);
@@ -176,22 +176,22 @@ class Calculator extends Block
 }
 ```
 
-**Instructions:**
+**Instrukcje:**
 
-1. Create the `views` subdirectory inside your plugin directory if it doesn't exist.
-2. Create the file `default.blade.php` with the following content:
+1. Jeśli katalog `views` w katalogu wtyczki jeszcze nie istnieje, utwórz go.
+2. Utwórz plik `default.blade.php` o następującej treści:
 
 ```blade
 <div class="some-class-{{ $id }}">
-    {{-- Your blade markup --}}
+    {{-- Twoje oznaczenia. --}}
 </div>
 
 <style>
-// Your CSS
+// Twój CSS
 </style>
 
 <script>
-// Your JS
+// Twój JS
 </script>
 ```
 

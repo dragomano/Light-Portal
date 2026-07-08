@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.11.25
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\Likely;
@@ -16,7 +16,6 @@ namespace LightPortal\Plugins\Likely;
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use LightPortal\Enums\Tab;
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
@@ -75,10 +74,8 @@ class Likely extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js');
-		$builder->css()->add('https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css');
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->scripts()->add('https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js');
+		$e->args->builder->css()->add('https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css');
 	}
 
 	public function prepareContent(Event $e): void

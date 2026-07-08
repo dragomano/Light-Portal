@@ -205,9 +205,9 @@ $txt['lp_block_link_in_title'] = 'Link in the block header';
 $txt['lp_bbc']['title'] = 'Custom BBCode';
 $txt['lp_html']['title'] = 'Custom HTML';
 $txt['lp_php']['title'] = 'Custom PHP';
-$txt['lp_bbc']['description'] = 'Here you can use any allowed BBCode tags as content.';
-$txt['lp_html']['description'] = 'Here you can use any HTML tags as content.';
-$txt['lp_php']['description'] = 'Here you can use any PHP code as content.';
+$txt['lp_bbc']['description'] = 'You can use any allowed BBCode tags in the content.';
+$txt['lp_html']['description'] = 'You can use any HTML in the content.';
+$txt['lp_php']['description'] = 'You can use PHP code in the content.';
 
 // Pages
 $txt['lp_pages'] = 'Pages';

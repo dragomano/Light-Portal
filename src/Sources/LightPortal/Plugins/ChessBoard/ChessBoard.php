@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.26
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\ChessBoard;
@@ -16,7 +16,6 @@ namespace LightPortal\Plugins\ChessBoard;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use LightPortal\Enums\Tab;
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
 use LightPortal\Plugins\PluginAttribute;
@@ -82,23 +81,18 @@ class ChessBoard extends GameBlock
 
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-
-		$builder->scripts()
+		$e->args->builder->scripts()
 			->add('chessboard.js')
 			->add('stockfish/' . self::ENGINE . '.js')
 			->add('stockfish/' . self::ENGINE . '.wasm');
 
-		$builder->css()->add('chessboard.css');
+		$e->args->builder->css()->add('chessboard.css');
 
-		$builder->images()
-			->addMultiple([
-				'images/standard.svg',
-				'images/staunty.svg',
-				'images/markers.svg',
-			]);
-
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->images()->addMultiple([
+			'images/standard.svg',
+			'images/staunty.svg',
+			'images/markers.svg',
+		]);
 	}
 
 	public function prepareBlockParams(Event $e): void
@@ -175,9 +169,9 @@ class ChessBoard extends GameBlock
 			data-api-data="' . htmlspecialchars(json_encode($apiData), ENT_QUOTES) . '"
 		></div>
 		<script type="module">
-		    window.portalApiData = window.portalApiData || {};
-		    window.portalApiData["chess_board_' . $e->args->id . '"] = "' . $e->args->id . '";
-		    usePortalApi("' . $this->buildApiUrl($e) . '", "chess_board/chessboard.js")
+			window.portalApiData = window.portalApiData || {};
+			window.portalApiData["chess_board_' . $e->args->id . '"] = "' . $e->args->id . '";
+			usePortalApi("' . $this->buildApiUrl($e) . '", "chess_board/chessboard.js")
 		</script>';
 	}
 

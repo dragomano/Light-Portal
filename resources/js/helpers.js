@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { contextState, axios } from './states.svelte.ts'
 
 const { pageUrl } = contextState

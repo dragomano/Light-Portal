@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\TinySlider;
@@ -16,7 +16,6 @@ namespace LightPortal\Plugins\TinySlider;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
@@ -25,9 +24,9 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -181,7 +180,7 @@ class TinySlider extends Block
 			->setValue($options['mouse_drag']);
 	}
 
-	public function getData(int $id, NamedParameterMap $parameters): array
+	public function getData(int $id, Params $parameters): array
 	{
 		if (empty($parameters['images'])) {
 			return [];
@@ -195,7 +194,7 @@ class TinySlider extends Block
 			[$link, $title] = [$image['link'], $image['title']];
 
 			$item = Str::html('div', ['class' => 'item']);
-			$img = Str::html('img', [
+			$img  = Str::html('img', [
 				'src'   => $link,
 				'alt'   => $title ?: '',
 				'class' => empty($parameters['lazyload']) ? null : 'tns-lazy-img',
@@ -266,10 +265,8 @@ class TinySlider extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
-		$builder->css()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->scripts()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
+		$e->args->builder->css()->add('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
 	}
 
 	public function prepareContent(Event $e): void
@@ -296,8 +293,8 @@ class TinySlider extends Block
 				edgePadding: ' . (empty($parameters['edge_padding']) ? $this->params['edge_padding'] : $parameters['edge_padding']) . ',
 				fixedWidth: ' . (empty($parameters['fixed_width']) ? $this->params['fixed_width'] : $parameters['fixed_width']) . ',
 				slideBy: ' . (empty($parameters['slide_by']) ? $this->params['slide_by'] : $parameters['slide_by']) . ',
-				controls: ' . (empty($parameters['controls']) ? 'false' : 'true') . ',
-				controlsContainer: "#tiny_slider_controls' . $id . '",
+				controls: ' . (empty($parameters['controls']) ? 'false' : 'true') . (empty($parameters['controls']) ? '' : ',
+				controlsContainer: "#tiny_slider_controls' . $id . '"') . ',
 				nav: ' . (empty($parameters['nav']) ? 'false' : 'true') . ',
 				navPosition: "bottom",' . ($parameters['nav'] && $parameters['nav_as_thumbnails'] ? '
 				navContainer: "#tiny_slider_thumbnails' . $id . '",' : '') . '
@@ -335,9 +332,9 @@ class TinySlider extends Block
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [
-			'title' => 'Tiny Slider 2',
-			'link' => 'https://github.com/ganlanyuan/tiny-slider',
-			'author' => 'William Lin',
+			'title'   => 'Tiny Slider 2',
+			'link'    => 'https://github.com/ganlanyuan/tiny-slider',
+			'author'  => 'William Lin',
 			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://github.com/ganlanyuan/tiny-slider/blob/master/LICENSE'

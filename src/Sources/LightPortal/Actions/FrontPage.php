@@ -31,8 +31,6 @@ use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasRequest;
 use LightPortal\Utils\Traits\HasResponse;
 use LightPortal\Utils\Traits\HasSorting;
-use Ramsey\Collection\Collection;
-use Ramsey\Collection\CollectionInterface;
 
 use function LightPortal\app;
 
@@ -130,11 +128,9 @@ class FrontPage implements ActionInterface
 
 		[$articlesData, $itemsCount] = [$data['articles'], $data['total']];
 
-		$articles = new Collection('array', $articlesData);
-
 		Utils::$context['total_articles'] = $itemsCount;
 
-		$this->preLoadImages($articles);
+		$this->preLoadImages($articlesData);
 
 		Utils::$context['page_index'] = new PageIndex(LP_BASE_URL, $start, $itemsCount, $limit);
 
@@ -150,7 +146,7 @@ class FrontPage implements ActionInterface
 			? LP_BASE_URL . ';start=' . ($start + $limit)
 			: '';
 
-		Utils::$context['lp_frontpage_articles'] = $articles->toArray();
+		Utils::$context['lp_frontpage_articles'] = $articlesData;
 
 		$this->dispatcher->dispatch(PortalHook::frontAssets);
 	}
@@ -238,9 +234,9 @@ class FrontPage implements ActionInterface
 		};
 	}
 
-	private function preLoadImages(CollectionInterface $articles): void
+	private function preLoadImages(array $articles): void
 	{
-		$images = array_filter($articles->column('image'));
+		$images = array_filter(array_column($articles, 'image'));
 
 		foreach ($images as $image) {
 			Utils::$context['html_headers'] .= "\n\t" . Str::html('link', [

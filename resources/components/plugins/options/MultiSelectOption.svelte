@@ -5,10 +5,10 @@
     id?: string;
     name?: string;
     value?: any;
-    option?: object;
+    option?: any[];
   }
 
-  let { id, name, value = $bindable(''), option = {} }: Props = $props();
+  let { id, name, value = $bindable(''), option = [] }: Props = $props();
   let values = $state(value.split(',').filter(Boolean))
 </script>
 

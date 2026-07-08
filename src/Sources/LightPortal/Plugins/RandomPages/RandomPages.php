@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.04.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -29,9 +29,9 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasTranslationJoins;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -47,7 +47,7 @@ class RandomPages extends Block
 			'exclude_categories' => '',
 			'include_categories' => '',
 			'num_pages'          => 10,
-			'show_num_views'   => false,
+			'show_num_views'     => false,
 		];
 	}
 
@@ -89,7 +89,7 @@ class RandomPages extends Block
 			->setValue($options['show_num_views']);
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$excludeCategories = array_filter(array_map(intval(...), explode(',', $parameters['exclude_categories'] ?? '')));
 		$includeCategories = array_filter(array_map(intval(...), explode(',', $parameters['include_categories'] ?? '')));
@@ -221,7 +221,7 @@ class RandomPages extends Block
 					->addHtml($author)
 					->addHtml(', ' . DateTime::relative($page['created_at']));
 
-				$parameters['show_num_views'] && $li
+				($parameters['show_num_views'] ?? false) && $li
 					->addText(' (' . __('lp_views_set', ['views' => $page['num_views']]) . ')');
 
 				$ul->addHtml($li);

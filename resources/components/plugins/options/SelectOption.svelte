@@ -9,7 +9,7 @@
     id?: string;
     name?: string;
     value?: any;
-    option?: object;
+    option?: any[];
     multiple?: boolean;
     clearable?: boolean;
   }
@@ -18,7 +18,7 @@
     id,
     name,
     value = $bindable(''),
-    option = {},
+    option = [],
     multiple = false,
     clearable = false
   }: Props = $props();

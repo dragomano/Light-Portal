@@ -4,7 +4,7 @@ description: Guida completa al sistema di modelli di Light Portal, modellazione 
 
 # Crea layout personalizzati
 
-Light Portal utilizza un sistema di modelli flessibile basato su [BladeOne] (https://github.com/EFTEC/BladeOne), un'implementazione standalone del motore di modellazione Blade di Laravel. Questo sistema ti consente di personalizzare l'aspetto e la struttura del tuo portale attraverso layout, temi e componenti riutilizzabili.
+Light Portal utilizza un sistema di template flessibile basato su [BladeOne](https://github.com/EFTEC/BladeOne), un'implementazione standalone del motore di modellazione Blade di Laravel. Questo sistema ti consente di personalizzare l'aspetto e la struttura del tuo portale attraverso layout, temi e componenti riutilizzabili.
 
 ## Sistema del template
 

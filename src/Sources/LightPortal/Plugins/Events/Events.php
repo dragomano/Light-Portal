@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.25
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\Events;
@@ -22,9 +22,9 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -92,7 +92,7 @@ class Events extends Block
 		$e->args->set['event'] = 'fas fa-calendar-days';
 	}
 
-	public function getData(NamedParameterMap $parameters): array
+	public function getData(Params $parameters): array
 	{
 		$now = time();
 		$todayDate = date('Y-m-d', $now);

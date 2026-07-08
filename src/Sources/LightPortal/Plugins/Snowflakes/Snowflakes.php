@@ -8,13 +8,12 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.10.25
+ * @version 29.06.26
  */
 
 namespace LightPortal\Plugins\Snowflakes;
 
 use Bugo\Compat\Theme;
-use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -67,10 +66,8 @@ class Snowflakes extends Plugin
 
 	public function prepareAssets(Event $e): void
 	{
-		$builder = new AssetBuilder($this);
-		$builder->scripts()->add('https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js');
-		$builder->css()->add('https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css');
-		$builder->appendTo($e->args->assets);
+		$e->args->builder->scripts()->add('https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js');
+		$e->args->builder->css()->add('https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css');
 	}
 
 	public function credits(Event $e): void

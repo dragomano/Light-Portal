@@ -20,7 +20,7 @@ Lokomotywa portalu. Możliwość dostosowania interakcji z modyfikacjami stron t
 
 ## Artykuł
 
-Cards on the front page that display the content set in the settings: forum boards or topics, pages, images, etc.
+Karty na stronie głównej, które wyświetlają treści określone w ustawieniach: fora lub wątki, strony, zdjęcia itp.
 
 ## kategoria
 

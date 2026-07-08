@@ -1,3 +1,5 @@
+declare module '*.css' {}
+
 declare module 'cm-chessboard/src/Chessboard' {
   export const PIECE: {
     wp: string

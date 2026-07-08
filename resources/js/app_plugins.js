@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { mount } from 'svelte'
 import './i18n.js'
 import PluginList from '../components/plugins/PluginList.svelte'

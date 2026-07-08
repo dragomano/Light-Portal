@@ -140,8 +140,8 @@
 
     {#if replyMode}
       <ReplyForm parent={{
-        id: parent.dataset.id,
-        author: parent.dataset.author
+        id: parent.dataset.id ?? '',
+        author: parent.dataset.author ?? ''
       }} {submit}>
         <Button class="active" onclick={() => replyMode = false}>
           {$_('modify_cancel')}

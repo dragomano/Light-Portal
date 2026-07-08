@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 28.06.26
  */
 
 namespace LightPortal\Plugins\Swiper;
@@ -24,9 +24,9 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Fields\RangeField;
 use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\Params;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
-use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -117,7 +117,7 @@ class Swiper extends Block
 			->setValue($options['show_scrollbar']);
 	}
 
-	public function getData(int|string $id, NamedParameterMap $parameters): array
+	public function getData(int|string $id, Params $parameters): array
 	{
 		if (empty($parameters['images'])) {
 			return [];

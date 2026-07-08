@@ -43,7 +43,7 @@
 				$post['preview'] = '<a href="' . $post['href'] . '">' . $post['preview'] . '</a>';
 			@endphp
 			<div class="windowbg">
-				<div class="smalltext">{{ $post['time'] }}</div>
+				<div class="smalltext">{!! $post['time'] !!}</div>
 				{!! $post[$parameters['link_type']] !!}
 
 				@if (! empty($parameters['show_body']))

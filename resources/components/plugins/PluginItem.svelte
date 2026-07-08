@@ -34,7 +34,7 @@
   const specialDesc = $derived(
     pluginState[key][item.name]?.languages[contextState.lang ?? 'english']
   );
-  const showToggle = $derived(!item.special && Object.keys(item.types)[0] !== $_('not_applicable'));
+  const showToggle = $derived(!item.special && Object.keys(item.types ?? {})[0] !== $_('not_applicable'));
 
   const toggle = async () => {
     const response = await axios.post(appState.baseUrl + '?action=admin;area=lp_plugins;toggle', {
@@ -53,7 +53,7 @@
     <div class="floatleft">
       <h4>
         {item.name}
-        {#each Object.entries(item.types) as [type, label]}
+        {#each Object.entries(item.types ?? {}) as [type, label]}
           <strong class="new_posts {label}" data-key={type}>{type}</strong>
         {/each}
       </h4>
@@ -61,11 +61,11 @@
     </div>
 
     <div class="floatright">
-      {#if item.settings.length}
+      {#if item.settings?.length}
         <Button
           tag="span"
           icon="gear"
-          class={show && 'fa-spin'}
+          class={show ? 'fa-spin' : undefined}
           data-id={settingsId}
           onclick={() => (show = !show)}
         />
@@ -90,7 +90,7 @@
       {/if}
     </div>
 
-    {#if show && item.settings.length}
+    {#if show && item.settings?.length}
       <br class="clear" />
       <PluginOptionList {item} />
     {/if}
