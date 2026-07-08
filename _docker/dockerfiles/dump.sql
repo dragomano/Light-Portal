@@ -775,7 +775,7 @@ CREATE TABLE `smf_log_actions` (
 
 INSERT INTO `smf_log_actions` (`id_action`, `id_log`, `log_time`, `id_member`, `ip`, `action`, `id_board`, `id_topic`, `id_msg`, `extra`) VALUES
 (1,	3,	1756827329,	1,	UNHEX('7F000001'),	'install',	0,	0,	0,	'{\"version\":\"SMF 2.1.7\"}'),
-(2,	3,	1756827506,	1,	UNHEX('7F000001'),	'install_package',	0,	0,	0,	'{\"package\":\"Light Portal\",\"version\":\"3.0\"}');
+(2,	3,	1756827506,	1,	UNHEX('7F000001'),	'install_package',	0,	0,	0,	'{\"package\":\"Light Portal\",\"version\":\"3.0.1\"}');
 
 DROP TABLE IF EXISTS `smf_log_activity`;
 CREATE TABLE `smf_log_activity` (
@@ -959,7 +959,7 @@ CREATE TABLE `smf_log_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 INSERT INTO `smf_log_packages` (`id_install`, `filename`, `package_id`, `name`, `version`, `id_member_installed`, `member_installed`, `time_installed`, `id_member_removed`, `member_removed`, `time_removed`, `install_state`, `failed_steps`, `themes_installed`, `db_changes`, `credits`, `sha256_hash`) VALUES
-(1,	'light_portal.tgz',	'Bugo:LightPortal',	'Light Portal',	'3.0',	1,	'Test',	1764899268,	0,	'0',	0,	1,	'[]',	'1',	'',	'',	'54ae9558b89b8524b89bd4401cca283d4c37c4c26a1958fda14badb564521d2c');
+(1,	'light_portal.tgz',	'Bugo:LightPortal',	'Light Portal',	'3.0.1',	1,	'Test',	1764899268,	0,	'0',	0,	1,	'[]',	'1',	'',	'',	'aae2b9d7d3c2e088b01a23283fa3489d0d47a3b001363c5f90a45de14a2334d7');
 
 DROP TABLE IF EXISTS `smf_log_polls`;
 CREATE TABLE `smf_log_polls` (
