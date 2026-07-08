@@ -97,10 +97,10 @@ class RoboFile extends Tasks
 			$type = $io->choice('What is the package type?', $this->packageTypes, 0);
 		}
 
-		$yes = $io->confirm('Do you want to change version?');
+		$yes = $io->confirm('Do you want to change version?', false);
 
 		if ($yes) {
-			$this->version = $io->ask('What is the package version?');
+			$this->version = $io->ask('What is the package version?', $this->version);
 
 			$this->changeVersion($this->version);
 		}
@@ -188,7 +188,7 @@ class RoboFile extends Tasks
 	{
 		$xml = simplexml_load_file('src/package-info.xml');
 
-		return (string) $xml->version;
+		return (string) ($xml->version ?? '');
 	}
 
 	private function getNormalizedVersion(): string
@@ -206,6 +206,26 @@ class RoboFile extends Tasks
 		$this->taskReplaceInFile('src/Sources/LightPortal/Hooks/Init.php')
 			->regex("~'LP_VERSION',\s*'(\d+\.\d+(?:.\d+)?)'~")
 			->to("'LP_VERSION', '$version'")
+			->run();
+
+		$this->taskReplaceInFile('src/Sources/LightPortal/Hooks/Init.php')
+			->regex('~releases/download/v[\d.]+/addons\.json~')
+			->to("releases/download/v{$version}/addons.json")
+			->run();
+
+		$this->taskReplaceInFile('_docker/dockerfiles/php/Dockerfile')
+			->regex('~releases/download/v[\d.]+/light_portal_[\d.]+_dev_edition\.tgz~')
+			->to("releases/download/v{$version}/light_portal_{$version}_dev_edition.tgz")
+			->run();
+
+		$this->taskReplaceInFile('_docker/dockerfiles/dump.sql')
+			->regex('~(Light Portal\\\\",\\\\"version\\\\":\\\\")[\d.]+~')
+			->to('Light Portal\\",\\"version\\":\\"' . $version)
+			->run();
+
+		$this->taskReplaceInFile('_docker/dockerfiles/dump.sql')
+			->regex("~('Light Portal',\s*')([\d.]+)(')~")
+			->to("'Light Portal',\t'{$version}'")
 			->run();
 	}
 
