@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      '@github/markdown-toolbar-element':
-        specifier: ^2.2.3
-        version: 2.2.3
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.2.0
         version: 7.2.0(svelte@5.56.4)(vite@8.1.3(esbuild@0.28.1)(sass@1.101.0))
@@ -449,9 +446,6 @@ packages:
     resolution: {integrity: sha512-QOxKHgsMT91myyQagP2v20YYAei1ByZuc3qcaYxbHx4AwOeyVrybDIuRFwG9YDv6OraC86jYnU4Ixd37ddC/0A==}
     peerDependencies:
       vue: '>=3.2.0'
-
-  '@github/markdown-toolbar-element@2.2.3':
-    resolution: {integrity: sha512-AlquKGee+IWiAMYVB0xyHFZRMnu4n3X4HTvJHu79GiVJ1ojTukCWyxMlF5NMsecoLcBKsuBhx3QPv2vkE/zQ0A==}
 
   '@iconify-json/simple-icons@1.2.89':
     resolution: {integrity: sha512-hRaCY5s2G5oWAIhc4LCGYn6g6RrwLL4zhoLOT+KUO3joVCxVlZKA+839bv/47Nbe9/ZD4UA6dznZ4XPYcI53wA==}
@@ -2061,8 +2055,6 @@ snapshots:
     dependencies:
       giscus: 1.6.0
       vue: 3.5.39(typescript@6.0.3)
-
-  '@github/markdown-toolbar-element@2.2.3': {}
 
   '@iconify-json/simple-icons@1.2.89':
     dependencies:

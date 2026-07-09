@@ -178,15 +178,6 @@ class Credits extends AbstractHook
 				]
 			],
 			[
-				'title' => '&lt;markdown-toolbar&gt; element',
-				'link' => 'https://github.com/github/markdown-toolbar-element',
-				'author' => 'GitHub, Inc.',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/github/markdown-toolbar-element/blob/main/LICENSE'
-				]
-			],
-			[
 				'title' => 'BladeOne Blade Template Engine',
 				'link' => 'https://github.com/EFTEC/BladeOne',
 				'author' => 'Jorge Patricio Castro Castillo',
