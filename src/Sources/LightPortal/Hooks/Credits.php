@@ -133,15 +133,15 @@ class Credits extends AbstractHook
 			],
 			[
 				'name' => 'Vite',
-				'link' => 'https://vitejs.dev'
+				'link' => 'https://vite.dev'
 			],
 			[
-				'name' => 'PHPStorm',
-				'link' => 'https://www.jetbrains.com/phpstorm/'
+				'name' => 'Zed',
+				'link' => 'https://zed.dev'
 			],
 			[
 				'name' => 'Robo',
-				'link' => 'https://robo.li/'
+				'link' => 'https://github.com/consolidation/robo'
 			],
 			[
 				'name' => 'Pest',
