@@ -1,6 +1,6 @@
 .article_flarum_view {
   .title_bar {
-    margin-bottom: 1em;
+    margin-block-end: 1em;
   }
 
   .header_img {
@@ -10,12 +10,14 @@
 
   .header_area {
     display: block;
-    margin-left: 20px;
-    width: 70%;
+    margin-inline-start: 20px;
+    inline-size: 70%;
     text-decoration: none;
 
     h3 {
-      margin: 0 0 3px;
+      margin-block-start: 0;
+      margin-inline: 0;
+      margin-block-end: 3px;
       line-height: 1.3;
       font-weight: 400;
       font-size: 16px;

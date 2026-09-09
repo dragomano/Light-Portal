@@ -7,10 +7,11 @@
 	background-color: #222222;
 	color: #fff;
 	font-size: 1.714285714em;
-	padding: 0.5em 0.75em;
-	text-align: right;
+	padding-block: 0.5em;
+	padding-inline: 0.75em;
+	text-align: end;
 	overflow-x: auto;
-	margin-bottom: 1px;
+	margin-block-end: 1px;
 }
 
 .calculator__keys {
@@ -26,14 +27,14 @@
 	> *:active::before,
 	> .is-depressed::before {
 		background-color: rgba(0, 0, 0, 0.2);
-		bottom: 0;
+		inset-block-end: 0;
 		box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.5) inset;
 		content: "";
-		left: 0;
+		inset-inline-start: 0;
 		opacity: 0.3;
 		position: absolute;
-		right: 0;
-		top: 0;
+		inset-inline-end: 0;
+		inset-block-start: 0;
 		z-index: 1;
 	}
 }

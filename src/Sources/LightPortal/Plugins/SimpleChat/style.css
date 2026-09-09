@@ -1,25 +1,25 @@
 .block_simple_chat {
 	.moderation_notes {
-		border-top: 1px solid #ccc;
-		height: 100%;
-		margin-top: 10px;
-		margin-bottom: 10px;
-		padding-right: 1em;
+		border-block-start: 1px solid #ccc;
+		block-size: 100%;
+		margin-block-start: 10px;
+		margin-block-end: 10px;
+		padding-inline-end: 1em;
 	}
 
 	.avatar {
-		width: 20px;
+		inline-size: 20px;
 		vertical-align: bottom;
 	}
 
 	.main_icons.delete {
 		cursor: pointer;
-		margin-top: -1px;
-		margin-left: 10px;
+		margin-block-start: -1px;
+		margin-inline-start: 10px;
 	}
 
 	.full_width {
 		float: none;
-		width: 100%;
+		inline-size: 100%;
 	}
 }

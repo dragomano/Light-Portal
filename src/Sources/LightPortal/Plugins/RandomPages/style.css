@@ -1,9 +1,13 @@
 .random_pages {
 	list-style: none;
-	padding-left: 0;
+	padding-inline-start: 0;
 
 	li {
-		margin: 4px 0 0 0;
-		padding: 6px 12px;
+		margin-block-start: 4px;
+		margin-inline-end: 0;
+		margin-block-end: 0;
+		margin-inline-start: 0;
+		padding-block: 6px;
+		padding-inline: 12px;
 	}
 }

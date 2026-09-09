@@ -3,9 +3,12 @@
 
 .checkbox {
   @include functions.valign(top);
-  margin: 0 3px 0 0;
-  width: 17px;
-  height: 17px;
+  margin-block-start: 0;
+  margin-inline-end: 3px;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  inline-size: 17px;
+  block-size: 17px;
 
   position: absolute;
   opacity: 0;
@@ -14,15 +17,18 @@
     @include functions.pointer;
 
     position: relative;
-    padding: 0 0 0 60px;
+    padding-block-start: 0;
+    padding-inline-end: 0;
+    padding-block-end: 0;
+    padding-inline-start: 60px;
 
     &::before {
       content: '';
       position: absolute;
-      top: -4px;
-      left: 0;
-      width: 50px;
-      height: 26px;
+      inset-block-start: -4px;
+      inset-inline-start: 0;
+      inline-size: 50px;
+      block-size: 26px;
       @include functions.bRadius(13px);
       background: #cdd1da;
       box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.2);
@@ -31,10 +37,10 @@
     &::after {
       content: '';
       position: absolute;
-      top: -2px;
-      left: 2px;
-      width: 22px;
-      height: 22px;
+      inset-block-start: -2px;
+      inset-inline-start: 2px;
+      inline-size: 22px;
+      block-size: 22px;
       @include functions.bRadius(10px);
       background: variables.$color-white;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -48,7 +54,7 @@
     }
 
     &::after {
-      left: 26px;
+      inset-inline-start: 26px;
     }
   }
 }

@@ -4,18 +4,18 @@
   .card {
     border: 0;
     box-shadow: 0 0.25rem 1rem rgba(48, 55, 66, 0.15);
-    height: 100%;
+    block-size: 100%;
     @include functions.bRadius(0.1rem);
     display: flex;
     flex-direction: column;
 
     .card-image {
-      padding-top: 0.8rem;
+      padding-block-start: 0.8rem;
 
       img {
         display: block;
-        height: auto;
-        width: 100%;
+        block-size: auto;
+        inline-size: 100%;
         object-fit: cover;
       }
     }

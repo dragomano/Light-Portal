@@ -4,8 +4,8 @@
 
     .roundframe {
       position: absolute;
-      top: 0;
-      right: 0;
+      inset-block-start: 0;
+      inset-inline-end: 0;
       z-index: 30;
 
       ul {
@@ -15,8 +15,8 @@
         z-index: 10;
 
         a {
-          width: 100%;
-          margin-bottom: 2px;
+          inline-size: 100%;
+          margin-block-end: 2px;
         }
       }
     }

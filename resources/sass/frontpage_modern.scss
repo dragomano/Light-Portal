@@ -12,7 +12,7 @@ $category_footer_color: #999;
   flex-direction: column;
 
   .mb-4 {
-    margin-bottom: 20px;
+    margin-block-end: 20px;
   }
 }
 
@@ -32,7 +32,7 @@ $category_footer_color: #999;
   display: flex;
   flex: 1;
   flex-direction: column;
-  min-height: 220px;
+  min-block-size: 220px;
   padding: 15px;
   @include functions.bRadius(8px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -49,19 +49,19 @@ $category_footer_color: #999;
 .category-header {
   display: flex;
   align-items: flex-start;
-  margin-bottom: auto;
+  margin-block-end: auto;
   flex: 1;
 }
 
 .category-icon {
   img {
-    width: 40px;
-    height: 40px;
+    inline-size: 40px;
+    block-size: 40px;
     @include functions.bRadius(50%);
-    margin-right: 15px;
+    margin-inline-end: 15px;
   }
 
-  margin-right: 15px;
+  margin-inline-end: 15px;
   flex-shrink: 0;
 }
 
@@ -71,11 +71,12 @@ $category_footer_color: #999;
   }
 
   img {
-    width: 100%;
-    max-height: 150px;
+    inline-size: 100%;
+    max-block-size: 150px;
     object-fit: contain;
     @include functions.bRadius;
-    margin: 8px 0;
+    margin-block: 8px;
+    margin-inline: 0;
     transition: opacity 0.2s;
     background: #f9f9f9;
 
@@ -86,8 +87,8 @@ $category_footer_color: #999;
 }
 
 .category-default-icon {
-  width: 40px;
-  height: 40px;
+  inline-size: 40px;
+  block-size: 40px;
   @include functions.bRadius;
   display: flex;
   align-items: center;
@@ -103,7 +104,7 @@ $category_footer_color: #999;
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-right: 15px;
+  margin-inline-end: 15px;
 
   h3 {
     a {
@@ -112,7 +113,7 @@ $category_footer_color: #999;
       text-decoration: none;
       color: $title_color;
       line-height: 1.3;
-      margin-bottom: 5px;
+      margin-block-end: 5px;
 
       &:hover {
         color: $title_hover_color;
@@ -137,17 +138,18 @@ $category_footer_color: #999;
 .category-stats {
   display: flex;
   justify-content: flex-start;
-  margin: 10px 0;
+  margin-block: 10px;
+  margin-inline: 0;
   font-size: 12px;
   color: $category_stats_color;
 
   .stat {
     display: flex;
     align-items: center;
-    margin-right: 15px;
+    margin-inline-end: 15px;
 
     i {
-      margin-right: 4px;
+      margin-inline-end: 4px;
       font-size: 14px;
     }
   }
@@ -158,19 +160,20 @@ $category_footer_color: #999;
   align-items: center;
   font-size: 11px;
   color: $category_footer_color;
-  margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  margin-block-start: auto;
+  padding-block-start: 10px;
+  border-block-start: 1px solid #f0f0f0;
   position: relative;
 
   .new-badge {
     background: #e74c3c;
     color: variables.$color-white;
-    padding: 1px 4px;
+    padding-block: 1px;
+    padding-inline: 4px;
     @include functions.bRadius(2px);
     font-size: 8px;
     font-weight: bold;
-    margin-right: 5px;
+    margin-inline-end: 5px;
     text-transform: uppercase;
   }
 
@@ -182,7 +185,7 @@ $category_footer_color: #999;
   }
 
   .date {
-    margin-left: auto;
+    margin-inline-start: auto;
     font-size: 11px;
     color: $category_footer_color;
   }
