@@ -197,7 +197,9 @@ class AdminAreas extends AbstractHook
 
 		$this->dispatcher->dispatch(PortalHook::extendAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
 
-		if (! User::$me->allowedTo('admin_forum') && $this->request()->isNot('lp_pages', 'area')) {
+		if (str_starts_with((string) $this->request()->get('area'), 'lp_')
+			&& $this->request()->isNot('lp_pages', 'area')
+			&& ! User::$me->allowedTo('admin_forum')) {
 			ErrorHandler::fatalLang('no_access', false);
 		}
 	}
