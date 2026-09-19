@@ -338,27 +338,41 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 	public function getRelatedPages(array $page): array
 	{
-		$titleWords = explode(' ', $page['title']);
-		$slugWords  = explode('-', (string) $page['slug']);
+		$normalizeWords = static function (array $words): array {
+			$words = array_map(
+				static fn(string $word): string => (string) preg_replace(
+					'/^[\p{P}\p{S}\x{5C}]+|[\p{P}\p{S}\x{5C}]+$/u',
+					'',
+					$word
+				),
+				$words
+			);
+
+			return array_values(array_filter($words, static fn(string $word): bool => $word !== ''));
+		};
+
+		$titleWords = $normalizeWords(preg_split('/\s+/u', trim((string) $page['title']), -1, PREG_SPLIT_NO_EMPTY));
+		$slugWords  = $normalizeWords(explode('-', (string) $page['slug']));
 		$titleCount = count($titleWords);
 		$slugCount  = count($slugWords);
 
 		$searchConditions = [];
+		$searchParams     = [];
 
 		foreach ($titleWords as $key => $word) {
 			$searchConditions[] = sprintf(
-				"CASE WHEN LOWER(t.title) LIKE LOWER('%%%s%%') THEN %d ELSE 0 END",
-				$word,
+				'CASE WHEN LOWER(t.title) LIKE LOWER(?) THEN %d ELSE 0 END',
 				($titleCount - $key) * 2
 			);
+			$searchParams[] = '%' . $word . '%';
 		}
 
 		foreach ($slugWords as $key => $word) {
 			$searchConditions[] = sprintf(
-				"CASE WHEN LOWER(p.slug) LIKE LOWER('%%%s%%') THEN %d ELSE 0 END",
-				$word,
+				'CASE WHEN LOWER(p.slug) LIKE LOWER(?) THEN %d ELSE 0 END',
 				$slugCount - $key
 			);
+			$searchParams[] = '%' . $word . '%';
 		}
 
 		$searchFormula = implode(' + ', $searchConditions);
@@ -369,7 +383,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				'page_id',
 				'slug',
 				'type',
-				'related' => new Expression($searchFormula),
+				'related' => new Expression($searchFormula, $searchParams),
 			])
 			->where([
 				'p.status'          => $page['status'],
@@ -382,7 +396,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$select->where->in('p.permissions', Permission::all());
 		$select
-			->where(new Expression($searchFormula . ' > 0'))
+			->where(new Expression($searchFormula . ' > 0', $searchParams))
 			->where($this->getTranslationFilter())
 			->order('related DESC')
 			->limit(4);
