@@ -217,6 +217,29 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		}
 	}
 
+	public function canRemove(int $item, int $pageId, int $userId): bool
+	{
+		$select = $this->sql->select('lp_comments')
+			->columns(['author_id'])
+			->where([
+				'page_id = ?' => $pageId,
+				'id = ?'      => $item,
+			]);
+		$comment = $this->sql->execute($select)->current();
+
+		if (empty($comment) || (int) $comment['author_id'] !== $userId)
+			return false;
+
+		$select = $this->sql->select('lp_comments')
+			->columns(['id'])
+			->where([
+				'page_id = ?'   => $pageId,
+				'parent_id = ?' => $item,
+			]);
+
+		return $this->sql->execute($select)->current() === false;
+	}
+
 	public function remove(mixed $items, bool $withResponse = false): void
 	{
 		$items = (array) $items;
