@@ -1,6 +1,6 @@
 class PortalEntity {
   constructor() {
-    this.workUrl = smf_scripturl + '?action=admin';
+    this.workUrl = smf_scripturl + '?action=admin;' + smf_session_var + '=' + smf_session_id;
   }
 
   toggleSpin(target) {
@@ -53,7 +53,7 @@ class PortalEntity {
 class Block extends PortalEntity {
   constructor() {
     super();
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions';
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
   async clone(target) {
@@ -121,7 +121,7 @@ class Block extends PortalEntity {
 class Page extends PortalEntity {
   constructor() {
     super();
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions';
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
   add(target) {
@@ -163,7 +163,7 @@ class Page extends PortalEntity {
 class Category extends PortalEntity {
   constructor() {
     super();
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions';
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
   async updatePriority(e) {
@@ -188,7 +188,7 @@ class Category extends PortalEntity {
 class Tag extends PortalEntity {
   constructor() {
     super();
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_tags;actions';
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_tags;actions;' + smf_session_var + '=' + smf_session_id;
   }
 }
 
