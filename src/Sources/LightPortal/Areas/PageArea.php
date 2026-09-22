@@ -437,6 +437,10 @@ final class PageArea extends AbstractArea
 
 	private function checkUser(): void
 	{
+		if ($this->request()->has('actions') && $this->request()->method() === 'POST') {
+			return;
+		}
+
 		if (! User::$me->allowedTo('light_portal_manage_pages_any') && ! $this->userId) {
 			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$me->id);
 		}
