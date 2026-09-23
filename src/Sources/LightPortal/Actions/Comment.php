@@ -244,11 +244,15 @@ final class Comment implements ActionInterface
 			$this->response()->exit($result);
 		}
 
-		$this->repository->update([
+		$updated = $this->repository->update([
 			'message' => Utils::shorten($message, 65531),
 			'id'      => $item,
 			'user'    => Utils::$context['user']['id'],
 		]);
+
+		if (! $updated) {
+			$this->response()->exit($result);
+		}
 
 		$result = [
 			'success' => true,

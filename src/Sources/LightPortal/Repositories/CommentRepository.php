@@ -199,8 +199,18 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		return $item;
 	}
 
-	public function update(array $data): void
+	public function update(array $data): bool
 	{
+		$createdAt = $this->sql->select('lp_comments')
+			->columns(['created_at'])
+			->where(['id = ?' => $data['id']])
+			->execute()
+			->current()['created_at'] ?? null;
+
+		if ($createdAt === null || ! $this->isCanEdit((int) $createdAt)) {
+			return false;
+		}
+
 		$update = $this->sql->update('lp_comments')
 			->set(['updated_at' => time()])
 			->where([
@@ -215,6 +225,8 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 			$this->saveTranslations($data, true);
 		}
+
+		return true;
 	}
 
 	public function canRemove(int $item, int $pageId, int $userId): bool
