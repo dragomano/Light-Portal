@@ -71,6 +71,8 @@ class Actions
 		if (empty(User::$me->is_admin) || $this->request()->hasNot('t'))
 			return;
 
+		User::$me->checkSession('request');
+
 		$topic = $this->request()->get('t');
 
 		$homeTopics = Setting::getFrontpageTopics();

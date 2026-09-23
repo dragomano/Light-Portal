@@ -29,12 +29,15 @@
 				&& ! empty($modSettings['lp_frontpage_mode'])
 				&& $modSettings['lp_frontpage_mode'] === FrontPageMode::CHOSEN_PAGES->value
 			)
-				<a class="button floatright" href="{{ $context['canonical_url'] }};promote">
-					@icon('home')
-					<span class="hidden-xs hidden-sm">
-                        {{ $txt['lp_' . (in_array($context['lp_page']['id'], Setting::getFrontpagePages()) ? 'remove_from' : 'promote_to') . '_fp'] }}
-                    </span>
-				</a>
+				<form class="floatright" method="post" action="{{ $context['canonical_url'] }};promote">
+					<input type="hidden" name="{{ $context['session_var'] }}" value="{{ $context['session_id'] }}">
+					<button class="button" type="submit">
+						@icon('home')
+						<span class="hidden-xs hidden-sm">
+							{{ $txt['lp_' . (in_array($context['lp_page']['id'], Setting::getFrontpagePages()) ? 'remove_from' : 'promote_to') . '_fp'] }}
+						</span>
+					</button>
+				</form>
 			@endif
 		</div>
 	</aside>
