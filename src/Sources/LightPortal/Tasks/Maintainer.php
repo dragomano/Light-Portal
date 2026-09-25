@@ -47,6 +47,21 @@ final class Maintainer extends BackgroundTask
 		$this->updateLastCommentIds();
 		$this->optimizeTables();
 
+		$this->scheduleNextRun();
+
+		return true;
+	}
+
+	private function scheduleNextRun(): void
+	{
+		$delete = $this->sql->delete('background_tasks')
+			->where(function (Where $where) {
+				$where->equalTo('task_class', '\\' . self::class)
+					->and->greaterThan('claimed_time', time());
+			});
+
+		$this->sql->execute($delete);
+
 		$insert = $this->sql->insert('background_tasks')
 			->values([
 				'task_file'    => '$sourcedir/LightPortal/Tasks/Maintainer.php',
@@ -56,8 +71,6 @@ final class Maintainer extends BackgroundTask
 			]);
 
 		$this->sql->execute($insert);
-
-		return true;
 	}
 
 	private function removeRedundantValues(): void
