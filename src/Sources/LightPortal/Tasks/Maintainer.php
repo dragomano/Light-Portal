@@ -12,6 +12,7 @@
 
 namespace LightPortal\Tasks;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Tasks\BackgroundTask;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
@@ -62,6 +63,7 @@ final class Maintainer extends BackgroundTask
 	private function removeRedundantValues(): void
 	{
 		$deleteEmptyParams = $this->sql->delete('lp_params')->where(['value = ?' => '']);
+
 		$this->sql->execute($deleteEmptyParams);
 
 		$select = $this->sql->select()
@@ -164,7 +166,17 @@ final class Maintainer extends BackgroundTask
 		];
 
 		foreach ($tables as $table) {
-			$sql = sprintf('OPTIMIZE TABLE `%s%s`', $this->sql->getPrefix(), $table);
+			$tableWithPrefix = $this->sql->getPrefix() . $table;
+
+			$sql = match (Config::$db_type) {
+				'postgresql'      => sprintf('VACUUM (ANALYZE) %s', $tableWithPrefix),
+				'mysql', 'mysqli' => sprintf('OPTIMIZE TABLE `%s`', $tableWithPrefix),
+				default           => '',
+			};
+
+			if ($sql === '')
+				continue;
+
 			$this->sql->getAdapter()->query($sql, Adapter::QUERY_MODE_EXECUTE);
 		}
 	}
