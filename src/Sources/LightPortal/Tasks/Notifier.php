@@ -83,11 +83,15 @@ final class Notifier extends BackgroundTask
 
 		$notifies = [];
 		foreach ($prefs as $member => $prefOption) {
-			foreach ($alertBits as $type => $bitvalue) {
-					foreach (AlertAction::values() as $action) {
-					if (isset($prefOption[$action]) && ($prefOption[$action] & $bitvalue)) {
-						$notifies[$type][] = $member;
-					}
+			$combinedMask = array_reduce(
+				AlertAction::values(),
+				static fn(int $mask, $action): int => $mask | ($prefOption[$action] ?? 0),
+				0
+			);
+
+			foreach ($alertBits as $type => $bitValue) {
+				if ($combinedMask & $bitValue) {
+					$notifies[$type][] = $member;
 				}
 			}
 		}
