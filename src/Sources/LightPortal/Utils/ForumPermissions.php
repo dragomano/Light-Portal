@@ -24,11 +24,16 @@ class ForumPermissions
 	public static function canSeeBoard(string $alias = 't'): Expression
 	{
 		$prefix = Config::$db_prefix;
+		$groups = array_values(array_map('intval', User::$me->groups));
+
+		$groupPlaceholders = $groups === []
+			? 'NULL'
+			: implode(', ', array_fill(0, count($groups), '?'));
 
 		return new Expression(
 			"EXISTS (SELECT bpv.id_board FROM {$prefix}board_permissions_view AS bpv " .
-			"WHERE bpv.id_group IN (?) AND bpv.deny = 0 AND bpv.id_board = $alias.id_board)",
-			[implode(',', User::$me->groups)]
+			"WHERE bpv.id_group IN ($groupPlaceholders) AND bpv.deny = 0 AND bpv.id_board = $alias.id_board)",
+			$groups
 		);
 	}
 
