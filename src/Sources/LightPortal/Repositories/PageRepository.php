@@ -641,6 +641,12 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 	private function saveTags(array $data, bool $replace = false): void
 	{
+		if ($replace) {
+			$delete = $this->sql->delete('lp_page_tag');
+			$delete->where->equalTo('page_id', $data['id']);
+			$this->sql->execute($delete);
+		}
+
 		$rows = [];
 		foreach ($data['tags'] as $tag) {
 			$rows[] = [
@@ -652,9 +658,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if ($rows === [])
 			return;
 
-		$sqlObject = $replace
-			? $this->sql->replace('lp_page_tag')->setConflictKeys(['page_id', 'tag_id'])->batch($rows)
-			: $this->sql->insert('lp_page_tag')->batch($rows);
+		$sqlObject = $this->sql->insert('lp_page_tag')->batch($rows);
 
 		$this->sql->execute($sqlObject);
 	}
