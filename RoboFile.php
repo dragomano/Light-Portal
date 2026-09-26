@@ -213,6 +213,11 @@ class RoboFile extends Tasks
 			->to("releases/download/v{$version}/addons.json")
 			->run();
 
+		$this->taskReplaceInFile('src/Sources/LightPortal/addons.json')
+			->regex('~(?<=\{"version":")[\d.]+(?=",)~')
+			->to($version)
+			->run();
+
 		$this->taskReplaceInFile('_docker/dockerfiles/php/Dockerfile')
 			->regex('~releases/download/v[\d.]+/light_portal_[\d.]+_dev_edition\.tgz~')
 			->to("releases/download/v{$version}/light_portal_{$version}_dev_edition.tgz")
