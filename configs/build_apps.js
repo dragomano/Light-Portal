@@ -78,14 +78,14 @@ async function buildChessBoard() {
             },
           },
           {
-            src: 'node_modules/stockfish/bin/stockfish-18-lite-single.js',
+            src: 'node_modules/stockfish/bin/stockfish-19-lite-single.js',
             dest: resolve(dist, 'ChessBoard/stockfish'),
             rename: {
               stripBase: 3,
             },
           },
           {
-            src: 'node_modules/stockfish/bin/stockfish-18-lite-single.wasm',
+            src: 'node_modules/stockfish/bin/stockfish-19-lite-single.wasm',
             dest: resolve(dist, 'ChessBoard/stockfish'),
             rename: {
               stripBase: 3,
