@@ -201,11 +201,11 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 	public function update(array $data): bool
 	{
-		$createdAt = $this->sql->select('lp_comments')
+		$select = $this->sql->select('lp_comments')
 			->columns(['created_at'])
-			->where(['id = ?' => $data['id']])
-			->execute()
-			->current()['created_at'] ?? null;
+			->where(['id = ?' => $data['id']]);
+
+		$createdAt = $this->sql->execute($select)->current()['created_at'] ?? null;
 
 		if ($createdAt === null || ! $this->isCanEdit((int) $createdAt)) {
 			return false;

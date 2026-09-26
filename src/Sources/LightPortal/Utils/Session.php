@@ -20,9 +20,7 @@ class Session extends GlobalArray implements SessionInterface
 	public function __construct(?string $key = null)
 	{
 		if ($key) {
-			if (! isset($_SESSION[$key])) {
-				$_SESSION[$key] = [];
-			}
+			$_SESSION[$key] ??= [];
 
 			$this->storage = &$_SESSION[$key];
 			return;

@@ -51,9 +51,7 @@ final class Cache implements CacheInterface
 
 	public function remember(string $key, callable $callback, ?int $time = null): mixed
 	{
-		if ($time === null) {
-			$time = $this->lifeTime;
-		}
+		$time ??= $this->lifeTime;
 
 		if ($time === 0) {
 			$this->forget($key);

@@ -120,16 +120,14 @@ abstract class XmlImporter extends AbstractImport
 	{
 		$key = $lang . '_' . $itemId;
 
-		if (! isset($translations[$key])) {
-			$translations[$key] = [
-				'item_id'     => $itemId,
-				'type'        => $this->getEntityType(),
-				'lang'        => $lang,
-				'title'       => '',
-				'content'     => '',
-				'description' => '',
-			];
-		}
+		$translations[$key] ??= [
+			'item_id'     => $itemId,
+			'type'        => $this->getEntityType(),
+			'lang'        => $lang,
+			'title'       => '',
+			'content'     => '',
+			'description' => '',
+		];
 
 		$translations[$key][$field] = trim($text);
 	}

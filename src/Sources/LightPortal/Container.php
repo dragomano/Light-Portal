@@ -31,9 +31,7 @@ class Container
 
 	public static function getInstance(): self
 	{
-		if (self::$instance === null) {
-			self::$instance = new self();
-		}
+		self::$instance ??= new self();
 
 		return self::$instance;
 	}
@@ -67,11 +65,9 @@ class Container
 		return $this->getServiceManager()->has($service) || isset(self::$taggedServices[$service]);
 	}
 
-	public function add(string $className, callable $factory = null): TaggableService
+	public function add(string $className, ?callable $factory = null): TaggableService
 	{
-		if ($factory === null) {
-			$factory = fn() => new $className();
-		}
+		$factory ??= fn() => new $className();
 
 		$this->getServiceManager()->setFactory($className, $factory);
 
@@ -105,9 +101,7 @@ class Container
 
 	public static function addServiceToTag(string $className, string $tag): void
 	{
-		if (! isset(self::$tags[$tag])) {
-			self::$tags[$tag] = [];
-		}
+		self::$tags[$tag] ??= [];
 
 		if (! in_array($className, self::$tags[$tag], true)) {
 			self::$tags[$tag][] = $className;

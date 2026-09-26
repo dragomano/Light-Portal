@@ -20,12 +20,12 @@
   },
   "require-dev": {
     "consolidation/robo": "@dev",
-    "dg/bypass-finals": "^1.9",
-    "mockery/mockery": "dev-bugfix/spy-generics",
+    "dg/bypass-finals": "^1.11",
+    "mockery/mockery": "^1.6.15",
     "pear/archive_tar": "^1.6",
-    "pestphp/pest": "^3.8",
-    "pestphp/pest-plugin-faker": "^3.0",
-    "rector/rector": "^2.3"
+    "pestphp/pest": "^3|^4|^5",
+    "pestphp/pest-plugin-faker": "^3|^4|^5",
+    "rector/rector": "^2.6"
   },
   "repositories": [
     {
@@ -44,6 +44,7 @@
   },
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
+    "rector": "vendor/bin/rector process",
     "test": "php -d memory_limit=512M vendor/bin/pest --colors=always",
     "test-debug": "php -d memory_limit=512M vendor/bin/pest --colors=always --display-warnings",
     "test-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=60",

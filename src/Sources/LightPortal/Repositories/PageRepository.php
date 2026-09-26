@@ -874,7 +874,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$items = (array) $items;
 
 		if ($items === [] || User::$me->is_admin || User::$me->allowedTo('light_portal_manage_pages_any')) {
-			return array_map('intval', $items);
+			return array_map(intval(...), $items);
 		}
 
 		$select = $this->sql->select()

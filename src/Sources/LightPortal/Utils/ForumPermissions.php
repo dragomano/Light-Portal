@@ -24,7 +24,7 @@ class ForumPermissions
 	public static function canSeeBoard(string $alias = 't'): Expression
 	{
 		$prefix = Config::$db_prefix;
-		$groups = array_values(array_map('intval', User::$me->groups));
+		$groups = array_values(array_map(intval(...), User::$me->groups));
 
 		$groupPlaceholders = $groups === []
 			? 'NULL'

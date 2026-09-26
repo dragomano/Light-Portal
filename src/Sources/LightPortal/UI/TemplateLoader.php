@@ -75,9 +75,7 @@ class TemplateLoader
 
 	private static function initView(): void
 	{
-		if (self::$view === null) {
-			self::$view = new View(self::getTemplateBasePath());
-		}
+		self::$view ??= new View(self::getTemplateBasePath());
 	}
 
 	private static function getTemplateBasePath(): string

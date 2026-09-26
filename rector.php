@@ -2,7 +2,6 @@
 
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\If_\UnwrapFutureCompatibleIfPhpVersionRector;
-use Rector\Php81\Rector\FuncCall\NullToStrictStringFuncCallArgRector;
 
 return RectorConfig::configure()
 	->withPaths([
@@ -12,7 +11,6 @@ return RectorConfig::configure()
 		__DIR__ . '**/Tasks/*',
 		__DIR__ . '**/Libs/*',
 		__DIR__ . '**/vendor/*',
-		NullToStrictStringFuncCallArgRector::class,
 		UnwrapFutureCompatibleIfPhpVersionRector::class,
 	])
 	->withParallel(360)
