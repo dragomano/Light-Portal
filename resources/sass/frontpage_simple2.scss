@@ -6,7 +6,7 @@
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
       0 10px 10px -5px rgba(0, 0, 0, 0.04);
     flex-direction: column;
-    height: 18rem;
+    block-size: 18rem;
     @include functions.bRadius(0.5rem);
     align-items: center;
     display: flex;
@@ -18,7 +18,7 @@
       box-shadow:
         0 20px 25px -5px rgba(0, 0, 0, 0.1),
         0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      height: 18rem;
+      block-size: 18rem;
     }
 
     .card-header {
@@ -26,14 +26,14 @@
       z-index: 0;
       position: relative;
       order: 1;
-      height: 20rem;
-      width: 100%;
+      block-size: 20rem;
+      inline-size: 100%;
       @include functions.bRadius(0.5rem, 0.5rem);
 
       @media (min-width: 768px) {
         @include functions.bRadius(0, 0.5rem, 0.5rem, 0);
-        width: 40%;
-        height: 100%;
+        inline-size: 40%;
+        block-size: 100%;
         order: 2;
       }
 
@@ -44,12 +44,12 @@
         background-size: cover;
         background-blend-mode: multiply;
         background-color: rgba(96, 165, 250, 0.3);
-        width: 100%;
-        height: 100%;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        inline-size: 100%;
+        block-size: 100%;
+        inset-block-start: 0;
+        inset-inline-end: 0;
+        inset-block-end: 0;
+        inset-inline-start: 0;
         position: absolute;
       }
 
@@ -59,11 +59,11 @@
         align-items: flex-start;
         justify-content: flex-start;
         background-image: linear-gradient(to bottom, transparent, transparent, #111827);
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height: 100%;
+        inset-block-start: 0;
+        inset-inline-end: 0;
+        inset-block-end: 0;
+        inset-inline-start: 0;
+        block-size: 100%;
         position: absolute;
         padding: 1.5rem;
 
@@ -73,11 +73,11 @@
 
         h3 {
           line-height: 1.25;
-          width: 100%;
+          inline-size: 100%;
           color: rgba(255, 255, 255, 1);
           font-weight: 700;
           font-size: 1.5rem;
-          margin-bottom: 0.5rem;
+          margin-block-end: 0.5rem;
         }
 
         time {
@@ -88,12 +88,12 @@
       svg {
         color: rgba(255, 255, 255, 1);
         fill: currentColor;
-        width: 6rem;
-        height: 100%;
+        inline-size: 6rem;
+        block-size: 100%;
         display: none;
-        margin-left: -3rem;
-        top: 0;
-        bottom: 0;
+        margin-inline-start: -3rem;
+        inset-block-start: 0;
+        inset-block-end: 0;
         position: absolute;
 
         @media (min-width: 768px) {
@@ -104,34 +104,34 @@
 
     .card-body {
       order: 2;
-      width: 100%;
+      inline-size: 100%;
       align-items: center;
-      height: 100%;
+      block-size: 100%;
       display: flex;
-      margin-top: -1.5rem;
+      margin-block-start: -1.5rem;
 
       @media (min-width: 768px) {
-        width: 60%;
-        margin-top: 0;
+        inline-size: 60%;
+        margin-block-start: 0;
         order: 1;
       }
 
       .card-body-inner {
-        width: 100%;
+        inline-size: 100%;
         box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         padding: 2rem;
         background-color: rgba(255, 255, 255, 1);
         @include functions.bRadius(0.5rem);
-        height: 100%;
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
+        block-size: 100%;
+        margin-inline-start: 0.5rem;
+        margin-inline-end: 0.5rem;
 
         @media (min-width: 768px) {
           box-shadow: none;
-          padding-left: 3.5rem;
-          padding-bottom: 3rem;
-          margin-left: 0;
-          margin-right: 0;
+          padding-inline-start: 3.5rem;
+          padding-block-end: 3rem;
+          margin-inline-start: 0;
+          margin-inline-end: 0;
         }
 
         h3,
@@ -165,7 +165,7 @@
 
         .read_more {
           display: flex;
-          margin-top: 0.75rem;
+          margin-block-start: 0.75rem;
           text-decoration: none;
 
           span {
@@ -178,7 +178,7 @@
 
           .arrow {
             font-size: 0.75rem;
-            margin-left: 0.25rem;
+            margin-inline-start: 0.25rem;
           }
         }
       }

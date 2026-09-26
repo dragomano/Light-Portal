@@ -6,13 +6,15 @@
 
 	.tns-nav {
 		text-align: center;
-		margin: 10px 0;
+		margin-block: 10px;
+		margin-inline: 0;
 
 		> [aria-controls] {
-			width: 9px;
-			height: 9px;
+			inline-size: 9px;
+			block-size: 9px;
 			padding: 0;
-			margin: 0 5px;
+			margin-block: 0;
+			margin-inline: 5px;
 			border-radius: 50%;
 			background: #ddd;
 			border: 0;
@@ -27,20 +29,22 @@
 		position: relative;
 
 		.thumbnails {
-			margin: 20px 0 0;
+			margin-block-start: 20px;
+			margin-inline: 0;
+			margin-block-end: 0;
 			text-align: center;
 
 			li {
 				display: inline-block;
 				cursor: pointer;
 				border: 5px solid #fff;
-				width: 50px;
+				inline-size: 50px;
 			}
 
 			img {
 				vertical-align: bottom;
-				height: auto;
-				max-height: 50px;
+				block-size: auto;
+				max-block-size: 50px;
 			}
 
 			.tns-nav-active {
@@ -51,20 +55,21 @@
 
 		.controls {
 			text-align: center;
-			margin-top: 10px;
+			margin-block-start: 10px;
 
 			li {
 				display: block;
-				padding: 0 15px;
+				padding-block: 0;
+				padding-inline: 15px;
 				cursor: pointer;
 				transition: background 0.3s;
 
 				&.prev span {
-					float: left !important;
+					float: inline-start !important;
 				}
 
 				&.next span {
-					float: right !important;
+					float: inline-end !important;
 				}
 
 				span::selection {
@@ -83,7 +88,7 @@
 
 @media (max-width: 640px) {
 	.block_tiny_slider .customize-tools .thumbnails {
-		margin-bottom: 10px;
+		margin-block-end: 10px;
 	}
 
 	.block_tiny_slider .customize-tools .controls li {

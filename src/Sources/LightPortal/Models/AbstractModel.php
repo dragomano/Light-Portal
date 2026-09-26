@@ -23,7 +23,7 @@ abstract class AbstractModel implements ModelInterface
 
 	protected array $aliases = [];
 
-	private array $data = [];
+	private array $data;
 
 	public function __construct(array $data = [])
 	{

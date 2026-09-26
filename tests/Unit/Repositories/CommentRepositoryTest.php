@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSql;
@@ -165,7 +166,9 @@ it('can update comment with translations', function () {
         'user'    => 1,
     ];
 
-    $this->repository->update($data);
+    Config::$modSettings['lp_time_to_change_comments'] = '5';
+
+    $result = $this->repository->update($data);
 
     $translations = $this->sql->getAdapter()->query(
         /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND type = ? AND lang = ?',
@@ -173,7 +176,8 @@ it('can update comment with translations', function () {
     );
     $translation = $translations->current();
 
-    expect($translation['content'])->toBe('Updated message');
+    expect($result)->toBeTrue()
+        ->and($translation['content'])->toBe('Updated message');
 });
 
 it('can remove comment and translations', function () {

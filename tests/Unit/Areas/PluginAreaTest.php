@@ -112,7 +112,6 @@ describe('PluginArea::main()', function () {
 
 describe('PluginArea::handleToggle()', function () {
     it('enables plugin when status is off', function () {
-        $_REQUEST['toggle'] = true;
         $pluginData = [
             'plugin' => 0,
             'status' => 'off',
@@ -125,17 +124,28 @@ describe('PluginArea::handleToggle()', function () {
             ->with('toggle')
             ->andReturn(false);
         $this->requestMock
+            ->shouldReceive('method')
+            ->andReturn('POST');
+        $this->requestMock
             ->shouldReceive('json')
             ->andReturn($pluginData);
 
-        Theme::$current->settings['default_theme_dir'] = sys_get_temp_dir();
+        $responseMock = mock(ResponseInterface::class);
+        $responseMock
+            ->shouldReceive('exit')
+            ->once()
+            ->with(['success' => true])
+            ->andThrow(new TestExitException());
+        AppMockRegistry::set(ResponseInterface::class, $responseMock);
+
+        Theme::$current->settings['default_theme_dir'] = __DIR__ . '/nonexistent';
 
         expect(fn() => $this->accessor->callMethod('handleToggle'))
-            ->not->toThrow(Exception::class);
+            ->toThrow(TestExitException::class);
+        expect(Config::$modSettings['lp_enabled_plugins'])->toBe('TestPlugin');
     });
 
     it('disables plugin when status is on', function () {
-        $_REQUEST['toggle'] = true;
         $pluginData = [
             'plugin' => 0,
             'status' => 'on',
@@ -150,17 +160,25 @@ describe('PluginArea::handleToggle()', function () {
             ->with('toggle')
             ->andReturn(false);
         $this->requestMock
+            ->shouldReceive('method')
+            ->andReturn('POST');
+        $this->requestMock
             ->shouldReceive('json')
             ->andReturn($pluginData);
 
         $responseMock = mock(ResponseInterface::class);
-        $responseMock->shouldReceive('exit')->andThrow(new TestExitException());
+        $responseMock
+            ->shouldReceive('exit')
+            ->once()
+            ->with(['success' => true])
+            ->andThrow(new TestExitException());
         AppMockRegistry::set(ResponseInterface::class, $responseMock);
 
-        Theme::$current->settings['default_theme_dir'] = sys_get_temp_dir();
+        Theme::$current->settings['default_theme_dir'] = __DIR__ . '/nonexistent';
 
         expect(fn() => $this->accessor->callMethod('handleToggle'))
             ->toThrow(TestExitException::class);
+        expect(Config::$modSettings['lp_enabled_plugins'])->toBe('');
     });
 
     it('returns early when toggle parameter is not present', function () {

@@ -58,12 +58,12 @@ if (! function_exists('LightPortal\\app')) {
                     return $callback();
                 }
 
-                public function get(string $key, int $time = null): null
+                public function get(string $key, ?int $time = null): null
                 {
                     return null;
                 }
 
-                public function put(string $key, mixed $value, int $time = null): void {}
+                public function put(string $key, mixed $value, ?int $time = null): void {}
 
                 public function forget(?string $key = null): void {}
 

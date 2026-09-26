@@ -22,8 +22,8 @@
     overflow: hidden;
 
     .article_image img {
-      width: 100%;
-      height: 200px;
+      inline-size: 100%;
+      block-size: 200px;
       object-fit: cover;
     }
 	}

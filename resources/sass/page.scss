@@ -4,14 +4,14 @@
   justify-content: space-between;
 
   .button {
-    margin-left: 4px;
+    margin-inline-start: 4px;
   }
 }
 
 section {
   #display_head {
-    margin-top: 0.1em;
-    margin-bottom: 0;
+    margin-block-start: 0.1em;
+    margin-block-end: 0;
 
     span {
       margin: 0;
@@ -20,7 +20,8 @@ section {
 
   article[itemprop='articleBody'] {
     .button {
-      margin: 2px auto;
+      margin-block: 2px;
+      margin-inline: auto;
     }
 
     a:has(img) {
@@ -30,7 +31,8 @@ section {
 
     img {
       display: block;
-      margin: 2em auto;
+      margin-block: 2em;
+      margin-inline: auto;
       border: 1px solid #ddd;
       border-radius: 4px;
       box-shadow:

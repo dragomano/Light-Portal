@@ -13,7 +13,7 @@
 		<const name="SMF" value="true"/>
 		<const name="SMF_VERSION" value="2.1"/>
 	</php>
-	<source>
+	<source ignoreIndirectDeprecations="true">
 		<include>
 			<directory>src/Sources/LightPortal</directory>
 		</include>

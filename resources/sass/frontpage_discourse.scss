@@ -6,28 +6,32 @@ $category_color: #333;
 $icon_color: #155724;
 
 .discourse_view {
-  max-width: 95%;
-  margin: 0 auto;
+  max-inline-size: 95%;
+  margin-block: 0;
+  margin-inline: auto;
   padding: 10px;
   @include functions.bRadius(5px);
 }
 
 .forum-list {
-  width: 100%;
+  inline-size: 100%;
 }
 
 .forum-item {
   display: flex;
   align-items: flex-start;
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-block-end: 1px solid #eee;
 }
 
 .forum-content {
   flex: 1;
 
   h3 {
-    margin: 0 0 5px 0;
+    margin-block-start: 0;
+    margin-inline-end: 0;
+    margin-block-end: 5px;
+    margin-inline-start: 0;
     color: $title_color;
     font-size: 16px;
   }
@@ -40,10 +44,11 @@ $icon_color: #155724;
 
   .tag {
     display: inline-block;
-    padding: 2px 8px;
+    padding-block: 2px;
+    padding-inline: 8px;
     @include functions.bRadius(3px);
     font-size: 12px;
-    margin-bottom: 5px;
+    margin-block-end: 5px;
   }
 
   .category {
@@ -62,11 +67,11 @@ $icon_color: #155724;
   font-size: 12px;
   color: $second_color;
   flex: 0 0 auto;
-  min-width: 60px;
-  margin-right: 10px;
+  min-inline-size: 60px;
+  margin-inline-end: 10px;
 
   i {
-    margin-right: 4px;
+    margin-inline-end: 4px;
     font-size: 12px;
   }
 }
@@ -76,11 +81,11 @@ $icon_color: #155724;
   font-size: 12px;
   color: $second_color;
   flex: 0 0 auto;
-  min-width: 60px;
-  margin-right: 10px;
+  min-inline-size: 60px;
+  margin-inline-end: 10px;
 
   i {
-    margin-right: 4px;
+    margin-inline-end: 4px;
     font-size: 12px;
   }
 }
@@ -90,18 +95,18 @@ $icon_color: #155724;
   font-size: 12px;
   color: $second_color;
   flex: 0 0 auto;
-  min-width: 60px;
-  margin-right: 10px;
+  min-inline-size: 60px;
+  margin-inline-end: 10px;
 
   i {
-    margin-right: 4px;
+    margin-inline-end: 4px;
     font-size: 12px;
   }
 }
 
 @media (max-width: 768px) {
   .discourse_view {
-    max-width: 900px;
+    max-inline-size: 900px;
     padding: 20px;
   }
 
@@ -123,14 +128,14 @@ $icon_color: #155724;
   .forum-replies {
     grid-row: 2;
     grid-column: 1;
-    margin-top: 5px;
-    text-align: left !important;
+    margin-block-start: 5px;
+    text-align: start !important;
   }
 
   .forum-activity {
     grid-row: 2;
     grid-column: 2;
-    margin-top: 5px;
-    text-align: right;
+    margin-block-start: 5px;
+    text-align: end;
   }
 }

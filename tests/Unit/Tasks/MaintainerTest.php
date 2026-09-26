@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Tasks\BackgroundTask;
 use Laminas\Db\Extra\Result\ExtendedResultInterface;
 use Laminas\Db\Extra\Sql\Operations\ExtendedDelete;
@@ -54,8 +55,11 @@ describe('Maintainer::execute', function () {
     });
 
     it('runs maintenance steps and schedules next task', function () {
+        Config::$db_type = 'mysql';
+
         $delete = mock(ExtendedDelete::class);
         $delete->shouldReceive('where')->andReturnSelf();
+        $taskDelete = new ExtendedDelete('background_tasks');
 
         $select1 = mock(ExtendedSelect::class);
         $select1->shouldReceive('from')->andReturnSelf();
@@ -88,6 +92,7 @@ describe('Maintainer::execute', function () {
         $adapter->shouldReceive('query')->times(9)->andReturnNull();
 
         $this->sql->shouldReceive('delete')->with('lp_params')->andReturn($delete);
+        $this->sql->shouldReceive('delete')->with('background_tasks')->andReturn($taskDelete);
         $this->sql->shouldReceive('select')->andReturn($select1, $select2, $select3);
         $this->sql->shouldReceive('update')->with('lp_pages')->andReturn($update);
         $this->sql->shouldReceive('insert')->with('background_tasks')->andReturn($insert);
@@ -95,6 +100,7 @@ describe('Maintainer::execute', function () {
         $this->sql->shouldReceive('getAdapter')->andReturn($adapter);
 
         $this->sql->shouldReceive('execute')->with($delete)->once()->andReturn(($this->makeResult)([]));
+        $this->sql->shouldReceive('execute')->with($taskDelete)->once()->andReturn(($this->makeResult)([]));
         $this->sql->shouldReceive('execute')->with($select1)->once()->andReturn(($this->makeResult)([
             ['id' => 1],
             ['id' => 2],

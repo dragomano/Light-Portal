@@ -12,8 +12,8 @@ $date_color: #888;
     flex-direction: column;
 
     img {
-      width: 100%;
-      height: auto;
+      inline-size: 100%;
+      block-size: auto;
     }
 
     .article-content {
@@ -23,7 +23,7 @@ $date_color: #888;
     .article-title {
       font-size: 0.625rem;
       font-weight: bold;
-      margin-bottom: 0.625rem;
+      margin-block-end: 0.625rem;
     }
 
     .article-date {

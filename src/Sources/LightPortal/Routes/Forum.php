@@ -18,7 +18,7 @@ class Forum implements Routable
 {
 	public static function buildRoute(array $params): array
 	{
-		$route[] = $params['action'];
+		$route = [$params['action']];
 
 		unset($params['action']);
 

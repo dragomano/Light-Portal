@@ -9,7 +9,7 @@
 
 .article_view {
   > div {
-    margin-bottom: 10px;
+    margin-block-end: 10px;
   }
 
   article {
@@ -21,8 +21,8 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: 95%;
-    min-height: 100%;
+    block-size: 95%;
+    min-block-size: 100%;
 
     a:hover {
       text-decoration: none;
@@ -30,7 +30,7 @@
     }
 
     .new_posts {
-      margin-left: 4px;
+      margin-inline-start: 4px;
     }
 
     &:hover {
@@ -59,8 +59,8 @@
     .new_hover {
       position: absolute;
       padding: 16px;
-      top: 0;
-      left: 0;
+      inset-block-start: 0;
+      inset-inline-start: 0;
 
       .new_icon {
         position: relative;
@@ -72,8 +72,8 @@
       position: absolute;
       padding: 16px;
       opacity: 0;
-      top: 0;
-      right: 0;
+      inset-block-start: 0;
+      inset-inline-end: 0;
 
       .edit_icon {
         position: relative;
@@ -86,8 +86,8 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      width: 100%;
-      height: 235px;
+      inline-size: 100%;
+      block-size: 235px;
     }
 
     .card_img_hover {
@@ -95,10 +95,10 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      width: 100%;
+      inline-size: 100%;
       position: absolute;
-      height: 235px;
-      top: 0;
+      block-size: 235px;
+      inset-block-start: 0;
     }
 
     .card_info {
@@ -109,7 +109,7 @@
       padding: 1.2em;
 
       div {
-        margin-top: 1em;
+        margin-block-start: 1em;
       }
 
       .card_date {
@@ -120,7 +120,10 @@
       h3 {
         font-size: 1.25rem;
         font-weight: 700;
-        margin: 10px 0 10px 0;
+        margin-block-start: 10px;
+        margin-inline-end: 0;
+        margin-block-end: 10px;
+        margin-inline-start: 0;
         overflow: hidden;
         display: -webkit-box;
         line-clamp: 2;
@@ -138,7 +141,7 @@
       }
 
       p {
-        margin-bottom: 5px;
+        margin-block-end: 5px;
         overflow: hidden;
         //text-overflow: ellipsis;
         display: -webkit-box;

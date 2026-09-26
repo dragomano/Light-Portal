@@ -2,27 +2,28 @@ dl.settings {
   div {
     dt,
     dd {
-      width: 50%;
+      inline-size: 50%;
 
       @media (max-width: 600px) {
-        width: 100%;
+        inline-size: 100%;
       }
     }
   }
 }
 
 .lp_table_settings {
-  width: 100%;
+  inline-size: 100%;
 
   td {
-    width: 50%;
+    inline-size: 50%;
   }
 
   @media (max-width: 600px) {
     td {
       display: block;
-      padding: 5px 0;
-      width: 100%;
+      padding-block: 5px;
+      padding-inline: 0;
+      inline-size: 100%;
     }
   }
 }

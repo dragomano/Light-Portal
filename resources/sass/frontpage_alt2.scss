@@ -9,8 +9,10 @@
     flex: 1 1 300px;
     flex-direction: column;
     overflow: hidden;
-    margin: 0 10px 10px;
-    min-height: 300px;
+    margin-block-start: 0;
+    margin-inline: 10px;
+    margin-block-end: 10px;
+    min-block-size: 300px;
     background-size: cover;
     @include functions.bRadius;
     box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.1);
@@ -23,8 +25,8 @@
       @include functions.bRadius(5px, 5px);
 
       div {
-        width: auto;
-        height: 200px;
+        inline-size: auto;
+        block-size: 200px;
         background-repeat: no-repeat;
         background-size: cover;
       }
@@ -39,12 +41,14 @@
       div {
         display: block;
         position: relative;
-        padding: 25px 25px 0;
+        padding-block-start: 25px;
+        padding-inline: 25px;
+        padding-block-end: 0;
 
         header {
           time {
             display: block;
-            margin-bottom: 4px;
+            margin-block-end: 4px;
             line-height: 1.15;
             font-weight: 500;
             letter-spacing: 0.5px;
@@ -52,7 +56,9 @@
           }
 
           h3 {
-            margin: 1em 0 0.5em;
+            margin-block-start: 1em;
+            margin-inline: 0;
+            margin-block-end: 0.5em;
             font-size: 1.2rem;
             line-height: 1.15;
           }
@@ -60,7 +66,7 @@
 
         section {
           p {
-            margin-bottom: 5px;
+            margin-block-end: 5px;
             overflow: hidden;
             display: -webkit-box;
             line-clamp: 3;
@@ -74,13 +80,15 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        padding: 0 25px 5px;
+        padding-block-start: 0;
+        padding-inline: 25px;
+        padding-block-end: 5px;
 
         img,
         svg {
-          margin-right: 5px;
-          width: 25px;
-          height: 25px;
+          margin-inline-end: 5px;
+          inline-size: 25px;
+          block-size: 25px;
           @include functions.bRadius(100%);
           object-fit: cover;
         }

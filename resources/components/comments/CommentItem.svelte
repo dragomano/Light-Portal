@@ -23,7 +23,9 @@
 
   const { id: userId, is_admin: isAdmin } = userState;
   const showReplyButton = $derived(level < 5 && userId !== comment.poster.id);
-  const showRemoveButton = $derived(comment.poster.id === userId || isAdmin);
+  const showRemoveButton = $derived(
+    (comment.poster.id === userId && (!comment.replies || !comment.replies.length)) || isAdmin
+  );
   const canEdit = $derived(
     comment.can_edit &&
       (!comment.replies || !comment.replies.length) &&

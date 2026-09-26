@@ -5,7 +5,8 @@
 .block_html,
 .block_markdown {
   .videocontainer {
-    margin: 0 auto;
+    margin-block: 0;
+    margin-inline: auto;
   }
 }
 
@@ -14,7 +15,7 @@
 }
 
 #info_center {
-  margin-bottom: 5px;
+  margin-block-end: 5px;
 }
 
 #admin_form_wrapper {
@@ -49,15 +50,15 @@
 #lp_post {
   .centertext {
     .button {
-      margin-left: 4px;
+      margin-inline-start: 4px;
     }
   }
 
   @media (max-width: 600px) {
     .button {
       float: none !important;
-      width: 100%;
-      margin-left: 0 !important;
+      inline-size: 100%;
+      margin-inline-start: 0 !important;
     }
   }
 }
@@ -72,7 +73,7 @@
 
 .sceditor-container {
   position: relative;
-  min-height: 300px !important;
+  min-block-size: 300px !important;
 }
 
 .priority,
@@ -85,12 +86,12 @@
 
 .lp_default_blocks,
 .lp_additional_blocks {
-  margin-bottom: 10px !important;
+  margin-block-end: 10px !important;
 
   th {
     &.icon,
     &.actions {
-      width: 8%;
+      inline-size: 8%;
     }
   }
 }
@@ -101,7 +102,7 @@
 
 .additional_row {
   .button {
-    margin-left: 2px;
+    margin-inline-start: 2px;
   }
 }
 
@@ -142,8 +143,12 @@
   background: variables.$tag-bg-color;
   border: 0 solid variables.$tag-border-color;
   color: variables.$tag-color;
-  margin: 0 3px 3px 0;
-  padding: 2px 6px;
+  margin-block-start: 0;
+  margin-inline-end: 3px;
+  margin-block-end: 3px;
+  margin-inline-start: 0;
+  padding-block: 2px;
+  padding-inline: 6px;
   @include functions.pointer;
   @include functions.bRadius(0);
 
@@ -152,15 +157,15 @@
   }
 }
 .vscomp-value {
-  height: auto !important;
-  width: 98%;
+  block-size: auto !important;
+  inline-size: 98%;
 
   div {
     margin: 0 !important;
   }
 
   i {
-    margin-right: 0.5em;
+    margin-inline-end: 0.5em;
   }
 }
 .vscomp-option-text {
@@ -175,7 +180,7 @@
   flex-wrap: nowrap !important;
 }
 .vscomp-value-tag-content {
-  width: auto !important;
+  inline-size: auto !important;
 }
 
 /* Svelecte */
@@ -207,8 +212,8 @@
 /* Screen readers only */
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  inline-size: 1px;
+  block-size: 1px;
   padding: 0;
   margin: -1px;
   overflow: hidden;

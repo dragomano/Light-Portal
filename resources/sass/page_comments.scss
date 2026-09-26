@@ -2,7 +2,7 @@
 @use 'variables';
 
 .comments {
-  margin-top: 1em;
+  margin-block-start: 1em;
 
   .cat_bar {
     @include functions.bRadius;
@@ -28,16 +28,16 @@
   .reply_form {
     textarea {
       resize: none;
-      width: 100%;
-      height: 100px;
+      inline-size: 100%;
+      block-size: 100px;
     }
 
     button {
-      float: left;
-      margin-top: 10px;
+      float: inline-start;
+      margin-block-start: 10px;
 
       &[name='comment'] {
-        float: right;
+        float: inline-end;
 
         &[disabled] {
           opacity: 0.5;
@@ -51,26 +51,27 @@
 .comment {
   &_list {
     list-style: none;
-    margin: auto 0;
+    margin-block: auto;
+    margin-inline: 0;
     position: relative;
 
     li {
       clear: both;
-      width: 100%;
+      inline-size: 100%;
     }
 
     @media (max-width: 600px) {
       .col-xs-12 {
         flex-basis: 95%;
-        margin-left: 10px;
+        margin-inline-start: 10px;
       }
     }
   }
 
   &_avatar {
     position: absolute;
-    width: 74px;
-    left: 10px;
+    inline-size: 74px;
+    inset-inline-start: 10px;
     @include functions.valign(top);
 
     @media (max-width: 600px) {
@@ -78,21 +79,23 @@
     }
 
     .avatar {
-      max-width: 45px !important;
-      max-height: 45px !important;
+      max-inline-size: 45px !important;
+      max-block-size: 45px !important;
       box-shadow: 0 0 4px #666;
       @include functions.bRadius(100%);
     }
   }
 
   &_wrapper {
-    width: 100%;
-    padding-left: 55px;
+    inline-size: 100%;
+    padding-inline-start: 55px;
 
     .comment_entry {
       display: block;
       position: relative;
-      padding: 0 12px 8px;
+      padding-block-start: 0;
+      padding-inline: 12px;
+      padding-block-end: 8px;
       border: 1px solid variables.$color-light-gray;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       @include functions.bRadius(7px);
@@ -100,17 +103,17 @@
       .edit_form {
         textarea {
           resize: none;
-          width: 100%;
-          height: 100px;
+          inline-size: 100%;
+          block-size: 100px;
         }
 
         .comment_edit_buttons {
           display: flex;
           justify-content: left;
           gap: 10px;
-          margin-top: 6px;
-          padding-top: 6px;
-          border-top: 1px dashed #bfbfbf;
+          margin-block-start: 6px;
+          padding-block-start: 6px;
+          border-block-start: 1px dashed #bfbfbf;
 
           [role='button'] {
             opacity: 0.6;
@@ -133,13 +136,16 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.7rem;
-    margin: -1px -13px 10px;
+    margin-block-start: -1px;
+    margin-inline: -13px;
+    margin-block-end: 10px;
 
     > span {
       font-weight: bold;
       border: 1px solid variables.$color-light-gray;
       display: inline-block;
-      padding: 6px 11px;
+      padding-block: 6px;
+      padding-inline: 11px;
       @include functions.bRadius(7px, 0, 7px, 0);
       @include functions.valign(top);
     }
@@ -147,28 +153,30 @@
     .comment_date {
       border: 1px solid variables.$color-light-gray;
       display: inline-block;
-      padding: 6px 11px;
+      padding-block: 6px;
+      padding-inline: 11px;
       opacity: 0.8;
       @include functions.bRadius(0, 7px, 0, 7px);
       @include functions.valign(top);
 
       .bbc_link {
-        margin-left: 10px;
+        margin-inline-start: 10px;
       }
     }
   }
 
   &_content {
-    padding: 0.2em 1em;
+    padding-block: 0.2em;
+    padding-inline: 1em;
   }
 
   &_buttons {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px dashed variables.$comment-smalltext-color;
+    margin-block-start: 6px;
+    padding-block-start: 6px;
+    border-block-start: 1px dashed variables.$comment-smalltext-color;
 
     [role='button'] {
       opacity: 0.6;
@@ -179,53 +187,16 @@
       }
 
       &:last-child {
-        margin-left: auto;
-        margin-right: 0;
+        margin-inline-start: auto;
+        margin-inline-end: 0;
       }
     }
   }
 }
 
 [dir='rtl'] {
-  .comment_wrapper {
-    padding: 0 55px 0 0;
-  }
-
-  .comment_avatar {
-    right: 10px;
-
-    img {
-      transform: scaleX(-1);
-    }
-  }
-
-  .comment_title span.bg {
-    @include functions.bRadius(0, 7px, 0, 7px);
-  }
-
-  .comment_date {
-    @include functions.bRadius(7px, 0, 7px, 0);
-  }
-
-  .comment_buttons {
-    span {
-      margin-right: 0;
-
-      &:last-child {
-        margin-left: 0;
-        margin-right: auto;
-      }
-    }
-  }
-
-  .reply_form {
-    button {
-      float: right !important;
-
-      &[name='comment'] {
-        float: left !important;
-      }
-    }
+  .comment_avatar img {
+    transform: scaleX(-1);
   }
 
   .comment_edit_buttons {

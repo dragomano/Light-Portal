@@ -133,15 +133,15 @@ class Credits extends AbstractHook
 			],
 			[
 				'name' => 'Vite',
-				'link' => 'https://vitejs.dev'
+				'link' => 'https://vite.dev'
 			],
 			[
-				'name' => 'PHPStorm',
-				'link' => 'https://www.jetbrains.com/phpstorm/'
+				'name' => 'Zed',
+				'link' => 'https://zed.dev'
 			],
 			[
 				'name' => 'Robo',
-				'link' => 'https://robo.li/'
+				'link' => 'https://github.com/consolidation/robo'
 			],
 			[
 				'name' => 'Pest',
@@ -175,15 +175,6 @@ class Credits extends AbstractHook
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
-				]
-			],
-			[
-				'title' => '&lt;markdown-toolbar&gt; element',
-				'link' => 'https://github.com/github/markdown-toolbar-element',
-				'author' => 'GitHub, Inc.',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/github/markdown-toolbar-element/blob/main/LICENSE'
 				]
 			],
 			[

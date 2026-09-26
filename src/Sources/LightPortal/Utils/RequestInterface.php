@@ -22,5 +22,7 @@ interface RequestInterface extends GlobalArrayInterface
 
 	public function json(?string $key = null, mixed $default = null): mixed;
 
+	public function method(): string;
+
 	public function url(): string;
 }

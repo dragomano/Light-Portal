@@ -101,6 +101,11 @@ final readonly class PluginArea
 		if ($this->request()->hasNot('toggle'))
 			return;
 
+		if ($this->request()->method() !== 'POST')
+			return;
+
+		User::$me->checkSession('request');
+
 		$data           = $this->request()->json();
 		$pluginId       = (int) $data['plugin'];
 		$pluginName     = Utils::$context['lp_plugins'][$pluginId] ?? '';

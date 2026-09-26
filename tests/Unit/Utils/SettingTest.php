@@ -15,9 +15,7 @@ arch()
 beforeEach(function () {
     Config::$modSettings = [];
     User::$me->id = 0;
-    User::$me->allowedTo = function () {
-        return false;
-    };
+    User::$me->permissions = [];
 });
 
 afterEach(function () {
@@ -268,25 +266,30 @@ describe('Setting::isSwapLeftRight()', function () {
 });
 
 describe('Setting::canMention()', function () {
-    beforeEach(function () {
-        User::$me->id = 0;
-        User::$me->allowedTo = fn() => false;
+    it('returns true when mentions are enabled and user can mention', function () {
+        Config::$modSettings['enable_mentions'] = '1';
+        User::$me->permissions = ['mention'];
+
+        $result = Setting::canMention();
+
+        expect($result)->toBeTrue();
     });
 
-    it('returns true when enable_mentions is true', function () {
+    it('returns false when user cannot mention', function () {
         Config::$modSettings['enable_mentions'] = '1';
 
         $result = Setting::canMention();
 
-        expect($result)->toBeTrue();
+        expect($result)->toBeFalse();
     });
 
-    it('returns true when user cannot mention', function () {
+    it('returns false when mentions are disabled', function () {
         Config::$modSettings['enable_mentions'] = '0';
+        User::$me->permissions = ['mention'];
 
         $result = Setting::canMention();
 
-        expect($result)->toBeTrue();
+        expect($result)->toBeFalse();
     });
 });
 

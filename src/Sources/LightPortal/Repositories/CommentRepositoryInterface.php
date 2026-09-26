@@ -18,7 +18,9 @@ interface CommentRepositoryInterface extends RepositoryInterface
 
 	public function save(array $data): int;
 
-	public function update(array $data): void;
+	public function update(array $data): bool;
+
+	public function canRemove(int $item, int $pageId, int $userId): bool;
 
 	public function updateLastCommentId(int $item, int $pageId): void;
 }

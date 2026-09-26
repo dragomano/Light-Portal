@@ -77,7 +77,6 @@ final class Comment implements ActionInterface
 	{
 		$rawComments = $this->langCache('page_' . $this->pageSlug . '_comments')
 			->setFallback(fn() => $this->repository->getByPageId(Utils::$context['lp_page']['id']));
-
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
 			$comment['published_at']  = date('Y-m-d', $comment['created_at']);
@@ -245,11 +244,15 @@ final class Comment implements ActionInterface
 			$this->response()->exit($result);
 		}
 
-		$this->repository->update([
+		$updated = $this->repository->update([
 			'message' => Utils::shorten($message, 65531),
 			'id'      => $item,
 			'user'    => Utils::$context['user']['id'],
 		]);
+
+		if (! $updated) {
+			$this->response()->exit($result);
+		}
 
 		$result = [
 			'success' => true,
@@ -263,9 +266,27 @@ final class Comment implements ActionInterface
 
 	private function remove(): void
 	{
+		if (User::$me->is_guest) {
+			$this->response()->exit(['success' => false]);
+		}
+
 		$item = (int) $this->request()->json('comment_id');
 
 		if (empty($item)) {
+			$this->response()->exit(['success' => false]);
+		}
+
+		$comment = $this->repository->getData($item);
+
+		$canRemove = ! empty($comment)
+			&& (int) $comment['page_id'] === (int) Utils::$context['lp_page']['id']
+			&& (User::$me->is_admin || $this->repository->canRemove(
+				$item,
+				(int) Utils::$context['lp_page']['id'],
+				User::$me->id
+			));
+
+		if (! $canRemove) {
 			$this->response()->exit(['success' => false]);
 		}
 

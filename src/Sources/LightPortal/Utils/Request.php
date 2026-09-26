@@ -40,9 +40,14 @@ class Request extends GlobalArray implements RequestInterface
 	public function json(?string $key = null, mixed $default = null): mixed
 	{
 		$input = file_get_contents('php://input');
-		$data = json_decode($input, true) ?? [];
+		$data  = json_decode($input, true) ?? [];
 
 		return $key ? ($data[$key] ?? $default) : $data;
+	}
+
+	public function method(): string
+	{
+		return strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
 	}
 
 	public function url(): string

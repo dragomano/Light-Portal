@@ -37,10 +37,13 @@
   const showToggle = $derived(!item.special && Object.keys(item.types ?? {})[0] !== $_('not_applicable'));
 
   const toggle = async () => {
-    const response = await axios.post(appState.baseUrl + '?action=admin;area=lp_plugins;toggle', {
-      plugin: index,
-      status: item.status
-    });
+    const response = await axios.post(
+      `${appState.baseUrl}?action=admin;area=lp_plugins;toggle;${appState.sessionVar}=${appState.sessionId}`,
+      {
+        plugin: index,
+        status: item.status
+      }
+    );
 
     if (response.data.success) {
       item.status = toggled ? 'on' : 'off';

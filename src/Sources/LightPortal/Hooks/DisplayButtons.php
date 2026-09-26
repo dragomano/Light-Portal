@@ -33,6 +33,7 @@ class DisplayButtons
 				? 'lp_remove_from_fp'
 				: 'lp_promote_to_fp',
 			'url'  => PortalSubAction::PROMOTE->url() . ';t=' . Utils::$context['current_topic']
+				. ';' . Utils::$context['session_var'] . '=' . Utils::$context['session_id']
 		];
 	}
 }

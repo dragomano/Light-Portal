@@ -1,7 +1,7 @@
 .block_tag_list {
 	.button {
 		margin: 4px;
-		float: left;
+		float: inline-start;
 		transition: all 0.2s 0.01s ease-in;
 
 		&:hover {

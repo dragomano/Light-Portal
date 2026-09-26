@@ -38,7 +38,7 @@ class CurrentMonth extends Block
 		$month = $today['month'];
 		$day   = $today['day'];
 
-		$startObject = checkdate($month, $day, $year) === true
+		$startObject = checkdate($month, $day, $year)
 			? date_create(implode('-', [$year, $month, $day]))
 			: date_create(implode('-', [$today['year'], $today['month'], $today['day']]));
 

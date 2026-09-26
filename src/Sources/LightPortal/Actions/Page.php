@@ -244,6 +244,11 @@ final readonly class Page implements ActionInterface
 		if (empty(User::$me->is_admin) || $this->request()->hasNot(PortalSubAction::PROMOTE->value))
 			return;
 
+		if ($this->request()->method() !== 'POST')
+			return;
+
+		User::$me->checkSession();
+
 		$page = Utils::$context['lp_page']['id'];
 
 		$frontPages = Setting::getFrontpagePages();

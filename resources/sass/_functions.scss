@@ -15,14 +15,9 @@
     $br: if(sass($bottomRight == null or $bottomRight < 0): 0; else: $bottomRight);
     $bl: if(sass($bottomLeft == null or $bottomLeft < 0): 0; else: $bottomLeft);
 
-    @if $tl == $tr and $tr == $br and $br == $bl {
-      border-radius: $tl;
-    } @else if $tl == $br and $tr == $bl {
-      border-radius: $tl $tr;
-    } @else if $tr == $bl {
-      border-radius: $tl $tr $br;
-    } @else {
-      border-radius: $tl $tr $br $bl;
-    }
+    border-start-start-radius: $tl;
+    border-start-end-radius: $tr;
+    border-end-end-radius: $br;
+    border-end-start-radius: $bl;
   }
 }

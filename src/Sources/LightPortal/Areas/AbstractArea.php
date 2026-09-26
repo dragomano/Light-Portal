@@ -164,6 +164,11 @@ abstract class AbstractArea implements AreaInterface
 		if ($this->request()->hasNot('actions'))
 			return;
 
+		if ($this->request()->method() !== 'POST')
+			return;
+
+		User::$me->checkSession('request');
+
 		$data = $this->request()->json();
 
 		$this->processActions($data);
@@ -321,6 +326,8 @@ abstract class AbstractArea implements AreaInterface
 	{
 		if ($this->request()->hasNot('bulk_actions') || $this->request()->isEmpty('items'))
 			return;
+
+		User::$me->checkSession();
 
 		$redirect = $this->getBulkActionsRedirect();
 		$items    = (array) ($this->request()->get('items') ?? []);

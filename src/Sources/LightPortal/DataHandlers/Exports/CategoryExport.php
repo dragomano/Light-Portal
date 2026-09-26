@@ -97,16 +97,14 @@ class CategoryExport extends XmlExporter
 
 				$categoryId = $row['category_id'];
 
-				if (! isset($items[$categoryId])) {
-					$items[$categoryId] = [
-						'category_id' => $row['category_id'],
-						'parent_id'   => $row['parent_id'] ?? '0',
-						'slug'        => $row['slug'] ?? '',
-						'icon'        => trim($row['icon'] ?? ''),
-						'priority'    => $row['priority'] ?? 0,
-						'status'      => $row['status'] ?? 0,
-					];
-				}
+				$items[$categoryId] ??= [
+					'category_id' => $row['category_id'],
+					'parent_id'   => $row['parent_id'] ?? '0',
+					'slug'        => $row['slug'] ?? '',
+					'icon'        => trim($row['icon'] ?? ''),
+					'priority'    => $row['priority'] ?? 0,
+					'status'      => $row['status'] ?? 0,
+				];
 
 				if ($row['lang'] && $row['title']) {
 					$items[$categoryId]['titles'][$row['lang']] = trim($row['title']);

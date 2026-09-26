@@ -154,7 +154,7 @@ class Setting implements SettingInterface
 
 	public static function canMention(): bool
 	{
-		return self::get('enable_mentions', 'bool', false) || ! User::$me->allowedTo('mention');
+		return self::get('enable_mentions', 'bool', false) && User::$me->allowedTo('mention');
 	}
 
 	protected static function transformArray(string $value, string $from): array

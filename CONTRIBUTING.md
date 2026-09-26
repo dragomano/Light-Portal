@@ -1,132 +1,71 @@
-## How to contribute
+# Contributing
 
-- Fork the repository. If you are not used to GitHub, please check out [fork a repository](https://help.github.com/fork-a-repo).
-- Branch your repository, to commit the desired changes.
-- Test your code.
-- Send a pull request to us.
+Thank you for contributing!
 
-### Recommended soft
+> **AI coding agents:** Read `AGENTS.md` before making any changes.
 
-- [Visual Studio Code](https://code.visualstudio.com) (all OS), or [PHPStorm](https://www.jetbrains.com/phpstorm/) (all OS)
-- [SmartGit](https://www.syntevo.com/smartgit/download/) (all OS), or [Git Extensions](https://github.com/gitextensions/gitextensions/releases) (Windows), or [GitHub Desktop](https://desktop.github.com) (macOS, Windows)
+## Coding standards
 
-## How to submit an issue
+See [STYLEGUIDE.md](STYLEGUIDE.md).
 
-- Use bug report or feature request templates.
+## Recommended software
 
-## How to submit a pull request
+### Editors
 
-- Check if the develop branch exists. If it exists use it to pull your request into.
-- If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. `Fix page permissions`).
-- If you want to send a new feature, use `Add` word in the title of your PR (i.e `Add a new frontpage template`).
+- [Visual Studio Code](https://code.visualstudio.com) (Windows, macOS, Linux)
+- [Zed](https://zed.dev) (Windows, macOS, Linux)
 
-In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update HelloPortal addon`, etc.)
+### Git clients
 
-## Styleguide with examples
+- [SmartGit](https://www.syntevo.com/smartgit/download/) (Windows, macOS, Linux)
+- [Git Extensions](https://github.com/gitextensions/gitextensions/releases) (Windows)
+- [GitHub Desktop](https://desktop.github.com) (Windows, macOS)
 
-### PHP Styleguide
+## Development workflow
 
-- Use [PHP 8.2+](https://www.php.net/releases/8.2/en.php) with tabs instead of spaces
+### Fork the repository
 
-```php
-/**
- * Get array with bubble sorting
- *
- * @param array $array
- * @return array
- */
-function getBubbleSortedArray(array $array): array
-{
-    $count = count($array);
-    for ($j = 0; $j < $count - 1; $j++) {
-        for ($i = 0; $i < $count - $j - 1; $i++) {
-            if ($array[$i] > $array[$i + 1]){
-                $tmp_var = $array[$i + 1];
-                $array[$i + 1] = $array[$i];
-                $array[$i] = $tmp_var;
-            }
-        }
-    }
+Fork the repository. If you are not familiar with GitHub forks, please read:
 
-    return $array;
-}
+- https://help.github.com/fork-a-repo
 
-$array = [5, 3, 2, 6, 1, 4, 7];
-$result = getBubbleSortedArray($array);
-var_dump($result);
-```
+### Create a branch
 
-#### In short
+Create a dedicated branch for your changes.
 
-- Variable names: `$camelCase = true`
-- Function names: `snake_case()`
-- Class names: `class PascalCase`
-- Method names: `$this->camelCase()`
-- Array key names: `$var['snake_case']`
-- Object key names: `$obj->camelCase`
-- Constant names: `CONSTANT_NAME`
+### Before submitting
 
-### HTML Styleguide
+- Test your changes.
+- Update documentation if needed.
+- Ensure your code follows the project's coding standards.
 
-- Use [HTML5](https://www.w3schools.com/html/html5_syntax.asp)
+## Reporting issues
 
-### CSS Styleguide
+Please use the appropriate template:
 
-- Use SASS (see `resources/sass/portal.scss`) to modify desired rules.
+- Bug report
+- Feature request
 
-```scss
-#comment_form {
-  textarea {
-    width: 100%;
-    height: 30px;
-  }
+## Pull Requests
 
-  button {
-    &[name='comment'] {
-      margin-top: 10px;
-      float: right;
-      display: none;
-    }
-  }
-}
-```
+- Target the **develop** branch if it exists.
+- Prefix bug fixes with **Fix**.
+  - Example: `Fix page permissions`
+- Prefix new features with **Add**.
+  - Example: `Add a new frontpage template`
 
-### JavaScript Styleguide
+## Commit messages
 
-- Use native JavaScript, [Alpine.js](https://github.com/alpinejs/alpine) (3.x), [htmx](https://htmx.org) (2.x), or [Svelte](https://svelte.dev/) (5.x).
-- Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
+Commit titles should naturally complete the sentence:
 
-```js
-'use strict';
+> If applied, this commit will ...
 
-Array.prototype.bubbleSort = function () {
-  let swapped;
+Examples:
 
-  do {
-    swapped = false;
+- Update HelloPortal addon
+- Fix page permissions
+- Add dark mode support
 
-    this.forEach((item, index) => {
-      if (item > this[index + 1]) {
-        let temp = item;
+## Versioning
 
-        this[index] = this[index + 1];
-        this[index + 1] = temp;
-        swapped = true;
-      }
-    });
-  } while (swapped);
-
-  return this;
-};
-
-const arr = [5, 3, 2, 6, 1, 4, 7];
-console.log('Source array: ', arr);
-// Source array:  (7) [5, 3, 2, 6, 1, 4, 7]
-
-console.log('Sorted array: ', arr.bubbleSort());
-// Sorted array:  (7) [1, 2, 3, 4, 5, 6, 7]
-```
-
-### Semantic Versioning
-
-We try using [Major.Minor.Patch](https://medium.com/fiverr-engineering/major-minor-patch-a5298e2e1798) for releases.
+This project follows Semantic Versioning (`Major.Minor.Patch`) whenever possible.

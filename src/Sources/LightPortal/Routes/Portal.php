@@ -39,7 +39,9 @@ class Portal implements Routable
 
 	public static function getEntryId(string $id, string $type = 'categories'): string
 	{
-		return (string) array_search($id, self::getDataFromCache($type), true) ?: $id;
+		$result = array_search($id, self::getDataFromCache($type), true);
+
+		return $result === false ? $id : (string) $result;
 	}
 
 	public static function buildRoute(array $params): array

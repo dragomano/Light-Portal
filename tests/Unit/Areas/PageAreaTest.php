@@ -391,13 +391,14 @@ it('beforeRemove logs action if user is not author', function () {
 it('checkUser redirects if user has no permissions and no userId', function () {
     $this->accessor->setProperty('userId', null);
 
-    User::$me->allowedTo = fn() => false;
+    $requestMock = mock(RequestInterface::class);
+    $requestMock->shouldReceive('has')->with('actions')->andReturn(false);
+    AppMockRegistry::set(RequestInterface::class, $requestMock);
 
     $responseMock = mock(ResponseInterface::class);
     $responseMock->shouldReceive('redirect')->once()->with('action=admin;area=lp_pages;u=1');
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
 
-    $this->accessor->setProperty('response', $responseMock);
     $this->accessor->callMethod('checkUser');
 });
 
@@ -467,25 +468,25 @@ it('getPageIcon returns default icon for unknown type', function () {
     expect($result)->toBe('fas fa-question');
 });
 it('beforeMain loads params and checks user', function () {
-    $this->accessor->setProperty('isModerate', true);
-
     $responseMock = mock(ResponseInterface::class);
-    $responseMock->shouldReceive('redirect')->once();
+    $responseMock->shouldNotReceive('redirect');
     AppMockRegistry::set(ResponseInterface::class, $responseMock);
-    $this->accessor->setProperty('response', $responseMock);
-
-    $responseMock->redirect();
 
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('get')->with('params')->andReturn([]);
     $requestMock->shouldReceive('get')->with('u')->andReturn(1);
+    $requestMock->shouldReceive('has')->with('actions')->andReturn(false);
     $requestMock->shouldReceive('has')->with('moderate')->andReturn(true);
     $requestMock->shouldReceive('has')->with('deleted')->andReturn(false);
     $requestMock->shouldReceive('get')->with('type')->andReturn(null);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
-    $this->accessor->setProperty('request', $requestMock);
 
     $this->accessor->callMethod('beforeMain');
+
+    expect($this->accessor->getProperty('userId'))->toBe(1)
+        ->and($this->accessor->getProperty('isModerate'))->toBeTrue()
+        ->and($this->accessor->getProperty('isDeleted'))->toBeFalse()
+        ->and($this->accessor->getProperty('entryType'))->toBeNull();
 });
 
 it('performBulkActions handles delete action', function () {
