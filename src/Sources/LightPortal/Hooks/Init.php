@@ -31,8 +31,8 @@ class Init
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		define('LP_NAME', DateTime::getValueForDate());
-		define('LP_VERSION', '3.0.1');
-		define('LP_PLUGIN_LIST', 'https://github.com/dragomano/Light-Portal/releases/download/v3.0.1/addons.json');
+		define('LP_VERSION', '3.0.2');
+		define('LP_PLUGIN_LIST', 'https://github.com/dragomano/Light-Portal/releases/download/v3.0.2/addons.json');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
 		define('LP_CACHE_TIME', Setting::get('lp_cache_interval', 'int', 72000));
