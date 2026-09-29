@@ -65,24 +65,29 @@ class Reactions extends Plugin
 			document.addEventListener("addReaction", (event) => {
 				const pageUrl = ' . Utils::escapeJavaScript(LP_PAGE_URL . $data['slug']) . '
 				const isComment = typeof event.detail.comment !== "undefined"
-				axios.post(pageUrl + ";add_reaction", event.detail)
+				const postJson = (url, data) => fetch(url, {
+					method: "POST",
+					headers: { "Content-Type": "application/json; charset=utf-8" },
+					body: JSON.stringify(data)
+				})
+				postJson(pageUrl + ";add_reaction", event.detail)
 					.then(() => {
 						isComment
-						? axios
-							.post(pageUrl + ";get_reactions", {
+						? postJson(pageUrl + ";get_reactions", {
 								comment: event.detail.comment
 							})
-							.then(response => {
+							.then(response => response.json())
+							.then(data => {
 								if (window.commentReactions && window.commentReactions[event.detail.comment]) {
 									window.commentReactions[event.detail.comment].showButtons = false
-									window.commentReactions[event.detail.comment].reactions = response.data
+									window.commentReactions[event.detail.comment].reactions = data
 								}
 							})
-						: axios
-							.get(pageUrl + ";get_reactions")
-							.then(response => {
+						: fetch(pageUrl + ";get_reactions")
+							.then(response => response.json())
+							.then(data => {
 								window.pageReactions.showButtons = false
-								window.pageReactions.reactions = response.data
+								window.pageReactions.reactions = data
 							})
 					})
 			})', true);

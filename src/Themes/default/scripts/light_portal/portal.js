@@ -12,8 +12,12 @@ class PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      toggle_item: item,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        toggle_item: item,
+      }),
     });
   }
 
@@ -24,8 +28,12 @@ class PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      delete_item: item,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        delete_item: item,
+      }),
     });
 
     target.closest('tr').remove();
@@ -61,11 +69,15 @@ class Block extends PortalEntity {
 
     if (!item) return false;
 
-    const response = await axios.post(this.workUrl, {
-      clone_block: item,
+    const response = await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        clone_block: item,
+      }),
     });
 
-    const { success, id } = response.data;
+    const { success, id } = await response.json();
 
     if (success) {
       const div = target.cloneNode(true);
@@ -102,9 +114,13 @@ class Block extends PortalEntity {
       if (key !== null) priority.push(key);
     }
 
-    await axios.post(this.workUrl, {
-      update_priority: priority,
-      update_placement: placement,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        update_priority: priority,
+        update_placement: placement,
+      }),
     });
 
     const nextElem = e.item.nextElementSibling;
@@ -138,8 +154,12 @@ class Page extends PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      restore_item: item,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        restore_item: item,
+      }),
     });
 
     target.closest('tr').remove();
@@ -152,8 +172,12 @@ class Page extends PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      remove_forever: item,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        remove_forever: item,
+      }),
     });
 
     target.closest('tr').remove();
@@ -179,8 +203,12 @@ class Category extends PortalEntity {
       if (id !== null) priority.push(id);
     }
 
-    await axios.post(this.workUrl, {
-      update_priority: priority,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        update_priority: priority,
+      }),
     });
   }
 }

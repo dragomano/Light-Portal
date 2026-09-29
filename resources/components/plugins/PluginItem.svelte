@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
-  import { appState, contextState, iconState, pluginState, axios } from '../../js/states.svelte';
+  import { appState, contextState, iconState, pluginState, postJson } from '../../js/states.svelte';
   import { PluginOptionList } from './index.js';
   import Toggle from 'svelte-toggle';
   import Button from '../BaseButton.svelte';
@@ -37,7 +37,7 @@
   const showToggle = $derived(!item.special && Object.keys(item.types ?? {})[0] !== $_('not_applicable'));
 
   const toggle = async () => {
-    const response = await axios.post(
+    const response = await postJson(
       `${appState.baseUrl}?action=admin;area=lp_plugins;toggle;${appState.sessionVar}=${appState.sessionId}`,
       {
         plugin: index,
@@ -45,8 +45,12 @@
       }
     );
 
-    if (response.data.success) {
-      item.status = toggled ? 'on' : 'off';
+    if (response.ok) {
+      const data = await response.json();
+
+      if (data.success) {
+        item.status = toggled ? 'on' : 'off';
+      }
     }
   };
 </script>

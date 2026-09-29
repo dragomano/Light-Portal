@@ -2,7 +2,12 @@ import type { PluginState } from '../components/types'
 
 const { context, user, icons, settings, plugins } = window.portalJson
 
-export const axios = window.axios
+export const postJson = (url: string, data: unknown) =>
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    body: JSON.stringify(data),
+  })
 
 export const appState = $state({
   baseUrl: window.smf_scripturl,

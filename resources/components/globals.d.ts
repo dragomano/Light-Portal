@@ -9,7 +9,6 @@ declare global {
     smf_session_var: string
     portalJson: any
     Alpine: AlpineType
-    axios: typeof import('axios').default
     loadExternalScript: (url: string, isModule?: boolean) => Promise<void>
     loadPortalScript: (url: string, isModule?: boolean) => Promise<void>
     usePortalApi: (endpoint: string, scriptName: string) => Promise<void>

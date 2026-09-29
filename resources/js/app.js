@@ -1,10 +1,6 @@
 import Alpine from 'alpinejs'
 // @ts-ignore
 import slug from 'alpinejs-slug'
-import axios from 'axios'
-
-window.axios = axios
-window.axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
 
 Alpine.plugin(slug)
 Alpine.start()

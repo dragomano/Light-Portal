@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { contextState, axios } from './states.svelte.ts'
+import { contextState, postJson } from './states.svelte.ts'
 
 const { pageUrl } = contextState
 
@@ -10,13 +10,11 @@ class CommentApi {
 
   async get(start) {
     try {
-      const response = await axios.get(`${this.workUrl}api=comments`, {
-        params: {
-          start,
-        },
-      })
+      const response = await fetch(`${this.workUrl}api=comments&start=${start}`)
 
-      return response.data
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+      return await response.json()
     } catch (error) {
       console.error(error)
     }
@@ -24,13 +22,15 @@ class CommentApi {
 
   async add(parent_id, author, message) {
     try {
-      const response = await axios.post(`${this.workUrl}api=add_comment`, {
+      const response = await postJson(`${this.workUrl}api=add_comment`, {
         parent_id,
         author,
         message,
       })
 
-      return response.data
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+      return await response.json()
     } catch (error) {
       console.error(error)
     }
@@ -38,12 +38,14 @@ class CommentApi {
 
   async update(comment_id, message) {
     try {
-      const response = await axios.post(`${this.workUrl}api=update_comment`, {
+      const response = await postJson(`${this.workUrl}api=update_comment`, {
         comment_id,
         message,
       })
 
-      return response.data
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+      return await response.json()
     } catch (error) {
       console.error(error)
     }
@@ -51,11 +53,13 @@ class CommentApi {
 
   async remove(comment_id) {
     try {
-      const response = await axios.post(`${this.workUrl}api=remove_comment`, {
+      const response = await postJson(`${this.workUrl}api=remove_comment`, {
         comment_id,
       })
 
-      return response.data
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+      return await response.json()
     } catch (error) {
       console.error(error)
     }

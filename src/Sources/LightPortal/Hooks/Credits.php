@@ -205,15 +205,6 @@ class Credits extends AbstractHook
 				]
 			],
 			[
-				'title' => 'Axios',
-				'link' => 'https://github.com/axios/axios',
-				'author' => 'Matt Zabriskie & Collaborators',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/axios/axios/blob/v1.x/LICENSE'
-				]
-			],
-			[
 				'title' => 'Virtual Select',
 				'link' => 'https://sa-si-dev.github.io/virtual-select/',
 				'author' => 'Sa Si Dev',
