@@ -395,8 +395,15 @@ if (! function_exists('checkSession')) {
 }
 
 if (! function_exists('logAction')) {
+    $GLOBALS['log_action_calls'] = [];
+
     function logAction(string $action, array $extra = []): int
     {
+        $GLOBALS['log_action_calls'][] = [
+            'action' => $action,
+            'extra'  => $extra,
+        ];
+
         return 1;
     }
 }

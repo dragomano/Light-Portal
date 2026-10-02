@@ -17,7 +17,12 @@ use LightPortal\Repositories\AbstractRepository;
 use LightPortal\Repositories\DataManagerInterface;
 use LightPortal\Repositories\PageRepository;
 use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\NotifierInterface;
+use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\ResponseInterface;
+use LightPortal\Utils\SessionInterface;
+use Tests\AppMockRegistry;
 use Tests\PortalTable;
 use Tests\ReflectionAccessor;
 use Tests\Table;
@@ -27,6 +32,8 @@ use Tests\Unit\Repositories\PageRepositoryTestProvider;
 beforeEach(function() {
     Lang::$txt['today'] = 'Today at';
     Lang::$txt['yesterday'] = 'Yesterday at';
+
+    $GLOBALS['log_action_calls'] = [];
 
     User::$me = new User(1);
     User::$me->language = 'english';
@@ -52,13 +59,25 @@ beforeEach(function() {
 
     $transactionMock = mock(TransactionInterface::class);
     $transactionMock->shouldReceive('begin')->andReturnUsing(function () use ($adapter) {
-        $adapter->getDriver()->getConnection()->beginTransaction();
+        $connection = $adapter->getDriver()->getConnection();
+
+        $connection->beginTransaction();
+
+        return $connection;
     });
     $transactionMock->shouldReceive('commit')->andReturnUsing(function () use ($adapter) {
-        $adapter->getDriver()->getConnection()->commit();
+        $connection = $adapter->getDriver()->getConnection();
+
+        $connection->commit();
+
+        return $connection;
     });
     $transactionMock->shouldReceive('rollback')->andReturnUsing(function () use ($adapter) {
-        $adapter->getDriver()->getConnection()->rollback();
+        $connection = $adapter->getDriver()->getConnection();
+
+        $connection->rollback();
+
+        return $connection;
     });
 
     $this->transaction = $transactionMock;
@@ -446,3 +465,93 @@ it('can get prev next links', function (
         ->and($links[2])->toBe($expectedNextTitle)
         ->and($links[3])->toBe($expectedNextSlug);
 })->with($dataset);
+
+it('logs page update with a string title when another member edits the page', function () {
+    $requestMock = mock(RequestInterface::class);
+    $requestMock->shouldReceive('hasNot')->with(['save', 'save_exit'])->andReturn(false);
+    $requestMock->shouldReceive('has')->andReturn(false);
+    AppMockRegistry::set(RequestInterface::class, $requestMock);
+
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->once();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    $sessionMock = mock(SessionInterface::class);
+    $sessionMock->shouldReceive('free')->once()->with('lp');
+    AppMockRegistry::set(SessionInterface::class, $sessionMock);
+
+    $responseMock = mock(ResponseInterface::class);
+    $responseMock->shouldReceive('redirect')->never();
+    AppMockRegistry::set(ResponseInterface::class, $responseMock);
+
+    Utils::$context['lp_page'] = [
+        'id'          => 1,
+        'category_id' => 0,
+        'author_id'   => 2, // Another member, not User::$me (id: 1)
+        'slug'        => 'test-page',
+        'type'        => ContentType::HTML->value,
+        'entry_type'  => EntryType::DEFAULT->value,
+        'permissions' => Permission::ALL->value,
+        'status'      => Status::ACTIVE->value,
+        'title'       => 'Test Page',
+        'content'     => 'Test content',
+        'description' => '',
+        'tags'        => [],
+        'options'     => ['show_title' => true],
+    ];
+
+    $this->repository->setData(1);
+
+    $logCalls = $GLOBALS['log_action_calls'];
+
+    expect($logCalls)->toHaveCount(1)
+        ->and($logCalls[0]['action'])->toBe('update_lp_page')
+        ->and($logCalls[0]['extra']['page'])->toBeString()
+        ->and($logCalls[0]['extra']['page'])->toContain('Test Page')
+        ->and($logCalls[0]['extra']['page'])->toContain('test-page');
+
+    // SMF stores the log params via json_encode: the value must stay a string after the round trip
+    $decoded = json_decode(json_encode($logCalls[0]['extra']), true);
+
+    expect($decoded['page'])->toBeString()
+        ->and($decoded['page'])->toContain('Test Page');
+});
+
+it('does not log page update when the author edits their own page', function () {
+    $requestMock = mock(RequestInterface::class);
+    $requestMock->shouldReceive('hasNot')->with(['save', 'save_exit'])->andReturn(false);
+    $requestMock->shouldReceive('has')->andReturn(false);
+    AppMockRegistry::set(RequestInterface::class, $requestMock);
+
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->once();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    $sessionMock = mock(SessionInterface::class);
+    $sessionMock->shouldReceive('free')->once()->with('lp');
+    AppMockRegistry::set(SessionInterface::class, $sessionMock);
+
+    $responseMock = mock(ResponseInterface::class);
+    $responseMock->shouldReceive('redirect')->never();
+    AppMockRegistry::set(ResponseInterface::class, $responseMock);
+
+    Utils::$context['lp_page'] = [
+        'id'          => 1,
+        'category_id' => 0,
+        'author_id'   => 1, // The author is editing their own page
+        'slug'        => 'test-page',
+        'type'        => ContentType::HTML->value,
+        'entry_type'  => EntryType::DEFAULT->value,
+        'permissions' => Permission::ALL->value,
+        'status'      => Status::ACTIVE->value,
+        'title'       => 'Test Page',
+        'content'     => 'Test content',
+        'description' => '',
+        'tags'        => [],
+        'options'     => ['show_title' => true],
+    ];
+
+    $this->repository->setData(1);
+
+    expect($GLOBALS['log_action_calls'])->toBeEmpty();
+});
