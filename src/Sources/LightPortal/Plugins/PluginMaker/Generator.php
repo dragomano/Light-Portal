@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -496,7 +496,7 @@ class Generator
 		$this->class
 			->addMethod('getSupportedContentTypes')
 			->setReturnType('array')
-			->setProtected()
+			->setPublic()
 			->addBody("// TODO: Return an array of supported content types, e.g., ['html', 'markdown']");
 	}
 

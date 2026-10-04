@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\CodeMirror;
@@ -54,24 +54,14 @@ class CodeMirror extends Editor
 			->toArray();
 	}
 
+	public function servesContent(array $object): bool
+	{
+		return $this->resolveCurrentMode($object) !== null;
+	}
+
 	public function prepareEditor(Event $e): void
 	{
-		$object = $e->args->object;
-
-		if (! $this->isContentSupported($object))
-			return;
-
-		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
-			return;
-
-		$types = array_keys($this->modes);
-		foreach ($types as $type) {
-			$isTypeMatched = $object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type);
-			if ($isTypeMatched && in_array($type, $modes)) {
-				$currentMode = $type;
-				break;
-			}
-		}
+		$currentMode = $this->resolveCurrentMode($e->args->object);
 
 		if (empty($currentMode))
 			return;
@@ -197,7 +187,7 @@ class CodeMirror extends Editor
 		];
 	}
 
-	protected function getSupportedContentTypes(): array
+	public function getSupportedContentTypes(): array
 	{
 		return array_keys($this->modes);
 	}
@@ -220,6 +210,21 @@ class CodeMirror extends Editor
 	private function getStateUrl(): string
 	{
 		return 'https://esm.sh/@codemirror/state@' . self::CORE['@codemirror/state'];
+	}
+
+	private function resolveCurrentMode(array $object): ?string
+	{
+		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
+			return null;
+
+		foreach (array_keys($this->modes) as $type) {
+			$isTypeMatched = $object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type);
+			if ($isTypeMatched && in_array($type, $modes)) {
+				return $type;
+			}
+		}
+
+		return null;
 	}
 
 	private function getThemes(): array

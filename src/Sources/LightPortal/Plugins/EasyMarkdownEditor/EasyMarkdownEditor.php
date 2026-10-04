@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\EasyMarkdownEditor;
@@ -172,7 +172,7 @@ class EasyMarkdownEditor extends Editor
 		];
 	}
 
-	protected function getSupportedContentTypes(): array
+	public function getSupportedContentTypes(): array
 	{
 		return ['markdown'];
 	}
