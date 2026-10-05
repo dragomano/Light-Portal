@@ -15,7 +15,9 @@ namespace LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PortalHook;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\Str;
 
@@ -149,109 +151,64 @@ class Credits extends AbstractHook
 			],
 		];
 
-		$links = [
-			[
-				'title' => 'Flexbox Grid',
-				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
-				'author' => 'Kristofer Joseph',
-				'license' => [
-					'name' => 'the Apache License 2.0',
-					'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'Font Awesome Free',
-				'link' => 'https://fontawesome.com',
-				'author' => 'Fonticons, Inc.',
-				'license' => [
-					'name' => 'the Font Awesome Free License',
-					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
-				]
-			],
-			[
-				'title' => 'Alpine.js',
-				'link' => 'https://github.com/alpinejs/alpine',
-				'author' => 'Caleb Porzio and contributors',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
-				]
-			],
-			[
-				'title' => 'BladeOne Blade Template Engine',
-				'link' => 'https://github.com/EFTEC/BladeOne',
-				'author' => 'Jorge Patricio Castro Castillo',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/EFTEC/BladeOne/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'Sortable.js',
-				'link' => 'https://github.com/SortableJS/Sortable',
-				'author' => 'All contributors to Sortable',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'Alpine JS Slug',
-				'link' => 'https://github.com/markmead/alpinejs-slug',
-				'author' => 'Mark Mead',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/markmead/alpinejs-slug/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Virtual Select',
-				'link' => 'https://sa-si-dev.github.io/virtual-select/',
-				'author' => 'Sa Si Dev',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/sa-si-dev/virtual-select/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'LazyLoad',
-				'link' => 'https://github.com/verlok/vanilla-lazyload',
-				'author' => 'Andrea Verlicchi',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/verlok/vanilla-lazyload/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'Svelte',
-				'link' => 'https://github.com/sveltejs/svelte',
-				'author' => 'Svelte contributors',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/sveltejs/svelte#MIT-1-ov-file'
-				]
-			],
-			[
-				'title' => 'svelte-toggle',
-				'link' => 'https://github.com/metonym/svelte-toggle',
-				'author' => 'Eric Liu',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/metonym/svelte-toggle/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'Svelecte',
-				'link' => 'https://github.com/mskocik/svelecte',
-				'author' => 'Martin Skočík',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/mskocik/svelecte?tab=MIT-1-ov-file#readme'
-				]
-			],
-		];
+		$links = CreditsFactory::make()
+			->title('Flexbox Grid')
+			->link('https://github.com/evgenyrodionov/flexboxgrid2')
+			->author('Kristofer Joseph')
+			->license(License::Apache2, 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE')
+			->title('Font Awesome Free')
+			->link('https://fontawesome.com')
+			->author('Fonticons, Inc.')
+			->license(License::FontAwesomeFree, 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt')
+			->title('Alpine.js')
+			->link('https://github.com/alpinejs/alpine')
+			->author('Caleb Porzio and contributors')
+			->license(License::Mit, 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md')
+			->title('BladeOne Blade Template Engine')
+			->link('https://github.com/EFTEC/BladeOne')
+			->author('Jorge Patricio Castro Castillo')
+			->license(License::Mit, 'https://github.com/EFTEC/BladeOne/blob/master/LICENSE')
+			->title('Sortable.js')
+			->link('https://github.com/SortableJS/Sortable')
+			->author('All contributors to Sortable')
+			->license(License::Mit, 'https://github.com/SortableJS/Sortable/blob/master/LICENSE')
+			->title('Alpine JS Slug')
+			->link('https://github.com/markmead/alpinejs-slug')
+			->author('Mark Mead')
+			->license(License::Mit, 'https://github.com/markmead/alpinejs-slug/blob/main/LICENSE')
+			->title('Virtual Select')
+			->link('https://sa-si-dev.github.io/virtual-select/')
+			->author('Sa Si Dev')
+			->license(License::Mit, 'https://github.com/sa-si-dev/virtual-select/blob/master/LICENSE')
+			->title('LazyLoad')
+			->link('https://github.com/verlok/vanilla-lazyload')
+			->author('Andrea Verlicchi')
+			->license(License::Mit, 'https://github.com/verlok/vanilla-lazyload/blob/master/LICENSE')
+			->title('Svelte')
+			->link('https://github.com/sveltejs/svelte')
+			->author('Svelte contributors')
+			->license(License::Mit, 'https://github.com/sveltejs/svelte#MIT-1-ov-file')
+			->title('svelte-toggle')
+			->link('https://github.com/metonym/svelte-toggle')
+			->author('Eric Liu')
+			->license(License::Mit, 'https://github.com/metonym/svelte-toggle/blob/master/LICENSE')
+			->title('Svelecte')
+			->link('https://github.com/mskocik/svelecte')
+			->author('Martin Skočík')
+			->license(License::Mit, 'https://github.com/mskocik/svelecte?tab=MIT-1-ov-file#readme')
+			->toArray();
 
-		$this->dispatcher->dispatch(PortalHook::credits, ['links' => &$links]);
+		$pluginLinks = [];
+
+		$this->dispatcher->dispatch(PortalHook::credits, ['links' => &$pluginLinks]);
+
+		foreach ($pluginLinks as $item) {
+			if (array_is_list($item)) {
+				$links = array_merge($links, $item);
+			} else {
+				$links[] = $item;
+			}
+		}
 
 		shuffle($links);
 

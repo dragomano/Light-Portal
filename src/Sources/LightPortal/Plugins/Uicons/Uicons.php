@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Uicons;
 
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -69,15 +71,12 @@ class Uicons extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Uicons',
-			'link' => 'https://www.flaticon.com/uicons',
-			'author' => 'Flaticon',
-			'license' => [
-				'name' => 'ISC License',
-				'link' => 'https://www.freepikcompany.com/legal#nav-flaticon-agreement'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Uicons')
+			->link('https://www.flaticon.com/uicons')
+			->author('Flaticon')
+			->license(License::Isc, 'https://www.freepikcompany.com/legal#nav-flaticon-agreement')
+			->toArray();
 	}
 
 	private function getIconList(): array

@@ -15,6 +15,8 @@ namespace LightPortal\Plugins\CodeMirror;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
 use LightPortal\Plugins\SettingsFactory;
@@ -156,35 +158,20 @@ class CodeMirror extends Editor
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title'   => 'CodeMirror 6',
-			'link'    => 'https://code.haverbeke.berlin/codemirror/dev/',
-			'author'  => 'Marijn Haverbeke and others',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://code.haverbeke.berlin/codemirror/dev/raw/branch/main/LICENSE'
-			]
-		];
-
-		$e->args->links[] = [
-			'title'   => '@uiw/codemirror-themes',
-			'link'    => 'https://github.com/uiwjs/react-codemirror/tree/master/themes',
-			'author'  => 'uiw',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://raw.githubusercontent.com/uiwjs/react-codemirror/refs/heads/master/LICENSE'
-			]
-		];
-
-		$e->args->links[] = [
-			'title'   => 'codemirror-lang-twig',
-			'link'    => 'https://codeberg.org/danb/codemirror-lang-twig',
-			'author'  => 'Dan Brown and others',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://codeberg.org/danb/codemirror-lang-twig/raw/branch/main/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('CodeMirror 6')
+			->link('https://code.haverbeke.berlin/codemirror/dev/')
+			->author('Marijn Haverbeke and others')
+			->license(License::Mit, 'https://code.haverbeke.berlin/codemirror/dev/raw/branch/main/LICENSE')
+			->title('@uiw/codemirror-themes')
+			->link('https://github.com/uiwjs/react-codemirror/tree/master/themes')
+			->author('uiw')
+			->license(License::Mit, 'https://raw.githubusercontent.com/uiwjs/react-codemirror/refs/heads/master/LICENSE')
+			->title('codemirror-lang-twig')
+			->link('https://codeberg.org/danb/codemirror-lang-twig')
+			->author('Dan Brown and others')
+			->license(License::Mit, 'https://codeberg.org/danb/codemirror-lang-twig/raw/branch/main/LICENSE')
+			->toArray();
 	}
 
 	public function getSupportedContentTypes(): array

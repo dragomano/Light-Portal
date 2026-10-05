@@ -8,14 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Dragula;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Placement;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -50,14 +52,11 @@ class Dragula extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Dragula',
-			'link' => 'https://github.com/bevacqua/dragula/',
-			'author' => 'Nicolas Bevacqua',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/bevacqua/dragula/?tab=MIT-1-ov-file#readme'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Dragula')
+			->link('https://github.com/bevacqua/dragula/')
+			->author('Nicolas Bevacqua')
+			->license(License::Mit, 'https://github.com/bevacqua/dragula/?tab=MIT-1-ov-file#readme')
+			->toArray();
 	}
 }

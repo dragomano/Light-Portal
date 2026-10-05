@@ -8,14 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\TwigLayouts;
 
 use Bugo\Compat\Theme;
 use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -60,15 +62,12 @@ class TwigLayouts extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Twig',
-			'link' => 'https://github.com/twigphp/Twig',
-			'author' => 'Twig Team',
-			'license' => [
-				'name' => 'the BSD-3-Clause',
-				'link' => 'https://github.com/twigphp/Twig/blob/3.x/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Twig')
+			->link('https://github.com/twigphp/Twig')
+			->author('Twig Team')
+			->license(License::Bsd3, 'https://github.com/twigphp/Twig/blob/3.x/LICENSE')
+			->toArray();
 	}
 
 	private function showExamples(): string

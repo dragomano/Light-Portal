@@ -8,13 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.10.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
 use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -59,14 +61,11 @@ class PluginMaker extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Nette PHP Generator',
-			'link' => 'https://github.com/nette/php-generator',
-			'author' => 'David Grudl',
-			'license' => [
-				'name' => 'the New BSD License',
-				'link' => 'https://github.com/nette/php-generator/blob/master/license.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Nette PHP Generator')
+			->link('https://github.com/nette/php-generator')
+			->author('David Grudl')
+			->license(License::NewBsd, 'https://github.com/nette/php-generator/blob/master/license.md')
+			->toArray();
 	}
 }

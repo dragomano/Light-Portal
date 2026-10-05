@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\HelloPortal;
@@ -17,6 +17,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -125,15 +127,12 @@ class HelloPortal extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Intro.js',
-			'link' => 'https://github.com/usablica/intro.js',
-			'author' => 'Afshin Mehrabani',
-			'license' => [
-				'name' => 'GNU AGPLv3',
-				'link' => 'https://github.com/usablica/intro.js/blob/master/license.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Intro.js')
+			->link('https://github.com/usablica/intro.js')
+			->author('Afshin Mehrabani')
+			->license(License::Agpl3, 'https://github.com/usablica/intro.js/blob/master/license.md')
+			->toArray();
 	}
 
 	private function getStepData(): string

@@ -8,15 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Chart;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
@@ -180,14 +182,11 @@ class Chart extends Block
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Chart.js',
-			'link' => 'https://github.com/chartjs/Chart.js',
-			'author' => 'Chart.js Contributors',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/chartjs/Chart.js/blob/master/LICENSE.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Chart.js')
+			->link('https://github.com/chartjs/Chart.js')
+			->author('Chart.js Contributors')
+			->license(License::Mit, 'https://github.com/chartjs/Chart.js/blob/master/LICENSE.md')
+			->toArray();
 	}
 }

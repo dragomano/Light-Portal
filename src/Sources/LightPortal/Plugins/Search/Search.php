@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Search;
@@ -19,8 +19,10 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Permission;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\SettingsFactory;
@@ -69,15 +71,12 @@ class Search extends Block
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Vanilla JavaScript autoComplete',
-			'link' => 'https://github.com/Pixabay/JavaScript-autoComplete',
-			'author' => 'Simon Steinberger / Pixabay.com',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://www.opensource.org/licenses/mit-license.php'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Vanilla JavaScript autoComplete')
+			->link('https://github.com/Pixabay/JavaScript-autoComplete')
+			->author('Simon Steinberger / Pixabay.com')
+			->license(License::Mit, 'https://www.opensource.org/licenses/mit-license.php')
+			->toArray();
 	}
 
 	public function init(): void

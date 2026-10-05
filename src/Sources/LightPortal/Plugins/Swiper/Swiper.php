@@ -8,15 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Swiper;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
@@ -250,14 +252,11 @@ class Swiper extends Block
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Swiper',
-			'link' => 'https://github.com/nolimits4web/swiper',
-			'author' => 'Vladimir Kharlampidi',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/nolimits4web/swiper/blob/master/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Swiper')
+			->link('https://github.com/nolimits4web/swiper')
+			->author('Vladimir Kharlampidi')
+			->license(License::Mit, 'https://github.com/nolimits4web/swiper/blob/master/LICENSE')
+			->toArray();
 	}
 }

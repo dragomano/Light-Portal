@@ -334,6 +334,10 @@ public function commentButtons(Event $e): void
 > adding custom settings of your plugin
 
 ```php
+use LightPortal\Plugins\SettingsFactory;
+
+// ...
+
 public function addSettings(Event $e): void
 {
     $this->addDefaultValues(['some_color' => '#ff00ad']);
@@ -637,17 +641,19 @@ public function extendPluginAreas(Event $e): void
 > adding copyrights of used libraries/scripts, etc.
 
 ```php
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
+
+// ...
+
 public function credits(Event $e): void
 {
-    $e->args->links[] = [
-        'title' => 'Uicons',
-        'link' => 'https://www.flaticon.com/uicons',
-        'author' => 'Flaticon',
-        'license' => [
-            'name' => 'ISC License',
-            'link' => 'https://www.freepikcompany.com/legal#nav-flaticon-agreement'
-        ]
-    ];
+    $e->args->links[$this->name] = CreditsFactory::make()
+        ->title('Bootstrap Icons')
+        ->link('https://github.com/twbs/icons')
+        ->author('The Bootstrap Authors')
+        ->license(License::Mit, 'https://github.com/twbs/icons/blob/main/LICENSE.md')
+        ->toArray();
 }
 ```
 

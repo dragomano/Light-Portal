@@ -8,15 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\TinySlider;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
@@ -331,14 +333,11 @@ class TinySlider extends Block
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title'   => 'Tiny Slider 2',
-			'link'    => 'https://github.com/ganlanyuan/tiny-slider',
-			'author'  => 'William Lin',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/ganlanyuan/tiny-slider/blob/master/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Tiny Slider 2')
+			->link('https://github.com/ganlanyuan/tiny-slider')
+			->author('William Lin')
+			->license(License::Mit, 'https://github.com/ganlanyuan/tiny-slider/blob/master/LICENSE')
+			->toArray();
 	}
 }

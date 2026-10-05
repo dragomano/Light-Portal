@@ -15,6 +15,8 @@ namespace LightPortal\Plugins\TinyMCE;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
 use LightPortal\Plugins\SettingsFactory;
@@ -89,15 +91,12 @@ class TinyMCE extends Editor
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'TinyMCE',
-			'link' => 'https://github.com/tinymce/tinymce',
-			'author' => 'Ephox Corporation DBA Tiny Technologies, Inc.',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/tinymce/tinymce/blob/develop/LICENSE.TXT'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('TinyMCE')
+			->link('https://github.com/tinymce/tinymce')
+			->author('Ephox Corporation DBA Tiny Technologies, Inc.')
+			->license(License::Mit, 'https://github.com/tinymce/tinymce/blob/develop/LICENSE.TXT')
+			->toArray();
 	}
 
 	public function getSupportedContentTypes(): array

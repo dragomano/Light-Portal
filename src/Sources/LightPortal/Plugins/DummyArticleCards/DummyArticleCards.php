@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.11.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\DummyArticleCards;
 
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -39,14 +41,11 @@ class DummyArticleCards extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title'   => 'DummyJSON',
-			'link'    => 'https://github.com/Ovi/DummyJSON',
-			'author'  => 'Muhammad Ovi (Owais)',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/Ovi/DummyJSON?tab=License-1-ov-file#readme'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('DummyJSON')
+			->link('https://github.com/Ovi/DummyJSON')
+			->author('Muhammad Ovi (Owais)')
+			->license(License::Mit, 'https://github.com/Ovi/DummyJSON?tab=License-1-ov-file#readme')
+			->toArray();
 	}
 }

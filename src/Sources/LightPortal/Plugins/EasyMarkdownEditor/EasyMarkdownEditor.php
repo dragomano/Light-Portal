@@ -16,6 +16,8 @@ namespace LightPortal\Plugins\EasyMarkdownEditor;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
 
@@ -161,15 +163,12 @@ class EasyMarkdownEditor extends Editor
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'EasyMDE',
-			'link' => 'https://github.com/Ionaru/easy-markdown-editor',
-			'author' => 'Sparksuite, Inc. | Jeroen Akkerman',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('EasyMDE')
+			->link('https://github.com/Ionaru/easy-markdown-editor')
+			->author('Sparksuite, Inc. | Jeroen Akkerman')
+			->license(License::Mit, 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE')
+			->toArray();
 	}
 
 	public function getSupportedContentTypes(): array
