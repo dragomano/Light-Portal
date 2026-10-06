@@ -17,6 +17,7 @@ use Bugo\Bricks\Forms\{FormPresenter, FormRenderer};
 use Bugo\Bricks\Tables\{Interfaces\TablePresenterInterface, TablePresenter};
 use LightPortal\Actions\{Block, BoardIndex, CardList, CardListInterface, Category, CategoryIndex, CategoryPageList};
 use LightPortal\Actions\{Comment, FrontPage, Page, Tag, TagIndex, TagPageList};
+use LightPortal\Assets\AssetHandler;
 use LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
 use LightPortal\Areas\{BlockArea, CategoryArea, PageArea, PluginArea, TagArea};
 use LightPortal\Articles\Queries\{BoardArticleQuery, ChosenPageArticleQuery, ChosenTopicArticleQuery, PageArticleQuery};
@@ -31,7 +32,7 @@ use LightPortal\Events\{EventDispatcherInterface, EventManager, EventManagerFact
 use LightPortal\Hooks\Integration;
 use LightPortal\Lists\{BlockList, CategoryList, IconList, PageList, PluginList, TagList};
 use LightPortal\Models\{BlockFactory, CategoryFactory, PageFactory, TagFactory};
-use LightPortal\Plugins\{AssetHandler, ConfigHandler, LangHandler, PluginHandler};
+use LightPortal\Plugins\{ConfigHandler, LangHandler, PluginHandler};
 use LightPortal\Renderers\{Blade, PurePHP, RendererInterface};
 use LightPortal\Repositories\{BlockRepository, BlockRepositoryInterface, CategoryIndexRepository, CategoryRepository};
 use LightPortal\Repositories\{CategoryRepositoryInterface, CommentRepository, CommentRepositoryInterface};

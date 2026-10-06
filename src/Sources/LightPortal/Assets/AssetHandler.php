@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace LightPortal\Plugins;
+namespace LightPortal\Assets;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\WebFetch\WebFetchApi;

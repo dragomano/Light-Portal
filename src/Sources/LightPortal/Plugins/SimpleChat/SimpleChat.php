@@ -8,13 +8,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.09.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
@@ -134,13 +135,10 @@ class SimpleChat extends Block
 	private function loadDependencies(): void
 	{
 		Theme::loadCSSFile('admin.css');
-		Theme::loadJavaScriptFile(
+		$this->loadExternalResources(new ExternalJs(
 			'https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js',
-			[
-				'defer'    => true,
-				'external' => true,
-			]
-		);
+			defer: true,
+		));
 	}
 
 	private function mergeWithDefaultParams(Params $parameters): Params

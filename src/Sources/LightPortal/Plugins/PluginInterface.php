@@ -12,6 +12,8 @@
 
 namespace LightPortal\Plugins;
 
+use LightPortal\Assets\ExternalResource;
+
 interface PluginInterface
 {
 	public function getCamelName(): string;
@@ -20,5 +22,5 @@ interface PluginInterface
 
 	public function addDefaultValues(array $values): void;
 
-	public function loadExternalResources(array $resources): void;
+	public function loadExternalResources(ExternalResource ...$resources): void;
 }

@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace LightPortal\Plugins;
+namespace LightPortal\Assets;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class ScriptCollection extends AssetCollection
+interface ExternalResource
 {
-	protected string $type = 'scripts';
+	public function load(): void;
 }

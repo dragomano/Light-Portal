@@ -15,6 +15,8 @@ namespace LightPortal\Plugins\Dragula;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\License;
 use LightPortal\Enums\Placement;
 use LightPortal\Plugins\CreditsFactory;
@@ -42,10 +44,10 @@ class Dragula extends Plugin
 		}');
 		}
 
-		$this->loadExternalResources([
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.css'],
-			['type' => 'js',  'url' => 'https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.js'],
-		]);
+		$this->loadExternalResources(
+			new ExternalCss('https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.css'),
+			new ExternalJs('https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.js'),
+		);
 
 		Theme::addInlineJavaScript('handleDragging()', true);
 	}

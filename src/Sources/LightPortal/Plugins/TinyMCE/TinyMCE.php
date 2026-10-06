@@ -15,6 +15,7 @@ namespace LightPortal\Plugins\TinyMCE;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\License;
 use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
@@ -56,15 +57,10 @@ class TinyMCE extends Editor
 
 		$apiKey = $this->context['api_key'] ?? 'no-api-key';
 
-		Theme::loadJavaScriptFile(
+		$this->loadExternalResources(new ExternalJs(
 			'https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js',
-			[
-				'external' => true,
-				'attributes' => [
-					'referrerpolicy' => 'origin',
-				]
-			]
-		);
+			attributes: ['referrerpolicy' => 'origin'],
+		));
 
 		Theme::addInlineJavaScript('
 		const useDarkMode = ' . ($this->isDarkTheme($this->context['dark_themes']) ? 'true' : 'false') . ';

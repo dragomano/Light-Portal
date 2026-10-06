@@ -16,6 +16,8 @@ namespace LightPortal\Plugins\EasyMarkdownEditor;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\License;
 use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
@@ -33,10 +35,10 @@ class EasyMarkdownEditor extends Editor
 
 		Lang::load('Editor');
 
-		$this->loadExternalResources([
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css'],
-			['type' => 'js',  'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'],
-		]);
+		$this->loadExternalResources(
+			new ExternalCss('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css'),
+			new ExternalJs('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'),
+		);
 
 		Theme::addInlineCss('
 		.editor-toolbar button {

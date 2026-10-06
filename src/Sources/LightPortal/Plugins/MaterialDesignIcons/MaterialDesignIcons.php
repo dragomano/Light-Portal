@@ -13,7 +13,7 @@
 
 namespace LightPortal\Plugins\MaterialDesignIcons;
 
-use Bugo\Compat\Theme;
+use LightPortal\Assets\ExternalCss;
 use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\CreditsFactory;
@@ -34,13 +34,9 @@ class MaterialDesignIcons extends Plugin
 
 	public function init(): void
 	{
-		Theme::loadCSSFile(
-			'https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css',
-			[
-				'external' => true,
-				'seed'     => false,
-			]
-		);
+		$this->loadExternalResources(new ExternalCss(
+			'https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css'
+		));
 	}
 
 	public function prepareIconList(Event $e): void

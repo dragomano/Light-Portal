@@ -16,6 +16,8 @@ namespace LightPortal\Plugins\HelloPortal;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\ForumHook;
 use LightPortal\Enums\License;
 use LightPortal\Plugins\CreditsFactory;
@@ -67,21 +69,21 @@ class HelloPortal extends Plugin
 		];
 
 		$resources = [
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css'],
+			new ExternalCss('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css'),
 		];
 
 		if (! empty($this->context['theme'])) {
 			$theme = $this->context['theme'] . '.css';
-			$resources[] = ['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme];
+			$resources[] = new ExternalCss('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme);
 		}
 
 		if (Utils::$context['right_to_left']) {
-			$resources[] = ['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css'];
+			$resources[] = new ExternalCss('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 		}
 
-		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js'];
+		$resources[] = new ExternalJs('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
-		$this->loadExternalResources($resources);
+		$this->loadExternalResources(...$resources);
 
 		Theme::addInlineJavaScript('
 		function runTour() {

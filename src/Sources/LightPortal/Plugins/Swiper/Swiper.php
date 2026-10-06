@@ -15,6 +15,8 @@ namespace LightPortal\Plugins\Swiper;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\License;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
@@ -195,10 +197,10 @@ class Swiper extends Block
 		if (empty($swiperHtml))
 			return;
 
-		$this->loadExternalResources([
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js'],
-		]);
+		$this->loadExternalResources(
+			new ExternalCss('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css'),
+			new ExternalJs('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js'),
+		);
 
 		Theme::addInlineJavaScript('
 			const swiper' . $id . ' = new Swiper("#swiper' . $id . '", {

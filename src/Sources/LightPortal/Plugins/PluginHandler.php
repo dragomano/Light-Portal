@@ -14,6 +14,8 @@ namespace LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\AssetBuilder;
+use LightPortal\Assets\AssetHandler;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventManager;
 use LightPortal\Utils\Setting;

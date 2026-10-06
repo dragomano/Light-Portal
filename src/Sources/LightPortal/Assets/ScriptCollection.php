@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace LightPortal\Plugins;
+namespace LightPortal\Assets;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CssCollection extends AssetCollection
+class ScriptCollection extends AssetCollection
 {
-	protected string $type = 'css';
+	protected string $type = 'scripts';
 }

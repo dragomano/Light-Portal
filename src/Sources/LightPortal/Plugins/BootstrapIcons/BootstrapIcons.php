@@ -13,8 +13,8 @@
 
 namespace LightPortal\Plugins\BootstrapIcons;
 
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
 use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\CreditsFactory;
@@ -35,13 +35,9 @@ class BootstrapIcons extends Plugin
 
 	public function init(): void
 	{
-		Theme::loadCSSFile(
-			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css',
-			[
-				'external' => true,
-				'seed'     => false,
-			]
-		);
+		$this->loadExternalResources(new ExternalCss(
+			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css'
+		));
 	}
 
 	public function prepareIconList(Event $e): void

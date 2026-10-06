@@ -10,7 +10,9 @@
  * @version 3.0
  */
 
-namespace LightPortal\Plugins;
+namespace LightPortal\Assets;
+
+use LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

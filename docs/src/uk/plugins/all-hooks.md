@@ -428,12 +428,17 @@ public function layoutExtensions(Event $e): void
 > додавання користувацьких скриптів і стилів на фронт-сторінці
 
 ```php
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
+
+// ...
+
 public function frontAssets(): void
 {
-    $this->loadExternalResources([
-        ['type' => 'css', 'url' => 'https://cdn.example.com/custom.css'],
-        ['type' => 'js',  'url' => 'https://cdn.example.com/custom.js'],
-    ]);
+    $this->loadExternalResources(
+        new ExternalCss('https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.css'),
+        new ExternalJs('https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.js'),
+    );
 }
 ```
 
