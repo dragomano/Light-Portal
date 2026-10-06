@@ -28,6 +28,7 @@
 			<file>src/Sources/LightPortal/Articles/Queries/index.php</file>
 			<file>src/Sources/LightPortal/Articles/Services/index.php</file>
 			<file>src/Sources/LightPortal/Articles/index.php</file>
+			<file>src/Sources/LightPortal/Assets/index.php</file>
 			<file>src/Sources/LightPortal/Database/Migrations/Columns/index.php</file>
 			<file>src/Sources/LightPortal/Database/Migrations/Creators/index.php</file>
 			<file>src/Sources/LightPortal/Database/Migrations/Operations/index.php</file>
@@ -59,6 +60,7 @@
 			<file>src/Sources/LightPortal/Utils/Traits/index.php</file>
 			<file>src/Sources/LightPortal/Utils/index.php</file>
 			<file>src/Sources/LightPortal/Validators/index.php</file>
+			<file>src/Sources/LightPortal/addons.php</file>
 			<file>src/Sources/LightPortal/app.php</file>
 			<file>src/Sources/LightPortal/create_index.php</file>
 			<file>src/Sources/LightPortal/functions.php</file>
