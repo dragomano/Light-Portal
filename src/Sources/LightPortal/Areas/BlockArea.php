@@ -31,9 +31,11 @@ use LightPortal\UI\Fields\UrlField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\BlockValidator;
+use starfederation\datastar\enums\ElementPatchMode;
 
 use const LP_PAGE_PARAM;
 
@@ -63,6 +65,8 @@ final class BlockArea extends AbstractArea
 			'clone_block'     => fn($data) => $this->handleClone($data['clone_block']),
 			'update_priority' => fn($data) => $this->getRepository()
 				->updatePriority($data['update_priority'], $data['update_placement']),
+			'toggle_item'     => fn($data) => $this->handleToggle($data['toggle_item']),
+			'delete_item'     => fn($data) => $this->handleRemove($data['delete_item']),
 		];
 	}
 
@@ -256,11 +260,27 @@ final class BlockArea extends AbstractArea
 
 		$this->request()->put('clone', true);
 
-		$result = ['success' => false];
-
 		Utils::$context['lp_block'] = $this->repository->getData(intval($item));
 
 		$this->repository->setData();
+
+		if (DatastarSender::isDatastarRequest()) {
+			if (empty(Utils::$context['lp_block']['id']))
+				return;
+
+			$newId = (int) Utils::$context['lp_block']['id'];
+			$html  = $this->renderBlockEntry($newId);
+
+			if ($html === null)
+				return;
+
+			$sender = new DatastarSender();
+			$sender->patchElements($html, 'tr[data-id="' . intval($item) . '"]', ElementPatchMode::After);
+
+			return;
+		}
+
+		$result = ['success' => false];
 
 		if (Utils::$context['lp_block']['id']) {
 			$result = [
@@ -269,9 +289,66 @@ final class BlockArea extends AbstractArea
 			];
 		}
 
-		$this->clearCache();
-
 		$this->response()->exit($result);
+	}
+
+	private function handleToggle(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$id = (int) $item;
+
+		$this->getRepository()->toggleStatus($id);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$html = $this->renderBlockEntry($id);
+
+		if ($html === null)
+			return;
+
+		$sender = new DatastarSender();
+		$sender->patchElements($html, 'tr[data-id="' . $id . '"]');
+	}
+
+	private function handleRemove(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$id = (int) $item;
+
+		$this->getRepository()->remove($id);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$sender = new DatastarSender();
+		$sender->removeElements('tr[data-id="' . $id . '"]');
+	}
+
+	private function renderBlockEntry(int $id): ?string
+	{
+		$blockData = $this->getRepository()->getAll(0, 0, 'placement DESC, priority');
+		$data      = null;
+
+		foreach ($blockData as $items) {
+			if (is_array($items) && array_key_exists($id, $items)) {
+				$data = $items[$id];
+				break;
+			}
+		}
+
+		if ($data === null)
+			return null;
+
+		return (string) TemplateLoader::fromFile(
+			'admin/partials/_block_entry',
+			['id' => $id, 'data' => $data],
+			false
+		);
 	}
 
 	private function getDefaultOptions(): array

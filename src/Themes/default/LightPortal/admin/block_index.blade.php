@@ -9,10 +9,10 @@
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
-				<a href="{{ $add_link }}" x-data>
+				<a href="{{ $add_link }}">
 					@php
 						$icon = Icon::get('plus', $txt['lp_blocks_add']);
-						echo str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" class=', $icon);
+						echo str_replace(' class=', ' data-on:mouseover="evt.target.classList.add(\'fa-spin\')" data-on:mouseout="evt.target.classList.remove(\'fa-spin\')" class=', $icon);
 					@endphp
 				</a>
 			</span>
@@ -54,7 +54,7 @@
 			</tbody>
 		@else
 			<tbody data-placement="{{ $placement }}">
-				<tr class="windowbg centertext" x-data>
+				<tr class="windowbg centertext">
 					<td>{{ $txt['lp_no_items'] }}</td>
 				</tr>
 			</tbody>

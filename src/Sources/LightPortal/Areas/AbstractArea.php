@@ -33,6 +33,7 @@ use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\Content;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\SessionManager;
@@ -170,10 +171,22 @@ abstract class AbstractArea implements AreaInterface
 
 		User::$me->checkSession('request');
 
-		$data = $this->request()->json();
+		$isDatastarRequest = DatastarSender::isDatastarRequest();
+
+		if ($isDatastarRequest) {
+			(new DatastarSender())->sendHeaders();
+		}
+
+		$data = $isDatastarRequest
+			? DatastarSender::readSignals()
+			: $this->request()->json();
 
 		$this->processActions($data);
 		$this->clearCache();
+
+		if ($isDatastarRequest) {
+			exit;
+		}
 
 		$this->response()->exit([
 			'success' => true,
