@@ -27,3 +27,30 @@ dl.settings {
     }
   }
 }
+
+/* Logo block on the portal settings home page */
+.information:has(.lp_about_logo) {
+  display: block;
+  overflow: visible;
+}
+
+.information:has(.lp_about_logo)::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+@media (width <= 600px) {
+  .information .lp_about_logo {
+    float: none;
+    display: block;
+    margin-inline: auto;
+  }
+}
+
+/* Dropdown Menu Fix */
+@media (max-width: 560px) {
+  #mobile_generic_menu_1_tabs .dropdown_menu_1_tabs a > i {
+    margin-inline-end: 8px;
+  }
+}
