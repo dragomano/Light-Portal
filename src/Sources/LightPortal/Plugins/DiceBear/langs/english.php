@@ -7,5 +7,6 @@ return [
 	'source_set' => ['User name', 'User ID', 'User email'],
 	'style' => 'Style',
 	'size' => 'Default size',
-	'flip' => 'Flip right',
+	'flip' => 'Flip the avatar',
+	'flip_set' => ['No', 'Horizontal', 'Vertical', 'Both'],
 ];
