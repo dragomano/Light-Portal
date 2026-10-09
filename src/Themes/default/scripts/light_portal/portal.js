@@ -78,7 +78,7 @@ class Block extends PortalEntity {
   constructor() {
     super();
     this.plural = 'blocks';
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions;' + smf_session_var + '=' + smf_session_id;
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions&' + smf_session_var + '=' + smf_session_id;
   }
 
   async clone(target) {
@@ -111,7 +111,7 @@ class Block extends PortalEntity {
     thisForm.submit();
   }
 
-  async sort(e) {
+  sort(e) {
     const items = e.from.children;
     const items2 = e.to.children;
 
@@ -131,14 +131,14 @@ class Block extends PortalEntity {
       if (key !== null) priority.push(key);
     }
 
-    await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        update_priority: priority,
-        update_placement: placement,
-      }),
-    });
+    const sortIds = document.getElementById('lp_block_sort_ids');
+    const sortPlacement = document.getElementById('lp_block_sort_placement');
+
+    sortIds.value = priority.join(',');
+    sortPlacement.value = placement;
+    sortIds.dispatchEvent(new Event('input', { bubbles: true }));
+    sortPlacement.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('lp_block_sort_trigger').click();
 
     const nextElem = e.item.nextElementSibling;
     const prevElem = e.item.previousElementSibling;

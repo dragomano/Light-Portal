@@ -44,6 +44,8 @@ if (! defined('SMF'))
 
 final class BlockArea extends AbstractArea
 {
+	private ?DatastarSender $datastarSender = null;
+
 	public function __construct(BlockRepositoryInterface $repository, EventDispatcherInterface $dispatcher)
 	{
 		parent::__construct($repository, $dispatcher);
@@ -63,8 +65,7 @@ final class BlockArea extends AbstractArea
 	{
 		return [
 			'clone_block'     => fn($data) => $this->handleClone($data['clone_block']),
-			'update_priority' => fn($data) => $this->getRepository()
-				->updatePriority($data['update_priority'], $data['update_placement']),
+			'update_priority' => fn($data) => $this->handleUpdatePriority($data['update_priority'], $data['update_placement']),
 			'toggle_item'     => fn($data) => $this->handleToggle($data['toggle_item']),
 			'delete_item'     => fn($data) => $this->handleRemove($data['delete_item']),
 		];
@@ -274,7 +275,7 @@ final class BlockArea extends AbstractArea
 			if ($html === null)
 				return;
 
-			$sender = new DatastarSender();
+			$sender = $this->getDatastarSender();
 			$sender->patchElements($html, 'tr[data-id="' . intval($item) . '"]', ElementPatchMode::After);
 
 			return;
@@ -309,7 +310,7 @@ final class BlockArea extends AbstractArea
 		if ($html === null)
 			return;
 
-		$sender = new DatastarSender();
+		$sender = $this->getDatastarSender();
 		$sender->patchElements($html, 'tr[data-id="' . $id . '"]');
 	}
 
@@ -325,8 +326,15 @@ final class BlockArea extends AbstractArea
 		if (! DatastarSender::isDatastarRequest())
 			return;
 
-		$sender = new DatastarSender();
+		$sender = $this->getDatastarSender();
 		$sender->removeElements('tr[data-id="' . $id . '"]');
+	}
+
+	private function handleUpdatePriority(mixed $priority, mixed $placement): void
+	{
+		$ids = array_values(array_map('intval', array_filter(explode(',', (string) $priority))));
+
+		$this->getRepository()->updatePriority($ids, (string) $placement);
 	}
 
 	private function renderBlockEntry(int $id): ?string
@@ -448,5 +456,10 @@ final class BlockArea extends AbstractArea
 		assert($repository instanceof BlockRepositoryInterface);
 
 		return $repository;
+	}
+
+	private function getDatastarSender(): DatastarSender
+	{
+		return $this->datastarSender ??= new DatastarSender();
 	}
 }

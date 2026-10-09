@@ -62,6 +62,16 @@
 	</table>
 @endforeach
 
+@php
+	$sortUrl = $scripturl . '?action=admin&area=lp_blocks&actions&' . $context['session_var'] . '=' . $context['session_id'];
+@endphp
+
+<div hidden data-signals="{ sort_ids: '', sort_placement: '' }">
+	<input id="lp_block_sort_ids" type="hidden" data-bind="sort_ids">
+	<input id="lp_block_sort_placement" type="hidden" data-bind="sort_placement">
+	<button id="lp_block_sort_trigger" type="button" data-on:click="@post('{{ $sortUrl }}', {payload: {update_priority: $sort_ids, update_placement: $sort_placement}})"></button>
+</div>
+
 <script src="@asset('Sortable.min.js')"></script>
 <script>
 	const block = new Block(),

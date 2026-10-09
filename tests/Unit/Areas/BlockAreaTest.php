@@ -10,6 +10,7 @@ use LightPortal\Areas\BlockArea;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
 use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Validators\BlockValidator;
@@ -360,4 +361,119 @@ it('getRepository returns correct instance', function () {
     $result = $this->accessor->callMethod('getRepository');
 
     expect($result)->toBe($this->repositoryMock);
+});
+
+it('update_priority handler parses comma-separated ids and passes placement', function () {
+    $this->repositoryMock->shouldReceive('updatePriority')
+        ->once()
+        ->with([3, 1, 7], 'top');
+
+    $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+
+    $handlers['update_priority'](['update_priority' => '3,1,7', 'update_placement' => 'top']);
+
+    expect(true)->toBeTrue();
+});
+
+it('update_priority handler ignores empty ids', function () {
+    $this->repositoryMock->shouldReceive('updatePriority')
+        ->once()
+        ->with([5], '');
+
+    $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+
+    $handlers['update_priority'](['update_priority' => '5,,', 'update_placement' => '']);
+
+    expect(true)->toBeTrue();
+});
+
+describe('Datastar actions', function () {
+    beforeEach(function () {
+        $this->serverBackup = $_SERVER;
+
+        unset($_SERVER['HTTP_DATASTAR_REQUEST']);
+
+        $this->senderMock = mock(DatastarSender::class);
+        $this->accessor->setProperty('datastarSender', $this->senderMock);
+    });
+
+    afterEach(function () {
+        $_SERVER = $this->serverBackup;
+    });
+
+    it('handleToggle toggles status without patching for non-Datastar requests', function () {
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(5);
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleToggle', ['5']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleToggle patches the row for Datastar requests', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(5);
+        $this->repositoryMock->shouldReceive('getAll')
+            ->andReturn([['placement' => 'top', 5 => ['id' => 5, 'type' => 'html', 'status' => 1]]]);
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::type('string'), 'tr[data-id="5"]');
+
+        $this->accessor->callMethod('handleToggle', ['5']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleToggle does not patch when the block is missing after toggle', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(5);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleToggle', ['5']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleToggle returns early for empty item', function () {
+        $this->repositoryMock->shouldNotReceive('toggleStatus');
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleToggle', ['']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleRemove removes the row without Datastar patch for non-Datastar requests', function () {
+        $this->repositoryMock->shouldReceive('remove')->once()->with(9);
+        $this->senderMock->shouldNotReceive('removeElements');
+
+        $this->accessor->callMethod('handleRemove', ['9']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleRemove sends removeElements for Datastar requests', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('remove')->once()->with(9);
+        $this->senderMock->shouldReceive('removeElements')
+            ->once()
+            ->with('tr[data-id="9"]');
+
+        $this->accessor->callMethod('handleRemove', ['9']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleRemove returns early for empty item', function () {
+        $this->repositoryMock->shouldNotReceive('remove');
+        $this->senderMock->shouldNotReceive('removeElements');
+
+        $this->accessor->callMethod('handleRemove', [null]);
+
+        expect(true)->toBeTrue();
+    });
 });

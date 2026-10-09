@@ -122,6 +122,29 @@ describe('DatastarSender', function () {
 
             expect(true)->toBeTrue();
         });
+
+        it('sends headers only once across removeElements calls', function () {
+            $sse = mock(ServerSentEventGenerator::class);
+            $sse->shouldReceive('sendHeaders')->once();
+            $sse->shouldReceive('removeElements')->twice();
+
+            $sender = new DatastarSender($sse);
+            $sender->removeElements('tr[data-id="7"]');
+            $sender->removeElements('tr[data-id="8"]');
+
+            expect(true)->toBeTrue();
+        });
+    });
+
+    it('sends headers before the first patch', function () {
+        $sse = mock(ServerSentEventGenerator::class);
+        $sse->shouldReceive('sendHeaders')->once()->ordered();
+        $sse->shouldReceive('patchElements')->once()->ordered();
+
+        $sender = new DatastarSender($sse);
+        $sender->patchElements('<tr data-id="42"></tr>');
+
+        expect(true)->toBeTrue();
     });
 
     it('emits a valid patch-elements SSE stream', function () {
