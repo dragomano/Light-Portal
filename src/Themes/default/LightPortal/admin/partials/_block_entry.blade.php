@@ -27,7 +27,7 @@
 						</tr>
 					@endif
 					<tr class="windowbg">
-						<td>{{ $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']] }}</td>
+						<td>{!! $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']] !!}</td>
 						<td class="hidden-md">{{ $data['areas'] }}</td>
 					</tr>
 					</tbody>
