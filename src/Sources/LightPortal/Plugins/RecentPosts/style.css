@@ -36,3 +36,8 @@
 		margin: 0 !important;
 	}
 }
+
+.recent_posts > div,
+.recent_posts_list > div {
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+}

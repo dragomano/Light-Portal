@@ -11,3 +11,7 @@
 		padding-inline: 12px;
 	}
 }
+
+.random_pages > li {
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+}

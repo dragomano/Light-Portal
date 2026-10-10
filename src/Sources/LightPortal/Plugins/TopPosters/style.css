@@ -2,3 +2,9 @@ dl.top_posters dt img {
 	inline-size: 24px;
 	vertical-align: middle;
 }
+
+.top_posters.stats {
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+	padding-inline-start: 10px;
+	margin-inline-start: 2px;
+}

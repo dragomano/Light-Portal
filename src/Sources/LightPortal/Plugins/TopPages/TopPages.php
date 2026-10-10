@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.06.26
+ * @version 10.10.26
  */
 
 namespace LightPortal\Plugins\TopPages;
@@ -135,7 +135,7 @@ class TopPages extends Block
 			if (empty($max)) {
 				echo $this->txt['no_items'];
 			} else {
-				$dl = Str::html('dl', ['class' => 'stats']);
+				$dl = Str::html('dl', ['class' => $this->name . ' stats']);
 
 				foreach ($topPages as $page) {
 					if ($page['num_' . $type] < 1 || empty($title = $page['title']))
