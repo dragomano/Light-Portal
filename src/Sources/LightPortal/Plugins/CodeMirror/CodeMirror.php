@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.10.26
+ * @version 14.10.26
  */
 
 namespace LightPortal\Plugins\CodeMirror;
@@ -30,6 +30,7 @@ class CodeMirror extends Editor
 		'html'     => 'HTML',
 		'php'      => 'PHP',
 		'markdown' => 'Markdown',
+		'carve'    => 'Carve',
 		'pug'      => 'Pug',
 		'twig'     => 'Twig',
 	];
@@ -46,6 +47,7 @@ class CodeMirror extends Editor
 		'@codemirror/commands'     => '6.11.1',
 		'@codemirror/search'       => '6.7.2',
 		'@lezer/highlight'         => '1.2.5',
+		'@lezer/common'            => '1.5.3',
 	];
 
 	public function addSettings(Event $e): void
@@ -73,6 +75,7 @@ class CodeMirror extends Editor
 			'php'   => $this->getModuleUrl('@codemirror/lang-php@6'),
 			'pug'   => $this->getModuleUrl('@codemirror/legacy-modes@6/mode/pug'),
 			'twig'  => $this->getModuleUrl('@ssddanbrown/codemirror-lang-twig@1'),
+			'carve' => $this->getModuleUrl('codemirror-carve@0.1.0'),
 			default => $this->getModuleUrl('@codemirror/lang-markdown@6'),
 		};
 
@@ -84,6 +87,7 @@ class CodeMirror extends Editor
 			'php'   => 'lang.php()',
 			'pug'   => 'language.StreamLanguage.define(lang.pug)',
 			'twig'  => 'lang.twig()',
+			'carve' => 'lang.carve()',
 			default => 'lang.markdown()',
 		};
 
@@ -109,8 +113,9 @@ class CodeMirror extends Editor
 
 		const themeChanger = document.getElementById("cmThemeChanger");
 		let savedTheme = localStorage.getItem("cmTheme");
-		if (savedTheme === null || ! themeChanger.querySelector(`option[value="${savedTheme}"]`))
+		if (savedTheme === null || ! themeChanger.querySelector(`option[value="${savedTheme}"]`)) {
 			savedTheme = "default";
+		}
 
 		themeChanger.value = savedTheme;
 
@@ -148,10 +153,11 @@ class CodeMirror extends Editor
 			themeChanger.addEventListener("change", function () {
 				const name = this.value;
 				view.dispatch({effects: themeCompartment.reconfigure(name !== "default" ? themes[name] ?? [] : [])});
-				if (name === "default")
+				if (name === "default") {
 					localStorage.removeItem("cmTheme");
-				else
+				} else {
 					localStorage.setItem("cmTheme", name);
+				}
 			});
 		});', true);
 	}
@@ -171,6 +177,10 @@ class CodeMirror extends Editor
 			->link('https://codeberg.org/danb/codemirror-lang-twig')
 			->author('Dan Brown and others')
 			->license(License::Mit, 'https://codeberg.org/danb/codemirror-lang-twig/raw/branch/main/LICENSE')
+			->title('codemirror-carve')
+			->link('https://github.com/dragomano/codemirror-carve')
+			->author('Bugo')
+			->license(License::Mit, 'https://raw.githubusercontent.com/dragomano/codemirror-carve/refs/heads/main/LICENSE')
 			->toArray();
 	}
 
@@ -201,8 +211,9 @@ class CodeMirror extends Editor
 
 	private function resolveCurrentMode(array $object): ?string
 	{
-		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
+		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? '')))) {
 			return null;
+		}
 
 		foreach (array_keys($this->modes) as $type) {
 			$isTypeMatched = $object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type);
