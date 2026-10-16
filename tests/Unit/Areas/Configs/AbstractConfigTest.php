@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Bugo\Bricks\Settings\CheckConfig;
+use Bugo\Bricks\Settings\ConfigBuilder;
+use Bugo\Bricks\Settings\DividerConfig;
+use Bugo\Bricks\Settings\SelectConfig;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
@@ -16,6 +20,7 @@ beforeEach(function () {
     Lang::$txt['permissionname_lp_test_permissions'] = 'Test Permissions Label';
 
     Utils::$context['config_vars'] = [];
+    Utils::$context['posting_fields'] = [];
 
     $this->config = new class extends AbstractConfig
     {
@@ -85,18 +90,21 @@ it('prepares config fields for different field types', function () {
             'name'  => 'lp_test_check',
             'label' => 'Test Check',
             'type'  => 'check',
+            'data'  => [],
             'tab'   => 'basic',
         ],
         [
             'name'  => 'lp_test_int',
             'label' => 'Test Int',
             'type'  => 'int',
+            'data'  => [],
             'tab'   => 'basic',
         ],
         [
             'name'  => 'lp_test_text',
             'label' => 'Test Text',
             'type'  => 'text',
+            'data'  => [],
             'tab'   => 'basic',
             'placeholder' => 'Enter text',
         ],
@@ -104,15 +112,26 @@ it('prepares config fields for different field types', function () {
             'name'  => 'lp_test_select',
             'label' => 'Test Select',
             'type'  => 'select',
+            'data'  => [[0, 'No'], [1, 'Yes']],
             'tab'   => 'basic',
             'attributes' => ['class' => 'select'],
         ],
     ];
 
     // This should not throw an exception and should process all field types
-    $reflection->callMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields');
 
-    expect(true)->toBeTrue();
+    $fields = Utils::$context['posting_fields'];
+
+    expect($fields['lp_test_check']['input']['attributes']['checked'])->toBeTrue()
+        ->and($fields['lp_test_int']['input']['attributes']['value'])->toBe(42)
+        ->and($fields['lp_test_text']['input']['attributes']['value'])->toBe('sample text')
+        ->and($fields['lp_test_text']['input']['attributes']['placeholder'])->toBe('Enter text')
+        ->and($fields['lp_test_select']['input']['tab'])->toBe('basic')
+        ->and($fields['lp_test_select']['input']['options'])->toBe([
+            'No'  => ['value' => 0, 'selected' => false],
+            'Yes' => ['value' => 1, 'selected' => true],
+        ]);
 });
 
 it('prepares config fields for callback and permissions field types', function () {
@@ -135,7 +154,7 @@ it('prepares config fields for callback and permissions field types', function (
     ];
 
     // This should not throw an exception and should handle special field types
-    $reflection->callMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields');
 
     expect(true)->toBeTrue();
 });
@@ -147,33 +166,57 @@ it('handles empty config vars array', function () {
     Utils::$context['posting_fields'] = [];
 
     // This should not throw an exception even with empty config vars
-    $reflection->callMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields');
 
     expect(true)->toBeTrue();
 });
 
-it('prepares config fields with configVars parameter', function () {
+it('uses select options from the prepared context', function () {
     $reflection = new ReflectionAccessor($this->config);
 
-    Config::$modSettings['lp_test_check'] = false;
-
+    Config::$modSettings['lp_test_select'] = 'second';
     Utils::$context['config_vars'] = [
-        [
-            'name'  => 'lp_test_check',
-            'label' => 'Test Check',
-            'type'  => 'check',
-            'tab'   => 'basic',
+        'lp_test_select' => [
+            'name'    => 'lp_test_select',
+            'label'   => 'Test Select',
+            'type'    => 'select',
+            'tab'     => 'basic',
+            'options' => ['first' => 'First', 'second' => 'Second'],
+            'data'    => [['stale', 'Stale']],
         ],
     ];
 
-    $configVars = [
-        ['options' => ['option1', 'option2']],
-    ];
+    $reflection->callMethod('prepareConfigFields');
 
-    // This should use the configVars parameter
-    $reflection->callMethod('prepareConfigFields', [$configVars]);
+    expect(Utils::$context['posting_fields']['lp_test_select']['input']['options'])->toBe([
+        'First'  => ['value' => 'first', 'selected' => false],
+        'Second' => ['value' => 'second', 'selected' => true],
+    ]);
+});
 
-    expect(true)->toBeTrue();
+it('prepares Bricks settings while preserving SMF dividers', function () {
+    Config::$modSettings['lp_test_select'] = '0';
+    $configVars = ConfigBuilder::make()->addVars([
+        CheckConfig::make('lp_test_check')->setTab('basic'),
+        DividerConfig::make(),
+        SelectConfig::make('lp_test_select')->setTab('basic')->setOptions([0 => 'None', 2 => 'Two']),
+    ])->build();
+    $originalVars = $configVars;
+
+    prepareDBSettingContext($configVars);
+
+    expect($configVars)->toBe($originalVars)
+        ->and(Utils::$context['config_vars'][0])->toBe('')
+        ->and(Utils::$context['config_vars']['lp_test_check']['data'])->toBe([])
+        ->and(Utils::$context['config_vars']['lp_test_select']['data'])->toBe([[0, 'None'], [2, 'Two']]);
+
+    (new ReflectionAccessor($this->config))->callMethod('prepareConfigFields');
+
+    expect(array_keys(Utils::$context['posting_fields']))->toBe(['lp_test_check', 'lp_test_select'])
+        ->and(Utils::$context['posting_fields']['lp_test_select']['input']['options'])->toBe([
+            'None' => ['value' => 0, 'selected' => true],
+            'Two'  => ['value' => 2, 'selected' => false],
+        ]);
 });
 
 it('handles unknown field type with default null', function () {
@@ -216,13 +259,13 @@ it('creates callback field using VarFactory createTemplateCallback', function ()
         ],
     ];
 
-    $reflection->callMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields');
 
     expect(true)->toBeTrue();
 
     Utils::$context['config_vars'][0]['name'] = 'lp_unknown_template';
 
-    $reflection->callMethod('prepareConfigFields', [[]]);
+    $reflection->callMethod('prepareConfigFields');
 
     expect(true)->toBeTrue();
 });

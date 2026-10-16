@@ -458,18 +458,32 @@ if (! function_exists('prepareDBSettingContext')) {
 
         foreach ($configVars as $var) {
             if (! is_array($var)) {
-                $vars[] = ['name' => '', 'type' => ''];
+                $vars[] = $var;
                 continue;
             }
 
-            $var['name'] = (string) ($var[1] ?? '');
-            $var['type'] = (string) ($var[0] ?? '');
-            $var['tab'] ??= '';
+            if (empty($var[1])) {
+                continue;
+            }
 
-            $vars[] = $var;
+            $var['name']  = (string) $var[1];
+            $var['type']  = (string) $var[0];
+            $var['tab'] ??= '';
+            $var['data']  = [];
+
+            if (is_array($var[2] ?? null)) {
+                if (isset($var[2][0]) && is_array($var[2][0])) {
+                    $var['data'] = $var[2];
+                } else {
+                    foreach ($var[2] as $key => $label) {
+                        $var['data'][] = [$key, $label];
+                    }
+                }
+            }
+
+            $vars[$var['name']] = $var;
         }
 
-        $configVars = $vars;
         Utils::$context['config_vars'] = $vars;
     }
 }
