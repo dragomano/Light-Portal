@@ -622,7 +622,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				$title = $data['title'];
 
 				Logging::logAction('update_lp_page', [
-					$this->entity => Str::html('a', $title)->href(LP_PAGE_URL . $data['slug'])
+					$this->entity => (string) Str::html('a', $title)->href(LP_PAGE_URL . $data['slug'])
 				]);
 			}
 		});

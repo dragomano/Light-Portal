@@ -20,3 +20,7 @@
 		}
 	}
 }
+
+.trending_topics > li {
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+}

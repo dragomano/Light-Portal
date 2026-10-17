@@ -334,6 +334,10 @@ public function commentButtons(Event $e): void
 > додавання власних налаштувань вашого плагіна
 
 ```php
+use LightPortal\Plugins\SettingsFactory;
+
+// ...
+
 public function addSettings(Event $e): void
 {
     $this->addDefaultValues(['some_color' => '#ff00ad']);
@@ -424,12 +428,17 @@ public function layoutExtensions(Event $e): void
 > додавання користувацьких скриптів і стилів на фронт-сторінці
 
 ```php
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
+
+// ...
+
 public function frontAssets(): void
 {
-    $this->loadExternalResources([
-        ['type' => 'css', 'url' => 'https://cdn.example.com/custom.css'],
-        ['type' => 'js',  'url' => 'https://cdn.example.com/custom.js'],
-    ]);
+    $this->loadExternalResources(
+        new ExternalCss('https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.css'),
+        new ExternalJs('https://cdn.jsdelivr.net/npm/dragula@3/dist/dragula.min.js'),
+    );
 }
 ```
 
@@ -637,17 +646,19 @@ public function extendPluginAreas(Event $e): void
 > додавання авторських прав використаних бібліотек/скриптів і т.д.
 
 ```php
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
+
+// ...
+
 public function credits(Event $e): void
 {
-    $e->args->links[] = [
-        'title' => 'Uicons',
-        'link' => 'https://www.flaticon.com/uicons',
-        'author' => 'Flaticon',
-        'license' => [
-            'name' => 'ISC License',
-            'link' => 'https://www.freepikcompany.com/legal#nav-flaticon-agreement'
-        ]
-    ];
+    $e->args->links[$this->name] = CreditsFactory::make()
+        ->title('Bootstrap Icons')
+        ->link('https://github.com/twbs/icons')
+        ->author('The Bootstrap Authors')
+        ->license(License::Mit, 'https://github.com/twbs/icons/blob/main/LICENSE.md')
+        ->toArray();
 }
 ```
 

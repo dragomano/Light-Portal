@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 10.10.26
  */
 
 namespace LightPortal\Plugins\TopBoards;
@@ -74,7 +74,7 @@ class TopBoards extends SsiBlock
 		if (empty($topBoards))
 			return;
 
-		$dl = Str::html('dl', ['class' => 'stats']);
+		$dl = Str::html('dl', ['class' => $this->name . ' stats']);
 
 		$type = $parameters['entity_type'] === 'num_posts' ? 'posts' : 'topics';
 		$max = $topBoards[0]['num_' . $type];

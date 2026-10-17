@@ -8,16 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\TagList;
 
 use Bugo\Compat\Config;
 use LightPortal\Actions\TagIndex;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
@@ -161,14 +163,11 @@ class TagList extends Block
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'laminas-tag',
-			'link' => 'https://github.com/laminas/laminas-tag/',
-			'author' => 'Laminas Project a Series of LF Projects, LLC.',
-			'license' => [
-				'name' => 'the BSD-3-Clause License',
-				'link' => 'https://github.com/laminas/laminas-tag/#BSD-3-Clause-1-ov-file'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('laminas-tag')
+			->link('https://github.com/laminas/laminas-tag/')
+			->author('Laminas Project a Series of LF Projects, LLC.')
+			->license(License::Bsd3, 'https://github.com/laminas/laminas-tag/#BSD-3-Clause-1-ov-file')
+			->toArray();
 	}
 }

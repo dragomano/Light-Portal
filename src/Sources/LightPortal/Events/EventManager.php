@@ -55,6 +55,11 @@ class EventManager
 	{
 		$args = $hook->createArgs($params);
 
+		if ($hook === PortalHook::prepareEditor) {
+			$this->dispatchToSingleEditor($hook, $args);
+			return;
+		}
+
 		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
@@ -80,5 +85,37 @@ class EventManager
 	public function getAll(string $event = ''): array
 	{
 		return $event ? $this->eventManager->getListeners($event) : $this->eventManager->getAllListeners();
+	}
+
+	/**
+	 * Only one editor plugin must render its UI for a content type. The most
+	 * specialized candidate wins (fewest supported types); ties are resolved
+	 * by the registration order (the alphabetical order of enabled plugins).
+	 */
+	private function dispatchToSingleEditor(PortalHook $hook, object $args): void
+	{
+		$candidates   = [];
+		$alternatives = [];
+
+		foreach ($this->getAll($hook->name) as $listener) {
+			if (method_exists($listener, 'servesContent')) {
+				if ($listener->servesContent(isset($args->object) ? $args->object : [])) {
+					$candidates[] = $listener;
+				}
+			} else {
+				$alternatives[] = $listener;
+			}
+		}
+
+		if ($candidates !== []) {
+			usort($candidates, static fn($a, $b) => count($a->getSupportedContentTypes()) <=> count($b->getSupportedContentTypes()));
+
+			$candidates[0]->prepareEditor(new Event($args));
+			return;
+		}
+
+		foreach ($alternatives as $listener) {
+			$listener->prepareEditor(new Event($args));
+		}
 	}
 }

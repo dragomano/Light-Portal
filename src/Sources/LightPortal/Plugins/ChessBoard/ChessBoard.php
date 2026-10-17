@@ -8,14 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.09.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\ChessBoard;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Tab;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
 use LightPortal\Plugins\PluginAttribute;
@@ -177,35 +179,20 @@ class ChessBoard extends GameBlock
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title'   => 'chess.js',
-			'link'    => 'https://github.com/jhlywa/chess.js',
-			'author'  => 'Jeff Hlywa',
-			'license' => [
-				'name' => 'the BSD 2-Clause "Simplified" License',
-				'link' => 'https://github.com/jhlywa/chess.js/blob/master/LICENSE'
-			]
-		];
-
-		$e->args->links[] = [
-			'title'   => 'cm-chessboard',
-			'link'    => 'https://github.com/shaack/cm-chessboard',
-			'author'  => 'Stefan Haack',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/shaack/cm-chessboard#MIT-1-ov-file'
-			]
-		];
-
-		$e->args->links[] = [
-			'title'   => 'Stockfish.js',
-			'link'    => 'https://github.com/nmrugg/stockfish.js',
-			'author'  => 'Chess.com',
-			'license' => [
-				'name' => 'the GPL-3.0 License',
-				'link' => 'https://github.com/nmrugg/stockfish.js#GPL-3.0-1-ov-file'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('chess.js')
+			->link('https://github.com/jhlywa/chess.js')
+			->author('Jeff Hlywa')
+			->license(License::Bsd2, 'https://github.com/jhlywa/chess.js/blob/master/LICENSE')
+			->title('cm-chessboard')
+			->link('https://github.com/shaack/cm-chessboard')
+			->author('Stefan Haack')
+			->license(License::Mit, 'https://github.com/shaack/cm-chessboard#MIT-1-ov-file')
+			->title('Stockfish.js')
+			->link('https://github.com/nmrugg/stockfish.js')
+			->author('Chess.com')
+			->license(License::Gpl3, 'https://github.com/nmrugg/stockfish.js#GPL-3.0-1-ov-file')
+			->toArray();
 	}
 
 	protected function getApiData(Event $e): array

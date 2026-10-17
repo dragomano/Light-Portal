@@ -91,6 +91,16 @@ You can create as many such layouts as you want. Use `debug.blade.php` and other
 
 You can easily change the look of anything by adding your own styles. Just create a new file called `portal_custom.css` in the `Themes/default/css` directory and put your CSS there.
 
+```css
+/*
+  Accent colour shared by the portal plugins. Set any CSS colour to recolour all of them;
+  remove it to keep the theme's default orange (#ff9400).
+*/
+:root {
+	--lp-accent: #4a90d9;
+}
+```
+
 :::tip Tip
 
 If you have created your own front page template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.

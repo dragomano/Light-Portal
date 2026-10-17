@@ -16,6 +16,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Placement;
@@ -96,22 +98,9 @@ class LoadTheme extends AbstractHook
 		if (Config::$modSettings['lp_fa_source'] === 'css_local') {
 			Theme::loadCSSFile('all.min.css', [], 'portal_fontawesome');
 		} elseif (Config::$modSettings['lp_fa_source'] === 'custom' && isset(Config::$modSettings['lp_fa_custom'])) {
-			Theme::loadCSSFile(
-				Config::$modSettings['lp_fa_custom'],
-				[
-					'external' => true,
-					'seed'     => false,
-				],
-				'portal_fontawesome'
-			);
+			(new ExternalCss(Config::$modSettings['lp_fa_custom'], id: 'portal_fontawesome'))->load();
 		} elseif (isset(Config::$modSettings['lp_fa_kit'])) {
-			Theme::loadJavaScriptFile(
-				Config::$modSettings['lp_fa_kit'],
-				[
-					'attributes' => ['crossorigin' => 'anonymous'],
-					'external'   => true,
-				]
-			);
+			(new ExternalJs(Config::$modSettings['lp_fa_kit'], attributes: ['crossorigin' => 'anonymous']))->load();
 		}
 	}
 }

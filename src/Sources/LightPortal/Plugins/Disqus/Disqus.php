@@ -8,14 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Disqus;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
@@ -74,16 +74,11 @@ class Disqus extends Plugin
 		if (empty($this->context['shortname']))
 			return;
 
-		Theme::loadJavaScriptFile(
+		$this->loadExternalResources(new ExternalJs(
 			'https://' . $this->context['shortname'] . '.disqus.com/count.js',
-			[
-				'async' => true,
-				'external' => true,
-				'attributes' => [
-					'id' => 'dsq-count-scr'
-				]
-			]
-		);
+			async: true,
+			attributes: ['id' => 'dsq-count-scr'],
+		));
 
 		foreach (Utils::$context['lp_frontpage_articles'] as $id => $page) {
 			Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' ' .

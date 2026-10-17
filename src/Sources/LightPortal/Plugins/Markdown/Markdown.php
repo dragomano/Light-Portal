@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 25.03.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Markdown;
@@ -29,7 +29,9 @@ use League\CommonMark\Extension\Table\Table;
 use League\CommonMark\Extension\Table\TableRow;
 use League\CommonMark\MarkdownConverter;
 use League\CommonMark\Util\HtmlFilter;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
 use LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
@@ -82,15 +84,12 @@ class Markdown extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title'   => 'league/commonmark',
-			'link'    => 'https://github.com/thephpleague/commonmark',
-			'author'  => 'Colin O\'Dell & The League of Extraordinary Packages',
-			'license' => [
-				'name' => 'the BSD-3-Clause License',
-				'link' => 'https://github.com/thephpleague/commonmark/blob/main/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('league/commonmark')
+			->link('https://github.com/thephpleague/commonmark')
+			->author('Colin O\'Dell & The League of Extraordinary Packages')
+			->license(License::Bsd3, 'https://github.com/thephpleague/commonmark/blob/main/LICENSE')
+			->toArray();
 	}
 
 	/**

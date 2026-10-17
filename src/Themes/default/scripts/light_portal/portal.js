@@ -1,5 +1,6 @@
 class PortalEntity {
   constructor() {
+    this.plural = '';
     this.workUrl = smf_scripturl + '?action=admin;' + smf_session_var + '=' + smf_session_id;
   }
 
@@ -7,14 +8,30 @@ class PortalEntity {
     target.classList.toggle('fa-spin');
   }
 
+  applyQuantity(count) {
+    if (typeof count !== 'number') return;
+
+    document.querySelectorAll(`[data-lp-quantity="${this.plural}"]`).forEach((el) => {
+      el.textContent = count > 0 ? `(${count})` : '';
+    });
+  }
+
   async toggleStatus(target) {
     const item = target.dataset.id;
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      toggle_item: item,
+    const response = await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        toggle_item: item,
+      }),
     });
+
+    const { count } = await response.json();
+
+    this.applyQuantity(count);
   }
 
   async remove(target) {
@@ -24,11 +41,18 @@ class PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      delete_item: item,
+    const response = await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        delete_item: item,
+      }),
     });
 
+    const { count } = await response.json();
+
     target.closest('tr').remove();
+    this.applyQuantity(count);
   }
 
   post(target) {
@@ -53,6 +77,7 @@ class PortalEntity {
 class Block extends PortalEntity {
   constructor() {
     super();
+    this.plural = 'blocks';
     this.workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
@@ -61,11 +86,15 @@ class Block extends PortalEntity {
 
     if (!item) return false;
 
-    const response = await axios.post(this.workUrl, {
-      clone_block: item,
+    const response = await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        clone_block: item,
+      }),
     });
 
-    const { success, id } = response.data;
+    const { success, id } = await response.json();
 
     if (success) {
       const div = target.cloneNode(true);
@@ -102,9 +131,13 @@ class Block extends PortalEntity {
       if (key !== null) priority.push(key);
     }
 
-    await axios.post(this.workUrl, {
-      update_priority: priority,
-      update_placement: placement,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        update_priority: priority,
+        update_placement: placement,
+      }),
     });
 
     const nextElem = e.item.nextElementSibling;
@@ -121,6 +154,7 @@ class Block extends PortalEntity {
 class Page extends PortalEntity {
   constructor() {
     super();
+    this.plural = 'pages';
     this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
@@ -138,11 +172,18 @@ class Page extends PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      restore_item: item,
+    const response = await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        restore_item: item,
+      }),
     });
 
+    const { count } = await response.json();
+
     target.closest('tr').remove();
+    this.applyQuantity(count);
   }
 
   async removeForever(target) {
@@ -152,17 +193,25 @@ class Page extends PortalEntity {
 
     if (!item) return false;
 
-    await axios.post(this.workUrl, {
-      remove_forever: item,
+    const response = await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        remove_forever: item,
+      }),
     });
 
+    const { count } = await response.json();
+
     target.closest('tr').remove();
+    this.applyQuantity(count);
   }
 }
 
 class Category extends PortalEntity {
   constructor() {
     super();
+    this.plural = 'categories';
     this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
@@ -179,8 +228,12 @@ class Category extends PortalEntity {
       if (id !== null) priority.push(id);
     }
 
-    await axios.post(this.workUrl, {
-      update_priority: priority,
+    await fetch(this.workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        update_priority: priority,
+      }),
     });
   }
 }
@@ -188,6 +241,7 @@ class Category extends PortalEntity {
 class Tag extends PortalEntity {
   constructor() {
     super();
+    this.plural = 'tags';
     this.workUrl = smf_scripturl + '?action=admin;area=lp_tags;actions;' + smf_session_var + '=' + smf_session_id;
   }
 }

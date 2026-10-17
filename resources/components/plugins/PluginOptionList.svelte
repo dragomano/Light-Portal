@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
-  import { appState, contextState, axios } from '../../js/states.svelte';
+  import { appState, contextState } from '../../js/states.svelte';
   import { PluginOptionItem } from './index.js';
   import Button from '../BaseButton.svelte';
   import type { Plugin } from '../types';
@@ -24,15 +24,18 @@
     e.preventDefault();
 
     const formData = new FormData(form);
-    const { data } = await axios.post(String(postUrl), formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+    const response = await fetch(String(postUrl), {
+      method: 'POST',
+      body: formData
     });
 
-    if (data.success) {
-      success = true;
-      setTimeout(() => (success = false), 2000);
+    if (response.ok) {
+      const data = await response.json();
+
+      if (data.success) {
+        success = true;
+        setTimeout(() => (success = false), 2000);
+      }
     }
   };
 

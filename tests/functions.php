@@ -20,8 +20,11 @@ if (! function_exists('fatal_error')) {
 }
 
 if (! function_exists('fatal_lang_error')) {
+    $GLOBALS['fatal_lang_error_calls'] = [];
+
     function fatal_lang_error(string $error, string|bool $log = 'general', array $sprintf = [], int $status = 403): void
     {
+        $GLOBALS['fatal_lang_error_calls'][] = $error;
     }
 }
 
@@ -395,8 +398,15 @@ if (! function_exists('checkSession')) {
 }
 
 if (! function_exists('logAction')) {
+    $GLOBALS['log_action_calls'] = [];
+
     function logAction(string $action, array $extra = []): int
     {
+        $GLOBALS['log_action_calls'][] = [
+            'action' => $action,
+            'extra'  => $extra,
+        ];
+
         return 1;
     }
 }
@@ -431,5 +441,49 @@ if (! class_exists('SMF_BackgroundTask')) {
         {
             $this->_details = $details;
         }
+    }
+}
+
+if (! function_exists('saveDBSettings')) {
+    function saveDBSettings(array &$configVars): void
+    {
+        $GLOBALS['save_db_settings_calls'][] = $configVars;
+    }
+}
+
+if (! function_exists('prepareDBSettingContext')) {
+    function prepareDBSettingContext(array &$configVars): void
+    {
+        $vars = [];
+
+        foreach ($configVars as $var) {
+            if (! is_array($var)) {
+                $vars[] = $var;
+                continue;
+            }
+
+            if (empty($var[1])) {
+                continue;
+            }
+
+            $var['name']  = (string) $var[1];
+            $var['type']  = (string) $var[0];
+            $var['tab'] ??= '';
+            $var['data']  = [];
+
+            if (is_array($var[2] ?? null)) {
+                if (isset($var[2][0]) && is_array($var[2][0])) {
+                    $var['data'] = $var[2];
+                } else {
+                    foreach ($var[2] as $key => $label) {
+                        $var['data'][] = [$key, $label];
+                    }
+                }
+            }
+
+            $vars[$var['name']] = $var;
+        }
+
+        Utils::$context['config_vars'] = $vars;
     }
 }

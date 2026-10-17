@@ -12,7 +12,6 @@ use Laminas\Db\Extra\Sql\Operations\ExtendedInsert;
 use Laminas\Db\Extra\Sql\Operations\ExtendedSelect;
 use Laminas\Db\Extra\Sql\Operations\ExtendedUpdate;
 use LightPortal\Database\Migrations\Installer;
-use LightPortal\Database\PortalAdapterFactory;
 use LightPortal\Database\PortalAdapterInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\PostInterface;
@@ -32,9 +31,6 @@ describe('Installer', function () {
         $this->adapter->shouldReceive('getTitle')->andReturn('MySQL')->byDefault();
         $this->adapter->shouldReceive('getCurrentSchema')->andReturn(null);
         $this->adapter->shouldReceive('query')->andReturnUsing(function ($sql) {});
-
-        $this->adapterFactoryMock = mock('alias:' . PortalAdapterFactory::class);
-        $this->adapterFactoryMock->shouldReceive('create')->andReturn($this->adapter);
 
         $this->portalSqlMock = mock(PortalSqlInterface::class);
         $this->portalSqlMock->shouldReceive('getPrefix')->andReturn('smf_');

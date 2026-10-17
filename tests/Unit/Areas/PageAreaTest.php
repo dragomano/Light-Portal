@@ -150,10 +150,15 @@ it('afterMain correctly runs', function () {
         'deleted_pages'    => 0,
     ];
 
+    $this->repositoryMock->shouldReceive('getTotalCount')
+        ->once()
+        ->with('', Mockery::type('array'))
+        ->andReturn(7);
+
     $this->accessor->setProperty('browseType', 'all');
     $this->accessor->callMethod('afterMain');
 
-    expect(Utils::$context['lp_pages']['title'])->toContain(Utils::$context['form_action']);
+    expect(Utils::$context['lp_pages']['title'])->toContain(Utils::$context['form_action'], '(7)');
 });
 
 it('setupAdditionalAddContext prepares page list and sets context', function () {

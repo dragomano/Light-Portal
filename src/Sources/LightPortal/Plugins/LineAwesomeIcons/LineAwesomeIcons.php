@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\LineAwesomeIcons;
 
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -41,15 +43,12 @@ class LineAwesomeIcons extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Line Awesome',
-			'link' => 'https://icons8.com/line-awesome',
-			'author' => 'Icons8',
-			'license' => [
-				'name' => 'the Good Boy License',
-				'link' => 'https://github.com/icons8/line-awesome/blob/master/LICENSE.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Line Awesome')
+			->link('https://icons8.com/line-awesome')
+			->author('Icons8')
+			->license(License::GoodBoy, 'https://github.com/icons8/line-awesome/blob/master/LICENSE.md')
+			->toArray();
 	}
 
 	private function getIconList(): array

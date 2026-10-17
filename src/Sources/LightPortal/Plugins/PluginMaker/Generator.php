@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -17,9 +17,11 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Editor;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
@@ -116,6 +118,8 @@ class Generator
 		$namespace->addUse(PluginAttribute::class);
 		$namespace->addUse(PluginType::class);
 		$namespace->addUse(PortalHook::class);
+		$namespace->addUse(CreditsFactory::class);
+		$namespace->addUse(License::class);
 
 		if ($this->hasType(PluginType::COMMENT)) {
 			$namespace->addUse(Setting::class);
@@ -496,7 +500,7 @@ class Generator
 		$this->class
 			->addMethod('getSupportedContentTypes')
 			->setReturnType('array')
-			->setProtected()
+			->setPublic()
 			->addBody("// TODO: Return an array of supported content types, e.g., ['html', 'markdown']");
 	}
 
@@ -529,15 +533,12 @@ class Generator
 			->setType(Event::class);
 
 		$method
-			->addBody("\$e->args->links[] = [")
-			->addBody("\t'title' => '" . __('lp_plugin_maker')['component_name'] . "',")
-			->addBody("\t'link' => '" . __('lp_plugin_maker')['component_link'] . "',")
-			->addBody("\t'author' => '" . __('lp_plugin_maker')['component_author'] . "',")
-			->addBody("\t'license' => [")
-			->addBody("\t\t'name' => '" . __('lp_plugin_maker')['license_name'] . "',")
-			->addBody("\t\t'link' => '" . __('lp_plugin_maker')['license_link'] . "'")
-			->addBody("\t]")
-			->addBody("];");
+			->addBody('$e->args->links[$this->name] = CreditsFactory::make()')
+			->addBody("\t->title('" . __('lp_plugin_maker')['component_name'] . "')")
+			->addBody("\t->link('" . __('lp_plugin_maker')['component_link'] . "')")
+			->addBody("\t->author('" . __('lp_plugin_maker')['component_author'] . "')")
+			->addBody("\t->license(License::Mit, '" . __('lp_plugin_maker')['license_link'] . "')")
+			->addBody("\t->toArray();");
 	}
 
 	private function createFile(): void
@@ -699,11 +700,11 @@ class Generator
 
 	private function addDocBlock(PhpFile $file): void
 	{
-		$licenseEnum = License::tryFrom($this->plugin['license']);
+		$license = License::tryFromName($this->plugin['license']);
 
-		if ($licenseEnum) {
-			$licenseName = $licenseEnum->getName();
-			$licenseLink = $licenseEnum->getLink();
+		if ($license) {
+			$licenseName = $license->value;
+			$licenseLink = $license->url();
 		} else {
 			$licenseName = __('lp_plugin_maker')['license_name'];
 			$licenseLink = __('lp_plugin_maker')['license_link'];

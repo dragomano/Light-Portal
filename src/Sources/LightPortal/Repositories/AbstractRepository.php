@@ -45,6 +45,12 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected string $entity;
 
+	/**
+	 * Whether the first saved version must be stored in the forum default language,
+	 * so that the entity is visible to users of that language.
+	 */
+	protected bool $baseTranslationRequired = true;
+
 	protected TransactionInterface $transaction;
 
 	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
@@ -88,28 +94,33 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected function saveTranslations(array $data, bool $replace = false): void
 	{
+		$default = $this->getDefaultTranslations($data['id']);
+
+		// The first saved version of an entity becomes the base one, in the forum default language.
+		$lang = $this->baseTranslationRequired && ! Language::isDefault() && $default === null
+			? Config::$language
+			: User::$me->language;
+
 		$values = [
 			'item_id'     => $data['id'],
 			'type'        => $this->entity,
-			'lang'        => User::$me->language,
+			'lang'        => $lang,
 			'title'       => $data['title'] ?? '',
 			'content'     => $data['content'] ?? '',
 			'description' => Utils::htmlspecialchars($data['description'] ?? ''),
 		];
 
-		$sqlObject = $replace
-			? $this->sql->replace('lp_translations')->setConflictKeys(['item_id', 'type', 'lang'])->values($values)
-			: $this->sql->insert('lp_translations')->values($values);
-
-		if (! Language::isDefault()) {
-			$default = $this->getDefaultTranslations($data['id']);
-
+		if ($lang !== Config::$language) {
 			foreach (['title', 'content', 'description'] as $field) {
-				if ($values[$field] === $default[$field]) {
+				if ($values[$field] === ($default[$field] ?? null)) {
 					unset($values[$field]);
 				}
 			}
 		}
+
+		$sqlObject = $replace
+			? $this->sql->replace('lp_translations')->setConflictKeys(['item_id', 'type', 'lang'])->values($values)
+			: $this->sql->insert('lp_translations')->values($values);
 
 		$this->sql->execute($sqlObject);
 	}
@@ -172,7 +183,7 @@ abstract class AbstractRepository implements RepositoryInterface
 		$this->sql->execute($deleteParams);
 	}
 
-	private function getDefaultTranslations(int $item): array
+	private function getDefaultTranslations(int $item): ?array
 	{
 		$select = $this->sql->select('lp_translations')
 			->columns(['title', 'content', 'description'])
@@ -184,6 +195,6 @@ abstract class AbstractRepository implements RepositoryInterface
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result ?: ['title' => null, 'content' => null, 'description' => null];
+		return $result ?: null;
 	}
 }

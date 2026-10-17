@@ -12,7 +12,7 @@
 
 namespace LightPortal\Enums;
 
-use LightPortal\Plugins\AssetBuilder;
+use LightPortal\Assets\AssetBuilder;
 use LightPortal\Renderers\RendererInterface;
 use LightPortal\Utils\Params;
 

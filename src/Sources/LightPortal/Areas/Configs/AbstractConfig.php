@@ -14,6 +14,7 @@ namespace LightPortal\Areas\Configs;
 
 use Bugo\Compat\{Config, Utils};
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Enums\Tab;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
@@ -46,9 +47,8 @@ abstract class AbstractConfig implements ConfigInterface
 		Config::updateModSettings($addSettings);
 	}
 
-	protected function prepareConfigFields(array $configVars): void
+	protected function prepareConfigFields(): void
 	{
-		$i = 0;
 		foreach ($this->createFieldsGenerator() as $var) {
 			$name = $var['name'];
 			$type = $var['type'];
@@ -59,16 +59,13 @@ abstract class AbstractConfig implements ConfigInterface
 			$data         = [];
 
 			if (! in_array($type, ['callback', 'permissions'])) {
-				$varFactory = new VarFactory($name, $type);
-
-				$value = $varFactory->getValue($data = $configVars[$i][2] ?? []);
-
+				$varFactory   = new VarFactory($name, $type);
+				$data         = $var['options'] ?? array_column($var['data'], 1, 0);
+				$value        = $varFactory->getValue($data);
 				$defaultValue = $varFactory->getDefaultValue();
 			}
 
 			$this->createFieldByType($type, $name, $var, $data, $value, $defaultValue);
-
-			$i++;
 		}
 
 		$this->preparePostFields();
@@ -81,31 +78,23 @@ abstract class AbstractConfig implements ConfigInterface
 		array $data = [],
 		mixed $value = null,
 		mixed $defaultValue = null
-	): void
-	{
-		$label = $var['label'] ?? (__($name) ?? '');
-		$after = $var['postinput'] ?? '';
-
+	): void {
+		$label       = $var['label'] ?? (__($name) ?? '');
+		$after       = $var['postinput'] ?? '';
 		$description = isset($var['help']) ? (__($var['help']) ?? '') : '';
-
-		$factory = new VarFactory($name, $type);
+		$factory     = new VarFactory($name, $type);
 
 		$field = match ($type) {
 			'check'       => CheckboxField::make($name, $label),
 			'int'         => NumberField::make($name, $label),
-			'text'        => TextField::make($name, $label)
-							->placeholder($var['placeholder'] ?? ''),
-			'select'      => SelectField::make($name, $label)
-							->setAttributes($var['attributes'] ?? [])
-							->setOptions($data),
-			'callback'    => CustomField::make($name, $label)
-							->setValue($var['callback'] ?? $factory->createTemplateCallback()),
-			'permissions' => CustomField::make($name, __('permissionname_' . $name))
-							->setValue($factory->createPermissionsCallback()),
+			'text'        => TextField::make($name, $label)->placeholder($var['placeholder'] ?? ''),
+			'select'      => SelectField::make($name, $label)->setAttributes($var['attributes'] ?? [])->setOptions($data),
+			'callback'    => CustomField::make($name, $label)->setValue($var['callback'] ?? $factory->createTemplateCallback()),
+			'permissions' => CustomField::make($name, __('permissionname_' . $name))->setValue($factory->createPermissionsCallback()),
 			default       => null,
 		};
 
-		$field?->setTab($var['tab'])
+		$field?->setTab($var['tab'] ?? Tab::TUNING)
 			->setAfter($after)
 			->setDescription($description);
 
@@ -116,8 +105,6 @@ abstract class AbstractConfig implements ConfigInterface
 
 	private function createFieldsGenerator(): iterable
 	{
-		foreach (Utils::$context['config_vars'] as $var) {
-			yield $var;
-		}
+		yield from array_filter(Utils::$context['config_vars'], is_array(...));
 	}
 }

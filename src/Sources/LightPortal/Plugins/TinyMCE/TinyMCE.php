@@ -8,13 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\TinyMCE;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalJs;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
 use LightPortal\Plugins\SettingsFactory;
@@ -54,15 +57,10 @@ class TinyMCE extends Editor
 
 		$apiKey = $this->context['api_key'] ?? 'no-api-key';
 
-		Theme::loadJavaScriptFile(
+		$this->loadExternalResources(new ExternalJs(
 			'https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js',
-			[
-				'external' => true,
-				'attributes' => [
-					'referrerpolicy' => 'origin',
-				]
-			]
-		);
+			attributes: ['referrerpolicy' => 'origin'],
+		));
 
 		Theme::addInlineJavaScript('
 		const useDarkMode = ' . ($this->isDarkTheme($this->context['dark_themes']) ? 'true' : 'false') . ';
@@ -89,18 +87,15 @@ class TinyMCE extends Editor
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'TinyMCE',
-			'link' => 'https://github.com/tinymce/tinymce',
-			'author' => 'Ephox Corporation DBA Tiny Technologies, Inc.',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/tinymce/tinymce/blob/develop/LICENSE.TXT'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('TinyMCE')
+			->link('https://github.com/tinymce/tinymce')
+			->author('Ephox Corporation DBA Tiny Technologies, Inc.')
+			->license(License::Mit, 'https://github.com/tinymce/tinymce/blob/develop/LICENSE.TXT')
+			->toArray();
 	}
 
-	protected function getSupportedContentTypes(): array
+	public function getSupportedContentTypes(): array
 	{
 		return ['html'];
 	}

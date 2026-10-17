@@ -68,7 +68,22 @@ trait HasPageFilters
 
 		Utils::$context['search'] = ['string' => $searchParams['string']];
 
+		$this->params = ['', $this->buildWhereConditions(
+			$this->userId,
+			$this->isModerate,
+			$this->isDeleted,
+			$search
+		)];
+	}
+
+	private function buildWhereConditions(
+		?int $userId,
+		bool $isModerate,
+		bool $isDeleted,
+		string $search = ''
+	): array {
 		$whereConditions = [];
+
 		if (! empty($search)) {
 			$whereConditions[] = new Expression(
 				'LOWER(p.slug) LIKE ? OR LOWER(t.title) LIKE ?',
@@ -76,13 +91,13 @@ trait HasPageFilters
 			);
 		}
 
-		if ($this->userId) {
-			$whereConditions['p.author_id'] = (int) $this->userId;
+		if ($userId) {
+			$whereConditions['p.author_id'] = (int) $userId;
 			$whereConditions['p.deleted_at'] = 0;
-		} elseif ($this->isModerate) {
+		} elseif ($isModerate) {
 			$whereConditions['p.status'] = Status::UNAPPROVED->value;
 			$whereConditions['p.deleted_at'] = 0;
-		} elseif ($this->isDeleted) {
+		} elseif ($isDeleted) {
 			$whereConditions[] = new Expression('p.deleted_at <> 0');
 		} else {
 			$whereConditions['p.status'] = [Status::INACTIVE->value, Status::ACTIVE->value];
@@ -91,6 +106,6 @@ trait HasPageFilters
 
 		$whereConditions['p.entry_type'] = $this->entryType ?? EntryType::DEFAULT->value;
 
-		$this->params = ['', $whereConditions];
+		return $whereConditions;
 	}
 }

@@ -47,28 +47,36 @@ trait HasPageBrowseTypes
 		}
 	}
 
+	private function getBrowseTypeCount(string $browseType): int
+	{
+		$whereConditions = match ($browseType) {
+			'own'   => $this->buildWhereConditions((int) User::$me->id, false, false),
+			'mod'   => $this->buildWhereConditions(null, true, false),
+			'del'   => $this->buildWhereConditions(null, false, true),
+			default => $this->buildWhereConditions(null, false, false),
+		};
+
+		return $this->getRepository()->getTotalCount('', $whereConditions);
+	}
+
 	private function changeTableTitle(): void
 	{
 		$titles = [
 			'all' => [
 				'',
 				__('all'),
-				Utils::$context['lp_quantities']['active_pages']
 			],
 			'own' => [
 				';u=' . User::$me->id,
 				__('lp_my_pages'),
-				Utils::$context['lp_quantities']['my_pages']
 			],
 			'mod' => [
 				';moderate',
 				__('awaiting_approval'),
-				Utils::$context['lp_quantities']['unapproved_pages']
 			],
 			'del' => [
 				';deleted',
 				__('lp_pages_deleted'),
-				Utils::$context['lp_quantities']['deleted_pages']
 			]
 		];
 
@@ -86,7 +94,7 @@ trait HasPageBrowseTypes
 
 			Utils::$context['lp_pages']['title'] .= Str::html('a')
 				->href(Utils::$context['form_action'] . $details[0])
-				->setText($details[1] . ' (' . $details[2] . ')');
+				->setText($details[1] . ' (' . $this->getBrowseTypeCount($browseType) . ')');
 
 			if ($browseType !== 'del' && count($titles) > 1) {
 				Utils::$context['lp_pages']['title'] .= ' | ';

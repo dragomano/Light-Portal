@@ -14,8 +14,8 @@ namespace LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalResource;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\PluginType;
 use LightPortal\Repositories\PluginRepositoryInterface;
@@ -169,17 +169,10 @@ abstract class Plugin implements PluginInterface, Stringable
 		}
 	}
 
-	public function loadExternalResources(array $resources): void
+	public function loadExternalResources(ExternalResource ...$resources): void
 	{
 		foreach ($resources as $resource) {
-			$type = $resource['type'] ?? null;
-			$url  = $resource['url']  ?? null;
-
-			match ($type) {
-				'css'   => Theme::loadCSSFile($url, ['external' => true]),
-				'js'    => Theme::loadJavaScriptFile($url, ['external' => true]),
-				default => ErrorHandler::log('[LP] ' . sprintf(__('lp_unsupported_resource_type'), $type)),
-			};
+			$resource->load();
 		}
 	}
 

@@ -1,3 +1,7 @@
 .search_addon input {
 	inline-size: 100%;
 }
+
+.search_results > div {
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+}

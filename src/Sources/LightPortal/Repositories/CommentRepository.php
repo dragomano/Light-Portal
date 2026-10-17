@@ -26,6 +26,9 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 {
 	protected string $entity = 'comment';
 
+	// Comments belong to their author's language, they must not fall back to the forum default one.
+	protected bool $baseTranslationRequired = false;
+
 	public function getAll(
 		int $start,
 		int $limit,

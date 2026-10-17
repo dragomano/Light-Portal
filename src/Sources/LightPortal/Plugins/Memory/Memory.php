@@ -8,11 +8,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Memory;
 
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
 use LightPortal\Plugins\PluginAttribute;
@@ -44,15 +46,12 @@ class Memory extends GameBlock
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title'   => 'Emoji One (v1)',
-			'link'    => 'https://icon-sets.iconify.design/emojione-v1',
-			'author'  => 'Emoji One',
-			'license' => [
-				'name' => 'CC BY-SA 4.0',
-				'link' => 'https://creativecommons.org/licenses/by-sa/4.0/'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Emoji One (v1)')
+			->link('https://icon-sets.iconify.design/emojione-v1')
+			->author('Emoji One')
+			->license(License::CcBySa4)
+			->toArray();
 	}
 
 	protected function getApiData(Event $e): array

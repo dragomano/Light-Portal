@@ -8,12 +8,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Snowflakes;
 
 use Bugo\Compat\Theme;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -72,14 +74,11 @@ class Snowflakes extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Snowflakes',
-			'link' => 'https://github.com/Alaev-Co/snowflakes',
-			'author' => 'Alaev & Co',
-			'license' => [
-				'name' => 'The MIT License',
-				'link' => 'https://github.com/Alaev-Co/snowflakes?tab=readme-ov-file#MIT-1-ov-file'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Snowflakes')
+			->link('https://github.com/Alaev-Co/snowflakes')
+			->author('Alaev & Co')
+			->license(License::Mit, 'https://github.com/Alaev-Co/snowflakes?tab=readme-ov-file#MIT-1-ov-file')
+			->toArray();
 	}
 }

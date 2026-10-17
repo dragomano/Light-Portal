@@ -8,14 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\BootstrapIcons;
 
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -33,13 +35,9 @@ class BootstrapIcons extends Plugin
 
 	public function init(): void
 	{
-		Theme::loadCSSFile(
-			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css',
-			[
-				'external' => true,
-				'seed'     => false,
-			]
-		);
+		$this->loadExternalResources(new ExternalCss(
+			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css'
+		));
 	}
 
 	public function prepareIconList(Event $e): void
@@ -61,14 +59,11 @@ class BootstrapIcons extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Bootstrap Icons',
-			'link' => 'https://github.com/twbs/icons',
-			'author' => 'The Bootstrap Authors',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/twbs/icons/blob/main/LICENSE.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Bootstrap Icons')
+			->link('https://github.com/twbs/icons')
+			->author('The Bootstrap Authors')
+			->license(License::Mit, 'https://github.com/twbs/icons/blob/main/LICENSE.md')
+			->toArray();
 	}
 }

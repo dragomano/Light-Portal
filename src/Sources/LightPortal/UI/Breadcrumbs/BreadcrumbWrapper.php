@@ -2,14 +2,14 @@
 
 namespace LightPortal\UI\Breadcrumbs;
 
-use Bugo\Bricks\Breadcrumbs\BreadcrumbItem;
 use Bugo\Bricks\Breadcrumbs\Interfaces\BreadcrumbBuilderInterface as Builder;
+use Bugo\Bricks\Breadcrumbs\Interfaces\BreadcrumbItemInterface;
 use Bugo\Bricks\Breadcrumbs\Interfaces\BreadcrumbPresenterInterface as Presenter;
 use Bugo\Compat\Utils;
 
 /**
  * @method self add(string $name, ?string $url = null, ?string $before = null, ?string $after = null)
- * @method self addItem(BreadcrumbItem $item)
+ * @method self addItem(BreadcrumbItemInterface $item)
  * @method self addItems(array $items)
  * @method self update(int $index, string $key, mixed $value)
  * @method self remove(int $index)

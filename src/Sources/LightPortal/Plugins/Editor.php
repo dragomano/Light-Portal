@@ -22,7 +22,15 @@ abstract class Editor extends Plugin
 {
 	abstract public function prepareEditor(Event $e): void;
 
-	abstract protected function getSupportedContentTypes(): array;
+	abstract public function getSupportedContentTypes(): array;
+
+	/**
+	 * The entry point for choosing a single editor plugin per content type.
+	 */
+	public function servesContent(array $object): bool
+	{
+		return $this->isContentSupported($object);
+	}
 
 	protected function isContentSupported(array $object): bool
 	{

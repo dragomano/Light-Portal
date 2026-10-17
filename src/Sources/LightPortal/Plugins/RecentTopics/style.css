@@ -36,3 +36,8 @@
 		margin: 0 !important;
 	}
 }
+
+.recent_topics > div,
+.recent_topics_list > div {
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+}

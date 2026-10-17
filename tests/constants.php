@@ -39,3 +39,7 @@ if (! defined('LP_AREAS_PATTERN')) {
 if (! defined('LP_PLUGIN_LIST')) {
     define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/json');
 }
+
+if (! defined('LP_VERSION')) {
+    define('LP_VERSION', '3.0');
+}

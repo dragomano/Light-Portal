@@ -8,13 +8,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 28.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
@@ -134,24 +135,15 @@ class SimpleChat extends Block
 	private function loadDependencies(): void
 	{
 		Theme::loadCSSFile('admin.css');
-		Theme::loadJavaScriptFile(
+		$this->loadExternalResources(new ExternalJs(
 			'https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js',
-			[
-				'defer'    => true,
-				'external' => true,
-			]
-		);
+			defer: true,
+		));
 	}
 
 	private function mergeWithDefaultParams(Params $parameters): Params
 	{
-		foreach ($this->defaultParams as $key => $value) {
-			if (! $parameters->containsKey($key)) {
-				$parameters->put($key, $value);
-			}
-		}
-
-		return $parameters;
+		return $parameters->replace($parameters->all() + $this->defaultParams);
 	}
 
 	private function getCachedMessages(int $id, int $cacheTime): array
@@ -175,8 +167,9 @@ class SimpleChat extends Block
 			} elseif ($action === 'remove_message') {
 				$this->chat->deleteMessage();
 			} else {
-				$blockId = (int) $this->request()->get('id') ?: $id;
+				$blockId          = (int) $this->request()->get('id') ?: $id;
 				$messagesToRender = $this->getCachedMessages($blockId, $cacheTime);
+
 				$this->chat->renderMessages($messagesToRender, $blockId);
 			}
 		}

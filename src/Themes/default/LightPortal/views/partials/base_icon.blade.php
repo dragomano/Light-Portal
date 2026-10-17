@@ -9,11 +9,16 @@
 			return `<i class="${data.value}"></i> ${data.value}`;
 		},
 		onServerSearch: async function (search, virtualSelect) {
-			await window['axios'].post("{{ $context['form_action'] }};icons", {
-				search,
-				@yield('extra_params')
+			await fetch("{{ $context['form_action'] }};icons", {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json; charset=utf-8' },
+				body: JSON.stringify({
+					search,
+					@yield('extra_params')
+				})
 			})
-				.then(({ data }) => {
+				.then(response => response.json())
+				.then(data => {
 					const icons = [];
 					for (let i = 0; i < data.length; i++) {
 						icons.push({ label: data[i].innerHTML, value: data[i].value })

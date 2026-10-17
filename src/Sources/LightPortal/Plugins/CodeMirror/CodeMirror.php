@@ -8,13 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 14.10.26
  */
 
 namespace LightPortal\Plugins\CodeMirror;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
 use LightPortal\Plugins\SettingsFactory;
@@ -28,8 +30,24 @@ class CodeMirror extends Editor
 		'html'     => 'HTML',
 		'php'      => 'PHP',
 		'markdown' => 'Markdown',
+		'carve'    => 'Carve',
 		'pug'      => 'Pug',
 		'twig'     => 'Twig',
+	];
+
+	/**
+	 * All ES modules loaded below must share a single instance of the CodeMirror 6
+	 * core packages, otherwise the editor will not recognize foreign extensions.
+	 */
+	private const CORE = [
+		'@codemirror/state'        => '6.7.6',
+		'@codemirror/view'         => '6.43.13',
+		'@codemirror/language'     => '6.12.4',
+		'@codemirror/autocomplete' => '6.20.3',
+		'@codemirror/commands'     => '6.11.1',
+		'@codemirror/search'       => '6.7.2',
+		'@lezer/highlight'         => '1.2.5',
+		'@lezer/common'            => '1.5.3',
 	];
 
 	public function addSettings(Event $e): void
@@ -40,248 +58,223 @@ class CodeMirror extends Editor
 			->toArray();
 	}
 
+	public function servesContent(array $object): bool
+	{
+		return $this->resolveCurrentMode($object) !== null;
+	}
+
 	public function prepareEditor(Event $e): void
 	{
-		$object = $e->args->object;
-
-		if (! $this->isContentSupported($object))
-			return;
-
-		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
-			return;
-
-		$types = array_keys($this->modes);
-		foreach ($types as $type) {
-			$isTypeMatched = $object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type);
-			if ($isTypeMatched && in_array($type, $modes)) {
-				$currentMode = $type;
-				break;
-			}
-		}
+		$currentMode = $this->resolveCurrentMode($e->args->object);
 
 		if (empty($currentMode))
 			return;
 
-		$resources = [
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.css'],
-			['type' => 'css', 'url' => implode(',', [
-				'https://cdn.jsdelivr.net/combine/npm/codemirror@5/theme/3024-day.min.css',
-				'npm/codemirror@5/theme/3024-night.min.css',
-				'npm/codemirror@5/theme/abcdef.min.css',
-				'npm/codemirror@5/theme/ambiance.min.css',
-				'npm/codemirror@5/theme/ayu-dark.min.css',
-				'npm/codemirror@5/theme/ayu-mirage.min.css',
-				'npm/codemirror@5/theme/base16-dark.min.css',
-				'npm/codemirror@5/theme/base16-light.min.css',
-				'npm/codemirror@5/theme/bespin.min.css',
-				'npm/codemirror@5/theme/blackboard.min.css',
-				'npm/codemirror@5/theme/cobalt.min.css',
-				'npm/codemirror@5/theme/colorforth.min.css',
-				'npm/codemirror@5/theme/darcula.min.css',
-				'npm/codemirror@5/theme/dracula.min.css',
-				'npm/codemirror@5/theme/duotone-dark.min.css',
-				'npm/codemirror@5/theme/duotone-light.min.css',
-				'npm/codemirror@5/theme/eclipse.min.css',
-				'npm/codemirror@5/theme/elegant.min.css',
-				'npm/codemirror@5/theme/erlang-dark.min.css',
-				'npm/codemirror@5/theme/gruvbox-dark.min.css',
-				'npm/codemirror@5/theme/hopscotch.min.css',
-				'npm/codemirror@5/theme/icecoder.min.css',
-				'npm/codemirror@5/theme/idea.min.css',
-				'npm/codemirror@5/theme/isotope.min.css',
-				'npm/codemirror@5/theme/lesser-dark.min.css',
-				'npm/codemirror@5/theme/liquibyte.min.css',
-				'npm/codemirror@5/theme/lucario.min.css',
-				'npm/codemirror@5/theme/material.min.css',
-				'npm/codemirror@5/theme/material-darker.min.css',
-				'npm/codemirror@5/theme/material-ocean.min.css',
-				'npm/codemirror@5/theme/material-palenight.min.css',
-				'npm/codemirror@5/theme/mbo.min.css',
-				'npm/codemirror@5/theme/mdn-like.min.css',
-				'npm/codemirror@5/theme/midnight.min.css',
-				'npm/codemirror@5/theme/monokai.min.css',
-				'npm/codemirror@5/theme/moxer.min.css',
-				'npm/codemirror@5/theme/neat.min.css',
-				'npm/codemirror@5/theme/neo.min.css',
-				'npm/codemirror@5/theme/night.min.css',
-				'npm/codemirror@5/theme/nord.min.css',
-				'npm/codemirror@5/theme/oceanic-next.min.css',
-				'npm/codemirror@5/theme/panda-syntax.min.css',
-				'npm/codemirror@5/theme/paraiso-dark.min.css',
-				'npm/codemirror@5/theme/paraiso-light.min.css',
-				'npm/codemirror@5/theme/pastel-on-dark.min.css',
-				'npm/codemirror@5/theme/railscasts.min.css',
-				'npm/codemirror@5/theme/rubyblue.min.css',
-				'npm/codemirror@5/theme/seti.min.css',
-				'npm/codemirror@5/theme/shadowfox.min.css',
-				'npm/codemirror@5/theme/solarized.min.css',
-				'npm/codemirror@5/theme/ssms.min.css',
-				'npm/codemirror@5/theme/the-matrix.min.css',
-				'npm/codemirror@5/theme/tomorrow-night-bright.min.css',
-				'npm/codemirror@5/theme/tomorrow-night-eighties.min.css',
-				'npm/codemirror@5/theme/ttcn.min.css',
-				'npm/codemirror@5/theme/twilight.min.css',
-				'npm/codemirror@5/theme/vibrant-ink.min.css',
-				'npm/codemirror@5/theme/xq-dark.min.css',
-				'npm/codemirror@5/theme/xq-light.min.css',
-				'npm/codemirror@5/theme/yeti.min.css',
-				'npm/codemirror@5/theme/yonce.min.css',
-				'npm/codemirror@5/theme/zenburn.min.css',
-			])],
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/fullscreen.min.css'],
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.css'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.js'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/xml/xml.min.js'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/javascript/javascript.min.js'],
-		];
-
-		if ($currentMode === 'html') {
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/xml-hint.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/html-hint.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/javascript-hint.min.js'];
-		} elseif ($currentMode === 'php') {
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/clike/clike.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/php/php.min.js'];
-		} elseif ($currentMode === 'pug') {
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/pug/pug.min.js'];
-		} elseif ($currentMode === 'twig') {
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/twig/twig.min.js'];
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/mode/multiplex.min.js'];
-		} else {
-			$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/mode/markdown/markdown.min.js'];
-		}
-
-		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js'];
-		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js'];
-		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/autorefresh.js'];
-
-		$this->loadExternalResources($resources);
-
-		Theme::addInlineCss('.CodeMirror {font-size: 1.4em; border: 1px solid #C5C5C5}');
-
-		$mode = match ($currentMode) {
-			'markdown' => '"text/x-markdown"',
-			'php'      => '"text/x-php"',
-			'pug'      => '"text/x-pug"',
-			'twig'     => '{ name: "twig", base: "text/html" }',
-			default    => '"text/html"',
+		$languageModule = match ($currentMode) {
+			'html'  => $this->getModuleUrl('@codemirror/lang-html@6'),
+			'php'   => $this->getModuleUrl('@codemirror/lang-php@6'),
+			'pug'   => $this->getModuleUrl('@codemirror/legacy-modes@6/mode/pug'),
+			'twig'  => $this->getModuleUrl('@ssddanbrown/codemirror-lang-twig@1'),
+			'carve' => $this->getModuleUrl('codemirror-carve@0.1.0'),
+			default => $this->getModuleUrl('@codemirror/lang-markdown@6'),
 		};
 
-		$options = [
-			'3024-day'                => '3024 Day',
-			'3024-night'              => '3024 Night',
-			'abcdef'                  => 'Abcdef',
-			'ambiance'                => 'Ambiance',
-			'base16-dark'             => 'Base16 Dark',
-			'base16-light'            => 'Base16 Light',
-			'bespin'                  => 'Bespin',
-			'blackboard'              => 'Blackboard',
-			'cobalt'                  => 'Cobalt',
-			'default'                 => 'Default',
-			'colorforth'              => 'Colorforth',
-			'darcula'                 => 'Darcula',
-			'dracula'                 => 'Dracula',
-			'duotone-dark'            => 'Duotone Dark',
-			'duotone-light'           => 'Duotone Light',
-			'eclipse'                 => 'Eclipse',
-			'elegant'                 => 'Elegant',
-			'erlang-dark'             => 'Erlang Dark',
-			'gruvbox-dark'            => 'Gruvbox Dark',
-			'hopscotch'               => 'Hopscotch',
-			'icecoder'                => 'Icecoder',
-			'idea'                    => 'Idea',
-			'isotope'                 => 'Isotope',
-			'lesser-dark'             => 'Lesser Dark',
-			'liquibyte'               => 'Liquibyte',
-			'lucario'                 => 'Lucario',
-			'material'                => 'Material',
-			'mbo'                     => 'Mbo',
-			'mdn-like'                => 'Mdn Like',
-			'midnight'                => 'Midnight',
-			'monokai'                 => 'Monokai',
-			'neat'                    => 'Neat',
-			'neo'                     => 'Neo',
-			'night'                   => 'Night',
-			'nord'                    => 'Nord',
-			'oceanic-next'            => 'Oceanic Next',
-			'panda-syntax'            => 'Panda Syntax',
-			'paraiso-dark'            => 'Paraiso Dark',
-			'paraiso-light'           => 'Paraiso Light',
-			'pastel-on-dark'          => 'Pastel On Dark',
-			'railscasts'              => 'Railscasts',
-			'rubyblue'                => 'Rubyblue',
-			'seti'                    => 'Seti',
-			'shadowfox'               => 'Shadowfox',
-			'solarized'               => 'Solarized',
-			'ssms'                    => 'Ssms',
-			'the-matrix'              => 'The Matrix',
-			'tomorrow-night-bright'   => 'Tomorrow Night Bright',
-			'tomorrow-night-eighties' => 'Tomorrow Night Eighties',
-			'ttcn'                    => 'Ttcn',
-			'twilight'                => 'Twilight',
-			'vibrant-ink'             => 'Vibrant Ink',
-			'xq-dark'                 => 'Xq Dark',
-			'xq-light'                => 'Xq Light',
-			'yeti'                    => 'Yeti',
-			'yonce'                   => 'Yonce',
-			'zenburn'                 => 'Zenburn',
-		];
+		$languagePackage = '@codemirror/language@' . self::CORE['@codemirror/language'];
+		$languageDeps    = ['@codemirror/state', '@codemirror/view', '@lezer/highlight'];
+
+		$languageInit = match ($currentMode) {
+			'html'  => 'lang.html()',
+			'php'   => 'lang.php()',
+			'pug'   => 'language.StreamLanguage.define(lang.pug)',
+			'twig'  => 'lang.twig()',
+			'carve' => 'lang.carve()',
+			default => 'lang.markdown()',
+		};
 
 		$select = '<span class="floatright"><label>' . __('theme') . '</label> '
 			. '<select id="cmThemeChanger">'
 			. implode('', array_map(
 				fn($v, $l) => "<option value=\"$v\">$l</option>",
-				array_keys($options), $options
+				array_keys($this->getThemes()), $this->getThemes()
 			))
 			. '</select></span>';
 
+		Theme::addInlineCss('
+		.cm-editor {font-size: 1.4em; border: 1px solid #C5C5C5; min-height: 300px}
+		.cm-editor.cm-focused {outline: 1px dotted #666}
+		.cm-scroller {overflow: auto}');
+
 		Theme::addInlineJavaScript('
-		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {
-			lineNumbers: true,
-			mode: '. $mode . ',
-			firstLineNumber: 1,
-			autoRefresh: true,
-			lineWrapping: true,
-			direction: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '",
-			styleActiveLine: true,
-			matchBrackets: true,
-			extraKeys: {"Ctrl-Space": "autocomplete"}
-		});
-		document.querySelector(".pf_content").insertAdjacentHTML("beforeEnd", `' . $select . '`);
-		let data = localStorage.getItem("cmTheme"),
-			themeChanger = document.getElementById("cmThemeChanger");
-		if (data !== null) {
-			themeChanger.value = data;
-			pageEditor.setOption("theme", data);
-		} else {
-			themeChanger.querySelector(\'option[value="default"]\').selected = true;
+		const content = document.querySelector(".pf_content"), textarea = document.getElementById("content");
+		if (! content || ! textarea)
+			return;
+
+		content.insertAdjacentHTML("beforeEnd", `' . $select . '`);
+
+		const themeChanger = document.getElementById("cmThemeChanger");
+		let savedTheme = localStorage.getItem("cmTheme");
+		if (savedTheme === null || ! themeChanger.querySelector(`option[value="${savedTheme}"]`)) {
+			savedTheme = "default";
 		}
-		themeChanger.addEventListener("change", function () {
-			pageEditor.setOption("theme", this.value);
-			localStorage.setItem("cmTheme", this.value);
+
+		themeChanger.value = savedTheme;
+
+		Promise.all([
+			import("' . $this->getModuleUrl('codemirror@6.0.2') . '"),
+			import("' . $this->getStateUrl() . '"),
+			import("' . $this->getModuleUrl($languagePackage, $languageDeps) . '"),
+			import("' . $this->getModuleUrl('@uiw/codemirror-themes-all@4') . '"),
+			import("' . $languageModule . '")
+		]).then(([cm, state, language, themes, lang]) => {
+			const savedThemeValue = savedTheme !== "default" ? themes[savedTheme] ?? [] : [];
+
+			textarea.style.display = "none";
+
+			const wrapper = document.createElement("div");
+			textarea.parentNode.insertBefore(wrapper, textarea);
+
+			const themeCompartment = new state.Compartment();
+			const view = new cm.EditorView({
+				doc: textarea.value,
+				extensions: [
+					cm.basicSetup,
+					' . $languageInit . ',
+					cm.EditorView.lineWrapping,
+					cm.EditorView.contentAttributes.of({dir: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '"}),
+					cm.EditorView.updateListener.of((update) => {
+						if (update.docChanged)
+							textarea.value = update.state.doc.toString();
+					}),
+					themeCompartment.of(savedThemeValue)
+				],
+				parent: wrapper
+			});
+
+			themeChanger.addEventListener("change", function () {
+				const name = this.value;
+				view.dispatch({effects: themeCompartment.reconfigure(name !== "default" ? themes[name] ?? [] : [])});
+				if (name === "default") {
+					localStorage.removeItem("cmTheme");
+				} else {
+					localStorage.setItem("cmTheme", name);
+				}
+			});
 		});', true);
 	}
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'CodeMirror 5',
-			'link' => 'https://github.com/codemirror/codemirror5',
-			'author' => 'Marijn Haverbeke and others',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/codemirror/codemirror5?tab=MIT-1-ov-file'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('CodeMirror 6')
+			->link('https://code.haverbeke.berlin/codemirror/dev/')
+			->author('Marijn Haverbeke and others')
+			->license(License::Mit, 'https://code.haverbeke.berlin/codemirror/dev/raw/branch/main/LICENSE')
+			->title('@uiw/codemirror-themes')
+			->link('https://github.com/uiwjs/react-codemirror/tree/master/themes')
+			->author('uiw')
+			->license(License::Mit, 'https://raw.githubusercontent.com/uiwjs/react-codemirror/refs/heads/master/LICENSE')
+			->title('codemirror-lang-twig')
+			->link('https://codeberg.org/danb/codemirror-lang-twig')
+			->author('Dan Brown and others')
+			->license(License::Mit, 'https://codeberg.org/danb/codemirror-lang-twig/raw/branch/main/LICENSE')
+			->title('codemirror-carve')
+			->link('https://github.com/dragomano/codemirror-carve')
+			->author('Bugo')
+			->license(License::Mit, 'https://raw.githubusercontent.com/dragomano/codemirror-carve/refs/heads/main/LICENSE')
+			->toArray();
 	}
 
-	protected function getSupportedContentTypes(): array
+	public function getSupportedContentTypes(): array
 	{
 		return array_keys($this->modes);
+	}
+
+	private function getModuleUrl(string $path, ?array $deps = null): string
+	{
+		$deps ??= array_keys(self::CORE);
+
+		return 'https://esm.sh/' . $path . '?deps=' . implode(',', array_map(
+			fn(string $name): string => $name . '@' . self::CORE[$name],
+			$deps
+		));
+	}
+
+	/**
+	 * A direct import of @codemirror/state must not pass the deps list, otherwise
+	 * esm.sh will serve it under a different URL than the one used by internal
+	 * imports of all other modules, creating a second instance of the core.
+	 */
+	private function getStateUrl(): string
+	{
+		return 'https://esm.sh/@codemirror/state@' . self::CORE['@codemirror/state'];
+	}
+
+	private function resolveCurrentMode(array $object): ?string
+	{
+		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? '')))) {
+			return null;
+		}
+
+		foreach (array_keys($this->modes) as $type) {
+			$isTypeMatched = $object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type);
+			if ($isTypeMatched && in_array($type, $modes)) {
+				return $type;
+			}
+		}
+
+		return null;
+	}
+
+	private function getThemes(): array
+	{
+		return [
+			'default'           => 'Default',
+			'abcdef'            => 'Abcdef',
+			'abyss'             => 'Abyss',
+			'androidstudio'     => 'Android Studio',
+			'andromeda'         => 'Andromeda',
+			'atomone'           => 'Atom One',
+			'aura'              => 'Aura',
+			'basicDark'         => 'Basic Dark',
+			'basicLight'        => 'Basic Light',
+			'bbedit'            => 'BBEdit',
+			'bespin'            => 'Bespin',
+			'consoleDark'       => 'Console Dark',
+			'consoleLight'      => 'Console Light',
+			'copilot'           => 'Copilot',
+			'darcula'           => 'Darcula',
+			'dracula'           => 'Dracula',
+			'duotoneDark'       => 'Duotone Dark',
+			'duotoneLight'      => 'Duotone Light',
+			'eclipse'           => 'Eclipse',
+			'githubDark'        => 'GitHub Dark',
+			'githubLight'       => 'GitHub Light',
+			'gruvboxDark'       => 'Gruvbox Dark',
+			'gruvboxLight'      => 'Gruvbox Light',
+			'kimbie'            => 'Kimbie',
+			'material'          => 'Material',
+			'materialDark'      => 'Material Dark',
+			'materialLight'     => 'Material Light',
+			'monokai'           => 'Monokai',
+			'monokaiDimmed'     => 'Monokai Dimmed',
+			'noctisLilac'       => 'Noctis Lilac',
+			'nord'              => 'Nord',
+			'okaidia'           => 'Okaidia',
+			'quietlight'        => 'Quiet Light',
+			'red'               => 'Red',
+			'solarizedDark'     => 'Solarized Dark',
+			'solarizedLight'    => 'Solarized Light',
+			'sublime'           => 'Sublime',
+			'tokyoNight'        => 'Tokyo Night',
+			'tokyoNightDay'     => 'Tokyo Night Day',
+			'tokyoNightStorm'   => 'Tokyo Night Storm',
+			'tomorrowNightBlue' => 'Tomorrow Night Blue',
+			'vscodeDark'        => 'VSCode Dark',
+			'vscodeLight'       => 'VSCode Light',
+			'whiteDark'         => 'White Dark',
+			'whiteLight'        => 'White Light',
+			'xcodeDark'         => 'Xcode Dark',
+			'xcodeLight'        => 'Xcode Light',
+		];
 	}
 }

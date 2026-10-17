@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 10.10.26
  */
 
 namespace LightPortal\Plugins\SimpleFeeder;
@@ -88,8 +88,10 @@ class SimpleFeeder extends Block
 			$feed = $feed['data'];
 		}
 
+		$items = '';
+
 		foreach ($feed as $item) {
-			echo Str::html('div', ['class' => 'windowbg'])
+			$items .= Str::html('div', ['class' => 'windowbg'])
 				->addHtml(
 					Str::html('div', ['class' => 'block'])
 						->addHtml(
@@ -111,5 +113,7 @@ class SimpleFeeder extends Block
 						: ''
 				);
 		}
+
+		echo Str::html('div', ['class' => $this->name . ' noup'])->setHtml($items);
 	}
 }

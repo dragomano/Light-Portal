@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\EasyMarkdownEditor;
@@ -16,6 +16,10 @@ namespace LightPortal\Plugins\EasyMarkdownEditor;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
 
@@ -31,10 +35,10 @@ class EasyMarkdownEditor extends Editor
 
 		Lang::load('Editor');
 
-		$this->loadExternalResources([
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css'],
-			['type' => 'js',  'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'],
-		]);
+		$this->loadExternalResources(
+			new ExternalCss('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css'),
+			new ExternalJs('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'),
+		);
 
 		Theme::addInlineCss('
 		.editor-toolbar button {
@@ -161,18 +165,15 @@ class EasyMarkdownEditor extends Editor
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'EasyMDE',
-			'link' => 'https://github.com/Ionaru/easy-markdown-editor',
-			'author' => 'Sparksuite, Inc. | Jeroen Akkerman',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('EasyMDE')
+			->link('https://github.com/Ionaru/easy-markdown-editor')
+			->author('Sparksuite, Inc. | Jeroen Akkerman')
+			->license(License::Mit, 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE')
+			->toArray();
 	}
 
-	protected function getSupportedContentTypes(): array
+	public function getSupportedContentTypes(): array
 	{
 		return ['markdown'];
 	}

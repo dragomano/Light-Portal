@@ -40,9 +40,13 @@ function handleDragging() {
   const doDrag = async (ids, panel) => {
     const workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions';
 
-    await axios.post(workUrl, {
-      update_priority: ids,
-      update_placement: panel,
+    await fetch(workUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        update_priority: ids,
+        update_placement: panel,
+      }),
     });
   }
 }

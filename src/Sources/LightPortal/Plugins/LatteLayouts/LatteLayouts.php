@@ -8,14 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\LatteLayouts;
 
 use Bugo\Compat\Theme;
 use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -60,15 +62,12 @@ class LatteLayouts extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Latte',
-			'link' => 'https://latte.nette.org',
-			'author' => 'David Grudl',
-			'license' => [
-				'name' => 'the New BSD License',
-				'link' => 'https://github.com/nette/latte/blob/master/license.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Latte')
+			->link('https://latte.nette.org')
+			->author('David Grudl')
+			->license(License::NewBsd, 'https://github.com/nette/latte/blob/master/license.md')
+			->toArray();
 	}
 
 	private function showExamples(): string

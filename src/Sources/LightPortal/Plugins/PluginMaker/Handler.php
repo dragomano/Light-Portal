@@ -20,6 +20,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
 use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
@@ -144,7 +145,7 @@ class Handler
 			'license'    => $postData['license']
 								?? Utils::$context['lp_plugin']['license']
 								?? Utils::$context['lp_plugin_maker_plugin']['license']
-								?? 'gpl',
+								?? License::Gpl3->name,
 			'smf_hooks'  => $postData['smf_hooks'] ?? Utils::$context['lp_plugin']['smf_hooks'] ?? false,
 			'smf_ssi'    => $postData['smf_ssi'] ?? Utils::$context['lp_plugin']['smf_ssi'] ?? false,
 			'components' => $postData['components'] ?? Utils::$context['lp_plugin']['components'] ?? false,
@@ -245,12 +246,10 @@ class Handler
 
 		SelectField::make('license', __('lp_plugin_maker')['license'])
 			->setTab('copyright')
-			->setOptions([
-				'gpl' => 'GPL 3.0+',
-				'mit' => 'MIT',
-				'bsd' => 'BSD',
-				'own' => __('lp_plugin_maker')['license_own']
-			])
+			->setOptions(array_merge(
+				array_column(License::cases(), 'value', 'name'),
+				['own' => __('lp_plugin_maker')['license_own']]
+			))
 			->setValue(Utils::$context['lp_plugin']['license']);
 
 		CheckboxField::make('smf_hooks', __('lp_plugin_maker')['use_smf_hooks'])

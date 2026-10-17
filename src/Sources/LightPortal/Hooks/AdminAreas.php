@@ -220,7 +220,7 @@ class AdminAreas extends AbstractHook
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title' => LP_NAME,
 			'description' => Str::html('img')
-					->class('floatright')
+					->class('floatright lp_about_logo')
 					->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
 					->setAttribute('alt', LP_NAME . ' logo') .
 				__('lp_base_info', [

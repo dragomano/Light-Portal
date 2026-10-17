@@ -17,7 +17,7 @@ final class BreadcrumbRenderer implements RendererInterface
 				'url'          => $item['url'] ?? null,
 				'extra_before' => $item['before'] ?? null,
 				'extra_after'  => $item['after'] ?? null,
-			]);
+			], static fn($value) => $value !== null && $value !== '');
 		}
 	}
 }

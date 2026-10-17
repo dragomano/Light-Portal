@@ -9,13 +9,13 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'SSI.php';
 
 $links = [
 	'donate' => [
-		'ApexCharts'  => 'https://ko-fi.com/post/ApexCharts-addon-for-Light-Portal-Z8Z4VKQ33',
-		'DiceBear'    => 'https://ko-fi.com/post/DiceBear-addon-for-Light-Portal-N4N7VKQ79',
-		'ImageUpload' => 'https://ko-fi.com/post/ImageUpload-addon-for-Light-Portal-X8X3VKQDT',
-		'IndexNow'    => 'https://ko-fi.com/post/IndexNow-addon-for-Light-Portal-R5R4VKQCB',
-		'Jodit'       => 'https://ko-fi.com/post/Jodit-addon-for-Light-Portal-Y8Y1VKQAM',
-		'MediaBlock'  => 'https://ko-fi.com/post/MediaBlock-addon-for-Light-Portal-B0B5VKQ8P',
-		'PageScroll'  => 'https://ko-fi.com/post/PageScroll-addon-for-Light-Portal-C0C7VKQGE',
+		'ApexCharts'  => 'https://app.lava.top/products/ac5011fa-3541-4038-b837-7457aa102c61',
+		'DiceBear'    => 'https://app.lava.top/products/b7bc7068-b01c-4101-8771-f4a4efc8f604',
+		'ImageUpload' => 'https://app.lava.top/products/6a7c4d6f-ccf7-47d4-85cf-994d6018ae5c',
+		'IndexNow'    => 'https://app.lava.top/products/3d16ceb4-4e01-4909-b30b-a20ad332498d',
+		'Jodit'       => 'https://app.lava.top/products/9cd880cf-3c55-4172-b202-fe3270843f92',
+		'MediaBlock'  => 'https://app.lava.top/products/122ebd35-beb0-4c03-8bc6-0b445772deda',
+		'PageScroll'  => 'https://app.lava.top/products/d0613170-59fd-4775-99b8-d119fe55c5f5',
 	],
 	'download' => [
 		'AdsBlock'            => 'https://drive.proton.me/urls/4093NM54BM#e2MvDlJTZIEl',
@@ -101,8 +101,8 @@ $list = $txtData = [];
 $list['version'] = LP_VERSION;
 
 $pluginList = app(PluginList::class)();
-$handler = app(PluginHandler::class)($pluginList);
-$plugins = $handler->getLoadedPlugins();
+$handler    = app(PluginHandler::class)($pluginList);
+$plugins    = $handler->getLoadedPlugins();
 
 $i = 0;
 
@@ -111,7 +111,7 @@ foreach ($links as $type => $plugin) {
 		if (empty($plugin[$data['name']]))
 			continue;
 
-		$file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $data['name'] . DIRECTORY_SEPARATOR . $data['name'] . '.php';
+		$file     = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $data['name'] . DIRECTORY_SEPARATOR . $data['name'] . '.php';
 		$docBlock = file_get_contents($file);
 
 		$version = '';

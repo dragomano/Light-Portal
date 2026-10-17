@@ -8,13 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\MaterialDesignIcons;
 
-use Bugo\Compat\Theme;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\Plugin;
@@ -32,13 +34,9 @@ class MaterialDesignIcons extends Plugin
 
 	public function init(): void
 	{
-		Theme::loadCSSFile(
-			'https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css',
-			[
-				'external' => true,
-				'seed'     => false,
-			]
-		);
+		$this->loadExternalResources(new ExternalCss(
+			'https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css'
+		));
 	}
 
 	public function prepareIconList(Event $e): void
@@ -60,14 +58,11 @@ class MaterialDesignIcons extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Material Design Icons',
-			'link' => 'https://pictogrammers.com/library/mdi/',
-			'author' => 'Pictogrammers',
-			'license' => [
-				'name' => 'Pictogrammers Free License',
-				'link' => 'https://pictogrammers.com/docs/general/license/'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Material Design Icons')
+			->link('https://pictogrammers.com/library/mdi/')
+			->author('Pictogrammers')
+			->license(License::PictogrammersFree)
+			->toArray();
 	}
 }

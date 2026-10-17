@@ -35,6 +35,7 @@ use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Language;
+use LightPortal\Utils\SessionManager;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\ValidatorInterface;
 
@@ -174,7 +175,19 @@ abstract class AbstractArea implements AreaInterface
 		$this->processActions($data);
 		$this->clearCache();
 
-		exit;
+		$this->response()->exit([
+			'success' => true,
+			'count'   => $this->getFreshQuantity(),
+		]);
+	}
+
+	protected function getFreshQuantity(): ?int
+	{
+		$entityPlural = $this->getEntityNamePlural();
+
+		Utils::$context['lp_quantities'] = app(SessionManager::class)();
+
+		return Utils::$context['lp_quantities']['active_' . $entityPlural] ?? null;
 	}
 
 	protected function processActions(array $data): void
@@ -341,10 +354,12 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function getTableTitle(): string
 	{
-		$count = Utils::$context['lp_quantities']['active_' . $this->getEntityNamePlural()] ?? 0;
-		$count = empty($count) ? '' : " ($count)";
+		$entityPlural = $this->getEntityNamePlural();
+		$count        = Utils::$context['lp_quantities']['active_' . $entityPlural] ?? 0;
+		$suffix       = empty($count) ? '' : "($count)";
 
-		return __('lp_' . $this->getEntityNamePlural()) . $count;
+		return __('lp_' . $entityPlural) .
+			' <span data-lp-quantity="' . $entityPlural . '">' . $suffix . '</span>';
 	}
 
 	protected function getDefaultSortColumn(): string

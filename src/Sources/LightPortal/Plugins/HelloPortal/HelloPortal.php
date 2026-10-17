@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\HelloPortal;
@@ -16,7 +16,11 @@ namespace LightPortal\Plugins\HelloPortal;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use LightPortal\Assets\ExternalCss;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\License;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -65,21 +69,21 @@ class HelloPortal extends Plugin
 		];
 
 		$resources = [
-			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css'],
+			new ExternalCss('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css'),
 		];
 
 		if (! empty($this->context['theme'])) {
 			$theme = $this->context['theme'] . '.css';
-			$resources[] = ['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme];
+			$resources[] = new ExternalCss('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme);
 		}
 
 		if (Utils::$context['right_to_left']) {
-			$resources[] = ['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css'];
+			$resources[] = new ExternalCss('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 		}
 
-		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js'];
+		$resources[] = new ExternalJs('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
-		$this->loadExternalResources($resources);
+		$this->loadExternalResources(...$resources);
 
 		Theme::addInlineJavaScript('
 		function runTour() {
@@ -125,15 +129,12 @@ class HelloPortal extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Intro.js',
-			'link' => 'https://github.com/usablica/intro.js',
-			'author' => 'Afshin Mehrabani',
-			'license' => [
-				'name' => 'GNU AGPLv3',
-				'link' => 'https://github.com/usablica/intro.js/blob/master/license.md'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Intro.js')
+			->link('https://github.com/usablica/intro.js')
+			->author('Afshin Mehrabani')
+			->license(License::Agpl3, 'https://github.com/usablica/intro.js/blob/master/license.md')
+			->toArray();
 	}
 
 	private function getStepData(): string

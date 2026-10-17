@@ -8,15 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.06.26
+ * @version 05.10.26
  */
 
 namespace LightPortal\Plugins\Likely;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
+use LightPortal\Enums\License;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
+use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CustomField;
@@ -131,14 +133,11 @@ class Likely extends Block
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = [
-			'title' => 'Likely',
-			'link' => 'https://github.com/NikolayRys/Likely',
-			'author' => 'Nikolay Rys, Ilya Birman, Evgeny Steblinsky, Artem Sapegin',
-			'license' => [
-				'name' => 'the ISC License',
-				'link' => 'https://github.com/NikolayRys/Likely/blob/master/license.txt'
-			]
-		];
+		$e->args->links[$this->name] = CreditsFactory::make()
+			->title('Likely')
+			->link('https://github.com/NikolayRys/Likely')
+			->author('Nikolay Rys, Ilya Birman, Evgeny Steblinsky, Artem Sapegin')
+			->license(License::Isc, 'https://github.com/NikolayRys/Likely/blob/master/license.txt')
+			->toArray();
 	}
 }

@@ -117,7 +117,7 @@ final class BasicConfig extends AbstractConfig
 
 		ACP::prepareDBSettingContext($configVars);
 
-		$this->prepareConfigFields($configVars);
+		$this->prepareConfigFields();
 
 		TemplateLoader::fromFile('admin/basic_settings');
 	}
@@ -140,7 +140,7 @@ final class BasicConfig extends AbstractConfig
 
 		$currentVersion = preg_replace('/^(\d+)\.(\d+)(?!\.)/', '$1.$2.0', LP_VERSION);
 		$currentVersion = $this->normalizeVersion($currentVersion);
-		$githubVersion = $this->normalizeVersion($xml['name']);
+		$githubVersion  = $this->normalizeVersion($xml['name']);
 
 		if (version_compare($currentVersion, $githubVersion, '<')) {
 			return $xml;
@@ -217,7 +217,6 @@ final class BasicConfig extends AbstractConfig
 
 	private function getCardsTabSettings(): array
 	{
-
 		return [
 			CheckConfig::make('lp_show_images_in_articles')
 				->setTab(self::TAB_CARDS),
