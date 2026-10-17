@@ -32,6 +32,7 @@ class RoboFile extends Tasks
 	private array $remotePlugins = [
 		'AdsBlock',
 		'BootstrapIcons',
+		'Carve',
 		'ChessBoard',
 		'Disqus',
 		'EasyMarkdownEditor',
