@@ -1,0 +1,76 @@
+.page_carve .bbc_code,
+.block_carve .bbc_code {
+	overflow: auto !important;
+	white-space: pre;
+}
+
+.page_carve blockquote {
+	width: 100% !important;
+}
+
+.page_carve .errorbox > strong:first-child,
+.page_carve .noticebox > strong:first-child,
+.page_carve .infobox > strong:first-child,
+.block_carve .errorbox > strong:first-child,
+.block_carve .noticebox > strong:first-child,
+.block_carve .infobox > strong:first-child {
+	display: block;
+	margin-bottom: 4px;
+}
+
+.page_carve .errorbox > p:first-of-type,
+.page_carve .noticebox > p:first-of-type,
+.page_carve .infobox > p:first-of-type,
+.block_carve .errorbox > p:first-of-type,
+.block_carve .noticebox > p:first-of-type,
+.block_carve .infobox > p:first-of-type {
+	margin-top: 0;
+}
+
+.page_carve .errorbox > :last-child,
+.page_carve .noticebox > :last-child,
+.page_carve .infobox > :last-child,
+.block_carve .errorbox > :last-child,
+.block_carve .noticebox > :last-child,
+.block_carve .infobox > :last-child {
+	margin-bottom: 0;
+}
+
+/* Definition lists: `:: term` / `: description`.
+  Built from the theme's own values — the .descbox frame, the .titlebg
+  typography, the .title_bar accent and the .windowbg background. */
+.page_carve dl.descbox > dt,
+.block_carve dl.descbox > dt {
+	margin: 8px 0 0;
+	padding: 2px 0 2px 10px;
+	border-inline-start: 3px solid var(--lp-accent, #ff9400);
+	color: #555;
+	font-family: "Tahoma", sans-serif;
+	font-weight: bold;
+}
+
+.page_carve dl.descbox > dt:first-child,
+.block_carve dl.descbox > dt:first-child {
+	margin-top: 0;
+}
+
+/* Terms sharing one description read as one block, not as separate rows. */
+.page_carve dl.descbox > dt + dt,
+.block_carve dl.descbox > dt + dt {
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.page_carve dl.descbox > dd,
+.block_carve dl.descbox > dd {
+	margin: 4px 0 0;
+	padding: 8px 10px;
+	background: #f0f4f7;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+}
+
+.page_carve dl.descbox > dd > :last-child,
+.block_carve dl.descbox > dd > :last-child {
+	margin-bottom: 0;
+}
