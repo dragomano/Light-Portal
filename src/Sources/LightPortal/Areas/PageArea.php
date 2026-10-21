@@ -26,6 +26,7 @@ use LightPortal\Areas\Traits\HasPageFilters;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\FrontPageMode;
 use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\Status;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\PageFactory;
@@ -44,6 +45,7 @@ use LightPortal\UI\Tables\PageStatusColumn;
 use LightPortal\UI\Tables\PageTypeSelectRow;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\PageValidator;
@@ -81,9 +83,62 @@ final class PageArea extends AbstractArea
 	protected function getCustomActionHandlers(): array
 	{
 		return [
-			'restore_item'   => fn($data) => $this->getRepository()->restore($data['restore_item']),
-			'remove_forever' => fn($data) => $this->getRepository()->removePermanently($data['remove_forever']),
+			'restore_item'   => fn($data) => $this->handleRestore($data['restore_item']),
+			'remove_forever' => fn($data) => $this->handleRemoveForever($data['remove_forever']),
 		];
+	}
+
+	protected function setupMainContext(): void
+	{
+		// The browse view (own pages, moderation, deleted ones) and the search are parts of the request
+		$this->calculateParams();
+		$this->calculateTypes();
+
+		parent::setupMainContext();
+
+		$suffix = ';sa=main' . $this->type;
+
+		if (! empty(Utils::$context['search_params'])) {
+			$suffix .= ';params=' . Utils::$context['search_params'];
+		}
+
+		$search = (string) $this->request()->get('search');
+
+		if ($search !== '') {
+			$suffix .= ';search=' . urlencode($search);
+		}
+
+		// Datastar encodes semicolons, so the action URL uses ampersands as separators
+		Utils::$context['lp_actions_url'] .= str_replace(';', '&', $suffix);
+	}
+
+	/**
+	 * Pages keep a counter for every browse view, so there is no single value to return
+	 */
+	protected function patchCounters(?int $delta = null): ?int
+	{
+		return null;
+	}
+
+	protected function afterRowRemoved(int $id): void
+	{
+		$this->calculateTypes();
+
+		$views = array_merge([$this->browseType, 'del'], $this->getRowViews($this->getEntityRow($id)));
+
+		$this->patchBrowseCounts($views);
+	}
+
+	protected function getRowCount(): int
+	{
+		$this->calculateParams();
+
+		return $this->getRepository()->getTotalCount(...$this->params);
+	}
+
+	protected function getRowCondition(int $id): array
+	{
+		return ['p.page_id = ?' => $id];
 	}
 
 	protected function getValidatorClass(): string
@@ -443,6 +498,77 @@ final class PageArea extends AbstractArea
 
 		if (! User::$me->allowedTo('light_portal_manage_pages_any') && ! $this->userId) {
 			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$me->id);
+		}
+	}
+
+	private function handleRestore(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$id  = (int) $item;
+		$row = $this->getEntityRow($id);
+
+		$this->getRepository()->restore([$id]);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$this->getDatastarSender()->removeElements($this->getRowSelector($id));
+
+		$this->patchBrowseCounts($this->getRestoreViews($row));
+
+		$this->patchNoItemsRow();
+	}
+
+	private function handleRemoveForever(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$id = (int) $item;
+
+		$this->getRepository()->removePermanently([$id]);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$this->getDatastarSender()->removeElements($this->getRowSelector($id));
+
+		$this->patchBrowseCounts(['del']);
+
+		$this->patchNoItemsRow();
+	}
+
+	/**
+	 * A page belongs to the views which match its status and author
+	 */
+	private function getRowViews(?array $row): array
+	{
+		if ((int) ($row['status'] ?? 0) === Status::UNAPPROVED->value) {
+			return ['mod'];
+		}
+
+		return (int) ($row['author_id'] ?? 0) === User::$me->id ? ['all', 'own'] : ['all'];
+	}
+
+	/**
+	 * A restored page returns to the view which matches its status and author
+	 */
+	private function getRestoreViews(?array $row): array
+	{
+		return array_merge(['del'], $this->getRowViews($row));
+	}
+
+	private function patchBrowseCounts(array $types): void
+	{
+		$sender = $this->getDatastarSender();
+
+		foreach (array_unique($types) as $type) {
+			$sender->patchElements(
+				'<span data-lp-quantity="pages_' . $type . '">(' . $this->getBrowseTypeCount($type) . ')</span>',
+				'[data-lp-quantity="pages_' . $type . '"]'
+			);
 		}
 	}
 

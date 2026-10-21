@@ -94,7 +94,7 @@ trait HasPageBrowseTypes
 
 			Utils::$context['lp_pages']['title'] .= Str::html('a')
 				->href(Utils::$context['form_action'] . $details[0])
-				->setText($details[1] . ' (' . $this->getBrowseTypeCount($browseType) . ')');
+				->setHtml($details[1] . ' <span data-lp-quantity="pages_' . $browseType . '">(' . $this->getBrowseTypeCount($browseType) . ')</span>');
 
 			if ($browseType !== 'del' && count($titles) > 1) {
 				Utils::$context['lp_pages']['title'] .= ' | ';

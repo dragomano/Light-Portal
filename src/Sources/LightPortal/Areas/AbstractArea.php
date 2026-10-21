@@ -251,7 +251,7 @@ abstract class AbstractArea implements AreaInterface
 
 		$this->getDatastarSender()->patchElements($this->renderEntityRow($entry), $this->getRowSelector($id));
 
-		$this->patchQuantity($entry['status'] === Status::ACTIVE->value ? 1 : -1);
+		$this->patchCounters($entry['status'] === Status::ACTIVE->value ? 1 : -1);
 	}
 
 	protected function handleRemoveItem(mixed $item): void
@@ -260,18 +260,25 @@ abstract class AbstractArea implements AreaInterface
 			return;
 		}
 
+		$id = (int) $item;
+
 		$this->repository->remove($item);
 
 		if (! DatastarSender::isDatastarRequest()) {
 			return;
 		}
 
-		$this->getDatastarSender()->removeElements($this->getRowSelector((int) $item));
+		$this->getDatastarSender()->removeElements($this->getRowSelector($id));
 
-		$this->patchNoItemsRow($this->patchQuantity());
+		$this->afterRowRemoved($id);
+
+		$this->patchNoItemsRow($this->patchCounters());
 	}
 
-	protected function patchQuantity(?int $delta = null): ?int
+	/**
+	 * @return int|null The fresh counter, or null when the entity keeps several counters
+	 */
+	protected function patchCounters(?int $delta = null): ?int
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
@@ -289,10 +296,12 @@ abstract class AbstractArea implements AreaInterface
 		return $count;
 	}
 
+	protected function afterRowRemoved(int $id): void {}
+
 	protected function patchNoItemsRow(?int $activeCount = null): void
 	{
 		// A list with active items cannot be empty at all, so the extra count query is not needed
-		if ($activeCount > 0 || $this->repository->getTotalCount() > 0) {
+		if ($activeCount > 0 || $this->getRowCount() > 0) {
 			return;
 		}
 
@@ -337,10 +346,20 @@ abstract class AbstractArea implements AreaInterface
 			1,
 			$this->getRowSort(),
 			'',
-			[$this->getEntityName() . '_id = ?' => $id]
+			$this->getRowCondition($id)
 		);
 
 		return $rows[$id] ?? null;
+	}
+
+	protected function getRowCondition(int $id): array
+	{
+		return [$this->getEntityName() . '_id = ?' => $id];
+	}
+
+	protected function getRowCount(): int
+	{
+		return $this->repository->getTotalCount();
 	}
 
 	protected function getRowSort(): string

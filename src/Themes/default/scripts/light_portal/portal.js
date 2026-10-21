@@ -1,58 +1,6 @@
 class PortalEntity {
-  constructor() {
-    this.plural = '';
-    this.workUrl = smf_scripturl + '?action=admin;' + smf_session_var + '=' + smf_session_id;
-  }
-
   toggleSpin(target) {
     target.classList.toggle('fa-spin');
-  }
-
-  applyQuantity(count) {
-    if (typeof count !== 'number') return;
-
-    document.querySelectorAll(`[data-lp-quantity="${this.plural}"]`).forEach((el) => {
-      el.textContent = count > 0 ? `(${count})` : '';
-    });
-  }
-
-  async toggleStatus(target) {
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    const response = await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        toggle_item: item,
-      }),
-    });
-
-    const { count } = await response.json();
-
-    this.applyQuantity(count);
-  }
-
-  async remove(target) {
-    if (!confirm(smf_you_sure)) return false;
-
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    const response = await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        delete_item: item,
-      }),
-    });
-
-    const { count } = await response.json();
-
-    target.closest('tr').remove();
-    this.applyQuantity(count);
   }
 
   post(target) {
@@ -75,35 +23,6 @@ class PortalEntity {
 }
 
 class Block extends PortalEntity {
-  constructor() {
-    super();
-    this.plural = 'blocks';
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_blocks;actions&' + smf_session_var + '=' + smf_session_id;
-  }
-
-  async clone(target) {
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    const response = await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        clone_block: item,
-      }),
-    });
-
-    const { success, id } = await response.json();
-
-    if (success) {
-      const div = target.cloneNode(true);
-
-      div.dataset.id = id;
-      target.after(div);
-    }
-  }
-
   add(target) {
     const thisForm = document.forms['block_add_form'];
 
@@ -153,69 +72,15 @@ class Block extends PortalEntity {
 }
 
 class Page extends PortalEntity {
-  constructor() {
-    super();
-    this.plural = 'pages';
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions;' + smf_session_var + '=' + smf_session_id;
-  }
-
   add(target) {
     const thisForm = document.forms['page_add_form'];
 
     thisForm['add_page'].value = target.dataset.type;
     thisForm.submit();
   }
-
-  async restore(target) {
-    if (!confirm(smf_you_sure)) return false;
-
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    const response = await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        restore_item: item,
-      }),
-    });
-
-    const { count } = await response.json();
-
-    target.closest('tr').remove();
-    this.applyQuantity(count);
-  }
-
-  async removeForever(target) {
-    if (!confirm(smf_you_sure)) return false;
-
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    const response = await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        remove_forever: item,
-      }),
-    });
-
-    const { count } = await response.json();
-
-    target.closest('tr').remove();
-    this.applyQuantity(count);
-  }
 }
 
 class Category extends PortalEntity {
-  constructor() {
-    super();
-    this.plural = 'categories';
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions;' + smf_session_var + '=' + smf_session_id;
-  }
-
   updatePriority(e) {
     const items = e.to.children;
 
@@ -237,13 +102,7 @@ class Category extends PortalEntity {
   }
 }
 
-class Tag extends PortalEntity {
-  constructor() {
-    super();
-    this.plural = 'tags';
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_tags;actions;' + smf_session_var + '=' + smf_session_id;
-  }
-}
+class Tag extends PortalEntity {}
 
 class PortalTabs {
   #refs = null;
