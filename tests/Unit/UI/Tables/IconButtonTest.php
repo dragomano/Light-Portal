@@ -27,4 +27,17 @@ describe('IconButton', function () {
             ->toContain('x-on:click="do()"')
             ->toContain('icon-plus');
     });
+
+    it('renders a button which does not submit an enclosing form', function () {
+        $html = IconButton::make('plus', ['data-on:click' => 'open()']);
+
+        expect($html)->toContain('type="button"');
+    });
+
+    it('allows overriding the button type', function () {
+        $html = IconButton::make('plus', ['type' => 'submit']);
+
+        expect($html)->toContain('type="submit"')
+            ->and($html)->not->toContain('type="button"');
+    });
 });

@@ -14,6 +14,7 @@ namespace LightPortal\Areas;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\Row;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
@@ -23,6 +24,7 @@ use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\UI\Fields\TextareaField;
 use LightPortal\UI\Tables\ContextMenuColumn;
 use LightPortal\UI\Tables\IconColumn;
+use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\UI\Tables\StatusColumn;
 use LightPortal\UI\Tables\TitleColumn;
 use LightPortal\Utils\Icon;
@@ -52,7 +54,8 @@ final class CategoryArea extends AbstractArea
 	protected function getCustomActionHandlers(): array
 	{
 		return [
-			'update_priority' => fn($data) => $this->getRepository()->updatePriority($data['update_priority']),
+			'update_priority' => fn($data) => $this->getRepository()
+				->updatePriority($this->parseIds($data['update_priority'])),
 		];
 	}
 
@@ -73,6 +76,23 @@ final class CategoryArea extends AbstractArea
 			    onSort: e => entity.updatePriority(e)
 			});
 		JS;
+	}
+
+	protected function buildTableWithBulkActions(): PortalTableBuilderInterface
+	{
+		return parent::buildTableWithBulkActions()
+			->addRow(Row::make($this->getSortControls()));
+	}
+
+	private function getSortControls(): string
+	{
+		$url = Utils::$context['lp_actions_url'] ?? '';
+
+		return '<div hidden data-signals="{ sort_ids: \'\' }">'
+			. '<input id="lp_category_sort_ids" type="hidden" data-bind="sort_ids">'
+			. '<button id="lp_category_sort_trigger" type="button"'
+			. ' data-on:click="@post(\'' . $url . '\', {payload: {update_priority: $sort_ids}})"></button>'
+			. '</div>';
 	}
 
 	protected function getTableColumns(): array

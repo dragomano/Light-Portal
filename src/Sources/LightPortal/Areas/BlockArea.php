@@ -44,8 +44,6 @@ if (! defined('SMF'))
 
 final class BlockArea extends AbstractArea
 {
-	private ?DatastarSender $datastarSender = null;
-
 	public function __construct(BlockRepositoryInterface $repository, EventDispatcherInterface $dispatcher)
 	{
 		parent::__construct($repository, $dispatcher);
@@ -65,7 +63,11 @@ final class BlockArea extends AbstractArea
 	{
 		return [
 			'clone_block'     => fn($data) => $this->handleClone($data['clone_block']),
-			'update_priority' => fn($data) => $this->handleUpdatePriority($data['update_priority'], $data['update_placement']),
+			'update_priority' => fn($data) => $this->handleUpdatePriority(
+				$data['update_priority'],
+				$data['update_placement'] ?? '',
+				$data['update_source'] ?? ''
+			),
 			'toggle_item'     => fn($data) => $this->handleToggle($data['toggle_item']),
 			'delete_item'     => fn($data) => $this->handleRemove($data['delete_item']),
 		];
@@ -278,6 +280,8 @@ final class BlockArea extends AbstractArea
 			$sender = $this->getDatastarSender();
 			$sender->patchElements($html, 'tr[data-id="' . intval($item) . '"]', ElementPatchMode::After);
 
+			$this->patchPlacement((string) (Utils::$context['lp_block']['placement'] ?? ''));
+
 			return;
 		}
 
@@ -321,6 +325,8 @@ final class BlockArea extends AbstractArea
 
 		$id = (int) $item;
 
+		$placement = $this->getPlacement($id);
+
 		$this->getRepository()->remove($id);
 
 		if (! DatastarSender::isDatastarRequest())
@@ -328,13 +334,68 @@ final class BlockArea extends AbstractArea
 
 		$sender = $this->getDatastarSender();
 		$sender->removeElements('tr[data-id="' . $id . '"]');
+
+		$this->patchPlacement($placement);
 	}
 
-	private function handleUpdatePriority(mixed $priority, mixed $placement): void
+	private function handleUpdatePriority(mixed $priority, mixed $placement, mixed $source): void
 	{
-		$ids = array_values(array_map('intval', array_filter(explode(',', (string) $priority))));
+		$ids = $this->parseIds($priority);
 
 		$this->getRepository()->updatePriority($ids, (string) $placement);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$this->patchPriorities($ids);
+
+		$this->patchPlacement((string) ($placement ?: $source));
+
+		if ($placement !== '' && (string) $source !== (string) $placement) {
+			$this->patchPlacement((string) $source);
+		}
+	}
+
+	/**
+	 * Blocks are renumbered by their position in the list, so every key of the list is a new priority
+	 */
+	private function patchPriorities(array $ids): void
+	{
+		$sender = $this->getDatastarSender();
+
+		foreach ($ids as $priority => $id) {
+			$sender->patchElements(
+				'<span data-lp-priority>' . $priority . '</span>',
+				'tr[data-id="' . $id . '"] td.priority [data-lp-priority]'
+			);
+		}
+	}
+
+	private function getPlacement(int $id): string
+	{
+		return (string) ($this->getRepository()->getData($id)['placement'] ?? '');
+	}
+
+	private function patchPlacement(string $placement): void
+	{
+		if ($placement === '')
+			return;
+
+		$count  = $this->getRepository()->getTotalCount('', ['placement = ?' => $placement]);
+		$sender = $this->getDatastarSender();
+
+		$sender->patchElements(
+			'<span data-lp-count="' . $placement . '">' . ($count ? " ($count)" : '') . '</span>',
+			'[data-lp-count="' . $placement . '"]'
+		);
+
+		if ($count === 0) {
+			$sender->patchElements(
+				'<tr class="windowbg centertext"><td>' . __('lp_no_items') . '</td></tr>',
+				'tbody[data-placement="' . $placement . '"]',
+				ElementPatchMode::Inner
+			);
+		}
 	}
 
 	private function renderBlockEntry(int $id): ?string
@@ -456,10 +517,5 @@ final class BlockArea extends AbstractArea
 		assert($repository instanceof BlockRepositoryInterface);
 
 		return $repository;
-	}
-
-	private function getDatastarSender(): DatastarSender
-	{
-		return $this->datastarSender ??= new DatastarSender();
 	}
 }

@@ -14,6 +14,7 @@ use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Validators\BlockValidator;
+use starfederation\datastar\enums\ElementPatchMode;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 use Tests\TestExitException;
@@ -389,8 +390,6 @@ it('update_priority handler ignores empty ids', function () {
 
 describe('Datastar actions', function () {
     beforeEach(function () {
-        $this->serverBackup = $_SERVER;
-
         unset($_SERVER['HTTP_DATASTAR_REQUEST']);
 
         $this->senderMock = mock(DatastarSender::class);
@@ -398,7 +397,7 @@ describe('Datastar actions', function () {
     });
 
     afterEach(function () {
-        $_SERVER = $this->serverBackup;
+        unset($_SERVER['HTTP_DATASTAR_REQUEST']);
     });
 
     it('handleToggle toggles status without patching for non-Datastar requests', function () {
@@ -447,6 +446,7 @@ describe('Datastar actions', function () {
     });
 
     it('handleRemove removes the row without Datastar patch for non-Datastar requests', function () {
+        $this->repositoryMock->shouldReceive('getData')->andReturn(['placement' => 'top']);
         $this->repositoryMock->shouldReceive('remove')->once()->with(9);
         $this->senderMock->shouldNotReceive('removeElements');
 
@@ -455,13 +455,49 @@ describe('Datastar actions', function () {
         expect(true)->toBeTrue();
     });
 
-    it('handleRemove sends removeElements for Datastar requests', function () {
+    it('handleRemove sends removeElements and updates the placement count', function () {
         $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
 
+        $this->repositoryMock->shouldReceive('getData')->with(9)->andReturn(['id' => 9, 'placement' => 'top']);
         $this->repositoryMock->shouldReceive('remove')->once()->with(9);
-        $this->senderMock->shouldReceive('removeElements')
+        $this->repositoryMock->shouldReceive('getTotalCount')
             ->once()
-            ->with('tr[data-id="9"]');
+            ->with('', ['placement = ?' => 'top'])
+            ->andReturn(1);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('tr[data-id="9"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="top"> (1)</span>', '[data-lp-count="top"]');
+
+        $this->accessor->callMethod('handleRemove', ['9']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleRemove shows the empty state when the placement becomes empty', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        Lang::$txt['lp_no_items'] = 'No items';
+
+        $this->repositoryMock->shouldReceive('getData')->with(9)->andReturn(['id' => 9, 'placement' => 'bottom']);
+        $this->repositoryMock->shouldReceive('remove')->once()->with(9);
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'bottom'])
+            ->andReturn(0);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('tr[data-id="9"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="bottom"></span>', '[data-lp-count="bottom"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(
+                '<tr class="windowbg centertext"><td>No items</td></tr>',
+                'tbody[data-placement="bottom"]',
+                ElementPatchMode::Inner
+            );
 
         $this->accessor->callMethod('handleRemove', ['9']);
 
@@ -473,6 +509,138 @@ describe('Datastar actions', function () {
         $this->senderMock->shouldNotReceive('removeElements');
 
         $this->accessor->callMethod('handleRemove', [null]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleUpdatePriority patches priorities and the placement count', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([3, 1], '')->andReturn();
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'top'])
+            ->andReturn(2);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-priority>0</span>', 'tr[data-id="3"] td.priority [data-lp-priority]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-priority>1</span>', 'tr[data-id="1"] td.priority [data-lp-priority]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="top"> (2)</span>', '[data-lp-count="top"]');
+
+        $this->accessor->callMethod('handleUpdatePriority', ['3,1', '', 'top']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleUpdatePriority patches both placements when a block is moved', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([7], 'left')->andReturn();
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'left'])
+            ->andReturn(1);
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'top'])
+            ->andReturn(4);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-priority>0</span>', 'tr[data-id="7"] td.priority [data-lp-priority]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="left"> (1)</span>', '[data-lp-count="left"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="top"> (4)</span>', '[data-lp-count="top"]');
+
+        $this->accessor->callMethod('handleUpdatePriority', ['7', 'left', 'top']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleUpdatePriority shows the empty state in the source placement', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        Lang::$txt['lp_no_items'] = 'No items';
+
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([7], 'top')->andReturn();
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'top'])
+            ->andReturn(5);
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'bottom'])
+            ->andReturn(0);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-priority>0</span>', 'tr[data-id="7"] td.priority [data-lp-priority]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="top"> (5)</span>', '[data-lp-count="top"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="bottom"></span>', '[data-lp-count="bottom"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(
+                '<tr class="windowbg centertext"><td>No items</td></tr>',
+                'tbody[data-placement="bottom"]',
+                ElementPatchMode::Inner
+            );
+
+        $this->accessor->callMethod('handleUpdatePriority', ['7', 'top', 'bottom']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleUpdatePriority does not patch for regular requests', function () {
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([3, 1], 'top')->andReturn();
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleUpdatePriority', ['3,1', 'top', '']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleClone updates the placement count for Datastar requests', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('getData')->once()->with(5)->andReturn(['id' => 5, 'placement' => 'top']);
+        $this->repositoryMock->shouldReceive('setData')->andReturnUsing(function () {
+            Utils::$context['lp_block']['id'] = 456;
+        });
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([
+            'top' => [
+                5   => ['id' => 5, 'type' => 'html', 'status' => 1],
+                456 => ['id' => 456, 'type' => 'html', 'status' => 1],
+            ],
+        ]);
+        $this->repositoryMock->shouldReceive('getTotalCount')
+            ->once()
+            ->with('', ['placement = ?' => 'top'])
+            ->andReturn(2);
+
+        $requestMock = mock(RequestInterface::class);
+        $requestMock->shouldReceive('put')->with('clone', true);
+        $this->accessor->setProperty('request', $requestMock);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::type('string'), 'tr[data-id="5"]', ElementPatchMode::After);
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-count="top"> (2)</span>', '[data-lp-count="top"]');
+
+        $this->accessor->callMethod('handleClone', [5]);
 
         expect(true)->toBeTrue();
     });

@@ -112,32 +112,33 @@ class Block extends PortalEntity {
   }
 
   sort(e) {
-    const items = e.from.children;
-    const items2 = e.to.children;
+    const items = e.to.children;
 
     let priority = [];
-    let placement = '';
 
-    for (let i = 0; i < items2.length; i++) {
-      const key = items2[i].querySelector('.handle')
-        ? parseInt(items2[i].querySelector('.handle').parentNode.parentNode.dataset.id, 10)
+    for (let i = 0; i < items.length; i++) {
+      const id = items[i].querySelector('.handle')
+        ? parseInt(items[i].querySelector('.handle').parentNode.parentNode.dataset.id, 10)
         : null;
-      const place = items[i] && items[i].parentNode ? items[i].parentNode.dataset.placement : null;
-      const place2 =
-        items2[i] && items2[i].parentNode ? items2[i].parentNode.dataset.placement : null;
 
-      if (place !== place2) placement = place2;
-
-      if (key !== null) priority.push(key);
+      if (id !== null) priority.push(id);
     }
+
+    const source = e.from.dataset.placement || '';
+    const target = e.to.dataset.placement || '';
 
     const sortIds = document.getElementById('lp_block_sort_ids');
     const sortPlacement = document.getElementById('lp_block_sort_placement');
+    const sortSource = document.getElementById('lp_block_sort_source');
 
     sortIds.value = priority.join(',');
-    sortPlacement.value = placement;
-    sortIds.dispatchEvent(new Event('input', { bubbles: true }));
-    sortPlacement.dispatchEvent(new Event('input', { bubbles: true }));
+    sortPlacement.value = source === target ? '' : target;
+    sortSource.value = source;
+
+    [sortIds, sortPlacement, sortSource].forEach((input) => {
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
     document.getElementById('lp_block_sort_trigger').click();
 
     const nextElem = e.item.nextElementSibling;
@@ -215,7 +216,7 @@ class Category extends PortalEntity {
     this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions;' + smf_session_var + '=' + smf_session_id;
   }
 
-  async updatePriority(e) {
+  updatePriority(e) {
     const items = e.to.children;
 
     let priority = [];
@@ -228,13 +229,11 @@ class Category extends PortalEntity {
       if (id !== null) priority.push(id);
     }
 
-    await fetch(this.workUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        update_priority: priority,
-      }),
-    });
+    const sortIds = document.getElementById('lp_category_sort_ids');
+
+    sortIds.value = priority.join(',');
+    sortIds.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('lp_category_sort_trigger').click();
   }
 }
 

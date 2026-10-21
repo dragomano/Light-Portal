@@ -16,7 +16,7 @@
 					@endphp
 				</a>
 			</span>
-			{{ $context['lp_block_placements'][$placement] ?? $txt['not_applicable'] }}{{ is_array($blocks) ? ' (' . count($blocks) . ')' : '' }}
+			{{ $context['lp_block_placements'][$placement] ?? $txt['not_applicable'] }}<span data-lp-count="{{ $placement }}">{{ is_array($blocks) ? ' (' . count($blocks) . ')' : '' }}</span>
 		</h3>
 	</div>
 
@@ -66,10 +66,11 @@
 	$sortUrl = $scripturl . '?action=admin&area=lp_blocks&actions&' . $context['session_var'] . '=' . $context['session_id'];
 @endphp
 
-<div hidden data-signals="{ sort_ids: '', sort_placement: '' }">
+<div hidden data-signals="{ sort_ids: '', sort_placement: '', sort_source: '' }">
 	<input id="lp_block_sort_ids" type="hidden" data-bind="sort_ids">
 	<input id="lp_block_sort_placement" type="hidden" data-bind="sort_placement">
-	<button id="lp_block_sort_trigger" type="button" data-on:click="@post('{{ $sortUrl }}', {payload: {update_priority: $sort_ids, update_placement: $sort_placement}})"></button>
+	<input id="lp_block_sort_source" type="hidden" data-bind="sort_source">
+	<button id="lp_block_sort_trigger" type="button" data-on:click="@post('{{ $sortUrl }}', {payload: {update_priority: $sort_ids, update_placement: $sort_placement, update_source: $sort_source}})"></button>
 </div>
 
 <script src="@asset('Sortable.min.js')"></script>

@@ -191,6 +191,8 @@ it('returns empty remove redirect suffix by default', function () {
 describe('setupMainContext', function () {
     beforeEach(function () {
         Utils::$context['admin_menu_name'] = 'test_menu';
+        Utils::$context['session_var']     = 'session_var';
+        Utils::$context['session_id']      = 'session_id';
     });
 
     it('sets up main context correctly', function () {
@@ -198,6 +200,8 @@ describe('setupMainContext', function () {
 
         expect(Utils::$context['page_title'])->toBe(Lang::$txt['lp_portal'] . ' - ' . Lang::$txt["lp_test_entities_manage"])
             ->and(Utils::$context['form_action'])->toBe(Config::$scripturl . "?action=admin;area=lp_test_entities")
+            ->and(Utils::$context['lp_actions_url'])
+                ->toBe(Config::$scripturl . '?action=admin&area=lp_test_entities&actions&session_var=session_id')
             ->and(Utils::$context['test_menu']['tab_data'])->toBeArray()
             ->and(Utils::$context['test_menu']['tab_data']['title'])->toBe(LP_NAME);
     });
@@ -480,5 +484,20 @@ describe('finalizePreviewTitle', function () {
         $this->accessor->callMethod('finalizePreviewTitle', [$entity]);
 
         expect(Utils::$context['preview_title'])->toContain('Test Title');
+    });
+});
+
+describe('parseIds', function () {
+    it('converts a comma-separated string into a list of ids', function () {
+        expect($this->accessor->callMethod('parseIds', ['3,1,7']))->toBe([3, 1, 7]);
+    });
+
+    it('skips empty values and reindexes the list', function () {
+        expect($this->accessor->callMethod('parseIds', ['5,,']))->toBe([5])
+            ->and($this->accessor->callMethod('parseIds', ['']))->toBe([]);
+    });
+
+    it('keeps the order of an array payload', function () {
+        expect($this->accessor->callMethod('parseIds', [[9, 4, 6]]))->toBe([9, 4, 6]);
     });
 });

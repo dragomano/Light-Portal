@@ -20,6 +20,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
 use LightPortal\Enums\ContentType;
+use LightPortal\Enums\Status;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\FactoryInterface;
@@ -39,6 +40,7 @@ use LightPortal\Utils\Language;
 use LightPortal\Utils\SessionManager;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\ValidatorInterface;
+use starfederation\datastar\enums\ElementPatchMode;
 
 use function LightPortal\app;
 
@@ -52,6 +54,8 @@ abstract class AbstractArea implements AreaInterface
 	use HasArea;
 
 	protected bool $shouldProcessAddForm = true;
+
+	protected ?DatastarSender $datastarSender = null;
 
 	public function __construct(
 		protected readonly DataManagerInterface $repository,
@@ -143,6 +147,11 @@ abstract class AbstractArea implements AreaInterface
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural" . $this->getMainFormActionSuffix();
 
+		// Datastar encodes semicolons, so the action URL uses ampersands as separators
+		Utils::$context['lp_actions_url'] = Config::$scripturl .
+			"?action=admin&area=lp_$entityPlural&actions&" .
+			Utils::$context['session_var'] . '=' . Utils::$context['session_id'];
+
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = $this->getMainTabData();
 	}
 
@@ -216,9 +225,156 @@ abstract class AbstractArea implements AreaInterface
 	final protected function getActionHandlers(): array
 	{
 		return array_merge([
-			'delete_item' => fn($data) => $this->repository->remove($data['delete_item']),
-			'toggle_item' => fn($data) => $this->repository->toggleStatus($data['toggle_item']),
+			'delete_item' => fn($data) => $this->handleRemoveItem($data['delete_item']),
+			'toggle_item' => fn($data) => $this->handleToggleItem($data['toggle_item']),
 		], $this->getCustomActionHandlers());
+	}
+
+	protected function handleToggleItem(mixed $item): void
+	{
+		if (empty($item)) {
+			return;
+		}
+
+		$this->repository->toggleStatus($item);
+
+		if (! DatastarSender::isDatastarRequest()) {
+			return;
+		}
+
+		$id    = (int) $item;
+		$entry = $this->getEntityRow($id);
+
+		if ($entry === null) {
+			return;
+		}
+
+		$this->getDatastarSender()->patchElements($this->renderEntityRow($entry), $this->getRowSelector($id));
+
+		$this->patchQuantity($entry['status'] === Status::ACTIVE->value ? 1 : -1);
+	}
+
+	protected function handleRemoveItem(mixed $item): void
+	{
+		if (empty($item)) {
+			return;
+		}
+
+		$this->repository->remove($item);
+
+		if (! DatastarSender::isDatastarRequest()) {
+			return;
+		}
+
+		$this->getDatastarSender()->removeElements($this->getRowSelector((int) $item));
+
+		$this->patchNoItemsRow($this->patchQuantity());
+	}
+
+	protected function patchQuantity(?int $delta = null): ?int
+	{
+		$entityPlural = $this->getEntityNamePlural();
+
+		// The cached counter can be adjusted in place only when the new state of the entity is known
+		$count = $delta === null ? null : app(SessionManager::class)->adjust('active_' . $entityPlural, $delta);
+		$count ??= $this->getFreshQuantity();
+
+		$suffix = empty($count) ? '' : "($count)";
+
+		$this->getDatastarSender()->patchElements(
+			'<span data-lp-quantity="' . $entityPlural . '">' . $suffix . '</span>',
+			'[data-lp-quantity="' . $entityPlural . '"]'
+		);
+
+		return $count;
+	}
+
+	protected function patchNoItemsRow(?int $activeCount = null): void
+	{
+		// A list with active items cannot be empty at all, so the extra count query is not needed
+		if ($activeCount > 0 || $this->repository->getTotalCount() > 0) {
+			return;
+		}
+
+		$table   = $this->buildTable()->build();
+		$colspan = count($table['columns'] ?? []);
+		$label   = $table['no_items_label'] ?? __('lp_no_items');
+
+		$this->getDatastarSender()->patchElements(
+			'<tr class="windowbg"><td colspan="' . $colspan . '" class="centertext">' . $label . '</td></tr>',
+			'#' . $this->getListId() . ' tbody',
+			ElementPatchMode::Inner
+		);
+	}
+
+	protected function renderEntityRow(array $entry): string
+	{
+		$cells = '';
+
+		foreach ($this->buildTable()->build()['columns'] ?? [] as $columnId => $column) {
+			$data = $column['data'] ?? [];
+
+			$value = match (true) {
+				isset($data['function']) => (string) call_user_func($data['function'], $entry),
+				isset($data['db'])       => (string) ($entry[$data['db']] ?? ''),
+				isset($data['value'])    => (string) $data['value'],
+				default                  => '',
+			};
+
+			$class = empty($data['class']) ? '' : ' ' . $data['class'];
+			$style = empty($data['style']) ? '' : ' style="' . $data['style'] . '"';
+
+			$cells .= '<td class="' . $columnId . $class . '"' . $style . '>' . $value . '</td>';
+		}
+
+		return '<tr class="windowbg" id="' . $this->getRowId((int) $entry['id']) . '">' . $cells . '</tr>';
+	}
+
+	protected function getEntityRow(int $id): ?array
+	{
+		$rows = $this->repository->getAll(
+			0,
+			1,
+			$this->getRowSort(),
+			'',
+			[$this->getEntityName() . '_id = ?' => $id]
+		);
+
+		return $rows[$id] ?? null;
+	}
+
+	protected function getRowSort(): string
+	{
+		return $this->getDefaultSortColumn();
+	}
+
+	protected function getRowId(int $id): string
+	{
+		return 'list_' . $this->getListId() . '_' . $id;
+	}
+
+	protected function getRowSelector(int $id): string
+	{
+		return '#' . $this->getRowId($id);
+	}
+
+	protected function getListId(): string
+	{
+		return 'lp_' . $this->getEntityNamePlural();
+	}
+
+	protected function parseIds(mixed $value): array
+	{
+		if (is_array($value)) {
+			return array_map('intval', $value);
+		}
+
+		return array_values(array_map('intval', array_filter(explode(',', (string) $value))));
+	}
+
+	protected function getDatastarSender(): DatastarSender
+	{
+		return $this->datastarSender ??= new DatastarSender();
 	}
 
 	protected function clearCache(): void
@@ -264,7 +420,7 @@ abstract class AbstractArea implements AreaInterface
 	protected function createTableBuilder(?string $title = null): PortalTableBuilderInterface
 	{
 		return PortalTableBuilder::make(
-			'lp_' . $this->getEntityNamePlural(),
+			$this->getListId(),
 			$title ?? $this->getTableTitle()
 		)
 			->setDefaultSortColumn($this->getDefaultSortColumn())

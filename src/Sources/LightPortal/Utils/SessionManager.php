@@ -45,6 +45,33 @@ final readonly class SessionManager
 		return $result;
 	}
 
+	/**
+	 * Adjusts a cached counter without querying the database.
+	 *
+	 * Returns null when the counter is not cached yet, so the caller can fall back to a real count.
+	 */
+	public function adjust(string $type, int $delta): ?int
+	{
+		$config = $this->getCountConfig()[$type] ?? null;
+
+		if ($config === null) {
+			return null;
+		}
+
+		$cacheKey = $config['cache_key'] ?? $type;
+		$count    = $this->session('lp')->get($cacheKey);
+
+		if ($count === null) {
+			return null;
+		}
+
+		$count = max(0, (int) $count + $delta);
+
+		$this->session('lp')->put($cacheKey, $count);
+
+		return $count;
+	}
+
 	private function getCountConfig(): array
 	{
 		$userKey = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);

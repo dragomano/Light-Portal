@@ -42,7 +42,7 @@
 			{{ $data['areas'] }}
 		</td>
 		<td class="priority hidden-xs">
-			{{ $data['priority'] }}
+			<span data-lp-priority>{{ $data['priority'] }}</span>
 			@php
 				$sortIcon = Icon::get('sort');
 				echo str_replace(' class="', ' title="' . $txt['lp_action_move'] . '" class="handle ', $sortIcon);
@@ -60,7 +60,7 @@
 		</td>
 		<td class="actions">
 			<div class="context_menu" data-on:click__outside="$ctx_{{ $id }} = false">
-				<button class="button floatnone" data-on:click="$ctx_{{ $id }} = true">
+				<button class="button floatnone" type="button" data-on:click="$ctx_{{ $id }} = true">
 					@icon('ellipsis')
 				</button>
 				<div class="roundframe" data-show="$ctx_{{ $id }}">
