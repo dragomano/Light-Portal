@@ -63,8 +63,8 @@ it('returns correct custom action handlers', function () {
     $result = $this->accessor->callMethod('getCustomActionHandlers');
 
     expect($result)->toBeArray()
-        ->and($result)->toHaveKey('update_priority')
-        ->and($result['update_priority'])->toBeCallable();
+        ->and($result)->toHaveKey('sort_items')
+        ->and($result['sort_items'])->toBeCallable();
 });
 
 it('returns correct default sort column', function () {
@@ -79,7 +79,7 @@ it('returns correct table script', function () {
     expect($result)->toBeString()
         ->and($result)->toContain('const entity = new Category();')
         ->and($result)->toContain('Sortable')
-        ->and($result)->toContain('updatePriority');
+        ->and($result)->toContain('entity.sort(');
 });
 
 it('returns correct table columns', function () {
@@ -130,17 +130,17 @@ it('parses comma-separated ids into a priority list', function () {
 
     $handlers = $this->accessor->callMethod('getCustomActionHandlers');
 
-    $handlers['update_priority'](['update_priority' => '3,1,7']);
+    $handlers['sort_items'](['sort_items' => '3,1,7']);
 
     expect(true)->toBeTrue();
 });
 
-it('keeps the order of an array payload', function () {
-    $this->repositoryMock->shouldReceive('updatePriority')->once()->with([5, 2]);
+it('keeps the order of the ids and drops empty values', function () {
+    $this->repositoryMock->shouldReceive('updatePriority')->once()->with([5, 2, 8]);
 
     $handlers = $this->accessor->callMethod('getCustomActionHandlers');
 
-    $handlers['update_priority'](['update_priority' => [5, 2]]);
+    $handlers['sort_items'](['sort_items' => '5,2,,8,']);
 
     expect(true)->toBeTrue();
 });
@@ -382,6 +382,41 @@ describe('Datastar actions', function () {
             ->and(html_entity_decode((string) $html, ENT_QUOTES))->toContain('toggle_item: 7');
     });
 
+    it('marks the priority number for patching', function () {
+        $columns = $this->accessor->callMethod('getTableColumns');
+        $html    = $columns[3]->toArray()['data']['function'](['id' => 5, 'priority' => 2]);
+
+        expect((string) $html)->toContain('<span data-lp-priority>2</span>');
+    });
+
+    it('patches priorities after sorting for Datastar requests', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([3, 1])->andReturn();
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-priority>0</span>', '#list_lp_categories_3 td.priority [data-lp-priority]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-priority>1</span>', '#list_lp_categories_1 td.priority [data-lp-priority]');
+
+        $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+        $handlers['sort_items'](['sort_items' => '3,1']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('does not patch priorities for regular requests', function () {
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([3, 1])->andReturn();
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+        $handlers['sort_items'](['sort_items' => '3,1']);
+
+        expect(true)->toBeTrue();
+    });
+
     it('adds sort controls to the table row', function () {
         $builder = $this->accessor->callMethod('buildTableWithBulkActions');
         $rows    = $builder->build()['additional_rows'] ?? [];
@@ -392,6 +427,6 @@ describe('Datastar actions', function () {
             ->toContain('id="lp_category_sort_ids"')
             ->toContain('data-bind="sort_ids"')
             ->toContain('id="lp_category_sort_trigger"')
-            ->toContain("@post('https://example.com/index.php?action=admin&area=lp_categories&actions&session=token', {payload: {update_priority: \$sort_ids}})");
+            ->toContain("@post('https://example.com/index.php?action=admin&area=lp_categories&actions&session=token', {payload: {sort_items: \$sort_ids}})");
     });
 });

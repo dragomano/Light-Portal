@@ -81,7 +81,7 @@ class Page extends PortalEntity {
 }
 
 class Category extends PortalEntity {
-  updatePriority(e) {
+  sort(e) {
     const items = e.to.children;
 
     let priority = [];

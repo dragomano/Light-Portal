@@ -70,7 +70,11 @@
 	<input id="lp_block_sort_ids" type="hidden" data-bind="sort_ids">
 	<input id="lp_block_sort_placement" type="hidden" data-bind="sort_placement">
 	<input id="lp_block_sort_source" type="hidden" data-bind="sort_source">
-	<button id="lp_block_sort_trigger" type="button" data-on:click="@post('{{ $sortUrl }}', {payload: {update_priority: $sort_ids, update_placement: $sort_placement, update_source: $sort_source}})"></button>
+	<button
+		id="lp_block_sort_trigger"
+		type="button"
+		data-on:click="@post('{{ $sortUrl }}', {payload: {sort_items: $sort_ids, placement: $sort_placement, source: $sort_source}})"
+	></button>
 </div>
 
 <script src="@asset('Sortable.min.js')"></script>

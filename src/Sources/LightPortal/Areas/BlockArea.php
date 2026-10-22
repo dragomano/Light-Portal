@@ -63,10 +63,11 @@ final class BlockArea extends AbstractArea
 	{
 		return [
 			'clone_block'     => fn($data) => $this->handleClone($data['clone_block']),
-			'update_priority' => fn($data) => $this->handleUpdatePriority(
-				$data['update_priority'],
-				$data['update_placement'] ?? '',
-				$data['update_source'] ?? ''
+			'sort_items'      => fn($data) => $this->handleUpdatePriority(
+				$data['sort_items'],
+				$data['placement'] ?? '',
+				$data['source'] ?? '',
+				empty($data['data_only'])
 			),
 			'toggle_item'     => fn($data) => $this->handleToggle($data['toggle_item']),
 			'delete_item'     => fn($data) => $this->handleRemove($data['delete_item']),
@@ -256,6 +257,11 @@ final class BlockArea extends AbstractArea
 		}
 	}
 
+	protected function getPriorityTarget(int $id): string
+	{
+		return 'tr[data-id="' . $id . '"] td.priority [data-lp-priority]';
+	}
+
 	private function handleClone(mixed $item): void
 	{
 		if (empty($item))
@@ -338,13 +344,27 @@ final class BlockArea extends AbstractArea
 		$this->patchPlacement($placement);
 	}
 
-	private function handleUpdatePriority(mixed $priority, mixed $placement, mixed $source): void
-	{
-		$ids = $this->parseIds($priority);
+	/**
+	 * The portal page drags blocks without any admin table around them, so it requests the data update only
+	 */
+	private function handleUpdatePriority(
+		mixed $priority,
+		mixed $placement,
+		mixed $source,
+		bool $withPatches = true
+	): void {
+		$placementName = (string) $placement;
+		$sourceName    = (string) $source;
+		$ids           = $this->parseIds((string) $priority);
 
-		$this->getRepository()->updatePriority($ids, (string) $placement);
+		$this->getRepository()->updatePriority($ids, $placementName);
 
-		if (! DatastarSender::isDatastarRequest())
+		// The panel the block has left is renumbered, so its priorities have no gaps
+		if ($placementName !== '' && $sourceName !== $placementName) {
+			$this->renumberPlacement($sourceName);
+		}
+
+		if (! $withPatches || ! DatastarSender::isDatastarRequest())
 			return;
 
 		$this->patchPriorities($ids);
@@ -357,18 +377,15 @@ final class BlockArea extends AbstractArea
 	}
 
 	/**
-	 * Blocks are renumbered by their position in the list, so every key of the list is a new priority
+	 * Blocks are renumbered by their place in the panel, so the priorities have no gaps
 	 */
-	private function patchPriorities(array $ids): void
+	private function renumberPlacement(string $placement): void
 	{
-		$sender = $this->getDatastarSender();
-
-		foreach ($ids as $priority => $id) {
-			$sender->patchElements(
-				'<span data-lp-priority>' . $priority . '</span>',
-				'tr[data-id="' . $id . '"] td.priority [data-lp-priority]'
-			);
+		if ($placement === '') {
+			return;
 		}
+
+		$this->getRepository()->updatePriority($this->getRepository()->getIdsByPlacement($placement), '');
 	}
 
 	private function getPlacement(int $id): string

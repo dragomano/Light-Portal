@@ -377,18 +377,34 @@ abstract class AbstractArea implements AreaInterface
 		return '#' . $this->getRowId($id);
 	}
 
+	/**
+	 * Entries are renumbered by their position in the list, so every key of the list is a new priority
+	 */
+	protected function patchPriorities(array $ids): void
+	{
+		$sender = $this->getDatastarSender();
+
+		foreach ($ids as $priority => $id) {
+			$sender->patchElements(
+				'<span data-lp-priority>' . $priority . '</span>',
+				$this->getPriorityTarget((int) $id)
+			);
+		}
+	}
+
+	protected function getPriorityTarget(int $id): string
+	{
+		return $this->getRowSelector($id) . ' td.priority [data-lp-priority]';
+	}
+
 	protected function getListId(): string
 	{
 		return 'lp_' . $this->getEntityNamePlural();
 	}
 
-	protected function parseIds(mixed $value): array
+	protected function parseIds(string $value): array
 	{
-		if (is_array($value)) {
-			return array_map('intval', $value);
-		}
-
-		return array_values(array_map('intval', array_filter(explode(',', (string) $value))));
+		return array_values(array_map('intval', array_filter(explode(',', $value))));
 	}
 
 	protected function getDatastarSender(): DatastarSender

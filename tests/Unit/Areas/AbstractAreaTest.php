@@ -497,7 +497,7 @@ describe('parseIds', function () {
             ->and($this->accessor->callMethod('parseIds', ['']))->toBe([]);
     });
 
-    it('keeps the order of an array payload', function () {
-        expect($this->accessor->callMethod('parseIds', [[9, 4, 6]]))->toBe([9, 4, 6]);
+    it('keeps empty values out of the list', function () {
+        expect($this->accessor->callMethod('parseIds', ['9,4,,6']))->toBe([9, 4, 6]);
     });
 });

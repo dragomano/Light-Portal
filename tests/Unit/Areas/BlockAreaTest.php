@@ -67,9 +67,9 @@ it('returns correct custom action handlers', function () {
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('clone_block')
-        ->and($result)->toHaveKey('update_priority')
+        ->and($result)->toHaveKey('sort_items')
         ->and($result['clone_block'])->toBeCallable()
-        ->and($result['update_priority'])->toBeCallable();
+        ->and($result['sort_items'])->toBeCallable();
 });
 
 it('returns correct validator class', function () {
@@ -364,26 +364,69 @@ it('getRepository returns correct instance', function () {
     expect($result)->toBe($this->repositoryMock);
 });
 
-it('update_priority handler parses comma-separated ids and passes placement', function () {
+it('sort_items handler parses comma-separated ids and passes placement', function () {
     $this->repositoryMock->shouldReceive('updatePriority')
         ->once()
         ->with([3, 1, 7], 'top');
 
     $handlers = $this->accessor->callMethod('getCustomActionHandlers');
 
-    $handlers['update_priority'](['update_priority' => '3,1,7', 'update_placement' => 'top']);
+    $handlers['sort_items'](['sort_items' => '3,1,7', 'placement' => 'top']);
 
     expect(true)->toBeTrue();
 });
 
-it('update_priority handler ignores empty ids', function () {
+it('sort_items handler renumbers the panel the blocks have left', function () {
+    $this->repositoryMock->shouldReceive('updatePriority')
+        ->once()
+        ->with([3, 1], 'right');
+
+    $this->repositoryMock->shouldReceive('getIdsByPlacement')
+        ->once()
+        ->with('left')
+        ->andReturn([5, 6]);
+
+    $this->repositoryMock->shouldReceive('updatePriority')
+        ->once()
+        ->with([5, 6], '');
+
+    $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+
+    $handlers['sort_items']([
+        'sort_items'  => '3,1',
+        'placement' => 'right',
+        'source'    => 'left',
+    ]);
+
+    expect(true)->toBeTrue();
+});
+
+it('sort_items handler keeps the source panel untouched when it is the target panel', function () {
+    $this->repositoryMock->shouldReceive('updatePriority')
+        ->once()
+        ->with([3, 1], 'left');
+
+    $this->repositoryMock->shouldNotReceive('getIdsByPlacement');
+
+    $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+
+    $handlers['sort_items']([
+        'sort_items'  => '3,1',
+        'placement' => 'left',
+        'source'    => 'left',
+    ]);
+
+    expect(true)->toBeTrue();
+});
+
+it('sort_items handler ignores empty ids', function () {
     $this->repositoryMock->shouldReceive('updatePriority')
         ->once()
         ->with([5], '');
 
     $handlers = $this->accessor->callMethod('getCustomActionHandlers');
 
-    $handlers['update_priority'](['update_priority' => '5,,', 'update_placement' => '']);
+    $handlers['sort_items'](['sort_items' => '5,,', 'placement' => '']);
 
     expect(true)->toBeTrue();
 });
@@ -513,6 +556,15 @@ describe('Datastar actions', function () {
         expect(true)->toBeTrue();
     });
 
+    it('handleBulkAction deletes the items', function () {
+        // The panels of the deleted blocks are renumbered by the repository
+        $this->repositoryMock->shouldReceive('remove')->once()->with([5, 6]);
+
+        $result = $this->accessor->callMethod('handleBulkAction', ['delete', [5, 6]]);
+
+        expect($result)->toBeTrue();
+    });
+
     it('handleUpdatePriority patches priorities and the placement count', function () {
         $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
 
@@ -541,6 +593,8 @@ describe('Datastar actions', function () {
         $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
 
         $this->repositoryMock->shouldReceive('updatePriority')->once()->with([7], 'left')->andReturn();
+        $this->repositoryMock->shouldReceive('getIdsByPlacement')->once()->with('top')->andReturn([2, 3]);
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([2, 3], '')->andReturn();
         $this->repositoryMock->shouldReceive('getTotalCount')
             ->once()
             ->with('', ['placement = ?' => 'left'])
@@ -571,6 +625,8 @@ describe('Datastar actions', function () {
         Lang::$txt['lp_no_items'] = 'No items';
 
         $this->repositoryMock->shouldReceive('updatePriority')->once()->with([7], 'top')->andReturn();
+        $this->repositoryMock->shouldReceive('getIdsByPlacement')->once()->with('bottom')->andReturn([]);
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([], '')->andReturn();
         $this->repositoryMock->shouldReceive('getTotalCount')
             ->once()
             ->with('', ['placement = ?' => 'top'])
@@ -607,6 +663,18 @@ describe('Datastar actions', function () {
         $this->senderMock->shouldNotReceive('patchElements');
 
         $this->accessor->callMethod('handleUpdatePriority', ['3,1', 'top', '']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('handleUpdatePriority updates only the data when patches are not requested', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        // The portal page drags blocks without an admin table around them
+        $this->repositoryMock->shouldReceive('updatePriority')->once()->with([7, 3], 'left')->andReturn();
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleUpdatePriority', ['7,3', 'left', '', false]);
 
         expect(true)->toBeTrue();
     });

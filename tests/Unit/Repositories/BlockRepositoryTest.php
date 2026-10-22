@@ -11,6 +11,9 @@ use LightPortal\Enums\Status;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\AbstractRepository;
 use LightPortal\Repositories\BlockRepository;
+use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\SessionInterface;
+use Tests\AppMockRegistry;
 use Tests\PortalTable;
 use Tests\TestAdapterFactory;
 
@@ -114,6 +117,21 @@ it('returns block data with options', function () {
         ->and($result['options']['theme'])->toBe('dark');
 });
 
+it('returns block ids of the placement ordered by priority', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_blocks (
+            block_id, icon, type, placement, priority, permissions, status, areas, title_class, content_class
+        ) VALUES
+            (1, '', 'custom', 'left', 3, 0, ?, 'all', '', ''),
+            (2, '', 'custom', 'right', 1, 0, ?, 'all', '', ''),
+            (3, '', 'custom', 'left', 1, 0, ?, 'all', '', '')
+    ", [Status::ACTIVE->value, Status::ACTIVE->value, Status::ACTIVE->value]);
+
+    expect($this->repository->getIdsByPlacement('left'))->toBe([3, 1])
+        ->and($this->repository->getIdsByPlacement('right'))->toBe([2])
+        ->and($this->repository->getIdsByPlacement(''))->toBe([]);
+});
+
 it('updates priority and placement', function () {
     $this->sql->getAdapter()->query(/** @lang text */ "
         INSERT INTO lp_blocks (
@@ -122,6 +140,11 @@ it('updates priority and placement', function () {
             (1, '', 'custom', 'left', 1, 0, ?, 'all', '', ''),
             (2, '', 'custom', 'left', 2, 0, ?, 'all', '', '')
     ", [Status::ACTIVE->value, Status::ACTIVE->value]);
+
+    // The cached block list must be dropped, otherwise the new placement is invisible on the portal
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->once();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
 
     $this->repository->updatePriority([
         2 => 1,
@@ -138,4 +161,93 @@ it('updates priority and placement', function () {
         ->and($rows[0]['placement'])->toBe('right')
         ->and($rows[1]['priority'])->toBe(1)
         ->and($rows[1]['placement'])->toBe('right');
+});
+
+it('renumbers the panel after a block is removed', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_blocks (
+            block_id, icon, type, placement, priority, permissions, status, areas, title_class, content_class
+        ) VALUES
+            (1, '', 'custom', 'left', 0, 0, ?, 'all', '', ''),
+            (2, '', 'custom', 'left', 1, 0, ?, 'all', '', ''),
+            (3, '', 'custom', 'left', 2, 0, ?, 'all', '', '')
+    ", [Status::ACTIVE->value, Status::ACTIVE->value, Status::ACTIVE->value]);
+
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->andReturnNull();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    $sessionMock = mock(SessionInterface::class);
+    $sessionMock->shouldReceive('withKey')->with('lp')->andReturnSelf();
+    $sessionMock->shouldReceive('free')->with('active_blocks')->andReturnNull();
+    AppMockRegistry::set(SessionInterface::class, $sessionMock);
+
+    $this->repository->remove([2]);
+
+    $rows = iterator_to_array($this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT block_id, priority FROM lp_blocks ORDER BY block_id')
+        ->execute());
+
+    expect(count($rows))->toBe(2)
+        ->and($rows[0]['priority'])->toBe(0)
+        ->and($rows[1]['priority'])->toBe(1);
+});
+
+it('renumbers every panel of the removed blocks', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_blocks (
+            block_id, icon, type, placement, priority, permissions, status, areas, title_class, content_class
+        ) VALUES
+            (1, '', 'custom', 'left', 0, 0, ?, 'all', '', ''),
+            (2, '', 'custom', 'left', 1, 0, ?, 'all', '', ''),
+            (3, '', 'custom', 'top', 0, 0, ?, 'all', '', ''),
+            (4, '', 'custom', 'top', 1, 0, ?, 'all', '', '')
+    ", array_fill(0, 4, Status::ACTIVE->value));
+
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->andReturnNull();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    $sessionMock = mock(SessionInterface::class);
+    $sessionMock->shouldReceive('withKey')->with('lp')->andReturnSelf();
+    $sessionMock->shouldReceive('free')->with('active_blocks')->andReturnNull();
+    AppMockRegistry::set(SessionInterface::class, $sessionMock);
+
+    $this->repository->remove([1, 4]);
+
+    $rows = iterator_to_array($this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT block_id, placement, priority FROM lp_blocks ORDER BY block_id')
+        ->execute());
+
+    expect(count($rows))->toBe(2)
+        ->and($rows[0]['placement'])->toBe('left')
+        ->and($rows[0]['priority'])->toBe(0)
+        ->and($rows[1]['placement'])->toBe('top')
+        ->and($rows[1]['priority'])->toBe(0);
+});
+
+it('appends the blocks hidden from the portal when the placement is given', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_blocks (
+            block_id, icon, type, placement, priority, permissions, status, areas, title_class, content_class
+        ) VALUES
+            (1, '', 'custom', 'right', 0, 0, ?, 'all', '', ''),
+            (2, '', 'custom', 'right', 1, 0, ?, 'all', '', ''),
+            (3, '', 'custom', 'right', 2, 0, ?, 'all', '', '')
+    ", [Status::ACTIVE->value, Status::ACTIVE->value, Status::ACTIVE->value]);
+
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->once();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    // The portal renders blocks 1 and 2 only, the hidden block 3 stays right after them
+    $this->repository->updatePriority([1, 2], 'right');
+
+    $rows = iterator_to_array($this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT block_id, priority FROM lp_blocks ORDER BY block_id')
+        ->execute());
+
+    expect($rows[0]['priority'])->toBe(0)
+        ->and($rows[1]['priority'])->toBe(1)
+        ->and($rows[2]['priority'])->toBe(2);
 });

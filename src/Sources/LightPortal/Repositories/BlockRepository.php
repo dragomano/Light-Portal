@@ -239,6 +239,8 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		if ($items === [])
 			return;
 
+		$placements = $this->getPlacements($items);
+
 		$this->dispatcher->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
 
 		$delete = $this->sql->delete('lp_blocks');
@@ -247,12 +249,42 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 		$this->deleteRelatedData($items);
 		$this->session('lp')->free('active_blocks');
+
+		// The panels of the deleted blocks are renumbered, so their priorities have no gaps
+		foreach ($placements as $placement) {
+			$this->updatePriority($this->getIdsByPlacement($placement));
+		}
+	}
+
+	public function getIdsByPlacement(string $placement): array
+	{
+		if (empty($placement)) {
+			return [];
+		}
+
+		$select = $this->sql->select('lp_blocks')
+			->columns(['block_id'])
+			->where(['placement = ?' => $placement])
+			->order('priority');
+
+		$ids = [];
+
+		foreach ($this->sql->execute($select) as $row) {
+			$ids[] = (int) $row['block_id'];
+		}
+
+		return $ids;
 	}
 
 	public function updatePriority(array $blocks = [], string $placement = ''): void
 	{
 		if ($blocks === [])
 			return;
+
+		if ($placement && array_is_list($blocks)) {
+			// The portal renders only the blocks available to the current user, so the hidden ones are appended
+			$blocks = array_merge($blocks, array_values(array_diff($this->getIdsByPlacement($placement), $blocks)));
+		}
 
 		$caseConditions = [];
 		$ids = [];
@@ -275,6 +307,8 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 			$updatePlacement->where->in('block_id', array_values($blocks));
 			$this->sql->execute($updatePlacement);
 		}
+
+		$this->cache()->flush();
 	}
 
 	public function updateStatusByType(string $type, int $status): void
@@ -372,5 +406,22 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		$result = $this->sql->execute($select)->current();
 
 		return $result['priority'] ?? 1;
+	}
+
+	/**
+	 * @return array<int, string>
+	 */
+	private function getPlacements(array $items): array
+	{
+		$select = $this->sql->select('lp_blocks')->columns(['placement']);
+		$select->where->in('block_id', $items);
+
+		$placements = [];
+
+		foreach ($this->sql->execute($select) as $row) {
+			$placements[] = (string) $row['placement'];
+		}
+
+		return array_unique($placements);
 	}
 }
