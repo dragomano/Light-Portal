@@ -22,28 +22,40 @@ class PageSearchRow extends Row
 {
 	public static function make(string $value = '', ?string $class = null): static
 	{
+		$url = Utils::$context['lp_actions_url'] ?? '';
+
 		$input = Str::html('input', [
-			'type'        => 'search',
-			'name'        => 'search',
-			'value'       => Utils::$context['search']['string'],
-			'placeholder' => __('lp_pages_search'),
-			'style'       => 'width: 100%',
+			'type'                           => 'search',
+			'name'                           => 'search',
+			'value'                          => Utils::$context['search']['string'],
+			'placeholder'                    => __('lp_pages_search'),
+			'style'                          => 'width: 100%',
+			'data-bind'                      => 'search',
+			'data-indicator'                 => 'fetching',
+			'data-on:input__debounce.300ms'  => "@post('" . $url . "', {payload: {search_items: \$search}})",
 		]);
 
 		$search = Str::html('div', ['class' => 'col-lg-10'])->setHtml($input);
 
-		$icon = Icon::get('search') . __('search');
+		$icon = Str::html('span', ['data-show' => '!$fetching'])->setHtml(Icon::get('search'));
+
+		$spinner = Str::html('i', [
+			'class'       => 'fa-solid fa-spinner fa-spin',
+			'aria-hidden' => 'true',
+			'data-show'   => '$fetching',
+		]);
 
 		$button = Str::html('button', [
 			'type'  => 'submit',
 			'name'  => 'is_search',
 			'class' => 'button floatnone',
 			'style' => 'width: 100%',
-		])->setHtml($icon);
+		])->setHtml($icon . $spinner . ' ' . __('search'));
 
 		$div = Str::html('div', ['class' => 'col-lg-2'])->setHtml($button);
 
-		$row = Str::html('div', ['class' => 'row'])
+		// Patching the list never touches what is being typed here
+		$row = Str::html('div', ['class' => 'row', 'data-ignore-morph' => ''])
 			->addHtml($search)
 			->addHtml($div)
 			->toHtml();

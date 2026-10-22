@@ -10,8 +10,8 @@ use Tests\AppMockRegistry;
 
 beforeEach(function () {
     Lang::$txt['lp_pages_search'] = 'Search pages';
-    Lang::$txt['search'] = 'Search';
-    Utils::$context['search'] = ['string' => 'query'];
+    Lang::$txt['search']          = 'Search';
+    Utils::$context['search']     = ['string' => 'query'];
 
     $icons = [
         'search' => '<i class="icon-search"></i>',
@@ -24,7 +24,7 @@ beforeEach(function () {
 
 describe('PageSearchRow', function () {
     it('renders search input and submit button', function () {
-        $row = PageSearchRow::make();
+        $row   = PageSearchRow::make();
         $value = $row->toArray()['value'];
 
         expect($value)
@@ -32,5 +32,21 @@ describe('PageSearchRow', function () {
             ->toContain('name="search"')
             ->toContain('placeholder="Search pages"')
             ->toContain('name="is_search"');
+    });
+
+    it('wires the field to the live search', function () {
+        Utils::$context['lp_actions_url'] = 'https://example.com/index.php?action=admin&area=lp_pages&actions&sa=main';
+
+        $row   = PageSearchRow::make();
+        $value = $row->toArray()['value'];
+
+        expect($value)
+            ->toContain('data-bind="search"')
+            ->toContain('data-indicator="fetching"')
+            ->toContain('data-on:input__debounce.300ms=')
+            ->toContain('area=lp_pages')
+            ->toContain('{payload: {search_items: $search}}')
+            ->toContain('data-show="$fetching"')
+            ->toContain('data-ignore-morph');
     });
 });

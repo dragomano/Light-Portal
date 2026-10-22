@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
@@ -163,6 +164,30 @@ it('afterMain correctly runs', function () {
     expect(Utils::$context['lp_pages']['title'])->toContain(Utils::$context['form_action'], '(7)');
 });
 
+it('keeps the search in the view tabs', function () {
+    Lang::$txt['all']               = 'all';
+    Lang::$txt['awaiting_approval'] = 'Awaiting approval';
+
+    Utils::$context['lp_pages']      = ['title' => ''];
+    Utils::$context['form_action']   = 'https://example.com?action=admin;area=lp_pages';
+    Utils::$context['search_params'] = 'c2VhcmNo';
+    Utils::$context['lp_quantities'] = [
+        'active_pages'     => 0,
+        'my_pages'         => 0,
+        'unapproved_pages' => 0,
+        'deleted_pages'    => 0,
+    ];
+
+    $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(7);
+
+    $this->accessor->setProperty('browseType', 'all');
+    $this->accessor->callMethod('afterMain');
+
+    expect(Utils::$context['lp_pages']['title'])
+        ->toContain('params=c2VhcmNo')
+        ->toContain('data-lp-quantity="pages_');
+});
+
 it('setupAdditionalAddContext prepares page list and sets context', function () {
     Utils::$context += [
         'lp_content_types' => ['bbc' => 'BBC'],
@@ -220,9 +245,9 @@ describe('prepareSpecificFields', function () {
             'created_at'  => time() - 1000,
         ];
 
-        Utils::$context['user']['is_admin'] = false;
+        Utils::$context['user']['is_admin']             = false;
         Utils::$context['lp_quantities']['active_tags'] = 0;
-        Utils::$context['posting_fields'] = [];
+        Utils::$context['posting_fields']               = [];
 
         $categoryListMock = mock(CategoryList::class);
         $categoryListMock->shouldReceive('__invoke')->andReturn([
@@ -256,8 +281,8 @@ describe('prepareSpecificFields', function () {
 
         foreach ($expectations as $type => $checks) {
             match ($type) {
-                'has_keys' => expect(Utils::$context['posting_fields'])->toHaveKeys($checks),
-                'not_has_keys' => array_map(fn($key) => expect(Utils::$context['posting_fields'])->not->toHaveKey($key), $checks),
+                'has_keys'      => expect(Utils::$context['posting_fields'])->toHaveKeys($checks),
+                'not_has_keys'  => array_map(fn($key) => expect(Utils::$context['posting_fields'])->not->toHaveKey($key), $checks),
                 'post_box_name' => is_null($checks)
                     ? expect(isset(Utils::$context['post_box_name']))->toBeFalse()
                     : expect(Utils::$context['post_box_name'])->toBe($checks),
@@ -449,7 +474,7 @@ it('preparePageList prepares all pages list', function () {
     ];
 
     Lang::$txt += [
-        'lp_bbc' => ['title' => 'BBC Page'],
+        'lp_bbc'  => ['title' => 'BBC Page'],
         'lp_html' => ['title' => 'HTML Page'],
     ];
 
@@ -861,5 +886,87 @@ describe('Datastar actions', function () {
         expect(Utils::$context['lp_actions_url'])
             ->toContain('&sa=main&deleted')
             ->toContain('&search=' . urlencode('test query'));
+    });
+
+    it('applies the search term to the query', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', ['test query']);
+
+        $params = $this->accessor->getProperty('params');
+
+        expect($params[1][0]->getExpression())->toBe('(LOWER(p.slug) LIKE ? OR LOWER(t.title) LIKE ?)')
+            ->and($params[1][0]->getParameters())->toBe(['%test query%', '%test query%'])
+            ->and(Utils::$context['search']['string'])->toBe('test query');
+    });
+
+    it('restores the search term from the params of the link', function () {
+        $encoded = base64_encode((string) json_encode([
+            'string'   => 'AT&T',
+            'u'        => null,
+            'moderate' => false,
+            'deleted'  => false,
+            'type'     => null,
+        ]));
+
+        $requestMock = mock(RequestInterface::class);
+        $requestMock->shouldReceive('get')->with('params')->andReturn($encoded);
+        $requestMock->shouldReceive('get')->andReturn(null);
+        $requestMock->shouldReceive('has')->andReturn(false);
+        $this->accessor->setProperty('request', $requestMock);
+        AppMockRegistry::set(RequestInterface::class, $requestMock);
+
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams');
+
+        $decoded = json_decode((string) base64_decode(Utils::$context['search_params']), true);
+
+        expect(Utils::$context['search']['string'])->toBe('AT&T')
+            ->and($decoded['string'])->toBe('AT&T');
+    });
+
+    it('patches the whole list when searching', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        // The renderer of the list is what normally fills the default list in the context
+        $presenter = mock(TablePresenterInterface::class);
+        $presenter->shouldReceive('show')->andReturnUsing(function () {
+            $GLOBALS['context']['default_list'] = 'lp_pages';
+            Utils::$context['default_list'] = 'lp_pages';
+            Utils::$context['lp_pages'] = ['title' => ''];
+        });
+        AppMockRegistry::set(TablePresenterInterface::class, $presenter);
+
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::on(fn(string $html) => str_contains($html, 'stub_lp_pages')), '#manage_pages');
+
+        $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+        $handlers['search_items'](['search_items' => 'test query']);
+
+        // The view tabs belong to the list as well, so they are a part of the patched markup
+        expect(Utils::$context['search']['string'])->toBe('test query')
+            ->and(Utils::$context['lp_pages']['title'])->toContain('data-lp-quantity="pages_');
+    });
+
+    it('puts the search signal before the list', function () {
+        $presenter = mock(TablePresenterInterface::class);
+        $presenter->shouldReceive('show')->andReturnNull();
+        AppMockRegistry::set(TablePresenterInterface::class, $presenter);
+
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        $this->accessor->callMethod('calculateParams', ['AT&T']);
+
+        ob_start();
+        $this->accessor->callMethod('showMainContent');
+        $html = (string) ob_get_clean();
+
+        expect($html)->toContain('data-signals')
+            ->and($html)->toContain('&amp;T')
+            ->and($html)->not->toContain('&amp;amp;');
     });
 });

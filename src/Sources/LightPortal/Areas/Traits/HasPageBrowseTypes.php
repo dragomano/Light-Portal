@@ -84,6 +84,9 @@ trait HasPageBrowseTypes
 			unset($titles['all'], $titles['mod'], $titles['del']);
 		}
 
+		// The search is a part of the view, so the tabs keep it as well
+		$params = empty(Utils::$context['search_params']) ? '' : ';params=' . Utils::$context['search_params'];
+
 		Utils::$context['lp_pages']['title'] .= ': ';
 		foreach ($titles as $browseType => $details) {
 			if ($this->browseType === $browseType) {
@@ -93,7 +96,7 @@ trait HasPageBrowseTypes
 			}
 
 			Utils::$context['lp_pages']['title'] .= Str::html('a')
-				->href(Utils::$context['form_action'] . $details[0])
+				->href(Utils::$context['form_action'] . $details[0] . $params)
 				->setHtml($details[1] . ' <span data-lp-quantity="pages_' . $browseType . '">(' . $this->getBrowseTypeCount($browseType) . ')</span>');
 
 			if ($browseType !== 'del' && count($titles) > 1) {

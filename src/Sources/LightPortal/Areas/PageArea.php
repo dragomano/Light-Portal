@@ -83,6 +83,7 @@ final class PageArea extends AbstractArea
 	protected function getCustomActionHandlers(): array
 	{
 		return [
+			'search_items'   => fn($data) => $this->handleSearch($data['search_items']),
 			'restore_item'   => fn($data) => $this->handleRestore($data['restore_item']),
 			'remove_forever' => fn($data) => $this->handleRemoveForever($data['remove_forever']),
 		];
@@ -110,6 +111,19 @@ final class PageArea extends AbstractArea
 
 		// Datastar encodes semicolons, so the action URL uses ampersands as separators
 		Utils::$context['lp_actions_url'] .= str_replace(';', '&', $suffix);
+	}
+
+	/**
+	 * The signal lives outside the list, so patching the list never rewrites what is being typed
+	 */
+	protected function showMainContent(): void
+	{
+		echo Str::html('div', [
+			'hidden'       => true,
+			'data-signals' => '{ search: ' . Utils::$smcFunc['json_encode']($this->searchString ?? '') . ' }',
+		])->toHtml();
+
+		parent::showMainContent();
 	}
 
 	/**
@@ -499,6 +513,23 @@ final class PageArea extends AbstractArea
 		if (! User::$me->allowedTo('light_portal_manage_pages_any') && ! $this->userId) {
 			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$me->id);
 		}
+	}
+
+	/**
+	 * The list is re-rendered on the server, so one patch replaces the rows, the pagination and the links
+	 */
+	private function handleSearch(mixed $term): void
+	{
+		$this->loadParamsFromRequest();
+		$this->calculateParams((string) $term);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$this->getDatastarSender()->patchElements(
+			$this->renderList(),
+			'#' . $this->getTableFormData()['name']
+		);
 	}
 
 	private function handleRestore(mixed $item): void

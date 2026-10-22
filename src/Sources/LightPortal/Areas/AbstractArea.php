@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
+use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
@@ -250,7 +251,6 @@ abstract class AbstractArea implements AreaInterface
 		}
 
 		$this->getDatastarSender()->patchElements($this->renderEntityRow($entry), $this->getRowSelector($id));
-
 		$this->patchCounters($entry['status'] === Status::ACTIVE->value ? 1 : -1);
 	}
 
@@ -269,9 +269,7 @@ abstract class AbstractArea implements AreaInterface
 		}
 
 		$this->getDatastarSender()->removeElements($this->getRowSelector($id));
-
 		$this->afterRowRemoved($id);
-
 		$this->patchNoItemsRow($this->patchCounters());
 	}
 
@@ -283,9 +281,8 @@ abstract class AbstractArea implements AreaInterface
 		$entityPlural = $this->getEntityNamePlural();
 
 		// The cached counter can be adjusted in place only when the new state of the entity is known
-		$count = $delta === null ? null : app(SessionManager::class)->adjust('active_' . $entityPlural, $delta);
+		$count   = $delta === null ? null : app(SessionManager::class)->adjust('active_' . $entityPlural, $delta);
 		$count ??= $this->getFreshQuantity();
-
 		$suffix = empty($count) ? '' : "($count)";
 
 		$this->getDatastarSender()->patchElements(
@@ -434,6 +431,24 @@ abstract class AbstractArea implements AreaInterface
 		$this->getTablePresenter()->show($this->buildTable());
 	}
 
+	/**
+	 * Renders the list into a string, so the whole block can be sent to the page as one patch
+	 */
+	protected function renderList(): string
+	{
+		$this->buildAndShowTable();
+
+		// The title with the view tabs is a part of the list that is about to be sent to the page
+		$this->afterMain();
+
+		Theme::loadTemplate('GenericList');
+
+		ob_start();
+		template_show_list();
+
+		return (string) ob_get_clean();
+	}
+
 	protected function buildTable(): PortalTableBuilderInterface
 	{
 		return $this->buildTableWithBulkActions();
@@ -454,10 +469,7 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function createTableBuilder(?string $title = null): PortalTableBuilderInterface
 	{
-		return PortalTableBuilder::make(
-			$this->getListId(),
-			$title ?? $this->getTableTitle()
-		)
+		return PortalTableBuilder::make($this->getListId(), $title ?? $this->getTableTitle())
 			->setDefaultSortColumn($this->getDefaultSortColumn())
 			->setScript($this->getTableScript())
 			->withCreateButton($this->getEntityNamePlural());
@@ -551,7 +563,6 @@ abstract class AbstractArea implements AreaInterface
 		$action   = (string) filter_input(INPUT_POST, $this->getBulkActionName());
 
 		$this->handleBulkAction($action, $items);
-
 		$this->cache()->flush();
 		$this->response()->redirect($redirect);
 	}
@@ -587,8 +598,7 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_add_title");
-
+		Utils::$context['page_title']      = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_add_title");
 		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_add_title");
 
 		Utils::$context['form_action'] = Config::$scripturl .
@@ -630,7 +640,6 @@ abstract class AbstractArea implements AreaInterface
 		);
 
 		$this->setContextEntity($entity->toArray());
-
 		$this->postProcessValidation();
 	}
 
@@ -762,8 +771,7 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_edit_title");
-
+		Utils::$context['page_title']      = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_edit_title");
 		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_edit_title");
 
 		Utils::$context['form_action'] = Config::$scripturl .
@@ -811,8 +819,7 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function finalizePreviewTitle(array $entity): void
 	{
-		Utils::$context['preview_title'] = Icon::parse($entity['icon'] ?? '') .
-			Utils::$context['preview_title'];
+		Utils::$context['preview_title'] = Icon::parse($entity['icon'] ?? '') . Utils::$context['preview_title'];
 	}
 
 	protected function handleRemoveRequest(int $item): bool

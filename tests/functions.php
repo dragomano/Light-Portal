@@ -64,6 +64,13 @@ if (! function_exists('loadTemplate')) {
     }
 }
 
+if (! function_exists('template_show_list')) {
+    function template_show_list(): void
+    {
+        echo '<div id="stub_' . (string) ($GLOBALS['context']['default_list'] ?? '') . '"></div>';
+    }
+}
+
 if (! function_exists('setupThemeContext')) {
     function setupThemeContext(bool $forceload = false): void
     {

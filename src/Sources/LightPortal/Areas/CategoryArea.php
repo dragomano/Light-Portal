@@ -71,9 +71,9 @@ final class CategoryArea extends AbstractArea
 		return <<<JS
 			const entity = new Category();
 			new window['Sortable'](document.querySelector("#lp_categories tbody"), {
-			    handle: ".handle",
-			    animation: 150,
-			    onSort: e => entity.sort(e)
+				handle: ".handle",
+				animation: 150,
+				onSort: e => entity.sort(e)
 			});
 		JS;
 	}
