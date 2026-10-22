@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.10.26
+ * @version 22.10.26
  */
 
 namespace LightPortal\Plugins\Dragula;
@@ -23,6 +23,7 @@ use LightPortal\Plugins\CreditsFactory;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,9 +34,11 @@ if (! defined('LP_NAME'))
 #[PluginAttribute]
 class Dragula extends Plugin
 {
+	use HasView;
+
 	public function init(): void
 	{
-		if (! User::$me->allowedTo('admin_forum'))
+		if (! $this->canDrag())
 			return;
 
 		foreach (Placement::all() as $alias => $placement) {
@@ -52,6 +55,27 @@ class Dragula extends Plugin
 		Theme::addInlineJavaScript('handleDragging()', true);
 	}
 
+	public function frontAssets(): void
+	{
+		if (! $this->canDrag())
+			return;
+
+		$this->loadExternalResources(
+			new ExternalJs(
+				'https://cdn.jsdelivr.net/gh/starfederation/datastar@v1/bundles/datastar.js',
+				attributes: ['type' => 'module']
+			),
+		);
+	}
+
+	public function addLayerBelow(): void
+	{
+		if (! $this->canDrag())
+			return;
+
+		echo $this->view();
+	}
+
 	public function credits(Event $e): void
 	{
 		$e->args->links[$this->name] = CreditsFactory::make()
@@ -60,5 +84,10 @@ class Dragula extends Plugin
 			->author('Nicolas Bevacqua')
 			->license(License::Mit, 'https://github.com/bevacqua/dragula/?tab=MIT-1-ov-file#readme')
 			->toArray();
+	}
+
+	private function canDrag(): bool
+	{
+		return User::$me->allowedTo('admin_forum');
 	}
 }
