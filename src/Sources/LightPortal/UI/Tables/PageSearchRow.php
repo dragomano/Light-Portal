@@ -24,15 +24,22 @@ class PageSearchRow extends Row
 	{
 		$url = Utils::$context['lp_actions_url'] ?? '';
 
+		// Typing, Enter and the button all request the same live update of the list
+		$action = "@post('" . $url . "', {payload: {search_items: \$search}})";
+
+		$masks = __('lp_search_masks');
+
 		$input = Str::html('input', [
-			'type'                           => 'search',
-			'name'                           => 'search',
-			'value'                          => Utils::$context['search']['string'],
-			'placeholder'                    => __('lp_pages_search'),
-			'style'                          => 'width: 100%',
-			'data-bind'                      => 'search',
-			'data-indicator'                 => 'fetching',
-			'data-on:input__debounce.300ms'  => "@post('" . $url . "', {payload: {search_items: \$search}})",
+			'type'                          => 'search',
+			'name'                          => 'search',
+			'value'                         => Utils::$context['search']['string'],
+			'placeholder'                   => __('lp_pages_search') . ' (' . $masks . ')',
+			'title'                         => $masks,
+			'style'                         => 'width: 100%',
+			'data-bind'                     => 'search',
+			'data-indicator'                => 'fetching',
+			'data-on:input__debounce.300ms' => $action,
+			'data-on:keydown'               => "evt.key === 'Enter' && (evt.preventDefault(), $action)",
 		]);
 
 		$search = Str::html('div', ['class' => 'col-lg-10'])->setHtml($input);
@@ -46,10 +53,11 @@ class PageSearchRow extends Row
 		]);
 
 		$button = Str::html('button', [
-			'type'  => 'submit',
-			'name'  => 'is_search',
-			'class' => 'button floatnone',
-			'style' => 'width: 100%',
+			'type'          => 'submit',
+			'name'          => 'is_search',
+			'class'         => 'button floatnone',
+			'style'         => 'width: 100%',
+			'data-on:click' => "evt.preventDefault(), $action",
 		])->setHtml($icon . $spinner . ' ' . __('search'));
 
 		$div = Str::html('div', ['class' => 'col-lg-2'])->setHtml($button);

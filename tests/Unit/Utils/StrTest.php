@@ -15,7 +15,22 @@ arch()
         'decodeHtmlEntities',
         'html',
         'typed',
+        'likePattern',
     ]);
+
+describe('Str::likePattern()', function () {
+    it('turns the user masks into the sql wildcards', function () {
+        expect(Str::likePattern('ма*ин?'))->toBe('%ма%ин_%');
+    });
+
+    it('keeps the sql wildcards as ordinary characters', function () {
+        expect(Str::likePattern('50% a_b'))->toBe('%50!% a!_b%');
+    });
+
+    it('escapes the escape character itself', function () {
+        expect(Str::likePattern('!*'))->toBe('%!!%%');
+    });
+});
 
 describe('Str::getCamelName()', function () {
     it('converts snake_case to CamelCase', function () {

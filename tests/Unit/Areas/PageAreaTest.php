@@ -894,9 +894,36 @@ describe('Datastar actions', function () {
 
         $params = $this->accessor->getProperty('params');
 
-        expect($params[1][0]->getExpression())->toBe('(LOWER(p.slug) LIKE ? OR LOWER(t.title) LIKE ?)')
+        expect($params[1][0]->getExpression())->toBe("(LOWER(p.slug) LIKE ? ESCAPE '!' OR LOWER(t.title) LIKE ? ESCAPE '!')")
             ->and($params[1][0]->getParameters())->toBe(['%test query%', '%test query%'])
             ->and(Utils::$context['search']['string'])->toBe('test query');
+    });
+
+    it('escapes the like wildcards in the search term', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', ['50% off_me']);
+
+        $params = $this->accessor->getProperty('params');
+
+        expect($params[1][0]->getParameters())->toBe(['%50!% off!_me%', '%50!% off!_me%'])
+            ->and(Utils::$context['search']['string'])->toBe('50% off_me');
+    });
+
+    it('turns the user masks into the sql wildcards', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', ['col*r?']);
+
+        $params = $this->accessor->getProperty('params');
+
+        expect($params[1][0]->getParameters())->toBe(['%col%r_%', '%col%r_%'])
+            ->and(Utils::$context['search']['string'])->toBe('col*r?');
+    });
+
+    it('caps a too long search term', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', [str_repeat('a', 150)]);
+
+        expect(Utils::$context['search']['string'])->toBe(str_repeat('a', 100));
     });
 
     it('restores the search term from the params of the link', function () {

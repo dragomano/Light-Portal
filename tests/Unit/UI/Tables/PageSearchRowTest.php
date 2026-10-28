@@ -30,7 +30,8 @@ describe('PageSearchRow', function () {
         expect($value)
             ->toContain('type="search"')
             ->toContain('name="search"')
-            ->toContain('placeholder="Search pages"')
+            ->toContain('placeholder="Search pages (* and ? are masks)"')
+            ->toContain('title="* and ? are masks"')
             ->toContain('name="is_search"');
     });
 
@@ -48,5 +49,19 @@ describe('PageSearchRow', function () {
             ->toContain('{payload: {search_items: $search}}')
             ->toContain('data-show="$fetching"')
             ->toContain('data-ignore-morph');
+    });
+
+    it('sends the same live request from Enter and from the button', function () {
+        Utils::$context['lp_actions_url'] = 'https://example.com/index.php?action=admin&area=lp_pages&actions&sa=main';
+
+        $value = PageSearchRow::make()->toArray()['value'];
+
+        // Enter and the button must not submit the form the classic way when Datastar is running
+        expect($value)
+            ->toContain('data-on:keydown=')
+            ->toContain('data-on:click=')
+            ->toContain('evt.key ===')
+            ->toContain('evt.preventDefault()')
+            ->and(substr_count($value, 'search_items: $search'))->toBe(3);
     });
 });

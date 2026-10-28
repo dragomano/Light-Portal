@@ -16,12 +16,15 @@ use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Status;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 trait HasPageFilters
 {
+	private const MAX_SEARCH_LENGTH = 100;
+
 	private array $params = [];
 
 	private array $pageParams = [];
@@ -54,7 +57,7 @@ trait HasPageFilters
 
 	private function calculateParams(?string $search = null): void
 	{
-		$this->searchString = trim($search ?? $this->searchString ?? $this->getRequestedSearch());
+		$this->searchString = $this->limitSearchString($search ?? $this->searchString ?? $this->getRequestedSearch());
 
 		$search = Utils::$smcFunc['strtolower']($this->searchString);
 
@@ -92,6 +95,14 @@ trait HasPageFilters
 			: (string) ($this->pageParams['string'] ?? '');
 	}
 
+	/**
+	 * A term longer than that only makes the LIKE scan heavier
+	 */
+	private function limitSearchString(string $search): string
+	{
+		return mb_substr(trim($search), 0, self::MAX_SEARCH_LENGTH);
+	}
+
 	private function buildWhereConditions(
 		?int $userId,
 		bool $isModerate,
@@ -101,10 +112,13 @@ trait HasPageFilters
 		$whereConditions = [];
 
 		if (! empty($search)) {
-			// The parentheses keep the OR inside this condition: the view conditions are joined with AND
+			// The parentheses keep the OR inside this condition: the view conditions are joined with AND.
+			// The * and ? characters are the wildcards here, while % and _ are ordinary characters
+			$pattern = Str::likePattern($search);
+
 			$whereConditions[] = new Expression(
-				'(LOWER(p.slug) LIKE ? OR LOWER(t.title) LIKE ?)',
-				['%' . $search . '%', '%' . $search . '%']
+				"(LOWER(p.slug) LIKE ? ESCAPE '!' OR LOWER(t.title) LIKE ? ESCAPE '!')",
+				[$pattern, $pattern]
 			);
 		}
 
