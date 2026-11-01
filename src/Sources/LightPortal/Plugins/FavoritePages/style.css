@@ -1,0 +1,8 @@
+#profile_menu {
+	min-width: 32em;
+}
+
+.profile_user_links .lp_menu_label {
+	-webkit-hyphens: none;
+	hyphens: none;
+}

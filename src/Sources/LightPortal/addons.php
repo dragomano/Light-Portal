@@ -41,6 +41,7 @@ $links = [
 		'EzPortalMigration'   => 'https://drive.proton.me/urls/RCN0DZ2T2W#Hg1jClvi3gUD',
 		'FaBoardIcons'        => 'https://drive.proton.me/urls/N12FM9R5GG#b5JnAQYnd5tE',
 		'FacebookComments'    => 'https://drive.proton.me/urls/A5PPYVT7MC#ossowqK7l9pD',
+		'FavoritePages'       => 'https://drive.proton.me/urls/T7MK9SRWYC#88r1h469d9wG',
 		'GalleryBlock'        => 'https://drive.proton.me/urls/BP1GDQ292M#3I1lq4mxK21v',
 		'Giscus'              => 'https://drive.proton.me/urls/R7BJKSJNH4#xdrmpoKhZvlR',
 		'HelloPortal'         => 'https://drive.proton.me/urls/40V4PK52CW#mwjkU1KWIeum',
