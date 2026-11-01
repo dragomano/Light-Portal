@@ -1,0 +1,8 @@
+{
+  "require": {
+    "markup-carve/carve-php": "^0.1"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
