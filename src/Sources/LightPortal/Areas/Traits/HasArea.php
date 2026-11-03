@@ -77,13 +77,7 @@ trait HasArea
 			if (empty($data['input']['after']))
 				continue;
 
-			$tag = 'div';
-
-			if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number'])) {
-				$tag = 'span';
-			}
-
-			Utils::$context['posting_fields'][$item]['input']['after'] = Str::html($tag)
+			Utils::$context['posting_fields'][$item]['input']['after'] = Str::html('div')
 				->class('roundframe smalltext')
 				->setHtml($data['input']['after']);
 		}
