@@ -37,6 +37,7 @@ class Filesystem implements FilesystemInterface
 	public function write(string $path, string $content): bool
 	{
 		$dir = dirname($path);
+
 		if (! $this->exists($dir)) {
 			throw new RuntimeException("Cannot write to file: $path (directory does not exist)");
 		}

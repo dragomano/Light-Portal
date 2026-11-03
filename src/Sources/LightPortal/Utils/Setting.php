@@ -132,7 +132,7 @@ class Setting implements SettingInterface
 
 	public static function isSwapLeftRight(): bool
 	{
-		$isRtl = ! empty(__('lang_rtl'));
+		$isRtl         = ! empty(__('lang_rtl'));
 		$swapLeftRight = self::get('lp_swap_left_right', 'bool', false);
 
 		return $isRtl ? ! $swapLeftRight : $swapLeftRight;
@@ -141,8 +141,7 @@ class Setting implements SettingInterface
 	public static function hideBlocksInACP(): bool
 	{
 		$hideBlocks = self::get('lp_hide_blocks_in_acp', 'bool', false);
-
-		$admin = isset(Utils::$context['current_action']) && Utils::$context['current_action'] === 'admin';
+		$admin      = isset(Utils::$context['current_action']) && Utils::$context['current_action'] === 'admin';
 
 		return $hideBlocks && $admin;
 	}

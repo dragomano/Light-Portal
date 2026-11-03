@@ -40,6 +40,7 @@ class ErrorHandler implements ErrorHandlerInterface
 		// Log to SMF if level matches or is higher priority
 		if ($this->shouldLogToSmf($level)) {
 			$smfLogType = $this->mapLevelToSmfType($level);
+
 			SmfErrorHandler::log($message, $smfLogType);
 		}
 	}

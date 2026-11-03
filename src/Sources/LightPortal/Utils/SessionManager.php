@@ -127,8 +127,7 @@ final readonly class SessionManager
 
 	private function getCount(string $type): int
 	{
-		$config = $this->getCountConfig()[$type];
-
+		$config   = $this->getCountConfig()[$type];
 		$cacheKey = $config['cache_key'] ?? $type;
 
 		return $this->getCachedCount($cacheKey, $config['repository'], $config['conditions']);
@@ -138,8 +137,8 @@ final readonly class SessionManager
 	{
 		if ($this->session('lp')->get($cacheKey) === null) {
 			$whereConditions = is_callable($conditions) ? $conditions() : $conditions;
+			$count           = $repository->getTotalCount('', $whereConditions);
 
-			$count = $repository->getTotalCount('', $whereConditions);
 			$this->session('lp')->put($cacheKey, $count);
 		}
 

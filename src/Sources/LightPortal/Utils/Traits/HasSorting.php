@@ -35,6 +35,7 @@ trait HasSorting
 			Utils::$context['lp_current_sorting'] = $this->session('lp')->get($sessionKey);
 		} else {
 			$sort = Setting::get('lp_frontpage_article_sorting', 'string', 'created;desc');
+
 			Utils::$context['lp_current_sorting'] = $sort;
 		}
 

@@ -76,7 +76,7 @@ class LoadTheme extends AbstractHook
 	protected function injectPortalLayer(): void
 	{
 		$layers = Utils::$context['template_layers'];
-		$pos = array_search('body', $layers, true);
+		$pos    = array_search('body', $layers, true);
 
 		if ($pos === false) {
 			return;
