@@ -25,7 +25,7 @@ class PageSearchRow extends Row
 		$url = Utils::$context['lp_actions_url'] ?? '';
 
 		// Typing, Enter and the button all request the same live update of the list
-		$action = "@post('" . $url . "', {payload: {search_items: \$search}})";
+		$action = "@post('" . $url . "', {payload: {search_items: \$search, page_type: \$page_type}})";
 
 		$masks = __('lp_search_masks');
 

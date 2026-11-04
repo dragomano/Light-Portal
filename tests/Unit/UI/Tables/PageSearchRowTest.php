@@ -46,7 +46,7 @@ describe('PageSearchRow', function () {
             ->toContain('data-indicator="fetching"')
             ->toContain('data-on:input__debounce.300ms=')
             ->toContain('area=lp_pages')
-            ->toContain('{payload: {search_items: $search}}')
+            ->toContain('{payload: {search_items: $search, page_type: $page_type}}')
             ->toContain('data-show="$fetching"')
             ->toContain('data-ignore-morph');
     });

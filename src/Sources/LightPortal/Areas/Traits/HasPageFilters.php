@@ -55,9 +55,14 @@ trait HasPageFilters
 		$this->entryType  = $this->request()->get('type') ?: ($this->pageParams['type'] ?? null);
 	}
 
-	private function calculateParams(?string $search = null): void
+	private function calculateParams(?string $search = null, ?string $type = null): void
 	{
 		$this->searchString = $this->limitSearchString($search ?? $this->searchString ?? $this->getRequestedSearch());
+
+		// The live request passes the type explicitly; otherwise it comes from the request or the link
+		if ($type !== null && $type !== '') {
+			$this->entryType = $type;
+		}
 
 		$search = Utils::$smcFunc['strtolower']($this->searchString);
 

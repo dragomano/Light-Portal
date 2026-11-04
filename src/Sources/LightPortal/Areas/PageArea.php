@@ -24,6 +24,7 @@ use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasPageBrowseTypes;
 use LightPortal\Areas\Traits\HasPageFilters;
 use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
 use LightPortal\Enums\FrontPageMode;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Status;
@@ -83,7 +84,10 @@ final class PageArea extends AbstractArea
 	protected function getCustomActionHandlers(): array
 	{
 		return [
-			'search_items'   => fn($data) => $this->handleSearch($data['search_items']),
+			'search_items'   => fn($data) => $this->handleSearch(
+				$data['search_items'] ?? '',
+				$data['page_type'] ?? null
+			),
 			'restore_item'   => fn($data) => $this->handleRestore($data['restore_item']),
 			'remove_forever' => fn($data) => $this->handleRemoveForever($data['remove_forever']),
 		];
@@ -114,13 +118,14 @@ final class PageArea extends AbstractArea
 	}
 
 	/**
-	 * The signal lives outside the list, so patching the list never rewrites what is being typed
+	 * The signals live outside the list, so patching the list never rewrites what is being typed or selected
 	 */
 	protected function showMainContent(): void
 	{
 		echo Str::html('div', [
 			'hidden'       => true,
-			'data-signals' => '{ search: ' . Utils::$smcFunc['json_encode']($this->searchString ?? '') . ' }',
+			'data-signals' => '{ search: ' . Utils::$smcFunc['json_encode']($this->searchString ?? '')
+				. ', page_type: ' . Utils::$smcFunc['json_encode']($this->entryType ?? EntryType::DEFAULT->value) . ' }',
 		])->toHtml();
 
 		parent::showMainContent();
@@ -518,10 +523,10 @@ final class PageArea extends AbstractArea
 	/**
 	 * The list is re-rendered on the server, so one patch replaces the rows, the pagination and the links
 	 */
-	private function handleSearch(mixed $term): void
+	private function handleSearch(mixed $term, mixed $type = null): void
 	{
 		$this->loadParamsFromRequest();
-		$this->calculateParams((string) $term);
+		$this->calculateParams((string) $term, $type === null ? null : (string) $type);
 
 		if (! DatastarSender::isDatastarRequest())
 			return;

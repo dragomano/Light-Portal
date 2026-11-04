@@ -36,10 +36,14 @@ class PageTypeSelectRow extends Row
 		$label = Str::html('label', ['for' => 'type'])
 			->setText(__('lp_page_type'));
 
+		// Changing the type requests the same live update of the list as the search does
+		$action = "@post('" . (Utils::$context['lp_actions_url'] ?? '') . "', {payload: {search_items: \$search, page_type: \$page_type}})";
+
 		$select = Str::html('select', [
-			'id'       => 'type',
-			'name'     => 'type',
-			'onchange' => 'this.form.submit()',
+			'id'             => 'type',
+			'name'           => 'type',
+			'data-bind'      => 'page_type',
+			'data-on:change' => $action,
 		]);
 
 		return parent::make($value ?: $label . ' ' . $select->addHtml($types), 'floatright')
