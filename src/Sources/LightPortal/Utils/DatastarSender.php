@@ -80,4 +80,10 @@ final class DatastarSender
 		$this->sendHeaders();
 		$this->sse->removeElements($selector);
 	}
+
+	public function patchSignals(array $signals): void
+	{
+		$this->sendHeaders();
+		$this->sse->patchSignals($signals);
+	}
 }

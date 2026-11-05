@@ -227,6 +227,7 @@ $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
 $txt['lp_pages_search'] = 'Slug or title';
+$txt['lp_pages_found'] = 'Found';
 $txt['lp_search_masks'] = '* and ? are masks';
 $txt['lp_page_type'] = 'Type';
 $txt['lp_page_type_set'] = ['Default', 'Internal', 'Draft'];

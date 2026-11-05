@@ -122,10 +122,14 @@ final class PageArea extends AbstractArea
 	 */
 	protected function showMainContent(): void
 	{
+		// The number of pages matching the current filters, shown and patched with the search row
+		Utils::$context['lp_pages_found'] = $this->getRowCount();
+
 		echo Str::html('div', [
 			'hidden'       => true,
 			'data-signals' => '{ search: ' . Utils::$smcFunc['json_encode']($this->searchString ?? '')
-				. ', page_type: ' . Utils::$smcFunc['json_encode']($this->entryType ?? EntryType::DEFAULT->value) . ' }',
+				. ', page_type: ' . Utils::$smcFunc['json_encode']($this->entryType ?? EntryType::DEFAULT->value)
+				. ', pages_found: ' . Utils::$context['lp_pages_found'] . ' }',
 		])->toHtml();
 
 		parent::showMainContent();
@@ -530,6 +534,10 @@ final class PageArea extends AbstractArea
 
 		if (! DatastarSender::isDatastarRequest())
 			return;
+
+		Utils::$context['lp_pages_found'] = $this->getRowCount();
+
+		$this->getDatastarSender()->patchSignals(['pages_found' => Utils::$context['lp_pages_found']]);
 
 		$this->getDatastarSender()->patchElements(
 			$this->renderList(),

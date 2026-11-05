@@ -966,6 +966,11 @@ describe('Datastar actions', function () {
         $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
         $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
 
+        // The number of matching pages is patched into the signal before the list
+        $this->senderMock->shouldReceive('patchSignals')
+            ->once()
+            ->with(['pages_found' => 0]);
+
         $this->senderMock->shouldReceive('patchElements')
             ->once()
             ->with(Mockery::on(fn(string $html) => str_contains($html, 'stub_lp_pages')), '#manage_pages');

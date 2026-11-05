@@ -5,7 +5,7 @@ order: 1
 
 # Manage pages
 
-This section shows all the pages you've created that you can edit. You can search for them by their title or slug: the list is filtered as you type, without reloading the page. The `*` and `?` characters work as masks — `*` matches any text and `?` matches a single character (for example, `col*r` finds `color-conversion`). All other characters, including `%` and `_`, are searched as is.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug: the list is filtered as you type, without reloading the page, and shows how many pages match the current filters. The `*` and `?` characters work as masks — `*` matches any text and `?` matches a single character (for example, `col*r` finds `color-conversion`). All other characters, including `%` and `_`, are searched as is.
 
 Each page shows its ID, creation or last updated date, view count, comment count, page type, slug, and title. You also see a list of actions you can do with it.
 

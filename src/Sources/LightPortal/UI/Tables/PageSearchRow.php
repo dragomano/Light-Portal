@@ -44,6 +44,12 @@ class PageSearchRow extends Row
 
 		$search = Str::html('div', ['class' => 'col-lg-10'])->setHtml($input);
 
+		// The number of pages matching the filters comes from the context and is patched with the search
+		if (($found = Utils::$context['lp_pages_found'] ?? null) !== null) {
+			$search->addHtml(Str::html('small', ['class' => 'lp_search_found'])
+				->setHtml(__('lp_pages_found') . ': ' . Str::html('span', ['data-text' => '$pages_found'])->setText((string) $found)));
+		}
+
 		$icon = Str::html('span', ['data-show' => '!$fetching'])->setHtml(Icon::get('search'));
 
 		$spinner = Str::html('i', [

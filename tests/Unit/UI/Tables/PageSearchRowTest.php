@@ -51,6 +51,27 @@ describe('PageSearchRow', function () {
             ->toContain('data-ignore-morph');
     });
 
+    it('shows the number of matching pages', function () {
+        Utils::$context['lp_pages_found'] = 7;
+
+        $row   = PageSearchRow::make();
+        $value = $row->toArray()['value'];
+
+        expect($value)
+            ->toContain('lp_search_found')
+            ->toContain('Found:')
+            ->toContain('data-text="$pages_found"')
+            ->toContain('>7<');
+    });
+
+    it('does not show the counter when the context has no count', function () {
+        unset(Utils::$context['lp_pages_found']);
+
+        $value = PageSearchRow::make()->toArray()['value'];
+
+        expect($value)->not()->toContain('lp_search_found');
+    });
+
     it('sends the same live request from Enter and from the button', function () {
         Utils::$context['lp_actions_url'] = 'https://example.com/index.php?action=admin&area=lp_pages&actions&sa=main';
 
