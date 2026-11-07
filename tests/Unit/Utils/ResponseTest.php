@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Bugo\Compat\Config;
 use LightPortal\Utils\Response;
 use LightPortal\Utils\ResponseInterface;
+use Tests\ReflectionAccessor;
 
 arch()
     ->expect(Response::class)
@@ -100,6 +102,32 @@ describe('Response', function () {
 
             $response->redirect('http://localhost:8080');
             expect(end($GLOBALS['redirectexit_calls']))->toBe('http://localhost:8080');
+        });
+    });
+
+    describe('buildRedirectUrl()', function () {
+        beforeEach(function () {
+            $this->accessor = new ReflectionAccessor(new Response());
+        });
+
+        it('prepends scripturl to query-style locations like redirectexit does', function () {
+            expect($this->accessor->callMethod('buildRedirectUrl', ['action=admin;area=lp_blocks;sa=main']))
+                ->toBe(Config::$scripturl . '?action=admin;area=lp_blocks;sa=main');
+        });
+
+        it('returns scripturl for an empty location', function () {
+            expect($this->accessor->callMethod('buildRedirectUrl', ['']))->toBe(Config::$scripturl);
+        });
+
+        it('keeps absolute locations untouched', function () {
+            expect($this->accessor->callMethod('buildRedirectUrl', ['https://example.com/page']))
+                ->toBe('https://example.com/page')
+                ->and($this->accessor->callMethod('buildRedirectUrl', ['http://localhost:8080']))
+                ->toBe('http://localhost:8080');
+        });
+
+        it('keeps about: locations untouched', function () {
+            expect($this->accessor->callMethod('buildRedirectUrl', ['about:blank']))->toBe('about:blank');
         });
     });
 });

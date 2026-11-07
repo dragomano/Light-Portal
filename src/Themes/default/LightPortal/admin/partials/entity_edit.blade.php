@@ -1,6 +1,6 @@
 @yield('preview')
 
-@postErrors()
+<div id="lp_post_errors">@postErrors()</div>
 
 <form
 	id="lp_post"
@@ -8,6 +8,7 @@
 	method="post"
 	accept-charset="{{ $context['character_set'] }}"
 	onsubmit="submitonce(this);"
+	data-on:submit="{{ $context['lp_form_submit_action'] }}"
 	@yield('form_data')
 >
 	<div class="roundframe{{ isset($context['preview_content']) ? '' : ' noup' }}">

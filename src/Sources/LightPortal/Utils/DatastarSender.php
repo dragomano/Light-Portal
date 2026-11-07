@@ -86,4 +86,16 @@ final class DatastarSender
 		$this->sendHeaders();
 		$this->sse->patchSignals($signals);
 	}
+
+	public function redirect(string $url): void
+	{
+		$this->sendHeaders();
+		$this->sse->location($url);
+	}
+
+	public function executeScript(string $script): void
+	{
+		$this->sendHeaders();
+		$this->sse->executeScript($script);
+	}
 }

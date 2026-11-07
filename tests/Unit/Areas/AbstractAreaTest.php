@@ -13,6 +13,7 @@ use LightPortal\Models\ModelInterface;
 use LightPortal\Repositories\DataManagerInterface;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Validators\ValidatorInterface;
@@ -472,6 +473,75 @@ describe('updateEditContextTitle', function () {
 
         expect(Utils::$context['page_area_title'])->toContain('Updated Title')
             ->and(Utils::$context['form_action'])->toContain('id=123');
+    });
+});
+
+describe('setFormSubmitContext', function () {
+    it('builds the datastar action URL and the submit expression', function () {
+        Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_test_entities;sa=edit;id=5';
+
+        $this->accessor->callMethod('setFormSubmitContext');
+
+        expect(Utils::$context['form_action_datastar'])
+            ->toBe(Config::$scripturl . '?action=admin&area=lp_test_entities&sa=edit&id=5')
+            ->and(Utils::$context['lp_form_submit_action'])
+            ->toStartWith("evt.submitter?.name === 'preview' ?")
+            ->toContain("evt.target.insertAdjacentHTML")
+            ->toContain('evt.target.submit()')
+            ->toContain("@post('" . Utils::$context['form_action_datastar'] . "', {contentType: 'form'})");
+    });
+});
+
+describe('getPostErrorsHtml', function () {
+    it('renders the error box for validation errors', function () {
+        Utils::$context['post_errors'] = ['first error', 'second error'];
+
+        $result = $this->accessor->callMethod('getPostErrorsHtml');
+
+        expect($result)->toContain('errorbox')
+            ->and($result)->toContain('<li>first error</li>')
+            ->and($result)->toContain('<li>second error</li>');
+    });
+
+    it('returns an empty string when there are no errors', function () {
+        Utils::$context['post_errors'] = [];
+
+        expect($this->accessor->callMethod('getPostErrorsHtml'))->toBe('');
+    });
+});
+
+describe('sendFormUpdate', function () {
+    beforeEach(function () {
+        // The sender is pre-warmed so that sendHeaders() stays a no-op inside the buffers
+        $sender = new DatastarSender();
+        $sender->sendHeaders();
+        $this->accessor->setProperty('datastarSender', $sender);
+    });
+
+    it('patches the error box when validation fails', function () {
+        Utils::$context['post_errors'] = ['boom'];
+
+        // sendEvent() closes one buffer level itself, hence the extra one
+        ob_start();
+        ob_start();
+        $this->accessor->callMethod('sendFormUpdate');
+        $output = ob_get_clean();
+
+        expect($output)
+            ->toContain('event: datastar-patch-elements')
+            ->toContain('data: selector #lp_post_errors')
+            ->toContain('data: mode inner')
+            ->toContain('boom');
+    });
+
+    it('sends nothing when there are no errors', function () {
+        Utils::$context['post_errors'] = [];
+
+        ob_start();
+        $this->accessor->callMethod('sendFormUpdate');
+        $output = ob_get_clean();
+
+        expect($output)->toBe('');
     });
 });
 

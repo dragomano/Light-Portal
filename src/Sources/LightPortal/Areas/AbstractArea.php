@@ -93,6 +93,11 @@ abstract class AbstractArea implements AreaInterface
 			$this->repository->setData();
 			$this->afterFormProcess();
 
+			if (DatastarSender::isDatastarRequest()) {
+				$this->sendFormUpdate();
+				exit;
+			}
+
 			TemplateLoader::fromFile($this->getEditTemplateName());
 		}
 	}
@@ -118,6 +123,11 @@ abstract class AbstractArea implements AreaInterface
 		$this->prepareEditor();
 		$this->preparePreview();
 		$this->repository->setData($this->getCurrentEntityId());
+
+		if (DatastarSender::isDatastarRequest()) {
+			$this->sendFormUpdate();
+			exit;
+		}
 
 		TemplateLoader::fromFile($this->getEditTemplateName());
 	}
@@ -604,6 +614,8 @@ abstract class AbstractArea implements AreaInterface
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=add";
 
+		$this->setFormSubmitContext();
+
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
 			'description' => __("lp_{$entityPlural}_add_description"),
@@ -758,6 +770,50 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function afterFormProcess(): void {}
 
+	/**
+	 * The response for a Datastar form post: the error box is patched with the validation
+	 * errors, while a successful save redirects before this method is called
+	 */
+	protected function sendFormUpdate(): void
+	{
+		$errors = $this->getPostErrorsHtml();
+
+		if ($errors !== '') {
+			$this->getDatastarSender()->patchElements($errors, '#lp_post_errors', ElementPatchMode::Inner);
+		}
+	}
+
+	protected function getPostErrorsHtml(): string
+	{
+		$errors = Utils::$context['post_errors'] ?? [];
+
+		if ($errors === []) {
+			return '';
+		}
+
+		$list = '';
+
+		foreach ($errors as $error) {
+			$list .= Str::html('li')->addHtml($error);
+		}
+
+		return (string) Str::html('div')->class('errorbox')->setHtml(Str::html('ul')->addHtml($list));
+	}
+
+	/**
+	 * The form post URL and the submit expression for the edit templates: Datastar always
+	 * prevents the default form submit, so the preview button triggers the classic
+	 * submission itself, with an extra flag because the submitter is not sent by submit()
+	 */
+	protected function setFormSubmitContext(): void
+	{
+		Utils::$context['form_action_datastar'] = str_replace(';', '&', Utils::$context['form_action']);
+
+		Utils::$context['lp_form_submit_action'] = "evt.submitter?.name === 'preview' ? "
+			. "(evt.target.insertAdjacentHTML('beforeend', '<input type=hidden name=preview value=1>'), evt.target.submit()) : "
+			. "@post('" . Utils::$context['form_action_datastar'] . "', {contentType: 'form'})";
+	}
+
 	protected function getItemId(): int
 	{
 		$entityName = $this->getEntityName();
@@ -776,6 +832,8 @@ abstract class AbstractArea implements AreaInterface
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=edit;id=$item";
+
+		$this->setFormSubmitContext();
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -856,6 +914,8 @@ abstract class AbstractArea implements AreaInterface
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=edit;id={$entity['id']}";
+
+		$this->setFormSubmitContext();
 	}
 
 	protected function getContextEntity(): array
