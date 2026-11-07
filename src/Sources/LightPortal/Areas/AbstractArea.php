@@ -20,6 +20,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Areas\Traits\HasDatastar;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\Status;
 use LightPortal\Enums\Tab;
@@ -53,10 +54,9 @@ if (! defined('SMF'))
 abstract class AbstractArea implements AreaInterface
 {
 	use HasArea;
+	use HasDatastar;
 
 	protected bool $shouldProcessAddForm = true;
-
-	protected ?DatastarSender $datastarSender = null;
 
 	public function __construct(
 		protected readonly DataManagerInterface $repository,
@@ -414,11 +414,6 @@ abstract class AbstractArea implements AreaInterface
 		return array_values(array_map('intval', array_filter(explode(',', $value))));
 	}
 
-	protected function getDatastarSender(): DatastarSender
-	{
-		return $this->datastarSender ??= new DatastarSender();
-	}
-
 	protected function clearCache(): void
 	{
 		$this->langCache($this->getCacheKey())->forget();
@@ -769,50 +764,6 @@ abstract class AbstractArea implements AreaInterface
 	}
 
 	protected function afterFormProcess(): void {}
-
-	/**
-	 * The response for a Datastar form post: the error box is patched with the validation
-	 * errors, while a successful save redirects before this method is called
-	 */
-	protected function sendFormUpdate(): void
-	{
-		$errors = $this->getPostErrorsHtml();
-
-		if ($errors !== '') {
-			$this->getDatastarSender()->patchElements($errors, '#lp_post_errors', ElementPatchMode::Inner);
-		}
-	}
-
-	protected function getPostErrorsHtml(): string
-	{
-		$errors = Utils::$context['post_errors'] ?? [];
-
-		if ($errors === []) {
-			return '';
-		}
-
-		$list = '';
-
-		foreach ($errors as $error) {
-			$list .= Str::html('li')->addHtml($error);
-		}
-
-		return (string) Str::html('div')->class('errorbox')->setHtml(Str::html('ul')->addHtml($list));
-	}
-
-	/**
-	 * The form post URL and the submit expression for the edit templates: Datastar always
-	 * prevents the default form submit, so the preview button triggers the classic
-	 * submission itself, with an extra flag because the submitter is not sent by submit()
-	 */
-	protected function setFormSubmitContext(): void
-	{
-		Utils::$context['form_action_datastar'] = str_replace(';', '&', Utils::$context['form_action']);
-
-		Utils::$context['lp_form_submit_action'] = "evt.submitter?.name === 'preview' ? "
-			. "(evt.target.insertAdjacentHTML('beforeend', '<input type=hidden name=preview value=1>'), evt.target.submit()) : "
-			. "@post('" . Utils::$context['form_action_datastar'] . "', {contentType: 'form'})";
-	}
 
 	protected function getItemId(): int
 	{

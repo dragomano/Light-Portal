@@ -8,15 +8,7 @@
 	<h3 class="catbg">{{ $context['page_area_title'] }}</h3>
 </div>
 
-@unless (empty($context['post_errors']))
-	<div class="errorbox">
-		<ul>
-			@foreach ($context['post_errors'] as $error)
-				<li>{!! $error !!}</li>
-			@endforeach
-		</ul>
-	</div>
-@endunless
+<div id="lp_post_errors">@postErrors()</div>
 
 @php $fields = $context['posting_fields']; @endphp
 
@@ -26,6 +18,7 @@
 	method="post"
 	accept-charset="{{ $context['character_set'] }}"
 	onsubmit="submitonce(this);"
+	data-on:submit="{{ $context['lp_form_submit_action'] }}"
 	x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : 'english' }"
 >
 	<div class="roundframe noup">

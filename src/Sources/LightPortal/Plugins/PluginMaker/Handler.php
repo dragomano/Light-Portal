@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 07.11.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -19,6 +19,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Areas\Traits\HasDatastar;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
@@ -31,6 +32,7 @@ use LightPortal\UI\Fields\SelectField;
 use LightPortal\UI\Fields\TextField;
 use LightPortal\UI\Fields\UrlField;
 use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasRequest;
@@ -48,6 +50,7 @@ if (! defined('LP_NAME'))
 class Handler
 {
 	use HasArea;
+	use HasDatastar;
 	use HasRequest;
 	use HasView;
 
@@ -60,6 +63,8 @@ class Handler
 		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __('lp_plugin_maker')['add_title'];
 		Utils::$context['page_area_title'] = __('lp_plugin_maker')['add_title'];
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
+
+		$this->setFormSubmitContext();
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -91,6 +96,12 @@ class Handler
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
+
+		if (DatastarSender::isDatastarRequest()) {
+			$this->sendFormUpdate();
+			exit;
+		}
+
 		$this->useCustomTemplate();
 
 		Utils::obExit();

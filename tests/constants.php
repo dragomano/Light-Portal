@@ -24,6 +24,10 @@ if (! defined('LP_ADDON_DIR')) {
     define('LP_ADDON_DIR', sys_get_temp_dir() . '/addons');
 }
 
+if (! defined('LP_ADDON_PATTERN')) {
+    define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
+}
+
 if (! defined('LP_ALIAS_PATTERN')) {
     define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9\-]+$');
 }

@@ -119,7 +119,7 @@ class AssetHandler
 	private function updateMaxFilemtime(string $type, string $file): void
 	{
 		$maxFilemtime = filemtime($file);
-		$property = 'max' . ucfirst($type) . 'Filemtime';
+		$property     = 'max' . ucfirst($type) . 'Filemtime';
 
 		if ($maxFilemtime > $this->{$property}) {
 			$this->{$property} = $maxFilemtime;
