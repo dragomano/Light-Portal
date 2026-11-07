@@ -238,6 +238,7 @@ abstract class AbstractArea implements AreaInterface
 		return array_merge([
 			'delete_item' => fn($data) => $this->handleRemoveItem($data['delete_item']),
 			'toggle_item' => fn($data) => $this->handleToggleItem($data['toggle_item']),
+			'bulk_items'  => fn($data) => $this->handleBulkItems($data['bulk_items']),
 		], $this->getCustomActionHandlers());
 	}
 
@@ -554,6 +555,28 @@ abstract class AbstractArea implements AreaInterface
 			default:
 				return false;
 		}
+	}
+
+	/**
+	 * The Datastar bulk action: the whole list is re-rendered and patched after the
+	 * repository call, so the rows, the empty state and the pagination stay consistent
+	 */
+	protected function handleBulkItems(array $payload): void
+	{
+		$action = (string) ($payload['action'] ?? '');
+		$items  = (array) ($payload['items'] ?? []);
+
+		if ($items === [] || ! $this->handleBulkAction($action, $items))
+			return;
+
+		$this->cache()->flush();
+
+		$this->getDatastarSender()->patchElements(
+			$this->renderList(),
+			'#' . $this->getTableFormData()['name']
+		);
+
+		$this->patchCounters();
 	}
 
 	protected function performBulkActions(): void
