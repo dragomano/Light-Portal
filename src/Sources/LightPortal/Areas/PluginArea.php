@@ -18,6 +18,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
+use LightPortal\Areas\Traits\HasActions;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Status;
@@ -49,6 +50,7 @@ final readonly class PluginArea
 	use HasCache;
 	use HasRequest;
 	use HasResponse;
+	use HasActions;
 
 	public function __construct(
 		private PluginRepositoryInterface $repository,
@@ -66,6 +68,11 @@ final readonly class PluginArea
 
 		Utils::$context['lp_plugins_api_endpoint'] = Config::$scripturl . '?action=admin;area=lp_plugins;api';
 
+		// Datastar encodes semicolons, so the actions URL uses ampersands as separators
+		Utils::$context['lp_actions_url'] = Config::$scripturl .
+			'?action=admin&area=lp_plugins&actions&' .
+			Utils::$context['session_var'] . '=' . Utils::$context['session_id'];
+
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
 			'description' => sprintf(
@@ -80,7 +87,7 @@ final readonly class PluginArea
 
 		Utils::$context['lp_plugins_extra'] = __('lp_plugins') . ' (' . count(Utils::$context['lp_plugins']) . ')';
 
-		$this->handleToggle();
+		$this->performActions();
 
 		$settings = [];
 
@@ -96,29 +103,28 @@ final readonly class PluginArea
 		TemplateLoader::fromFile('admin/plugin_index');
 	}
 
-	private function handleToggle(): void
+	protected function getActionHandlers(): array
 	{
-		if ($this->request()->hasNot('toggle'))
+		return [
+			'toggle_plugin' => fn($data) => $this->handleTogglePlugin($data['toggle_plugin']),
+		];
+	}
+
+	/**
+	 * The plugin is identified by its name, so the toggle direction is derived from the
+	 * current membership in the enabled list
+	 */
+	protected function handleTogglePlugin(string $pluginName): void
+	{
+		if ($pluginName === '' || ! in_array($pluginName, Utils::$context['lp_plugins']))
 			return;
 
-		if ($this->request()->method() !== 'POST')
-			return;
-
-		User::$me->checkSession('request');
-
-		$data           = $this->request()->json();
-		$pluginId       = (int) $data['plugin'];
-		$pluginName     = Utils::$context['lp_plugins'][$pluginId] ?? '';
 		$enabledPlugins = Setting::getEnabledPlugins();
+		$wasEnabled     = in_array($pluginName, $enabledPlugins);
 
-		if ($data['status'] === 'on') {
-			$enabledPlugins = array_filter(
-				$enabledPlugins,
-				static fn($item) => $item !== $pluginName
-			);
-		} else {
-			$enabledPlugins[] = $pluginName;
-		}
+		$enabledPlugins = $wasEnabled
+			? array_filter($enabledPlugins, static fn($item) => $item !== $pluginName)
+			: [...$enabledPlugins, $pluginName];
 
 		sort($enabledPlugins);
 
@@ -131,10 +137,20 @@ final readonly class PluginArea
 		]);
 
 		$this->removeAssets();
-		$this->handleBlockPluginToggle($pluginName, $data);
 
+		if ($wasEnabled) {
+			$this->handleBlockPluginToggle($pluginName);
+		}
+	}
+
+	protected function clearCache(): void
+	{
 		$this->cache()->flush();
-		$this->response()->exit(['success' => true]);
+	}
+
+	protected function getFreshQuantity(): ?int
+	{
+		return count(Setting::getEnabledPlugins());
 	}
 
 	private function handleSave(array $configVars): void
@@ -157,13 +173,13 @@ final readonly class PluginArea
 		$this->response()->exit(['success' => true]);
 	}
 
-	private function handleBlockPluginToggle(string $pluginName, array $data): void
+	private function handleBlockPluginToggle(string $pluginName): void
 	{
 		$snakeName     = Str::getSnakeName($pluginName);
 		$pluginData    = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
 		$isBlockPlugin = ($pluginData['type'] ?? '') === PluginType::BLOCK->value;
 
-		if ($data['status'] === 'on' && $isBlockPlugin) {
+		if ($isBlockPlugin) {
 			app(BlockRepositoryInterface::class)->updateStatusByType($snakeName, Status::INACTIVE->value);
 		}
 	}
@@ -315,12 +331,13 @@ final readonly class PluginArea
 		];
 
 		$contextData = [
-			'locale'  => __('lang_dictionary'),
-			'postUrl' => Utils::$context['post_url'],
-			'charset' => Utils::$context['character_set'],
-			'user'    => Utils::$context['user'],
-			'rtl'     => Utils::$context['right_to_left'],
-			'lang'    => Language::getNameFromLocale(User::$me->language),
+			'locale'     => __('lang_dictionary'),
+			'postUrl'    => Utils::$context['post_url'],
+			'actionsUrl' => Utils::$context['lp_actions_url'] ?? '',
+			'charset'    => Utils::$context['character_set'],
+			'user'       => Utils::$context['user'],
+			'rtl'        => Utils::$context['right_to_left'],
+			'lang'       => Language::getNameFromLocale(User::$me->language),
 		];
 
 		$pluginsData = [

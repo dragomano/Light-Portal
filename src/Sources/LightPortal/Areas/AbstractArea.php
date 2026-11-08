@@ -20,6 +20,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Areas\Traits\HasActions;
 use LightPortal\Areas\Traits\HasDatastar;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\Status;
@@ -54,6 +55,7 @@ if (! defined('SMF'))
 abstract class AbstractArea implements AreaInterface
 {
 	use HasArea;
+	use HasActions;
 	use HasDatastar;
 
 	protected bool $shouldProcessAddForm = true;
@@ -181,39 +183,6 @@ abstract class AbstractArea implements AreaInterface
 		return '';
 	}
 
-	protected function performActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		if ($this->request()->method() !== 'POST')
-			return;
-
-		User::$me->checkSession('request');
-
-		$isDatastarRequest = DatastarSender::isDatastarRequest();
-
-		if ($isDatastarRequest) {
-			(new DatastarSender())->sendHeaders();
-		}
-
-		$data = $isDatastarRequest
-			? DatastarSender::readSignals()
-			: $this->request()->json();
-
-		$this->processActions($data);
-		$this->clearCache();
-
-		if ($isDatastarRequest) {
-			exit;
-		}
-
-		$this->response()->exit([
-			'success' => true,
-			'count'   => $this->getFreshQuantity(),
-		]);
-	}
-
 	protected function getFreshQuantity(): ?int
 	{
 		$entityPlural = $this->getEntityNamePlural();
@@ -221,16 +190,6 @@ abstract class AbstractArea implements AreaInterface
 		Utils::$context['lp_quantities'] = app(SessionManager::class)();
 
 		return Utils::$context['lp_quantities']['active_' . $entityPlural] ?? null;
-	}
-
-	protected function processActions(array $data): void
-	{
-		foreach ($this->getActionHandlers() as $key => $handler) {
-			if (isset($data[$key])) {
-				$handler($data);
-				break;
-			}
-		}
 	}
 
 	final protected function getActionHandlers(): array

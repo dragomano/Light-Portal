@@ -7,6 +7,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\PluginArea;
+use LightPortal\Areas\Traits\HasActions;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
@@ -25,7 +26,7 @@ use Tests\TestExitException;
 
 arch()
     ->expect(PluginArea::class)
-    ->toUseTraits([HasCache::class, HasRequest::class, HasResponse::class]);
+    ->toUseTraits([HasActions::class, HasCache::class, HasRequest::class, HasResponse::class]);
 
 beforeEach(function () {
     $this->repository  = mock(PluginRepositoryInterface::class);
@@ -52,10 +53,15 @@ beforeEach(function () {
 });
 
 describe('PluginArea::main()', function () {
+    beforeEach(function () {
+        Utils::$context['session_var'] = 'sesc';
+        Utils::$context['session_id']  = 'token';
+    });
+
     it('sets up context variables correctly', function () {
         $this->requestMock
             ->shouldReceive('hasNot')
-            ->with('toggle')
+            ->with('actions')
             ->andReturn(true);
         $this->requestMock
             ->shouldReceive('hasNot')
@@ -77,7 +83,9 @@ describe('PluginArea::main()', function () {
 
         expect(Utils::$context['page_title'])->toBe('Portal - Manage plugins')
             ->and(Utils::$context['post_url'])->toContain('?action=admin;area=lp_plugins;save')
-            ->and(Utils::$context['lp_plugins_api_endpoint'])->toContain('?action=admin;area=lp_plugins;api');
+            ->and(Utils::$context['lp_plugins_api_endpoint'])->toContain('?action=admin;area=lp_plugins;api')
+            ->and(Utils::$context['lp_actions_url'])
+                ->toBe('https://example.com/index.php?action=admin&area=lp_plugins&actions&sesc=token');
     });
 
     it('loads plugin list', function () {
@@ -86,7 +94,7 @@ describe('PluginArea::main()', function () {
 
         $this->requestMock
             ->shouldReceive('hasNot')
-            ->with('toggle')
+            ->with('actions')
             ->andReturn(true);
         $this->requestMock
             ->shouldReceive('hasNot')
@@ -110,84 +118,86 @@ describe('PluginArea::main()', function () {
     });
 });
 
-describe('PluginArea::handleToggle()', function () {
-    it('enables plugin when status is off', function () {
-        $pluginData = [
-            'plugin' => 0,
-            'status' => 'off',
-        ];
+describe('PluginArea::performActions()', function () {
+    beforeEach(function () {
+        Theme::$current->settings['default_theme_dir'] = __DIR__ . '/nonexistent';
+    });
 
+    it('enables the plugin by name', function () {
         Utils::$context['lp_plugins'] = ['TestPlugin'];
 
-        $this->requestMock
-            ->shouldReceive('hasNot')
-            ->with('toggle')
-            ->andReturn(false);
-        $this->requestMock
-            ->shouldReceive('method')
-            ->andReturn('POST');
-        $this->requestMock
-            ->shouldReceive('json')
-            ->andReturn($pluginData);
+        $this->requestMock->shouldReceive('hasNot')->with('actions')->andReturn(false);
+        $this->requestMock->shouldReceive('method')->andReturn('POST');
+        $this->requestMock->shouldReceive('json')->andReturn(['toggle_plugin' => 'TestPlugin']);
 
         $responseMock = mock(ResponseInterface::class);
         $responseMock
             ->shouldReceive('exit')
             ->once()
-            ->with(['success' => true])
+            ->with(['success' => true, 'count' => 1])
             ->andThrow(new TestExitException());
         AppMockRegistry::set(ResponseInterface::class, $responseMock);
 
-        Theme::$current->settings['default_theme_dir'] = __DIR__ . '/nonexistent';
-
-        expect(fn() => $this->accessor->callMethod('handleToggle'))
+        expect(fn() => $this->accessor->callMethod('performActions'))
             ->toThrow(TestExitException::class);
         expect(Config::$modSettings['lp_enabled_plugins'])->toBe('TestPlugin');
     });
 
-    it('disables plugin when status is on', function () {
-        $pluginData = [
-            'plugin' => 0,
-            'status' => 'on',
-        ];
-
+    it('disables the plugin by name', function () {
         Utils::$context['lp_plugins'] = ['TestPlugin'];
 
         Config::$modSettings['lp_enabled_plugins'] = 'TestPlugin';
 
-        $this->requestMock
-            ->shouldReceive('hasNot')
-            ->with('toggle')
-            ->andReturn(false);
-        $this->requestMock
-            ->shouldReceive('method')
-            ->andReturn('POST');
-        $this->requestMock
-            ->shouldReceive('json')
-            ->andReturn($pluginData);
+        $this->requestMock->shouldReceive('hasNot')->with('actions')->andReturn(false);
+        $this->requestMock->shouldReceive('method')->andReturn('POST');
+        $this->requestMock->shouldReceive('json')->andReturn(['toggle_plugin' => 'TestPlugin']);
 
         $responseMock = mock(ResponseInterface::class);
         $responseMock
             ->shouldReceive('exit')
             ->once()
-            ->with(['success' => true])
+            ->with(['success' => true, 'count' => 0])
             ->andThrow(new TestExitException());
         AppMockRegistry::set(ResponseInterface::class, $responseMock);
 
-        Theme::$current->settings['default_theme_dir'] = __DIR__ . '/nonexistent';
-
-        expect(fn() => $this->accessor->callMethod('handleToggle'))
+        expect(fn() => $this->accessor->callMethod('performActions'))
             ->toThrow(TestExitException::class);
         expect(Config::$modSettings['lp_enabled_plugins'])->toBe('');
     });
 
-    it('returns early when toggle parameter is not present', function () {
+    it('keeps the enabled list untouched for an unknown plugin name', function () {
+        Utils::$context['lp_plugins'] = ['TestPlugin'];
+
+        Config::$modSettings['lp_enabled_plugins'] = 'TestPlugin';
+
+        $this->requestMock->shouldReceive('hasNot')->with('actions')->andReturn(false);
+        $this->requestMock->shouldReceive('method')->andReturn('POST');
+        $this->requestMock->shouldReceive('json')->andReturn(['toggle_plugin' => 'MissingPlugin']);
+
+        $responseMock = mock(ResponseInterface::class);
+        $responseMock
+            ->shouldReceive('exit')
+            ->once()
+            ->with(['success' => true, 'count' => 1])
+            ->andThrow(new TestExitException());
+        AppMockRegistry::set(ResponseInterface::class, $responseMock);
+
+        expect(fn() => $this->accessor->callMethod('performActions'))
+            ->toThrow(TestExitException::class);
+        expect(Config::$modSettings['lp_enabled_plugins'])->toBe('TestPlugin');
+    });
+
+    it('returns early when the actions parameter is not present', function () {
         $this->requestMock
             ->shouldReceive('hasNot')
-            ->with('toggle')
+            ->with('actions')
             ->andReturn(true);
 
-        $this->accessor->callMethod('handleToggle');
+        $responseMock = mock(ResponseInterface::class);
+        $responseMock->shouldNotReceive('exit');
+        AppMockRegistry::set(ResponseInterface::class, $responseMock);
+
+        $this->accessor->callMethod('performActions');
 
         expect(true)->toBeTrue();
     });
