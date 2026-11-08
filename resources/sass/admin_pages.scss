@@ -20,3 +20,23 @@
     }
   }
 }
+
+.lp_search_box {
+  position: relative;
+
+  input[type='search'] {
+    width: 100%;
+    padding-inline-end: 2.4em;
+
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+    }
+  }
+
+  .lp_search_icon {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0.8em;
+    transform: translateY(-50%);
+  }
+}

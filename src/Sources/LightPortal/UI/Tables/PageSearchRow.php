@@ -24,7 +24,7 @@ class PageSearchRow extends Row
 	{
 		$url = Utils::$context['lp_actions_url'] ?? '';
 
-		// Typing, Enter and the button all request the same live update of the list
+		// Typing, Enter and the magnifier all request the same live update of the list
 		$action = "@post('" . $url . "', {payload: {search_items: \$search, page_type: \$page_type}})";
 
 		$masks = __('lp_search_masks');
@@ -35,43 +35,41 @@ class PageSearchRow extends Row
 			'value'                         => Utils::$context['search']['string'],
 			'placeholder'                   => __('lp_pages_search') . ' (' . $masks . ')',
 			'title'                         => $masks,
-			'style'                         => 'width: 100%',
 			'data-bind'                     => 'search',
 			'data-indicator'                => 'fetching',
 			'data-on:input__debounce.300ms' => $action,
 			'data-on:keydown'               => "evt.key === 'Enter' && (evt.preventDefault(), $action)",
 		]);
 
-		$search = Str::html('div', ['class' => 'col-lg-10'])->setHtml($input);
-
-		// The number of pages matching the filters comes from the context and is patched with the search
-		if (($found = Utils::$context['lp_pages_found'] ?? null) !== null) {
-			$search->addHtml(Str::html('small', ['class' => 'lp_search_found'])
-				->setHtml(__('lp_pages_found') . ': ' . Str::html('span', ['data-text' => '$pages_found'])->setText((string) $found)));
-		}
-
-		$icon = Str::html('span', ['data-show' => '!$fetching'])->setHtml(Icon::get('search'));
+		// The magnifier repeats the live request, so the classic form submit is only a fallback
+		$icon = Str::html('span', [
+			'class'         => 'lp_search_icon',
+			'data-show'     => '!$fetching',
+			'data-on:click' => $action,
+		])->setHtml(Icon::get('search'));
 
 		$spinner = Str::html('i', [
-			'class'       => 'fa-solid fa-spinner fa-spin',
+			'class'       => 'lp_search_icon fa-solid fa-spinner fa-spin',
 			'aria-hidden' => 'true',
 			'data-show'   => '$fetching',
 		]);
 
-		$button = Str::html('button', [
-			'type'          => 'submit',
-			'name'          => 'is_search',
-			'class'         => 'button floatnone',
-			'style'         => 'width: 100%',
-			'data-on:click' => "evt.preventDefault(), $action",
-		])->setHtml($icon . $spinner . ' ' . __('search'));
+		$box = Str::html('div', ['class' => 'lp_search_box'])
+			->addHtml($input)
+			->addHtml($icon)
+			->addHtml($spinner);
 
-		$div = Str::html('div', ['class' => 'col-lg-2'])->setHtml($button);
+		$col = Str::html('div', ['class' => 'col-lg-12'])->setHtml($box);
+
+		// The number of pages matching the filters comes from the context and is patched with the search
+		if (($found = Utils::$context['lp_pages_found'] ?? null) !== null) {
+			$col->addHtml(Str::html('small', ['class' => 'lp_search_found'])
+				->setHtml(__('lp_pages_found') . ': ' . Str::html('span', ['data-text' => '$pages_found'])->setText((string) $found)));
+		}
 
 		// Patching the list never touches what is being typed here
 		$row = Str::html('div', ['class' => 'row', 'data-ignore-morph' => ''])
-			->addHtml($search)
-			->addHtml($div)
+			->addHtml($col)
 			->toHtml();
 
 		return parent::make($value ?: $row)
