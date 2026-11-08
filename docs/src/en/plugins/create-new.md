@@ -53,6 +53,8 @@ You can use the **PluginMaker** as a helper to create your own plugins. Download
 
 ![Create a new plugin with PluginMaker](create_plugin.png)
 
+If the form contains validation errors (for example, the plugin name is empty or already taken), they are shown right above the form, without reloading the page.
+
 :::
 
 ## Choosing the type of plugin

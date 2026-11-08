@@ -17,4 +17,4 @@ The following actions are available for each page:
 - Edit — change the selected page
 - Delete
 
-Mass actions with pages are also available.
+Mass actions with pages are also available: mark the needed pages with the checkboxes, choose an action (toggle status or delete), and apply it — the list updates right away, without reloading the page.
