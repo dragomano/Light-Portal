@@ -286,12 +286,6 @@
 				}
 			}
 		}
-
-		updateState(target, refs) {
-			if (target) {
-				refs.plugin_name.innerText = target;
-			}
-		}
 	}
 
 	const plugin = new PluginMaker();

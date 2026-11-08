@@ -6,7 +6,7 @@
 			<div
 				class="bg odd {{ $index === 0 ? 'active_navigation' : '' }}"
 				data-tab="{{ $tab['id'] }}"
-				@isset ($tab['show']) x-show="{{ $tab['show'] }}" @endisset
+				@isset ($tab['show']) data-show="{{ $tab['show'] }}" @endisset
 			>
 				@icon($tab['icon']){{ $tab['title'] }}
 			</div>
@@ -17,7 +17,7 @@
 			<section
 				class="bg even {{ $index === 0 ? 'active_content' : '' }}"
 				data-content="{{ $tab['id'] }}"
-				@isset ($tab['show']) x-show="{{ $tab['show'] }}" @endisset
+				@isset ($tab['show']) data-show="{{ $tab['show'] }}" @endisset
 			>
 				@portalTab($fields, $tab['type'] ?? 'content')
 			</section>

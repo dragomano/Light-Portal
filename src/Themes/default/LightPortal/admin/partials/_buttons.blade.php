@@ -3,7 +3,7 @@
 	class="button active"
 	name="remove"
 	style="float: left"
-	x-show="!{{ (int) empty($id) }}"
+	data-show="!{{ (int) empty($id) }}"
 >
 	{{ $txt['remove'] }}
 </button>

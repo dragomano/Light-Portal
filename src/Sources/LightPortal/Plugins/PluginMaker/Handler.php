@@ -78,7 +78,7 @@ class Handler
 				sprintf(
 					Str::html('strong')
 						->style('color', 'initial')
-						->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s'))
+						->setHtml('%s/' . Str::html('span', ['data-text' => '$plugin_name'])->setText('%s'))
 						->toHtml(),
 					LP_ADDON_DIR,
 					self::PLUGIN_NAME,
@@ -219,7 +219,7 @@ class Handler
 				'maxlength' => 255,
 				'pattern'   => LP_ADDON_PATTERN,
 				'style'     => 'width: 100%',
-				'@change'   => 'plugin.updateState($event.target.value, $refs)',
+				'data-bind' => 'plugin_name',
 			])
 			->setValue(Utils::$context['lp_plugin']['name']);
 

@@ -25,14 +25,14 @@ class RangeField extends CustomField
 		parent::build();
 
 		Utils::$context['posting_fields'][$this->name]['input']['html'] = Str::html('div', [
-			'x-data' => "{ '$this->name' : {$this->attributes['value']} }",
+			'data-signals' => "{ '$this->name': {$this->attributes['value']} }",
 		])
 			->addHtml(
 				Str::html('input', [
-					'type'    => 'range',
-					'id'      => $this->name,
-					'name'    => $this->name,
-					'x-model' => $this->name,
+					'type'      => 'range',
+					'id'        => $this->name,
+					'name'      => $this->name,
+					'data-bind' => $this->name,
 				])
 					->setAttribute('min', $this->attributes['min'] ?? null)
 					->setAttribute('max', $this->attributes['max'] ?? null)
@@ -40,9 +40,9 @@ class RangeField extends CustomField
 			)
 			->addHtml(
 				Str::html('span', [
-					'class'  => 'progress_bar amt',
-					'style'  => 'margin-left: 10px',
-					'x-text' => $this->name,
+					'class'     => 'progress_bar amt',
+					'style'     => 'margin-left: 10px',
+					'data-text' => '$' . $this->name,
 				])
 			);
 	}

@@ -33,7 +33,7 @@ class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInter
 	{
 		$icon = str_replace(
 			' class=',
-			' @mouseover="entity.toggleSpin($event.target)" @mouseout="entity.toggleSpin($event.target)" class=',
+			' data-on:mouseenter="entity.toggleSpin(evt.target)" data-on:mouseleave="entity.toggleSpin(evt.target)" class=',
 			Icon::get('plus', __("lp_{$entity}_add"))
 		);
 
@@ -42,7 +42,6 @@ class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInter
 				Config::$scripturl . "?action=admin;area=lp_$entity;sa=add;",
 				Utils::$context['session_var'] . '=' . Utils::$context['session_id']
 			]),
-			'x-data' => '',
 		]);
 
 		$button = Str::html('span', ['class' => 'floatright'])
