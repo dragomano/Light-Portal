@@ -25,8 +25,6 @@ class ButtonsRow extends Row
 		string $value = ''
 	): static
 	{
-		$selectionExpr = self::getSelectionExpression($formName);
-
 		$selectOptions = '';
 		foreach ($options as $action => $label) {
 			$selectOptions .= Str::html('option', ['value' => $action])
@@ -35,35 +33,27 @@ class ButtonsRow extends Row
 		}
 
 		$submit = Str::html('input', [
-			'type'          => 'submit',
-			'name'          => 'bulk_actions',
-			'value'         => __('quick_mod_go'),
-			'class'         => 'button',
-			':disabled'     => '!hasSelection',
-			'data-on:click' => self::getBulkSubmitExpression($formName, $actionName),
+			'type'               => 'submit',
+			'name'               => 'bulk_actions',
+			'value'              => __('quick_mod_go'),
+			'class'              => 'button',
+			'data-attr:disabled' => '!$has_selection',
+			'data-on:click'      => self::getBulkSubmitExpression($formName, $actionName),
 		]);
 
 		$select = Str::html('select', [
-			'name'      => $actionName,
-			':disabled' => '!hasSelection',
+			'name'               => $actionName,
+			'data-attr:disabled' => '!$has_selection',
 		])
 			->setHtml($selectOptions);
 
 		$wrapper = Str::html('span', [
 			// The morph preserves the button state, so this row must be replaced instead
-			'data-ignore-morph'             => '',
-			'x-data'                        => '{ hasSelection: false }',
-			'x-init'                        => "hasSelection = $selectionExpr",
-			'x-on:lp-bulk-selection.window' => "if (\$event.detail?.formName === '$formName') hasSelection = $selectionExpr",
+			'data-ignore-morph' => '',
+			'data-signals'      => '{ has_selection: false }',
 		])->setHtml($value ?: $select . ' ' . $submit)->toHtml();
 
 		return parent::make($wrapper)->setClass('floatright');
-	}
-
-	private static function getSelectionExpression(string $formName): string
-	{
-		return "Array.from(document.forms['$formName']?.elements || [])"
-			. ".some(el => el.name === 'items[]' && el.checked)";
 	}
 
 	/**
@@ -80,7 +70,7 @@ class ButtonsRow extends Row
 			. " const els = Array.from(document.forms['$formName'].elements)"
 			. ".filter(el => el.name === 'items[]' && el.checked);"
 			. " els.forEach(el => el.checked = false);"
-			. " window.dispatchEvent(new CustomEvent('lp-bulk-selection', {detail: {formName: '$formName'}}));"
+			. " \$has_selection = false;"
 			. " @post('$url', {payload: {bulk_items: {"
 			. "action: document.forms['$formName']['$actionName'].value,"
 			. " items: els.map(el => el.value)"

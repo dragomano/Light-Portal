@@ -113,14 +113,14 @@ final class ExtraConfig extends AbstractConfig
 
 			SelectConfig::make('lp_comment_block')
 				->setOptions(__('lp_comment_block_set'))
-				->setJavaScript('@change="comment_block = $event.target.value"'),
+				->setJavaScript('data-bind="comment_block"'),
 
 			IntConfig::make('lp_time_to_change_comments')
 				->setPostInput(__('manageposts_minutes'))
-				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+				->setJavaScript('data-attr:disabled="$comment_block !== \'default\'"'),
 
 			IntConfig::make('lp_num_comments_per_page')
-				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+				->setJavaScript('data-attr:disabled="$comment_block !== \'default\'"'),
 
 			SelectConfig::make('lp_comment_sorting')
 				->setOptions([
@@ -129,7 +129,7 @@ final class ExtraConfig extends AbstractConfig
 					__('lp_sort_by_updated'),
 					__('lp_sort_by_updated_desc'),
 				])
-				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+				->setJavaScript('data-attr:disabled="$comment_block !== \'default\'"'),
 
 			/* @uses template_callback_comment_settings_after */
 			CallbackConfig::make('comment_settings_after'),
@@ -161,15 +161,15 @@ final class ExtraConfig extends AbstractConfig
 
 			CheckConfig::make('lp_menu_separate_subsection')
 				->setHelp('lp_menu_separate_subsection_help')
-				->setJavaScript('@change="separate_subsection = !separate_subsection"'),
+				->setJavaScript('data-bind="separate_subsection"'),
 
 			TextConfig::make('lp_menu_separate_subsection_title')
 				->setHelp('lp_menu_separate_subsection_title_help')
-				->setJavaScript(':disabled="separate_subsection === false"')
+				->setJavaScript('data-attr:disabled="$separate_subsection === false"')
 				->setSize('75" placeholder="{lp_pages}'),
 
 			TextConfig::make('lp_menu_separate_subsection_href')
-				->setJavaScript(':disabled="separate_subsection === false"')
+				->setJavaScript('data-attr:disabled="$separate_subsection === false"')
 				->setSize('75" placeholder="' . Config::$scripturl),
 
 			/* @uses template_callback_menu_settings_after */

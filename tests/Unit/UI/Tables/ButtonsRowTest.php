@@ -70,12 +70,16 @@ describe('ButtonsRow', function () {
             ->toContain("const els = Array.from(document.forms['manage_pages'].elements)")
             ->toContain(".filter(el => el.name === 'items[]' && el.checked);")
             ->toContain('els.forEach(el => el.checked = false);')
-            ->toContain("new CustomEvent('lp-bulk-selection', {detail: {formName: 'manage_pages'}})")
+            ->toContain('$has_selection = false;')
             ->toContain("@post('" . Utils::$context['lp_actions_url'] . "', {payload: {bulk_items: {")
             ->toContain("action: document.forms['manage_pages']['page_actions'].value")
             ->toContain('items: els.map(el => el.value)')
             ->and($value)->toContain('name="bulk_actions"')
             ->and($value)->toContain('data-ignore-morph')
-            ->and($value)->not->toContain('onclick=');
+            ->and($value)->toContain('data-signals="{ has_selection: false }"')
+            ->and($value)->toContain('data-attr:disabled="!$has_selection"')
+            ->and($value)->not->toContain('onclick=')
+            ->and($value)->not->toContain('x-data')
+            ->and($value)->not->toContain('lp-bulk-selection');
     });
 });

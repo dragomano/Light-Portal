@@ -277,15 +277,6 @@ class Handler
 
 	private function setTitleField(): void
 	{
-		$languages = empty(Config::$modSettings['userLanguage'])
-			? [Language::getNameFromLocale(Config::$language)]
-			: [
-				Language::getNameFromLocale(Language::getFallbackValue()),
-				Language::getNameFromLocale(Config::$language)
-			];
-
-		$languages = array_unique([Language::getNameFromLocale(Language::getFallbackValue()), ...$languages]);
-
 		$value = Str::html('div');
 
 		if (count(Utils::$context['lp_languages']) > 1) {
@@ -298,13 +289,11 @@ class Handler
 				$link = Str::html('a')
 					->class('button floatnone')
 					->setText($lang['name'])
-					->setAttribute(':class', "{ 'active': tab === '$key' }")
-					->setAttribute('x-on:click.prevent', implode('; ', [
-						"tab = '$key'",
+					->setAttribute('data-class:active', "\$tab === '$key'")
+					->setAttribute('data-on:click__prevent', implode('; ', [
+						"\$tab = '$key'",
 						"window.location.hash = '$key'",
-						"\$nextTick(() => {
-							setTimeout(() => { document.querySelector('input[name=\"descriptions[$key]\"]').focus() }, 50);
-						})"
+						"setTimeout(() => { document.querySelector('input[name=\"descriptions[$key]\"]')?.focus() }, 50)",
 					]));
 
 				$nav->addHtml($link);
@@ -313,10 +302,9 @@ class Handler
 			$value->addHtml($nav);
 		}
 
-		$i = count($languages) - 1;
 		foreach (Utils::$context['lp_languages'] as $key => $lang) {
 			$inputDiv = Str::html('div')
-				->setAttribute('x-show', "tab === '$key'");
+				->setAttribute('data-show', "\$tab === '$key'");
 
 			$inputTitle = Str::html('input')
 				->setAttribute('type', 'text')
@@ -329,10 +317,6 @@ class Handler
 				->setAttribute('name', "descriptions[$key]")
 				->setAttribute('value', Utils::$context['lp_plugin']['descriptions'][$key] ?? '')
 				->placeholder(__('lp_page_description'));
-
-			if (in_array($key, $languages)) {
-				$inputDescription->setAttribute('x-ref', 'title_' . $i--);
-			}
 
 			if ($lang['filename'] === Language::getFallbackValue()) {
 				$inputDescription->setAttribute('required', 'required');

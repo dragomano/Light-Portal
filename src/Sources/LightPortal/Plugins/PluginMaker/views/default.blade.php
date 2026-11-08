@@ -19,7 +19,7 @@
 	accept-charset="{{ $context['character_set'] }}"
 	onsubmit="submitonce(this);"
 	data-on:submit="{{ $context['lp_form_submit_action'] }}"
-	x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : 'english' }"
+	data-signals="{ tab: window.location.hash ? window.location.hash.substring(1) : 'english' }"
 >
 	<div class="roundframe noup">
 		<div class="lp_tabs">

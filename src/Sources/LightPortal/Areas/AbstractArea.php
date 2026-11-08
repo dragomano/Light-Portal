@@ -458,7 +458,7 @@ abstract class AbstractArea implements AreaInterface
 			return;
 
 		$builder
-			->addColumn(CheckboxColumn::make(name: 'bulk', entity: 'items'))
+			->addColumn(CheckboxColumn::make(name: 'bulk', entity: 'items', signal: 'has_selection'))
 			->addRow($this->getBulkActionsButtonsRow());
 	}
 

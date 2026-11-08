@@ -76,7 +76,7 @@ function template_callback_comment_settings_before(): void
 {
 	$value = Config::$modSettings['lp_comment_block'] ?? 'none';
 
-	echo '<div x-data="{ comment_block: \'' . $value . '\' }">';
+	echo '<div data-signals="{ comment_block: \'' . $value . '\' }">';
 }
 
 function template_callback_comment_settings_after(): void
@@ -88,7 +88,7 @@ function template_callback_menu_settings_before(): void
 {
 	$value = empty(Config::$modSettings['lp_menu_separate_subsection']) ? 'false' : 'true';
 
-	echo '<div x-data="{ separate_subsection: ' . $value . '}">';
+	echo '<div data-signals="{ separate_subsection: ' . $value . '}">';
 }
 
 function template_callback_menu_settings_after(): void
