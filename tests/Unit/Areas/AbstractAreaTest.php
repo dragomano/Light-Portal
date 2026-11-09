@@ -523,11 +523,9 @@ describe('sendFormUpdate', function () {
     it('patches the error box when validation fails', function () {
         Utils::$context['post_errors'] = ['boom'];
 
-        // sendEvent() closes one buffer level itself, hence the extra one
-        ob_start();
-        ob_start();
-        $this->accessor->callMethod('sendFormUpdate');
-        $output = ob_get_clean();
+        $output = captureDatastarOutput(
+            fn() => $this->accessor->callMethod('sendFormUpdate')
+        );
 
         expect($output)
             ->toContain('event: datastar-patch-elements')
@@ -539,9 +537,9 @@ describe('sendFormUpdate', function () {
     it('sends nothing when there are no errors', function () {
         Utils::$context['post_errors'] = [];
 
-        ob_start();
-        $this->accessor->callMethod('sendFormUpdate');
-        $output = ob_get_clean();
+        $output = captureDatastarOutput(
+            fn() => $this->accessor->callMethod('sendFormUpdate')
+        );
 
         expect($output)->toBe('');
     });

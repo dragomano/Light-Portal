@@ -494,3 +494,29 @@ if (! function_exists('prepareDBSettingContext')) {
         Utils::$context['config_vars'] = $vars;
     }
 }
+
+if (! function_exists('captureDatastarOutput')) {
+    /**
+     * The Datastar SDK flushes its own output buffer differently across 1.x releases:
+     * 1.0.0 closes the innermost level (ob_end_flush), 1.0.3 only flushes it (ob_flush).
+     * In both cases the event output lands in the outer buffer, so the inner one is
+     * sacrificial and every level above the initial one is collected.
+     */
+    function captureDatastarOutput(callable $callback): string
+    {
+        $level = ob_get_level();
+
+        ob_start();
+        ob_start();
+
+        $callback();
+
+        $output = '';
+
+        while (ob_get_level() > $level) {
+            $output = ob_get_clean() . $output;
+        }
+
+        return $output;
+    }
+}

@@ -151,10 +151,9 @@ describe('DatastarSender', function () {
         $sender = new DatastarSender();
         $sender->sendHeaders();
 
-        ob_start();
-        ob_start();
-        $sender->patchElements('<tr data-id="42"></tr>', 'tr[data-id="7"]', ElementPatchMode::After);
-        $output = ob_get_clean();
+        $output = captureDatastarOutput(
+            fn() => $sender->patchElements('<tr data-id="42"></tr>', 'tr[data-id="7"]', ElementPatchMode::After)
+        );
 
         expect($output)
             ->toContain("event: datastar-patch-elements")
@@ -167,10 +166,9 @@ describe('DatastarSender', function () {
         $sender = new DatastarSender();
         $sender->sendHeaders();
 
-        ob_start();
-        ob_start();
-        $sender->removeElements('tr[data-id="7"]');
-        $output = ob_get_clean();
+        $output = captureDatastarOutput(
+            fn() => $sender->removeElements('tr[data-id="7"]')
+        );
 
         expect($output)
             ->toContain('event: datastar-patch-elements')
