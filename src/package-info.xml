@@ -34,6 +34,7 @@
 		<database>uninstall.php</database>
 		<remove-dir name="$themedir/LightPortal" />
 		<remove-dir name="$themedir/css/light_portal" />
+		<remove-dir name="$themedir/images/light_portal" />
 		<remove-dir name="$themedir/scripts/light_portal" />
 		<remove-dir name="$themedir/languages/LightPortal" />
 		<remove-file name="$boarddir/portal.php" />

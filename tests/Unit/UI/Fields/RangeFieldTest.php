@@ -29,15 +29,15 @@ it('builds HTML structure with div container', function () {
         ->and((string) $html)->toContain('</div>');
 });
 
-it('creates Alpine.js x-data attribute with field name and value', function () {
+it('seeds the Datastar signal with the field name and value', function () {
     $this->field->setValue(75);
 
     $this->field->__destruct();
 
     $html = Utils::$context['posting_fields']['test_field']['input']['html'];
 
-    expect((string) $html)->toContain('x-data')
-        ->and((string) $html)->toContain('{ \'test_field\' : 75 }');
+    expect((string) $html)->toContain('data-signals')
+        ->and((string) $html)->toContain("{ 'test_field': 75 }");
 });
 
 it('creates input element with correct type and attributes', function () {
@@ -51,7 +51,7 @@ it('creates input element with correct type and attributes', function () {
         ->and((string) $html)->toContain('type="range"')
         ->and((string) $html)->toContain('id="test_field"')
         ->and((string) $html)->toContain('name="test_field"')
-        ->and((string) $html)->toContain('x-model="test_field"');
+        ->and((string) $html)->toContain('data-bind="test_field"');
 });
 
 it('sets min attribute when provided', function () {
@@ -136,14 +136,14 @@ it('sets correct classes and style on span', function () {
         ->and((string) $html)->toContain('style="margin-left: 10px"');
 });
 
-it('binds span to Alpine.js with x-text', function () {
+it('binds span to Datastar with data-text', function () {
     $this->field->setValue(80);
 
     $this->field->__destruct();
 
     $html = Utils::$context['posting_fields']['test_field']['input']['html'];
 
-    expect((string) $html)->toContain('x-text="test_field"');
+    expect((string) $html)->toContain('data-text="$test_field"');
 });
 
 it('handles numeric zero value', function () {
@@ -153,7 +153,7 @@ it('handles numeric zero value', function () {
 
     $html = Utils::$context['posting_fields']['test_field']['input']['html'];
 
-    expect((string) $html)->toContain('{ \'test_field\' : 0 }');
+    expect((string) $html)->toContain("{ 'test_field': 0 }");
 });
 
 it('handles float values correctly', function () {
@@ -163,7 +163,7 @@ it('handles float values correctly', function () {
 
     $html = Utils::$context['posting_fields']['test_field']['input']['html'];
 
-    expect((string) $html)->toContain('{ \'test_field\' : 7.5 }')
+    expect((string) $html)->toContain("{ 'test_field': 7.5 }")
         ->and((string) $html)->toContain('step="0.1"');
 });
 
@@ -180,7 +180,7 @@ it('handles all range attributes together', function () {
     expect((string) $html)->toContain('min="10"')
         ->and((string) $html)->toContain('max="200"')
         ->and((string) $html)->toContain('step="10"')
-        ->and((string) $html)->toContain('{ \'test_field\' : 100 }');
+        ->and((string) $html)->toContain("{ 'test_field': 100 }");
 });
 
 it('writes correct label and input configuration to context', function () {

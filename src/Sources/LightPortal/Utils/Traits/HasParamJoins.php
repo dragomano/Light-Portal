@@ -25,6 +25,7 @@ trait HasParamJoins
 
 		if (empty($params)) {
 			$this->joinAllParams($select, $primary, $entity);
+
 			return;
 		}
 
@@ -44,6 +45,7 @@ trait HasParamJoins
 	protected function joinParamsArray(Select $select, array $params, string $primary, string $entity): void
 	{
 		$index = 1;
+
 		foreach ($params as $key => $param) {
 			[$name, $alias, $columns] = $this->normalizeParamConfig($key, $param, $index);
 			$this->joinSingleParam($select, $alias, $primary, $entity, $name, $columns);
@@ -73,13 +75,13 @@ trait HasParamJoins
 	protected function normalizeParamConfig(int|string $key, mixed $param, int $index): array
 	{
 		if (is_int($key)) {
-			$name = $param;
-			$alias = 'pp' . ($index > 1 ? $index : '');
+			$name    = $param;
+			$alias   = 'pp' . ($index > 1 ? $index : '');
 			$columns = [];
 		} else {
 			// 'param_name' => ['alias' => ..., 'columns' => ...]
-			$name = $key;
-			$alias = $param['alias'] ?? 'pp' . ($index > 1 ? $index : '');
+			$name    = $key;
+			$alias   = $param['alias'] ?? 'pp' . ($index > 1 ? $index : '');
 			$columns = $param['columns'] ?? [];
 		}
 

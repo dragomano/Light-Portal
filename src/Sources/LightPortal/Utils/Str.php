@@ -48,6 +48,7 @@ class Str
 	public static function getImageFromText(string $text): string
 	{
 		preg_match('/<img[^>]+src="([^"]+)"/i', $text, $m);
+
 		$src = $m[1] ?? '';
 
 		return (! $src || str_contains($src, (string) Config::$modSettings['smileys_url']))
@@ -68,5 +69,14 @@ class Str
 	public static function typed(string $type, ...$args): mixed
 	{
 		return Typed::$type(...$args);
+	}
+
+	/**
+	 * Builds a LIKE pattern for a user term: * and ? are the wildcards, while % and _ are the
+	 * ordinary characters. The query must add ESCAPE '!' to the LIKE conditions that use it.
+	 */
+	public static function likePattern(string $term): string
+	{
+		return '%' . strtr($term, ['!' => '!!', '%' => '!%', '_' => '!_', '*' => '%', '?' => '_']) . '%';
 	}
 }

@@ -31,9 +31,11 @@ use LightPortal\UI\Fields\UrlField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\BlockValidator;
+use starfederation\datastar\enums\ElementPatchMode;
 
 use const LP_PAGE_PARAM;
 
@@ -61,8 +63,14 @@ final class BlockArea extends AbstractArea
 	{
 		return [
 			'clone_block'     => fn($data) => $this->handleClone($data['clone_block']),
-			'update_priority' => fn($data) => $this->getRepository()
-				->updatePriority($data['update_priority'], $data['update_placement']),
+			'sort_items'      => fn($data) => $this->handleUpdatePriority(
+				$data['sort_items'],
+				$data['placement'] ?? '',
+				$data['source'] ?? '',
+				empty($data['data_only'])
+			),
+			'toggle_item'     => fn($data) => $this->handleToggle($data['toggle_item']),
+			'delete_item'     => fn($data) => $this->handleRemove($data['delete_item']),
 		];
 	}
 
@@ -249,6 +257,11 @@ final class BlockArea extends AbstractArea
 		}
 	}
 
+	protected function getPriorityTarget(int $id): string
+	{
+		return 'tr[data-id="' . $id . '"] td.priority [data-lp-priority]';
+	}
+
 	private function handleClone(mixed $item): void
 	{
 		if (empty($item))
@@ -256,11 +269,29 @@ final class BlockArea extends AbstractArea
 
 		$this->request()->put('clone', true);
 
-		$result = ['success' => false];
-
 		Utils::$context['lp_block'] = $this->repository->getData(intval($item));
 
 		$this->repository->setData();
+
+		if (DatastarSender::isDatastarRequest()) {
+			if (empty(Utils::$context['lp_block']['id']))
+				return;
+
+			$newId = (int) Utils::$context['lp_block']['id'];
+			$html  = $this->renderBlockEntry($newId);
+
+			if ($html === null)
+				return;
+
+			$sender = $this->getDatastarSender();
+			$sender->patchElements($html, 'tr[data-id="' . intval($item) . '"]', ElementPatchMode::After);
+
+			$this->patchPlacement((string) (Utils::$context['lp_block']['placement'] ?? ''));
+
+			return;
+		}
+
+		$result = ['success' => false];
 
 		if (Utils::$context['lp_block']['id']) {
 			$result = [
@@ -269,9 +300,141 @@ final class BlockArea extends AbstractArea
 			];
 		}
 
-		$this->clearCache();
-
 		$this->response()->exit($result);
+	}
+
+	private function handleToggle(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$id = (int) $item;
+
+		$this->getRepository()->toggleStatus($id);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$html = $this->renderBlockEntry($id);
+
+		if ($html === null)
+			return;
+
+		$sender = $this->getDatastarSender();
+		$sender->patchElements($html, 'tr[data-id="' . $id . '"]');
+	}
+
+	private function handleRemove(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$id = (int) $item;
+
+		$placement = $this->getPlacement($id);
+
+		$this->getRepository()->remove($id);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$sender = $this->getDatastarSender();
+		$sender->removeElements('tr[data-id="' . $id . '"]');
+
+		$this->patchPlacement($placement);
+	}
+
+	/**
+	 * The portal page drags blocks without any admin table around them, so it requests the data update only
+	 */
+	private function handleUpdatePriority(
+		mixed $priority,
+		mixed $placement,
+		mixed $source,
+		bool $withPatches = true
+	): void {
+		$placementName = (string) $placement;
+		$sourceName    = (string) $source;
+		$ids           = $this->parseIds((string) $priority);
+
+		$this->getRepository()->updatePriority($ids, $placementName);
+
+		// The panel the block has left is renumbered, so its priorities have no gaps
+		if ($placementName !== '' && $sourceName !== $placementName) {
+			$this->renumberPlacement($sourceName);
+		}
+
+		if (! $withPatches || ! DatastarSender::isDatastarRequest())
+			return;
+
+		$this->patchPriorities($ids);
+
+		$this->patchPlacement((string) ($placement ?: $source));
+
+		if ($placement !== '' && (string) $source !== (string) $placement) {
+			$this->patchPlacement((string) $source);
+		}
+	}
+
+	/**
+	 * Blocks are renumbered by their place in the panel, so the priorities have no gaps
+	 */
+	private function renumberPlacement(string $placement): void
+	{
+		if ($placement === '') {
+			return;
+		}
+
+		$this->getRepository()->updatePriority($this->getRepository()->getIdsByPlacement($placement), '');
+	}
+
+	private function getPlacement(int $id): string
+	{
+		return (string) ($this->getRepository()->getData($id)['placement'] ?? '');
+	}
+
+	private function patchPlacement(string $placement): void
+	{
+		if ($placement === '')
+			return;
+
+		$count  = $this->getRepository()->getTotalCount('', ['placement = ?' => $placement]);
+		$sender = $this->getDatastarSender();
+
+		$sender->patchElements(
+			'<span data-lp-count="' . $placement . '">' . ($count ? " ($count)" : '') . '</span>',
+			'[data-lp-count="' . $placement . '"]'
+		);
+
+		if ($count === 0) {
+			$sender->patchElements(
+				'<tr class="windowbg centertext"><td>' . __('lp_no_items') . '</td></tr>',
+				'tbody[data-placement="' . $placement . '"]',
+				ElementPatchMode::Inner
+			);
+		}
+	}
+
+	private function renderBlockEntry(int $id): ?string
+	{
+		$blockData = $this->getRepository()->getAll(0, 0, 'placement DESC, priority');
+		$data      = null;
+
+		foreach ($blockData as $items) {
+			if (is_array($items) && array_key_exists($id, $items)) {
+				$data = $items[$id];
+				break;
+			}
+		}
+
+		if ($data === null)
+			return null;
+
+		return (string) TemplateLoader::fromFile(
+			'admin/partials/_block_entry',
+			['id' => $id, 'data' => $data],
+			false
+		);
 	}
 
 	private function getDefaultOptions(): array

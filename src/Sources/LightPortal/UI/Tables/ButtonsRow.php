@@ -13,16 +13,11 @@
 namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
+use Bugo\Compat\Utils;
 use LightPortal\Utils\Str;
 
 class ButtonsRow extends Row
 {
-	private static function getSelectionExpression(string $formName): string
-	{
-		return "Array.from(document.forms['$formName']?.elements || [])"
-			. ".some(el => el.name === 'items[]' && el.checked)";
-	}
-
 	public static function bulkActions(
 		string $formName = '',
 		string $actionName = '',
@@ -30,8 +25,6 @@ class ButtonsRow extends Row
 		string $value = ''
 	): static
 	{
-		$selectionExpr = self::getSelectionExpression($formName);
-
 		$selectOptions = '';
 		foreach ($options as $action => $label) {
 			$selectOptions .= Str::html('option', ['value' => $action])
@@ -40,26 +33,47 @@ class ButtonsRow extends Row
 		}
 
 		$submit = Str::html('input', [
-			'type'      => 'submit',
-			'name'      => 'bulk_actions',
-			'value'     => __('quick_mod_go'),
-			'class'     => 'button',
-			':disabled' => '!hasSelection',
-			'onclick'   => "return document.forms['$formName']['$actionName'].value && confirm('" . __('quickmod_confirm') . "');",
+			'type'               => 'submit',
+			'name'               => 'bulk_actions',
+			'value'              => __('quick_mod_go'),
+			'class'              => 'button',
+			'data-attr:disabled' => '!$has_selection',
+			'data-on:click'      => self::getBulkSubmitExpression($formName, $actionName),
 		]);
 
 		$select = Str::html('select', [
-			'name'      => $actionName,
-			':disabled' => '!hasSelection',
+			'name'               => $actionName,
+			'data-attr:disabled' => '!$has_selection',
 		])
 			->setHtml($selectOptions);
 
 		$wrapper = Str::html('span', [
-			'x-data'                        => '{ hasSelection: false }',
-			'x-init'                        => "hasSelection = $selectionExpr",
-			'x-on:lp-bulk-selection.window' => "if (\$event.detail?.formName === '$formName') hasSelection = $selectionExpr",
+			// The morph preserves the button state, so this row must be replaced instead
+			'data-ignore-morph' => '',
+			'data-signals'      => '{ has_selection: false }',
 		])->setHtml($value ?: $select . ' ' . $submit)->toHtml();
 
 		return parent::make($wrapper)->setClass('floatright');
+	}
+
+	/**
+	 * The classic submit is kept as a fallback, while the Datastar click posts the selected
+	 * ids together with the chosen action as one bulk_items payload. The selection is
+	 * cleared before posting, because the morph of the patched list preserves input states
+	 */
+	private static function getBulkSubmitExpression(string $formName, string $actionName): string
+	{
+		$url = Utils::$context['lp_actions_url'] ?? '';
+
+		return "evt.preventDefault();"
+			. " if (!confirm('" . __('quickmod_confirm') . "')) return;"
+			. " const els = Array.from(document.forms['$formName'].elements)"
+			. ".filter(el => el.name === 'items[]' && el.checked);"
+			. " els.forEach(el => el.checked = false);"
+			. " \$has_selection = false;"
+			. " @post('$url', {payload: {bulk_items: {"
+			. "action: document.forms['$formName']['$actionName'].value,"
+			. " items: els.map(el => el.value)"
+			. "}}})";
 	}
 }

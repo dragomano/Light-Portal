@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 use LightPortal\Areas\AbstractArea;
 use LightPortal\Areas\AreaInterface;
 use LightPortal\Events\EventDispatcherInterface;
@@ -13,7 +14,9 @@ use LightPortal\Models\ModelInterface;
 use LightPortal\Repositories\DataManagerInterface;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\SessionManager;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Validators\ValidatorInterface;
 use Tests\AppMockRegistry;
@@ -191,6 +194,8 @@ it('returns empty remove redirect suffix by default', function () {
 describe('setupMainContext', function () {
     beforeEach(function () {
         Utils::$context['admin_menu_name'] = 'test_menu';
+        Utils::$context['session_var']     = 'session_var';
+        Utils::$context['session_id']      = 'session_id';
     });
 
     it('sets up main context correctly', function () {
@@ -198,6 +203,8 @@ describe('setupMainContext', function () {
 
         expect(Utils::$context['page_title'])->toBe(Lang::$txt['lp_portal'] . ' - ' . Lang::$txt["lp_test_entities_manage"])
             ->and(Utils::$context['form_action'])->toBe(Config::$scripturl . "?action=admin;area=lp_test_entities")
+            ->and(Utils::$context['lp_actions_url'])
+                ->toBe(Config::$scripturl . '?action=admin&area=lp_test_entities&actions&session_var=session_id')
             ->and(Utils::$context['test_menu']['tab_data'])->toBeArray()
             ->and(Utils::$context['test_menu']['tab_data']['title'])->toBe(LP_NAME);
     });
@@ -471,6 +478,150 @@ describe('updateEditContextTitle', function () {
     });
 });
 
+describe('setFormSubmitContext', function () {
+    it('builds the datastar action URL and the submit expression', function () {
+        Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_test_entities;sa=edit;id=5';
+
+        $this->accessor->callMethod('setFormSubmitContext');
+
+        expect(Utils::$context['form_action_datastar'])
+            ->toBe(Config::$scripturl . '?action=admin&area=lp_test_entities&sa=edit&id=5')
+            ->and(Utils::$context['lp_form_submit_action'])
+            ->toStartWith("evt.submitter?.name === 'preview' ?")
+            ->toContain("evt.target.insertAdjacentHTML")
+            ->toContain('evt.target.submit()')
+            ->toContain("@post('" . Utils::$context['form_action_datastar'] . "', {contentType: 'form'})");
+    });
+});
+
+describe('getPostErrorsHtml', function () {
+    it('renders the error box for validation errors', function () {
+        Utils::$context['post_errors'] = ['first error', 'second error'];
+
+        $result = $this->accessor->callMethod('getPostErrorsHtml');
+
+        expect($result)->toContain('errorbox')
+            ->and($result)->toContain('<li>first error</li>')
+            ->and($result)->toContain('<li>second error</li>');
+    });
+
+    it('returns an empty string when there are no errors', function () {
+        Utils::$context['post_errors'] = [];
+
+        expect($this->accessor->callMethod('getPostErrorsHtml'))->toBe('');
+    });
+});
+
+describe('sendFormUpdate', function () {
+    beforeEach(function () {
+        // The sender is pre-warmed so that sendHeaders() stays a no-op inside the buffers
+        $sender = new DatastarSender();
+        $sender->sendHeaders();
+        $this->accessor->setProperty('datastarSender', $sender);
+    });
+
+    it('patches the error box when validation fails', function () {
+        Utils::$context['post_errors'] = ['boom'];
+
+        $output = captureDatastarOutput(
+            fn() => $this->accessor->callMethod('sendFormUpdate')
+        );
+
+        expect($output)
+            ->toContain('event: datastar-patch-elements')
+            ->toContain('data: selector #lp_post_errors')
+            ->toContain('data: mode inner')
+            ->toContain('boom');
+    });
+
+    it('sends nothing when there are no errors', function () {
+        Utils::$context['post_errors'] = [];
+
+        $output = captureDatastarOutput(
+            fn() => $this->accessor->callMethod('sendFormUpdate')
+        );
+
+        expect($output)->toBe('');
+    });
+});
+
+describe('handleBulkItems', function () {
+    beforeEach(function () {
+        $this->cacheMock = mock(CacheInterface::class);
+        AppMockRegistry::set(CacheInterface::class, $this->cacheMock);
+
+        $presenterMock = mock(TablePresenterInterface::class);
+        $presenterMock->shouldReceive('show')->andReturnNull();
+        AppMockRegistry::set(TablePresenterInterface::class, $presenterMock);
+
+        $this->senderMock = mock(DatastarSender::class);
+        $this->accessor->setProperty('datastarSender', $this->senderMock);
+
+        $this->sessionManagerMock = mock(SessionManager::class);
+        $this->sessionManagerMock->shouldReceive('__invoke')->andReturn(['active_test_entities' => 5]);
+        AppMockRegistry::set(SessionManager::class, $this->sessionManagerMock);
+
+        Utils::$context['session_var']   = 'sesc';
+        Utils::$context['session_id']    = 'token';
+        Utils::$context['form_action']   = Config::$scripturl . '?action=admin;area=lp_test_entities';
+        Utils::$context['lp_quantities'] = [];
+    });
+
+    it('removes the items and patches the whole list with the counters', function () {
+        $this->repositoryMock->shouldReceive('remove')->once()->with(['1', '2']);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        $this->cacheMock->shouldReceive('flush')->once();
+
+        // The list itself is stubbed out in the tests, so only the selector matters here
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::on(fn(string $html) => str_contains($html, 'stub_')), '#manage_test_entities');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="test_entities">(5)</span>', '[data-lp-quantity="test_entities"]');
+
+        $this->accessor->callMethod('handleBulkItems', [['action' => 'delete', 'items' => ['1', '2']]]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('toggles the items and patches the list', function () {
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with([3, 7]);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        $this->cacheMock->shouldReceive('flush')->once();
+        $this->senderMock->shouldReceive('patchElements')->twice();
+
+        $this->accessor->callMethod('handleBulkItems', [['action' => 'toggle', 'items' => [3, 7]]]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('does nothing for an unknown action', function () {
+        $this->repositoryMock->shouldNotReceive('remove');
+        $this->repositoryMock->shouldNotReceive('toggleStatus');
+        $this->cacheMock->shouldNotReceive('flush');
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleBulkItems', [['action' => 'unknown', 'items' => ['1']]]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('does nothing without items', function () {
+        $this->repositoryMock->shouldNotReceive('remove');
+        $this->cacheMock->shouldNotReceive('flush');
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleBulkItems', [['action' => 'delete', 'items' => []]]);
+
+        expect(true)->toBeTrue();
+    });
+});
+
 describe('finalizePreviewTitle', function () {
     it('sets preview title with icon', function () {
         Utils::$context['preview_title'] = 'Test Title';
@@ -480,5 +631,20 @@ describe('finalizePreviewTitle', function () {
         $this->accessor->callMethod('finalizePreviewTitle', [$entity]);
 
         expect(Utils::$context['preview_title'])->toContain('Test Title');
+    });
+});
+
+describe('parseIds', function () {
+    it('converts a comma-separated string into a list of ids', function () {
+        expect($this->accessor->callMethod('parseIds', ['3,1,7']))->toBe([3, 1, 7]);
+    });
+
+    it('skips empty values and reindexes the list', function () {
+        expect($this->accessor->callMethod('parseIds', ['5,,']))->toBe([5])
+            ->and($this->accessor->callMethod('parseIds', ['']))->toBe([]);
+    });
+
+    it('keeps empty values out of the list', function () {
+        expect($this->accessor->callMethod('parseIds', ['9,4,,6']))->toBe([9, 4, 6]);
     });
 });

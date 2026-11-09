@@ -99,8 +99,8 @@ trait HasQuery
 				't.id_board != ?'         => Setting::get('recycle_board', 'int', 0),
 			])
 			->where(new Expression(
-				'LOWER(m.subject) LIKE ?',
-				['%' . trim(Utils::$smcFunc['strtolower']($search)) . '%']
+				"LOWER(m.subject) LIKE ? ESCAPE '!'",
+				[Str::likePattern(trim(Utils::$smcFunc['strtolower']($search)))]
 			))
 			->order('m.subject')
 			->limit(100);

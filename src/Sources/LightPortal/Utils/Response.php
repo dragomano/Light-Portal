@@ -12,6 +12,7 @@
 
 namespace LightPortal\Utils;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
@@ -33,6 +34,25 @@ class Response implements ResponseInterface
 
 	public function redirect(string $url = ''): void
 	{
+		if (DatastarSender::isDatastarRequest()) {
+			(new DatastarSender)->redirect($this->buildRedirectUrl($url));
+
+			exit;
+		}
+
 		Utils::redirectexit($url);
+	}
+
+	/**
+	 * The classic redirectexit() prepends scripturl to query-style locations,
+	 * so the Datastar location event must receive the same absolute URL
+	 */
+	private function buildRedirectUrl(string $url): string
+	{
+		if (preg_match('~^(ftp|https?)://~', $url) === 1 || str_starts_with($url, 'about:')) {
+			return $url;
+		}
+
+		return Config::$scripturl . ($url !== '' ? '?' . $url : '');
 	}
 }

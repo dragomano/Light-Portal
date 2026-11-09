@@ -14,5 +14,7 @@ namespace LightPortal\Repositories;
 
 interface CategoryRepositoryInterface extends DataManagerInterface
 {
+	public function getIds(): array;
+
 	public function updatePriority(array $categories = []): void;
 }

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
@@ -18,9 +19,11 @@ use LightPortal\Models\PageFactory;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Validators\PageValidator;
+use starfederation\datastar\enums\ElementPatchMode;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 
@@ -161,6 +164,30 @@ it('afterMain correctly runs', function () {
     expect(Utils::$context['lp_pages']['title'])->toContain(Utils::$context['form_action'], '(7)');
 });
 
+it('keeps the search in the view tabs', function () {
+    Lang::$txt['all']               = 'all';
+    Lang::$txt['awaiting_approval'] = 'Awaiting approval';
+
+    Utils::$context['lp_pages']      = ['title' => ''];
+    Utils::$context['form_action']   = 'https://example.com?action=admin;area=lp_pages';
+    Utils::$context['search_params'] = 'c2VhcmNo';
+    Utils::$context['lp_quantities'] = [
+        'active_pages'     => 0,
+        'my_pages'         => 0,
+        'unapproved_pages' => 0,
+        'deleted_pages'    => 0,
+    ];
+
+    $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(7);
+
+    $this->accessor->setProperty('browseType', 'all');
+    $this->accessor->callMethod('afterMain');
+
+    expect(Utils::$context['lp_pages']['title'])
+        ->toContain('params=c2VhcmNo')
+        ->toContain('data-lp-quantity="pages_');
+});
+
 it('setupAdditionalAddContext prepares page list and sets context', function () {
     Utils::$context += [
         'lp_content_types' => ['bbc' => 'BBC'],
@@ -218,9 +245,9 @@ describe('prepareSpecificFields', function () {
             'created_at'  => time() - 1000,
         ];
 
-        Utils::$context['user']['is_admin'] = false;
+        Utils::$context['user']['is_admin']             = false;
         Utils::$context['lp_quantities']['active_tags'] = 0;
-        Utils::$context['posting_fields'] = [];
+        Utils::$context['posting_fields']               = [];
 
         $categoryListMock = mock(CategoryList::class);
         $categoryListMock->shouldReceive('__invoke')->andReturn([
@@ -254,8 +281,8 @@ describe('prepareSpecificFields', function () {
 
         foreach ($expectations as $type => $checks) {
             match ($type) {
-                'has_keys' => expect(Utils::$context['posting_fields'])->toHaveKeys($checks),
-                'not_has_keys' => array_map(fn($key) => expect(Utils::$context['posting_fields'])->not->toHaveKey($key), $checks),
+                'has_keys'      => expect(Utils::$context['posting_fields'])->toHaveKeys($checks),
+                'not_has_keys'  => array_map(fn($key) => expect(Utils::$context['posting_fields'])->not->toHaveKey($key), $checks),
                 'post_box_name' => is_null($checks)
                     ? expect(isset(Utils::$context['post_box_name']))->toBeFalse()
                     : expect(Utils::$context['post_box_name'])->toBe($checks),
@@ -447,7 +474,7 @@ it('preparePageList prepares all pages list', function () {
     ];
 
     Lang::$txt += [
-        'lp_bbc' => ['title' => 'BBC Page'],
+        'lp_bbc'  => ['title' => 'BBC Page'],
         'lp_html' => ['title' => 'HTML Page'],
     ];
 
@@ -602,4 +629,376 @@ it('getRepository returns correct instance', function () {
     $result = $this->accessor->callMethod('getRepository');
 
     expect($result)->toBe($this->repositoryMock);
+});
+
+describe('Datastar actions', function () {
+    beforeEach(function () {
+        unset($_SERVER['HTTP_DATASTAR_REQUEST']);
+
+        Utils::$context['lp_actions_url']   = 'https://example.com/index.php?action=admin&area=lp_pages&actions&sa=main&session=token';
+        Utils::$context['form_action']      = 'https://example.com?action=admin;area=lp_pages;sa=main';
+        Utils::$context['session_var']      = 'session_var';
+        Utils::$context['session_id']       = 'session_id';
+        Utils::$context['search_params']    = '';
+        Utils::$context['search']           = ['string' => ''];
+        Utils::$context['user']['is_admin'] = true;
+        Utils::$context['lp_content_types'] = ['bbc' => 'BBC'];
+        Utils::$context['lp_loaded_addons'] = [];
+        Utils::$context['lp_quantities']    = ['active_tags' => 0];
+        Utils::$context['lp_page_types']    = EntryType::all();
+
+        Utils::$smcFunc['json_encode'] = 'json_encode';
+        Utils::$smcFunc['json_decode'] = 'json_decode';
+
+        Lang::$txt += [
+            'lp_pages_extra'               => 'Pages',
+            'lp_no_items'                  => 'No items',
+            'all'                          => 'All',
+            'awaiting_approval'            => 'Awaiting approval',
+            'lp_pages_deleted'             => 'Deleted pages',
+            'lp_my_pages'                  => 'My pages',
+            'lp_views'                     => 'Views',
+            'lp_slug'                      => 'Slug',
+            'lp_title'                     => 'Title',
+            'status'                       => 'Status',
+            'lp_actions'                   => 'Actions',
+            'custom_profile_icon'          => 'Icon',
+            'modify'                       => 'Modify',
+            'remove'                       => 'Remove',
+            'restore_message'              => 'Restore',
+            'lp_action_remove_permanently' => 'Delete forever',
+            'lp_action_on'                 => 'On',
+            'lp_action_off'                => 'Off',
+            'lp_page_status_set'           => [0 => 'No', 1 => 'Yes', 2 => 'Pending'],
+        ];
+
+        $iconList = mock(IconList::class);
+        $iconList->shouldReceive('__invoke')->andReturn([
+            'plus'     => '<i class="fas fa-plus"></i>',
+            'views'    => '<i class="fas fa-eye"></i>',
+            'search'   => '<i class="fas fa-search"></i>',
+            'ellipsis' => '<i class="fas fa-ellipsis"></i>',
+        ]);
+        AppMockRegistry::set(IconList::class, $iconList);
+
+        $requestMock = mock(RequestInterface::class);
+        $requestMock->shouldReceive('get')->andReturn(null);
+        $requestMock->shouldReceive('has')->andReturn(false);
+        $this->accessor->setProperty('request', $requestMock);
+        AppMockRegistry::set(RequestInterface::class, $requestMock);
+
+        $this->senderMock = mock(DatastarSender::class);
+        $this->accessor->setProperty('datastarSender', $this->senderMock);
+
+        $this->pageRow = [
+            'id'           => 7,
+            'slug'         => 'test-page',
+            'type'         => 'bbc',
+            'entry_type'   => 0,
+            'status'       => 1,
+            'num_views'    => 0,
+            'num_comments' => 0,
+            'author_id'    => 1,
+            'author_name'  => 'Tester',
+            'date'         => 'today',
+            'created_at'   => 0,
+            'updated_at'   => 0,
+            'is_front'     => false,
+            'title'        => 'Test page',
+        ];
+    });
+
+    afterEach(function () {
+        unset($_SERVER['HTTP_DATASTAR_REQUEST']);
+    });
+
+    it('toggles the status and patches the row', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(7);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([7 => $this->pageRow]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(19);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::on(fn(string $html) => str_contains($html, 'id="list_lp_pages_7"')), '#list_lp_pages_7');
+
+        $this->accessor->callMethod('handleToggleItem', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('does not patch view counters when the status is toggled', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        // A toggle changes the status between inactive and active, and both states belong to the same views
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(7);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([7 => $this->pageRow]);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::on(fn(string $html) => str_contains($html, 'id="list_lp_pages_7"')), '#list_lp_pages_7');
+
+        $this->accessor->callMethod('handleToggleItem', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('does not patch anything for regular requests', function () {
+        $this->repositoryMock->shouldReceive('toggleStatus')->once()->with(7);
+        $this->senderMock->shouldNotReceive('patchElements');
+
+        $this->accessor->callMethod('handleToggleItem', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('removes a page and patches the current, the deleted and the own view counters', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('remove')->once()->with(7);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([7 => $this->pageRow]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(18);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('#list_lp_pages_7');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_all">(18)</span>', '[data-lp-quantity="pages_all"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_own">(18)</span>', '[data-lp-quantity="pages_own"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_del">(18)</span>', '[data-lp-quantity="pages_del"]');
+
+        $this->accessor->callMethod('handleRemoveItem', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('shows the empty state when the last row of the view is removed', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('remove')->once()->with(7);
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([7 => $this->pageRow]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('#list_lp_pages_7');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_all">(0)</span>', '[data-lp-quantity="pages_all"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_own">(0)</span>', '[data-lp-quantity="pages_own"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_del">(0)</span>', '[data-lp-quantity="pages_del"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(
+                Mockery::on(fn(string $html) => str_contains($html, 'colspan="8"') && str_contains($html, 'centertext')),
+                '#lp_pages tbody',
+                ElementPatchMode::Inner
+            );
+
+        $this->accessor->callMethod('handleRemoveItem', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('restores a page and patches the deleted and the target view counters', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([7 => $this->pageRow]);
+        $this->repositoryMock->shouldReceive('restore')->once()->with([7]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(11);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('#list_lp_pages_7');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_del">(11)</span>', '[data-lp-quantity="pages_del"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_all">(11)</span>', '[data-lp-quantity="pages_all"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_own">(11)</span>', '[data-lp-quantity="pages_own"]');
+
+        $this->accessor->callMethod('handleRestore', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('restores an unapproved page into the moderation view', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([7 => array_merge($this->pageRow, ['status' => 2])]);
+        $this->repositoryMock->shouldReceive('restore')->once()->with([7]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(1);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('#list_lp_pages_7');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_del">(1)</span>', '[data-lp-quantity="pages_del"]');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_mod">(1)</span>', '[data-lp-quantity="pages_mod"]');
+        $this->senderMock->shouldNotReceive('patchElements')
+            ->with(Mockery::type('string'), '[data-lp-quantity="pages_all"]');
+
+        $this->accessor->callMethod('handleRestore', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('removes a page permanently and patches the deleted view counter', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        $this->repositoryMock->shouldReceive('removePermanently')->once()->with([7]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(10);
+
+        $this->senderMock->shouldReceive('removeElements')->once()->with('#list_lp_pages_7');
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with('<span data-lp-quantity="pages_del">(10)</span>', '[data-lp-quantity="pages_del"]');
+
+        $this->accessor->callMethod('handleRemoveForever', [7]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('appends the browse view and the search to the action URL', function () {
+        $requestMock = mock(RequestInterface::class);
+        $requestMock->shouldReceive('get')->with('search')->andReturn('test query');
+        $requestMock->shouldReceive('get')->with('u')->andReturn(null);
+        $requestMock->shouldReceive('get')->with('type')->andReturn(null);
+        $requestMock->shouldReceive('get')->with('params')->andReturn(null);
+        $requestMock->shouldReceive('has')->andReturn(false);
+        $this->accessor->setProperty('request', $requestMock);
+        AppMockRegistry::set(RequestInterface::class, $requestMock);
+
+        $this->accessor->setProperty('isDeleted', true);
+        Utils::$context['admin_menu_name'] = 'admin';
+        Utils::$context['page_title']      = '';
+
+        $this->accessor->callMethod('setupMainContext');
+
+        expect(Utils::$context['lp_actions_url'])
+            ->toContain('&sa=main&deleted')
+            ->toContain('&search=' . urlencode('test query'));
+    });
+
+    it('applies the search term to the query', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', ['test query']);
+
+        $params = $this->accessor->getProperty('params');
+
+        expect($params[1][0]->getExpression())->toBe("(LOWER(p.slug) LIKE ? ESCAPE '!' OR LOWER(t.title) LIKE ? ESCAPE '!')")
+            ->and($params[1][0]->getParameters())->toBe(['%test query%', '%test query%'])
+            ->and(Utils::$context['search']['string'])->toBe('test query');
+    });
+
+    it('escapes the like wildcards in the search term', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', ['50% off_me']);
+
+        $params = $this->accessor->getProperty('params');
+
+        expect($params[1][0]->getParameters())->toBe(['%50!% off!_me%', '%50!% off!_me%'])
+            ->and(Utils::$context['search']['string'])->toBe('50% off_me');
+    });
+
+    it('turns the user masks into the sql wildcards', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', ['col*r?']);
+
+        $params = $this->accessor->getProperty('params');
+
+        expect($params[1][0]->getParameters())->toBe(['%col%r_%', '%col%r_%'])
+            ->and(Utils::$context['search']['string'])->toBe('col*r?');
+    });
+
+    it('caps a too long search term', function () {
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams', [str_repeat('a', 150)]);
+
+        expect(Utils::$context['search']['string'])->toBe(str_repeat('a', 100));
+    });
+
+    it('restores the search term from the params of the link', function () {
+        $encoded = base64_encode((string) json_encode([
+            'string'   => 'AT&T',
+            'u'        => null,
+            'moderate' => false,
+            'deleted'  => false,
+            'type'     => null,
+        ]));
+
+        $requestMock = mock(RequestInterface::class);
+        $requestMock->shouldReceive('get')->with('params')->andReturn($encoded);
+        $requestMock->shouldReceive('get')->andReturn(null);
+        $requestMock->shouldReceive('has')->andReturn(false);
+        $this->accessor->setProperty('request', $requestMock);
+        AppMockRegistry::set(RequestInterface::class, $requestMock);
+
+        $this->accessor->callMethod('loadParamsFromRequest');
+        $this->accessor->callMethod('calculateParams');
+
+        $decoded = json_decode((string) base64_decode(Utils::$context['search_params']), true);
+
+        expect(Utils::$context['search']['string'])->toBe('AT&T')
+            ->and($decoded['string'])->toBe('AT&T');
+    });
+
+    it('patches the whole list when searching', function () {
+        $_SERVER['HTTP_DATASTAR_REQUEST'] = 'true';
+
+        // The renderer of the list is what normally fills the default list in the context
+        $presenter = mock(TablePresenterInterface::class);
+        $presenter->shouldReceive('show')->andReturnUsing(function () {
+            $GLOBALS['context']['default_list'] = 'lp_pages';
+            Utils::$context['default_list'] = 'lp_pages';
+            Utils::$context['lp_pages'] = ['title' => ''];
+        });
+        AppMockRegistry::set(TablePresenterInterface::class, $presenter);
+
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        // The number of matching pages is patched into the signal before the list
+        $this->senderMock->shouldReceive('patchSignals')
+            ->once()
+            ->with(['pages_found' => 0]);
+
+        $this->senderMock->shouldReceive('patchElements')
+            ->once()
+            ->with(Mockery::on(fn(string $html) => str_contains($html, 'stub_lp_pages')), '#manage_pages');
+
+        $handlers = $this->accessor->callMethod('getCustomActionHandlers');
+        $handlers['search_items'](['search_items' => 'test query']);
+
+        // The view tabs belong to the list as well, so they are a part of the patched markup
+        expect(Utils::$context['search']['string'])->toBe('test query')
+            ->and(Utils::$context['lp_pages']['title'])->toContain('data-lp-quantity="pages_');
+    });
+
+    it('puts the search signal before the list', function () {
+        $presenter = mock(TablePresenterInterface::class);
+        $presenter->shouldReceive('show')->andReturnNull();
+        AppMockRegistry::set(TablePresenterInterface::class, $presenter);
+
+        $this->repositoryMock->shouldReceive('getAll')->andReturn([]);
+        $this->repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
+
+        $this->accessor->callMethod('calculateParams', ['AT&T']);
+
+        ob_start();
+        $this->accessor->callMethod('showMainContent');
+        $html = (string) ob_get_clean();
+
+        expect($html)->toContain('data-signals')
+            ->and($html)->toContain('&amp;T')
+            ->and($html)->not->toContain('&amp;amp;');
+    });
 });

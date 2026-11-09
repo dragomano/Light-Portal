@@ -2,16 +2,17 @@
 
 @unless (empty($id) || empty($data))
 	@php
-		$title = ($data['description'] ?: $data['title']) ?: '';
-		$status = empty($data['status']) ? 'false' : 'true';
-		$isMissingType = !isset($txt['lp_' . $data['type']]['title']);
+		$title         = ($data['description'] ?: $data['title']) ?: '';
+		$status        = empty($data['status']) ? 'false' : 'true';
+		$isMissingType = ! isset($txt['lp_' . $data['type']]['title']);
+		$workUrl       = $scripturl . '?action=admin&area=lp_blocks&actions&' . $context['session_var'] . '=' . $context['session_id'];
 	@endphp
 
 	<tr
+		id="lp_block_{{ $id }}"
 		class="windowbg"
 		data-id="{{ $id }}"
-		x-data="{ status: {{ $status }}, showContextMenu: false }"
-		x-init="$watch('status', () => block.toggleStatus($el))"
+		data-signals="{ st_{{ $id }}: {{ $status }}, ctx_{{ $id }}: false }"
 	>
 		<td class="icon hidden-xs hidden-sm">
 			{!! $data['icon'] !!}
@@ -41,7 +42,7 @@
 			{{ $data['areas'] }}
 		</td>
 		<td class="priority hidden-xs">
-			{{ $data['priority'] }}
+			<span data-lp-priority>{{ $data['priority'] }}</span>
 			@php
 				$sortIcon = Icon::get('sort');
 				echo str_replace(' class="', ' title="' . $txt['lp_action_move'] . '" class="handle ', $sortIcon);
@@ -50,21 +51,22 @@
 		<td class="status">
 			@if (!$isMissingType)
 				<span
-					:class="{ 'on': status, 'off': !status }"
-					:title="status ? '{{ $txt['lp_action_off'] }}' : '{{ $txt['lp_action_on'] }}'"
-					@click.prevent="status = !status"
+					data-class:on="$st_{{ $id }}"
+					data-class:off="!$st_{{ $id }}"
+					data-attr:title="$st_{{ $id }} ? '{{ $txt['lp_action_off'] }}' : '{{ $txt['lp_action_on'] }}'"
+					data-on:click="@post('{{ $workUrl }}', {payload: {toggle_item: {{ $id }}}})"
 				></span>
 			@endif
 		</td>
 		<td class="actions">
-			<div class="context_menu" @click.outside="showContextMenu = false">
-				<button class="button floatnone" @click.prevent="showContextMenu = true">
+			<div class="context_menu" data-on:click__outside="$ctx_{{ $id }} = false">
+				<button class="button floatnone" type="button" data-on:click="$ctx_{{ $id }} = true">
 					@icon('ellipsis')
 				</button>
-				<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
+				<div class="roundframe" data-show="$ctx_{{ $id }}">
 					<ul>
 						<li>
-							<a @click.prevent="block.clone($root)" class="button">
+							<a data-on:click="@post('{{ $workUrl }}', {payload: {clone_block: {{ $id }}}})" class="button">
 								{{ $txt['lp_action_clone'] }}
 							</a>
 						</li>
@@ -78,7 +80,7 @@
 						@endisset
 
 						<li>
-							<a @click.prevent="showContextMenu = false; block.remove($root)" class="button error">
+							<a data-on:click="if (!confirm(smf_you_sure)) return; @post('{{ $workUrl }}', {payload: {delete_item: {{ $id }}}})" class="button error">
 								{{ $txt['remove'] }}
 							</a>
 						</li>

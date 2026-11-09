@@ -16,10 +16,14 @@ use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
+use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Areas\Traits\HasActions;
+use LightPortal\Areas\Traits\HasDatastar;
 use LightPortal\Enums\ContentType;
+use LightPortal\Enums\Status;
 use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\FactoryInterface;
@@ -33,11 +37,13 @@ use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\Utils\Content;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\SessionManager;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\ValidatorInterface;
+use starfederation\datastar\enums\ElementPatchMode;
 
 use function LightPortal\app;
 
@@ -49,6 +55,8 @@ if (! defined('SMF'))
 abstract class AbstractArea implements AreaInterface
 {
 	use HasArea;
+	use HasActions;
+	use HasDatastar;
 
 	protected bool $shouldProcessAddForm = true;
 
@@ -87,6 +95,11 @@ abstract class AbstractArea implements AreaInterface
 			$this->repository->setData();
 			$this->afterFormProcess();
 
+			if (DatastarSender::isDatastarRequest()) {
+				$this->sendFormUpdate();
+				exit;
+			}
+
 			TemplateLoader::fromFile($this->getEditTemplateName());
 		}
 	}
@@ -112,6 +125,11 @@ abstract class AbstractArea implements AreaInterface
 		$this->prepareEditor();
 		$this->preparePreview();
 		$this->repository->setData($this->getCurrentEntityId());
+
+		if (DatastarSender::isDatastarRequest()) {
+			$this->sendFormUpdate();
+			exit;
+		}
 
 		TemplateLoader::fromFile($this->getEditTemplateName());
 	}
@@ -142,6 +160,11 @@ abstract class AbstractArea implements AreaInterface
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural" . $this->getMainFormActionSuffix();
 
+		// Datastar encodes semicolons, so the action URL uses ampersands as separators
+		Utils::$context['lp_actions_url'] = Config::$scripturl .
+			"?action=admin&area=lp_$entityPlural&actions&" .
+			Utils::$context['session_var'] . '=' . Utils::$context['session_id'];
+
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = $this->getMainTabData();
 	}
 
@@ -160,27 +183,6 @@ abstract class AbstractArea implements AreaInterface
 		return '';
 	}
 
-	protected function performActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		if ($this->request()->method() !== 'POST')
-			return;
-
-		User::$me->checkSession('request');
-
-		$data = $this->request()->json();
-
-		$this->processActions($data);
-		$this->clearCache();
-
-		$this->response()->exit([
-			'success' => true,
-			'count'   => $this->getFreshQuantity(),
-		]);
-	}
-
 	protected function getFreshQuantity(): ?int
 	{
 		$entityPlural = $this->getEntityNamePlural();
@@ -190,22 +192,186 @@ abstract class AbstractArea implements AreaInterface
 		return Utils::$context['lp_quantities']['active_' . $entityPlural] ?? null;
 	}
 
-	protected function processActions(array $data): void
-	{
-		foreach ($this->getActionHandlers() as $key => $handler) {
-			if (isset($data[$key])) {
-				$handler($data);
-				break;
-			}
-		}
-	}
-
 	final protected function getActionHandlers(): array
 	{
 		return array_merge([
-			'delete_item' => fn($data) => $this->repository->remove($data['delete_item']),
-			'toggle_item' => fn($data) => $this->repository->toggleStatus($data['toggle_item']),
+			'delete_item' => fn($data) => $this->handleRemoveItem($data['delete_item']),
+			'toggle_item' => fn($data) => $this->handleToggleItem($data['toggle_item']),
+			'bulk_items'  => fn($data) => $this->handleBulkItems($data['bulk_items']),
 		], $this->getCustomActionHandlers());
+	}
+
+	protected function handleToggleItem(mixed $item): void
+	{
+		if (empty($item)) {
+			return;
+		}
+
+		$this->repository->toggleStatus($item);
+
+		if (! DatastarSender::isDatastarRequest()) {
+			return;
+		}
+
+		$id    = (int) $item;
+		$entry = $this->getEntityRow($id);
+
+		if ($entry === null) {
+			return;
+		}
+
+		$this->getDatastarSender()->patchElements($this->renderEntityRow($entry), $this->getRowSelector($id));
+		$this->patchCounters($entry['status'] === Status::ACTIVE->value ? 1 : -1);
+	}
+
+	protected function handleRemoveItem(mixed $item): void
+	{
+		if (empty($item)) {
+			return;
+		}
+
+		$id = (int) $item;
+
+		$this->repository->remove($item);
+
+		if (! DatastarSender::isDatastarRequest()) {
+			return;
+		}
+
+		$this->getDatastarSender()->removeElements($this->getRowSelector($id));
+		$this->afterRowRemoved($id);
+		$this->patchNoItemsRow($this->patchCounters());
+	}
+
+	/**
+	 * @return int|null The fresh counter, or null when the entity keeps several counters
+	 */
+	protected function patchCounters(?int $delta = null): ?int
+	{
+		$entityPlural = $this->getEntityNamePlural();
+
+		// The cached counter can be adjusted in place only when the new state of the entity is known
+		$count   = $delta === null ? null : app(SessionManager::class)->adjust('active_' . $entityPlural, $delta);
+		$count ??= $this->getFreshQuantity();
+		$suffix = empty($count) ? '' : "($count)";
+
+		$this->getDatastarSender()->patchElements(
+			'<span data-lp-quantity="' . $entityPlural . '">' . $suffix . '</span>',
+			'[data-lp-quantity="' . $entityPlural . '"]'
+		);
+
+		return $count;
+	}
+
+	protected function afterRowRemoved(int $id): void {}
+
+	protected function patchNoItemsRow(?int $activeCount = null): void
+	{
+		// A list with active items cannot be empty at all, so the extra count query is not needed
+		if ($activeCount > 0 || $this->getRowCount() > 0) {
+			return;
+		}
+
+		$table   = $this->buildTable()->build();
+		$colspan = count($table['columns'] ?? []);
+		$label   = $table['no_items_label'] ?? __('lp_no_items');
+
+		$this->getDatastarSender()->patchElements(
+			'<tr class="windowbg"><td colspan="' . $colspan . '" class="centertext">' . $label . '</td></tr>',
+			'#' . $this->getListId() . ' tbody',
+			ElementPatchMode::Inner
+		);
+	}
+
+	protected function renderEntityRow(array $entry): string
+	{
+		$cells = '';
+
+		foreach ($this->buildTable()->build()['columns'] ?? [] as $columnId => $column) {
+			$data = $column['data'] ?? [];
+
+			$value = match (true) {
+				isset($data['function']) => (string) call_user_func($data['function'], $entry),
+				isset($data['db'])       => (string) ($entry[$data['db']] ?? ''),
+				isset($data['value'])    => (string) $data['value'],
+				default                  => '',
+			};
+
+			$class = empty($data['class']) ? '' : ' ' . $data['class'];
+			$style = empty($data['style']) ? '' : ' style="' . $data['style'] . '"';
+
+			$cells .= '<td class="' . $columnId . $class . '"' . $style . '>' . $value . '</td>';
+		}
+
+		return '<tr class="windowbg" id="' . $this->getRowId((int) $entry['id']) . '">' . $cells . '</tr>';
+	}
+
+	protected function getEntityRow(int $id): ?array
+	{
+		$rows = $this->repository->getAll(
+			0,
+			1,
+			$this->getRowSort(),
+			'',
+			$this->getRowCondition($id)
+		);
+
+		return $rows[$id] ?? null;
+	}
+
+	protected function getRowCondition(int $id): array
+	{
+		return [$this->getEntityName() . '_id = ?' => $id];
+	}
+
+	protected function getRowCount(): int
+	{
+		return $this->repository->getTotalCount();
+	}
+
+	protected function getRowSort(): string
+	{
+		return $this->getDefaultSortColumn();
+	}
+
+	protected function getRowId(int $id): string
+	{
+		return 'list_' . $this->getListId() . '_' . $id;
+	}
+
+	protected function getRowSelector(int $id): string
+	{
+		return '#' . $this->getRowId($id);
+	}
+
+	/**
+	 * Entries are renumbered by their position in the list, so every key of the list is a new priority
+	 */
+	protected function patchPriorities(array $ids): void
+	{
+		$sender = $this->getDatastarSender();
+
+		foreach ($ids as $priority => $id) {
+			$sender->patchElements(
+				'<span data-lp-priority>' . $priority . '</span>',
+				$this->getPriorityTarget((int) $id)
+			);
+		}
+	}
+
+	protected function getPriorityTarget(int $id): string
+	{
+		return $this->getRowSelector($id) . ' td.priority [data-lp-priority]';
+	}
+
+	protected function getListId(): string
+	{
+		return 'lp_' . $this->getEntityNamePlural();
+	}
+
+	protected function parseIds(string $value): array
+	{
+		return array_values(array_map('intval', array_filter(explode(',', $value))));
 	}
 
 	protected function clearCache(): void
@@ -230,6 +396,24 @@ abstract class AbstractArea implements AreaInterface
 		$this->getTablePresenter()->show($this->buildTable());
 	}
 
+	/**
+	 * Renders the list into a string, so the whole block can be sent to the page as one patch
+	 */
+	protected function renderList(): string
+	{
+		$this->buildAndShowTable();
+
+		// The title with the view tabs is a part of the list that is about to be sent to the page
+		$this->afterMain();
+
+		Theme::loadTemplate('GenericList');
+
+		ob_start();
+		template_show_list();
+
+		return (string) ob_get_clean();
+	}
+
 	protected function buildTable(): PortalTableBuilderInterface
 	{
 		return $this->buildTableWithBulkActions();
@@ -250,10 +434,7 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function createTableBuilder(?string $title = null): PortalTableBuilderInterface
 	{
-		return PortalTableBuilder::make(
-			'lp_' . $this->getEntityNamePlural(),
-			$title ?? $this->getTableTitle()
-		)
+		return PortalTableBuilder::make($this->getListId(), $title ?? $this->getTableTitle())
 			->setDefaultSortColumn($this->getDefaultSortColumn())
 			->setScript($this->getTableScript())
 			->withCreateButton($this->getEntityNamePlural());
@@ -277,7 +458,7 @@ abstract class AbstractArea implements AreaInterface
 			return;
 
 		$builder
-			->addColumn(CheckboxColumn::make(name: 'bulk', entity: 'items'))
+			->addColumn(CheckboxColumn::make(name: 'bulk', entity: 'items', signal: 'has_selection'))
 			->addRow($this->getBulkActionsButtonsRow());
 	}
 
@@ -335,6 +516,28 @@ abstract class AbstractArea implements AreaInterface
 		}
 	}
 
+	/**
+	 * The Datastar bulk action: the whole list is re-rendered and patched after the
+	 * repository call, so the rows, the empty state and the pagination stay consistent
+	 */
+	protected function handleBulkItems(array $payload): void
+	{
+		$action = (string) ($payload['action'] ?? '');
+		$items  = (array) ($payload['items'] ?? []);
+
+		if ($items === [] || ! $this->handleBulkAction($action, $items))
+			return;
+
+		$this->cache()->flush();
+
+		$this->getDatastarSender()->patchElements(
+			$this->renderList(),
+			'#' . $this->getTableFormData()['name']
+		);
+
+		$this->patchCounters();
+	}
+
 	protected function performBulkActions(): void
 	{
 		if ($this->request()->hasNot('bulk_actions') || $this->request()->isEmpty('items'))
@@ -347,7 +550,6 @@ abstract class AbstractArea implements AreaInterface
 		$action   = (string) filter_input(INPUT_POST, $this->getBulkActionName());
 
 		$this->handleBulkAction($action, $items);
-
 		$this->cache()->flush();
 		$this->response()->redirect($redirect);
 	}
@@ -383,12 +585,13 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_add_title");
-
+		Utils::$context['page_title']      = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_add_title");
 		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_add_title");
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=add";
+
+		$this->setFormSubmitContext();
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -426,7 +629,6 @@ abstract class AbstractArea implements AreaInterface
 		);
 
 		$this->setContextEntity($entity->toArray());
-
 		$this->postProcessValidation();
 	}
 
@@ -558,12 +760,13 @@ abstract class AbstractArea implements AreaInterface
 	{
 		$entityPlural = $this->getEntityNamePlural();
 
-		Utils::$context['page_title'] = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_edit_title");
-
+		Utils::$context['page_title']      = __('lp_portal') . ' - ' . __("lp_{$entityPlural}_edit_title");
 		Utils::$context['page_area_title'] = __("lp_{$entityPlural}_edit_title");
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=edit;id=$item";
+
+		$this->setFormSubmitContext();
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -607,8 +810,7 @@ abstract class AbstractArea implements AreaInterface
 
 	protected function finalizePreviewTitle(array $entity): void
 	{
-		Utils::$context['preview_title'] = Icon::parse($entity['icon'] ?? '') .
-			Utils::$context['preview_title'];
+		Utils::$context['preview_title'] = Icon::parse($entity['icon'] ?? '') . Utils::$context['preview_title'];
 	}
 
 	protected function handleRemoveRequest(int $item): bool
@@ -645,6 +847,8 @@ abstract class AbstractArea implements AreaInterface
 
 		Utils::$context['form_action'] = Config::$scripturl .
 			"?action=admin;area=lp_$entityPlural;sa=edit;id={$entity['id']}";
+
+		$this->setFormSubmitContext();
 	}
 
 	protected function getContextEntity(): array

@@ -22,8 +22,9 @@ class Avatar
 {
 	public static function get(int $userId, array $userData = []): string
 	{
-		if ($userId === 0)
+		if ($userId === 0) {
 			return '';
+		}
 
 		if ($userData === []) {
 			$userData = self::getPreparedData([$userId]);
@@ -33,8 +34,9 @@ class Avatar
 			User::load($userId);
 		}
 
-		if (empty(User::$loaded[$userId]))
+		if (empty(User::$loaded[$userId])) {
 			return '';
+		}
 
 		$data = User::$loaded[$userId]->format(true);
 
@@ -55,6 +57,7 @@ class Avatar
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = self::get((int) $item[$entity]['id'], $userData);
+
 			return $item;
 		}, $items);
 	}

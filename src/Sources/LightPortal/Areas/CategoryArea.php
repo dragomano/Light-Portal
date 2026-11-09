@@ -14,6 +14,7 @@ namespace LightPortal\Areas;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\Row;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
@@ -23,8 +24,10 @@ use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\UI\Fields\TextareaField;
 use LightPortal\UI\Tables\ContextMenuColumn;
 use LightPortal\UI\Tables\IconColumn;
+use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\UI\Tables\StatusColumn;
 use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\CategoryValidator;
@@ -52,7 +55,7 @@ final class CategoryArea extends AbstractArea
 	protected function getCustomActionHandlers(): array
 	{
 		return [
-			'update_priority' => fn($data) => $this->getRepository()->updatePriority($data['update_priority']),
+			'sort_items' => fn($data) => $this->handleUpdatePriority($data['sort_items']),
 		];
 	}
 
@@ -68,11 +71,40 @@ final class CategoryArea extends AbstractArea
 		return <<<JS
 			const entity = new Category();
 			new window['Sortable'](document.querySelector("#lp_categories tbody"), {
-			    handle: ".handle",
-			    animation: 150,
-			    onSort: e => entity.updatePriority(e)
+				handle: ".handle",
+				animation: 150,
+				onSort: e => entity.sort(e)
 			});
 		JS;
+	}
+
+	protected function buildTableWithBulkActions(): PortalTableBuilderInterface
+	{
+		return parent::buildTableWithBulkActions()
+			->addRow(Row::make($this->getSortControls()));
+	}
+
+	private function handleUpdatePriority(mixed $priority): void
+	{
+		$ids = $this->parseIds((string) $priority);
+
+		$this->getRepository()->updatePriority($ids);
+
+		if (! DatastarSender::isDatastarRequest())
+			return;
+
+		$this->patchPriorities($ids);
+	}
+
+	private function getSortControls(): string
+	{
+		$url = Utils::$context['lp_actions_url'] ?? '';
+
+		return '<div hidden data-signals="{ sort_ids: \'\' }">'
+			. '<input id="lp_category_sort_ids" type="hidden" data-bind="sort_ids">'
+			. '<button id="lp_category_sort_trigger" type="button"'
+			. ' data-on:click="@post(\'' . $url . '\', {payload: {sort_items: $sort_ids}})"></button>'
+			. '</div>';
 	}
 
 	protected function getTableColumns(): array
@@ -84,7 +116,7 @@ final class CategoryArea extends AbstractArea
 			Column::make('priority', __('lp_block_priority'))
 				->setStyle('width: 12%')
 				->setData(static fn($entry) => Str::html('div')->data('id', $entry['id'])
-					->setHtml($entry['priority'] . ' ' .
+					->setHtml('<span data-lp-priority>' . $entry['priority'] . '</span> ' .
 						Icon::get('sort', __('lp_action_move'), 'handle ')), 'centertext')
 				->setSort('priority'),
 			StatusColumn::make(),

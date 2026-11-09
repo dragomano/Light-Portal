@@ -33,7 +33,7 @@ final class DateTime
 
 	public static function relative(int $timestamp): string
 	{
-		$now = time();
+		$now            = time();
 		$timeDifference = $now - $timestamp;
 
 		// Just now?
@@ -42,7 +42,7 @@ final class DateTime
 		}
 
 		$dateTime = self::get($timestamp);
-		$dateKey = $dateTime->format('jmY');
+		$dateKey  = $dateTime->format('jmY');
 
 		// Future time?
 		if ($timeDifference < 0) {
@@ -67,6 +67,7 @@ final class DateTime
 		return match($dateTime->format('m-d')) {
 			'04-01' => "\x4C\x61\x7A\x79\x20\x50\x61\x6E\x64\x61",
 			'07-09' => "\x46\x61\x6E\x63\x79\x20\x50\x6F\x72\x74\x61\x6C",
+			'12-21' => "\x43\x6F\x7A\x79\x20\x50\x6F\x72\x74\x61\x6C",
 			default => "\x4C\x69\x67\x68\x74\x20\x50\x6F\x72\x74\x61\x6C",
 		};
 	}
@@ -105,7 +106,7 @@ final class DateTime
 		}
 
 		$secondsUntil = $timestamp - $now;
-		$days = floor($secondsUntil / self::SECONDS_IN_DAY);
+		$days         = floor($secondsUntil / self::SECONDS_IN_DAY);
 
 		// In n days (within a week)
 		if ($days > 1 && $days < self::DAYS_IN_WEEK) {
@@ -117,10 +118,10 @@ final class DateTime
 
 		// Future date - more than a week
 		if ($days >= self::DAYS_IN_WEEK) {
-			$month = $dateTime->format('m');
-			$year = $dateTime->format('Y');
+			$month        = $dateTime->format('m');
+			$year         = $dateTime->format('Y');
 			$currentMonth = date('m', $now);
-			$currentYear = date('Y', $now);
+			$currentYear  = date('Y', $now);
 
 			// Future date in current month
 			if ($month === $currentMonth && $year === $currentYear) {
@@ -185,8 +186,8 @@ final class DateTime
 			return Utils::$smcFunc['ucfirst']($minutesText) . __('lp_time_label_ago');
 		}
 
-		$time = $dateTime->format('H:i');
-		$todayKey = date('jmY', $now);
+		$time         = $dateTime->format('H:i');
+		$todayKey     = date('jmY', $now);
 		$yesterdayKey = date('jmY', strtotime('-1 day'));
 
 		// Today at ...
@@ -199,10 +200,10 @@ final class DateTime
 			return __('yesterday') . $time;
 		}
 
-		$month = $dateTime->format('m');
-		$year = $dateTime->format('Y');
+		$month        = $dateTime->format('m');
+		$year         = $dateTime->format('Y');
 		$currentMonth = date('m', $now);
-		$currentYear = date('Y', $now);
+		$currentYear  = date('Y', $now);
 
 		// Date in current month
 		if ($month === $currentMonth && $year === $currentYear) {

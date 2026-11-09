@@ -14,6 +14,8 @@ namespace LightPortal\Repositories;
 
 interface BlockRepositoryInterface extends DataManagerInterface
 {
+	public function getIdsByPlacement(string $placement): array;
+
 	public function updatePriority(array $blocks = [], string $placement = ''): void;
 
 	public function updateStatusByType(string $type, int $status): void;

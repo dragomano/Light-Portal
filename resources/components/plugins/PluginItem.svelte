@@ -19,11 +19,6 @@
   let outdated = $state(item.outdated);
   // svelte-ignore state_referenced_locally
   let settingsId = $state(item.snakeName + '_' + appState.sessionId);
-  let index = $state(
-    Object.values(pluginState.list).findIndex(
-      (plugin: Plugin) => plugin.snakeName === item.snakeName
-    )
-  );
 
   const { donate: donateIcon, download: downloadIcon } = iconState;
   const donateLink = $derived(pluginState.donate[item.name].link);
@@ -37,13 +32,9 @@
   const showToggle = $derived(!item.special && Object.keys(item.types ?? {})[0] !== $_('not_applicable'));
 
   const toggle = async () => {
-    const response = await postJson(
-      `${appState.baseUrl}?action=admin;area=lp_plugins;toggle;${appState.sessionVar}=${appState.sessionId}`,
-      {
-        plugin: index,
-        status: item.status
-      }
-    );
+    const response = await postJson(String(contextState.actionsUrl), {
+      toggle_plugin: item.name
+    });
 
     if (response.ok) {
       const data = await response.json();
@@ -56,7 +47,7 @@
 </script>
 
 <div class="windowbg" class:outdated transition:fade>
-  <div class="features" data-id={index}>
+  <div class="features" data-id={item.snakeName}>
     <div class="floatleft">
       <h4>
         {item.name}

@@ -36,4 +36,17 @@ describe('PageTypeSelectRow', function () {
 
         expect($value)->toContain('Internal');
     });
+
+    it('wires the select to the live search', function () {
+        Utils::$context['lp_actions_url'] = 'https://example.com/index.php?action=admin&area=lp_pages&actions&sa=main';
+
+        $row   = PageTypeSelectRow::make();
+        $value = $row->toArray()['value'];
+
+        expect($value)
+            ->toContain('data-bind="page_type"')
+            ->toContain('data-on:change=')
+            ->toContain('{payload: {search_items: $search, page_type: $page_type}}')
+            ->not()->toContain('this.form.submit()');
+    });
 });

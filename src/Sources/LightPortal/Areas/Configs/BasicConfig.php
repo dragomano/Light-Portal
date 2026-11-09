@@ -178,7 +178,7 @@ final class BasicConfig extends AbstractConfig
 		return [
 			SelectConfig::make('lp_frontpage_mode')
 				->setOptions(FrontPageMode::getSelectOptions())
-				->setAttribute('@change', '$dispatch(\'change-mode\', { front: $event.target.value })')
+				->setAttribute('data-bind', 'frontpage_mode')
 				->setTab(self::TAB_BASE),
 
 			CallbackConfig::make('frontpage_mode_settings')

@@ -379,3 +379,58 @@ describe('SessionManager::getCachedCount()', function () {
         expect($result)->toBe(0);
     });
 });
+
+describe('SessionManager::adjust()', function () {
+    beforeEach(function () {
+        $this->manager = new SessionManager(
+            mock(BlockRepositoryInterface::class),
+            mock(PageRepositoryInterface::class),
+            mock(CategoryRepositoryInterface::class),
+            mock(TagRepositoryInterface::class)
+        );
+    });
+
+    it('increments the cached counter without a database query', function () {
+        $this->sessionMock->shouldReceive('get')->with('active_categories')->andReturn(4);
+        $this->sessionMock->shouldReceive('put')->once()->with('active_categories', 5);
+
+        expect($this->manager->adjust('active_categories', 1))->toBe(5);
+    });
+
+    it('decrements the cached counter without a database query', function () {
+        $this->sessionMock->shouldReceive('get')->with('active_tags')->andReturn(3);
+        $this->sessionMock->shouldReceive('put')->once()->with('active_tags', 2);
+
+        expect($this->manager->adjust('active_tags', -1))->toBe(2);
+    });
+
+    it('never returns a negative value', function () {
+        $this->sessionMock->shouldReceive('get')->with('active_tags')->andReturn(0);
+        $this->sessionMock->shouldReceive('put')->once()->with('active_tags', 0);
+
+        expect($this->manager->adjust('active_tags', -1))->toBe(0);
+    });
+
+    it('returns null when the counter is not cached yet', function () {
+        $this->sessionMock->shouldReceive('get')->with('active_blocks')->andReturn(null);
+        $this->sessionMock->shouldNotReceive('put');
+
+        expect($this->manager->adjust('active_blocks', 1))->toBeNull();
+    });
+
+    it('returns null for an unknown counter', function () {
+        $this->sessionMock->shouldNotReceive('get');
+
+        expect($this->manager->adjust('unknown_counter', 1))->toBeNull();
+    });
+
+    it('uses the cache key from the config when present', function () {
+        User::$me->id = 7;
+        User::$me->allowedTo = fn($permission) => false;
+
+        $this->sessionMock->shouldReceive('get')->with('active_pages_u7')->andReturn(10);
+        $this->sessionMock->shouldReceive('put')->once()->with('active_pages_u7', 9);
+
+        expect($this->manager->adjust('active_pages', -1))->toBe(9);
+    });
+});

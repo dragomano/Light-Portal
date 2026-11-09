@@ -16,13 +16,20 @@ use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Status;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 trait HasPageFilters
 {
+	private const MAX_SEARCH_LENGTH = 100;
+
 	private array $params = [];
+
+	private array $pageParams = [];
+
+	private ?string $searchString = null;
 
 	private ?int $userId = null;
 
@@ -34,29 +41,34 @@ trait HasPageFilters
 
 	private function loadParamsFromRequest(): void
 	{
-		$pageParams = [];
 		$encodedParams = $this->request()->get('params');
 		if ($encodedParams) {
 			$decodedParams = Utils::$smcFunc['json_decode'](base64_decode($encodedParams), true);
 			if (is_array($decodedParams)) {
-				$pageParams = $decodedParams;
+				$this->pageParams = $decodedParams;
 			}
 		}
 
-		$this->userId     = $this->request()->get('u') ? (int) $this->request()->get('u') : ($pageParams['u'] ?? null);
-		$this->isModerate = $this->request()->has('moderate') || ($pageParams['moderate'] ?? false);
-		$this->isDeleted  = $this->request()->has('deleted') || ($pageParams['deleted'] ?? false);
-		$this->entryType  = $this->request()->get('type') ?: ($pageParams['type'] ?? null);
+		$this->userId     = $this->request()->get('u') ? (int) $this->request()->get('u') : ($this->pageParams['u'] ?? null);
+		$this->isModerate = $this->request()->has('moderate') || ($this->pageParams['moderate'] ?? false);
+		$this->isDeleted  = $this->request()->has('deleted') || ($this->pageParams['deleted'] ?? false);
+		$this->entryType  = $this->request()->get('type') ?: ($this->pageParams['type'] ?? null);
 	}
 
-	private function calculateParams(): void
+	private function calculateParams(?string $search = null, ?string $type = null): void
 	{
-		$searchString = trim((string) $this->request()->get('search'));
+		$this->searchString = $this->limitSearchString($search ?? $this->searchString ?? $this->getRequestedSearch());
 
-		$search = Utils::$smcFunc['strtolower']($searchString);
+		// The live request passes the type explicitly; otherwise it comes from the request or the link
+		if ($type !== null && $type !== '') {
+			$this->entryType = $type;
+		}
 
+		$search = Utils::$smcFunc['strtolower']($this->searchString);
+
+		// The term is stored as is: the templates escape it when they render it
 		$searchParams = [
-			'string'   => Utils::htmlspecialchars($searchString),
+			'string'   => $this->searchString,
 			'u'        => $this->userId ? (int) $this->userId : null,
 			'moderate' => $this->isModerate,
 			'deleted'  => $this->isDeleted,
@@ -66,7 +78,7 @@ trait HasPageFilters
 		Utils::$context['search_params'] = empty(array_filter($searchParams))
 			? '' : base64_encode((string) Utils::$smcFunc['json_encode']($searchParams));
 
-		Utils::$context['search'] = ['string' => $searchParams['string']];
+		Utils::$context['search'] = ['string' => $this->searchString];
 
 		$this->params = ['', $this->buildWhereConditions(
 			$this->userId,
@@ -74,6 +86,26 @@ trait HasPageFilters
 			$this->isDeleted,
 			$search
 		)];
+	}
+
+	/**
+	 * The term is carried by the link that is followed, so it survives sorting and paging
+	 */
+	private function getRequestedSearch(): string
+	{
+		$requested = $this->request()->get('search');
+
+		return $requested !== null
+			? (string) $requested
+			: (string) ($this->pageParams['string'] ?? '');
+	}
+
+	/**
+	 * A term longer than that only makes the LIKE scan heavier
+	 */
+	private function limitSearchString(string $search): string
+	{
+		return mb_substr(trim($search), 0, self::MAX_SEARCH_LENGTH);
 	}
 
 	private function buildWhereConditions(
@@ -85,9 +117,13 @@ trait HasPageFilters
 		$whereConditions = [];
 
 		if (! empty($search)) {
+			// The parentheses keep the OR inside this condition: the view conditions are joined with AND.
+			// The * and ? characters are the wildcards here, while % and _ are ordinary characters
+			$pattern = Str::likePattern($search);
+
 			$whereConditions[] = new Expression(
-				'LOWER(p.slug) LIKE ? OR LOWER(t.title) LIKE ?',
-				['%' . $search . '%', '%' . $search . '%']
+				"(LOWER(p.slug) LIKE ? ESCAPE '!' OR LOWER(t.title) LIKE ? ESCAPE '!')",
+				[$pattern, $pattern]
 			);
 		}
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.10.26
+ * @version 28.10.26
  */
 
 namespace LightPortal\Plugins\Search;
@@ -119,9 +119,15 @@ class Search extends Block
 		if (empty($data['phrase']))
 			return;
 
-		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($data['phrase']));
+		$this->response()->exit($this->query($this->prepareQuery((string) $data['phrase'])));
+	}
 
-		$this->response()->exit($this->query($query));
+	/**
+	 * The word is entity-encoded inside the query itself: doing it here as well breaks the matching
+	 */
+	private function prepareQuery(string $query): string
+	{
+		return (string) Utils::$smcFunc['htmltrim']($query);
 	}
 
 	private function getResults(): array
@@ -130,7 +136,7 @@ class Search extends Block
 			return [];
 		}
 
-		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request()->get($this->name)));
+		$query = $this->prepareQuery((string) $this->request()->get($this->name));
 
 		if (empty($query)) {
 			return [];
@@ -144,24 +150,37 @@ class Search extends Block
 		$titleWords = explode(' ', $query);
 
 		$searchFormula = '';
+		$searchParams  = [];
+
 		foreach ($titleWords as $key => $word) {
+			// The stored titles and contents are entity-encoded, so the word is encoded the same way
 			$word = htmlentities($word);
 
+			$weight = count($titleWords) - $key;
+
+			// The * and ? characters are the wildcards here, while % and _ are ordinary characters
+			$pattern = Str::likePattern($word);
+
+			// The words are bound parameters: the formula itself is a part of the SQL string
 			$searchFormula .= ($searchFormula ? ' + ' : '')
-				. 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN '
-				. (count($titleWords) - $key) * 5 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '')
-				. 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN '
-				. (count($titleWords) - $key) * 4 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '')
-				. 'CASE WHEN lower(t.content) LIKE lower(\'%' . $word . '%\') THEN '
-				. (count($titleWords) - $key) * 3 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '')
-				. 'CASE WHEN lower(p.slug) = lower(\'' . $word . '\') THEN '
-				. (count($titleWords) - $key) * 2 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '')
-				. 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN '
-				. (count($titleWords) - $key) . ' ELSE 0 END';
+				. 'CASE WHEN lower(t.title) = lower(?) THEN ' . $weight * 5 . ' ELSE 0 END';
+			$searchParams[] = $word;
+
+			$searchFormula .= ' + '
+				. "CASE WHEN lower(t.title) LIKE lower(?) ESCAPE '!' THEN " . $weight * 4 . ' ELSE 0 END';
+			$searchParams[] = $pattern;
+
+			$searchFormula .= ' + '
+				. "CASE WHEN lower(t.content) LIKE lower(?) ESCAPE '!' THEN " . $weight * 3 . ' ELSE 0 END';
+			$searchParams[] = $pattern;
+
+			$searchFormula .= ' + '
+				. 'CASE WHEN lower(p.slug) = lower(?) THEN ' . $weight * 2 . ' ELSE 0 END';
+			$searchParams[] = $word;
+
+			$searchFormula .= ' + '
+				. "CASE WHEN lower(p.slug) LIKE lower(?) ESCAPE '!' THEN " . $weight . ' ELSE 0 END';
+			$searchParams[] = $pattern;
 		}
 
 		$select = $this->sql->select()
@@ -169,7 +188,7 @@ class Search extends Block
 			->columns([
 				'slug', 'type',
 				'date'    => new Expression('GREATEST(p.created_at, p.updated_at)'),
-				'related' => new Expression('(' . $searchFormula . ')'),
+				'related' => new Expression('(' . $searchFormula . ')', $searchParams),
 			])
 			->join(
 				['mem' => 'members'],
@@ -177,7 +196,7 @@ class Search extends Block
 				['id_member', 'real_name'],
 				Select::JOIN_LEFT
 			)
-			->where(new Expression('(' . $searchFormula . ') > 0'))
+			->where(new Expression('(' . $searchFormula . ') > 0', $searchParams))
 			->where([
 				'status'          => 1,
 				'deleted_at'      => 0,

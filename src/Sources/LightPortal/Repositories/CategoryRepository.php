@@ -175,6 +175,24 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		$this->cache()->flush();
 
 		$this->session('lp')->free('active_categories');
+
+		// The categories are renumbered, so their priorities have no gaps
+		$this->updatePriority($this->getIds());
+	}
+
+	public function getIds(): array
+	{
+		$select = $this->sql->select('lp_categories')
+			->columns(['category_id'])
+			->order('priority');
+
+		$ids = [];
+
+		foreach ($this->sql->execute($select) as $row) {
+			$ids[] = (int) $row['category_id'];
+		}
+
+		return $ids;
 	}
 
 	public function updatePriority(array $categories = []): void
@@ -201,7 +219,7 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 
 		$this->sql->execute($update);
 
-		$this->cache()->forget('all_categories');
+		$this->cache()->flush();
 	}
 
 	private function addData(array $data): int

@@ -17,25 +17,27 @@ use LightPortal\Utils\Str;
 
 class CheckboxColumn extends Column
 {
-	public static function make(string $name = 'actions', string $title = '', ?string $entity = null): static
+	/**
+	 * The optional signal makes the checkbox update it on every change, so the bulk
+	 * actions row can enable or disable its controls; export and import tables pass
+	 * no signal and stay free of extra attributes
+	 */
+	public static function make(string $name = 'actions', string $title = '', ?string $entity = null, string $signal = ''): static
 	{
-		$dispatchSelection = self::getDispatchSelectionScript();
+		$updateSignal = $signal === ''
+			? []
+			: ['data-on:input' => "\$$signal = Array.from(evt.target.form?.elements || [])"
+				. ".some(el => el.name === '{$entity}[]' && el.checked)"];
 
 		return parent::make($name, $title ?: Str::html('input', [
-			'type'    => 'checkbox',
-			'onclick' => "invertAll(this, this.form); $dispatchSelection",
-		])->toHtml())
+				'type'    => 'checkbox',
+				'onclick' => 'invertAll(this, this.form)',
+			] + $updateSignal)->toHtml())
 			->setStyle('width: 5%')
 			->setData(static fn($entry) => Str::html('input', [
 				'type'    => 'checkbox',
 				'value'   => $entry['id'],
 				'name'    => $entity . '[]',
-				'onclick' => $dispatchSelection,
-			]), 'centertext');
-	}
-
-	private static function getDispatchSelectionScript(): string
-	{
-		return "window.dispatchEvent(new CustomEvent('lp-bulk-selection', { detail: { formName: this.form?.getAttribute('name') } }));";
+			] + $updateSignal), 'centertext');
 	}
 }

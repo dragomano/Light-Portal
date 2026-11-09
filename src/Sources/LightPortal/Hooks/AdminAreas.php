@@ -27,6 +27,7 @@ use LightPortal\Areas\Configs\PanelConfig;
 use LightPortal\Areas\PageArea;
 use LightPortal\Areas\PluginArea;
 use LightPortal\Areas\TagArea;
+use LightPortal\Assets\ExternalJs;
 use LightPortal\DataHandlers\Exports\BlockExport;
 use LightPortal\DataHandlers\Exports\CategoryExport;
 use LightPortal\DataHandlers\Exports\PageExport;
@@ -63,6 +64,11 @@ class AdminAreas extends AbstractHook
 		Theme::loadCSSFile('light_portal/virtual-select.min.css');
 		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
 		Theme::loadJavaScriptFile('light_portal/portal.js', ['minimize' => true]);
+
+		(new ExternalJs(
+			'https://cdn.jsdelivr.net/gh/starfederation/datastar@v1/bundles/datastar.js',
+			attributes: ['type' => 'module']
+		))->load();
 
 		Lang::load('ManageSettings');
 
@@ -221,7 +227,7 @@ class AdminAreas extends AbstractHook
 			'title' => LP_NAME,
 			'description' => Str::html('img')
 					->class('floatright lp_about_logo')
-					->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
+					->setAttribute('src', Theme::$current->settings['default_theme_url'] . '/images/light_portal/logo.svg')
 					->setAttribute('alt', LP_NAME . ' logo') .
 				__('lp_base_info', [
 					LP_VERSION,

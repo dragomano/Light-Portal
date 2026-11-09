@@ -9,14 +9,14 @@
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
-				<a href="{{ $add_link }}" x-data>
+				<a href="{{ $add_link }}">
 					@php
 						$icon = Icon::get('plus', $txt['lp_blocks_add']);
-						echo str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" class=', $icon);
+						echo str_replace(' class=', ' data-on:mouseover="evt.target.classList.add(\'fa-spin\')" data-on:mouseout="evt.target.classList.remove(\'fa-spin\')" class=', $icon);
 					@endphp
 				</a>
 			</span>
-			{{ $context['lp_block_placements'][$placement] ?? $txt['not_applicable'] }}{{ is_array($blocks) ? ' (' . count($blocks) . ')' : '' }}
+			{{ $context['lp_block_placements'][$placement] ?? $txt['not_applicable'] }}<span data-lp-count="{{ $placement }}">{{ is_array($blocks) ? ' (' . count($blocks) . ')' : '' }}</span>
 		</h3>
 	</div>
 
@@ -54,13 +54,28 @@
 			</tbody>
 		@else
 			<tbody data-placement="{{ $placement }}">
-				<tr class="windowbg centertext" x-data>
+				<tr class="windowbg centertext">
 					<td>{{ $txt['lp_no_items'] }}</td>
 				</tr>
 			</tbody>
 		@endif
 	</table>
 @endforeach
+
+@php
+	$sortUrl = $scripturl . '?action=admin&area=lp_blocks&actions&' . $context['session_var'] . '=' . $context['session_id'];
+@endphp
+
+<div hidden data-signals="{ sort_ids: '', sort_placement: '', sort_source: '' }">
+	<input id="lp_block_sort_ids" type="hidden" data-bind="sort_ids">
+	<input id="lp_block_sort_placement" type="hidden" data-bind="sort_placement">
+	<input id="lp_block_sort_source" type="hidden" data-bind="sort_source">
+	<button
+		id="lp_block_sort_trigger"
+		type="button"
+		data-on:click="@post('{{ $sortUrl }}', {payload: {sort_items: $sort_ids, placement: $sort_placement, source: $sort_source}})"
+	></button>
+</div>
 
 <script src="@asset('Sortable.min.js')"></script>
 <script>

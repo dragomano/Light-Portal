@@ -21,17 +21,26 @@ class ContextMenuColumn extends Column
 	{
 		return parent::make($name, $title ?: __('lp_actions'))
 			->setStyle('width: 8%')
-			->setData(static fn($entry) => /** @lang text */ '
-				<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
-					<div class="context_menu" @click.outside="showContextMenu = false">
-						' . IconButton::make('ellipsis', ['x-on:click.prevent' => 'showContextMenu = true'], 'button floatnone') . '
-						<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
-							<ul>
-								<li>' . Link::make(__('modify'), ['href' => Utils::$context['form_action'] . ";sa=edit;id={$entry['id']}"]) . '</li>
-								<li>' . Link::make(__('remove'), ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error') . '</li>
-							</ul>
+			->setData(static function ($entry) {
+				$id  = $entry['id'];
+				$ctx = '$ctx_' . $id;
+
+				return /** @lang text */ '
+					<div data-id="' . $id . '" data-signals="{ ctx_' . $id . ': false }">
+						<div class="context_menu" data-on:click__outside="' . $ctx . ' = false">
+							' . IconButton::make('ellipsis', ['data-on:click' => $ctx . ' = true'], 'button floatnone') . '
+							<div class="roundframe" data-show="' . $ctx . '">
+								<ul>
+									<li>' . Link::make(__('modify'), ['href' => Utils::$context['form_action'] . ";sa=edit;id=$id"]) . '</li>
+									<li>' . Link::make(__('remove'), [
+										'data-on:click' => 'if (!confirm(smf_you_sure)) return; @post(\'' .
+											(Utils::$context['lp_actions_url'] ?? '') . '\', {payload: {delete_item: ' . $id . '}}); ' .
+											$ctx . ' = false',
+									], 'button error') . '</li>
+								</ul>
+							</div>
 						</div>
-					</div>
-				</div>', 'centertext');
+					</div>';
+			}, 'centertext');
 	}
 }

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 07.11.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -19,6 +19,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Areas\Traits\HasDatastar;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\License;
 use LightPortal\Enums\PluginType;
@@ -31,6 +32,7 @@ use LightPortal\UI\Fields\SelectField;
 use LightPortal\UI\Fields\TextField;
 use LightPortal\UI\Fields\UrlField;
 use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\DatastarSender;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasRequest;
@@ -48,6 +50,7 @@ if (! defined('LP_NAME'))
 class Handler
 {
 	use HasArea;
+	use HasDatastar;
 	use HasRequest;
 	use HasView;
 
@@ -61,6 +64,8 @@ class Handler
 		Utils::$context['page_area_title'] = __('lp_plugin_maker')['add_title'];
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
 
+		$this->setFormSubmitContext();
+
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
 			'description' => __('lp_plugin_maker')['add_desc'],
@@ -73,7 +78,7 @@ class Handler
 				sprintf(
 					Str::html('strong')
 						->style('color', 'initial')
-						->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s'))
+						->setHtml('%s/' . Str::html('span', ['data-text' => '$plugin_name'])->setText('%s'))
 						->toHtml(),
 					LP_ADDON_DIR,
 					self::PLUGIN_NAME,
@@ -91,6 +96,12 @@ class Handler
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
+
+		if (DatastarSender::isDatastarRequest()) {
+			$this->sendFormUpdate();
+			exit;
+		}
+
 		$this->useCustomTemplate();
 
 		Utils::obExit();
@@ -208,7 +219,7 @@ class Handler
 				'maxlength' => 255,
 				'pattern'   => LP_ADDON_PATTERN,
 				'style'     => 'width: 100%',
-				'@change'   => 'plugin.updateState($event.target.value, $refs)',
+				'data-bind' => 'plugin_name',
 			])
 			->setValue(Utils::$context['lp_plugin']['name']);
 
@@ -266,15 +277,6 @@ class Handler
 
 	private function setTitleField(): void
 	{
-		$languages = empty(Config::$modSettings['userLanguage'])
-			? [Language::getNameFromLocale(Config::$language)]
-			: [
-				Language::getNameFromLocale(Language::getFallbackValue()),
-				Language::getNameFromLocale(Config::$language)
-			];
-
-		$languages = array_unique([Language::getNameFromLocale(Language::getFallbackValue()), ...$languages]);
-
 		$value = Str::html('div');
 
 		if (count(Utils::$context['lp_languages']) > 1) {
@@ -287,13 +289,11 @@ class Handler
 				$link = Str::html('a')
 					->class('button floatnone')
 					->setText($lang['name'])
-					->setAttribute(':class', "{ 'active': tab === '$key' }")
-					->setAttribute('x-on:click.prevent', implode('; ', [
-						"tab = '$key'",
+					->setAttribute('data-class:active', "\$tab === '$key'")
+					->setAttribute('data-on:click__prevent', implode('; ', [
+						"\$tab = '$key'",
 						"window.location.hash = '$key'",
-						"\$nextTick(() => {
-							setTimeout(() => { document.querySelector('input[name=\"descriptions[$key]\"]').focus() }, 50);
-						})"
+						"setTimeout(() => { document.querySelector('input[name=\"descriptions[$key]\"]')?.focus() }, 50)",
 					]));
 
 				$nav->addHtml($link);
@@ -302,10 +302,9 @@ class Handler
 			$value->addHtml($nav);
 		}
 
-		$i = count($languages) - 1;
 		foreach (Utils::$context['lp_languages'] as $key => $lang) {
 			$inputDiv = Str::html('div')
-				->setAttribute('x-show', "tab === '$key'");
+				->setAttribute('data-show', "\$tab === '$key'");
 
 			$inputTitle = Str::html('input')
 				->setAttribute('type', 'text')
@@ -318,10 +317,6 @@ class Handler
 				->setAttribute('name', "descriptions[$key]")
 				->setAttribute('value', Utils::$context['lp_plugin']['descriptions'][$key] ?? '')
 				->placeholder(__('lp_page_description'));
-
-			if (in_array($key, $languages)) {
-				$inputDescription->setAttribute('x-ref', 'title_' . $i--);
-			}
 
 			if ($lang['filename'] === Language::getFallbackValue()) {
 				$inputDescription->setAttribute('required', 'required');

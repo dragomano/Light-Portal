@@ -8,15 +8,7 @@
 	<h3 class="catbg">{{ $context['page_area_title'] }}</h3>
 </div>
 
-@unless (empty($context['post_errors']))
-	<div class="errorbox">
-		<ul>
-			@foreach ($context['post_errors'] as $error)
-				<li>{!! $error !!}</li>
-			@endforeach
-		</ul>
-	</div>
-@endunless
+<div id="lp_post_errors">@postErrors()</div>
 
 @php $fields = $context['posting_fields']; @endphp
 
@@ -26,7 +18,8 @@
 	method="post"
 	accept-charset="{{ $context['character_set'] }}"
 	onsubmit="submitonce(this);"
-	x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : 'english' }"
+	data-on:submit="{{ $context['lp_form_submit_action'] }}"
+	data-signals="{ tab: window.location.hash ? window.location.hash.substring(1) : 'english' }"
 >
 	<div class="roundframe noup">
 		<div class="lp_tabs">
@@ -291,12 +284,6 @@
 				removeOption(index) {
 					this.options.splice(index, 1);
 				}
-			}
-		}
-
-		updateState(target, refs) {
-			if (target) {
-				refs.plugin_name.innerText = target;
 			}
 		}
 	}

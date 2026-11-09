@@ -4,7 +4,12 @@
 	method="post"
 	accept-charset="{{ $context['character_set'] }}"
 >
-	<input type="search" name="search" placeholder="{{ $plugin->txt['title'] }}">
+	<input
+		type="search"
+		name="search"
+		placeholder="{{ $plugin->txt['title'] }} ({{ $plugin->txt['masks'] }})"
+		title="{{ $plugin->txt['masks'] }}"
+	>
 </form>
 
 <script>

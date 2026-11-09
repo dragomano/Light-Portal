@@ -54,8 +54,9 @@ readonly class Notifier implements NotifierInterface
 
 	protected function getUserGender(): string
 	{
-		if (empty(User::$profiles[User::$me->id]))
+		if (empty(User::$profiles[User::$me->id])) {
 			return 'male';
+		}
 
 		return isset(User::$profiles[User::$me->id]['options']['cust_gender'])
 			&& User::$profiles[User::$me->id]['options']['cust_gender'] === '{gender_2}'

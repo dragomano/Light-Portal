@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.26
+ * @version 07.11.26
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -131,8 +131,12 @@ class Validator extends AbstractValidator
 		Utils::$context['post_errors'] = [];
 
 		foreach ($this->errors as $error) {
-			Utils::$context['post_errors'][] = __('lp_post_error_' . $error)
-				?? __('lp_plugin_maker')[$error] ?? $error;
+			// __() returns an empty string for a missing key, so the fallback needs a strict check
+			$message = __('lp_post_error_' . $error);
+
+			Utils::$context['post_errors'][] = $message !== ''
+				? $message
+				: __('lp_plugin_maker')[$error] ?? $error;
 		}
 	}
 

@@ -32,6 +32,7 @@ $GLOBALS['modSettings'] = [
 
 $GLOBALS['settings'] = [
     'default_theme_dir' => __DIR__ . '/../src/Themes/default',
+    'default_theme_url' => 'https://example.com/Themes/default',
 ];
 
 $GLOBALS['_INITIAL_STATE'] = [

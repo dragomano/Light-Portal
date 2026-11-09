@@ -33,6 +33,7 @@ readonly class IconButton
 	public function render(): string
 	{
 		$button = Str::html('button', [
+			'type'  => 'button',
 			'class' => $this->class,
 		])->addHtml(Icon::get($this->icon));
 

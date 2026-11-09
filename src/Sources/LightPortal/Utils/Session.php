@@ -23,6 +23,7 @@ class Session extends GlobalArray implements SessionInterface
 			$_SESSION[$key] ??= [];
 
 			$this->storage = &$_SESSION[$key];
+
 			return;
 		}
 

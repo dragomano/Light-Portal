@@ -13,6 +13,7 @@
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.18",
     "laminas/laminas-servicemanager": "^4.5",
+    "starfederation/datastar-php": "^1.0",
     "wplake/typed": "^1.2"
   },
   "autoload": {

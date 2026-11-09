@@ -12,6 +12,7 @@ use LightPortal\Repositories\AbstractRepository;
 use LightPortal\Repositories\CategoryRepository;
 use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\SessionInterface;
 use Tests\AppMockRegistry;
 use Tests\PortalTable;
 use Tests\TestAdapterFactory;
@@ -134,7 +135,7 @@ it('updates priorities and clears cache', function () {
     ", [Status::ACTIVE->value, Status::ACTIVE->value]);
 
     $cacheMock = mock(CacheInterface::class);
-    $cacheMock->shouldReceive('forget')->with('all_categories')->once();
+    $cacheMock->shouldReceive('flush')->once();
     AppMockRegistry::set(CacheInterface::class, $cacheMock);
 
     $this->repository->updatePriority([
@@ -150,4 +151,45 @@ it('updates priorities and clears cache', function () {
 
     expect($priorities[0]['priority'])->toBe(2)
         ->and($priorities[1]['priority'])->toBe(1);
+});
+
+it('returns category ids ordered by priority', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_categories (category_id, parent_id, slug, icon, priority, status)
+        VALUES
+            (1, 0, 'news', '', 1, ?),
+            (2, 0, 'articles', '', 0, ?),
+            (3, 0, 'blog', '', 2, ?)
+    ", array_fill(0, 3, Status::ACTIVE->value));
+
+    expect($this->repository->getIds())->toBe([2, 1, 3]);
+});
+
+it('renumbers the categories after a removal', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_categories (category_id, parent_id, slug, icon, priority, status)
+        VALUES
+            (1, 0, 'news', '', 0, ?),
+            (2, 0, 'articles', '', 1, ?),
+            (3, 0, 'blog', '', 2, ?)
+    ", array_fill(0, 3, Status::ACTIVE->value));
+
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('flush')->andReturnNull();
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
+
+    $sessionMock = mock(SessionInterface::class);
+    $sessionMock->shouldReceive('withKey')->with('lp')->andReturnSelf();
+    $sessionMock->shouldReceive('free')->with('active_categories')->andReturnNull();
+    AppMockRegistry::set(SessionInterface::class, $sessionMock);
+
+    $this->repository->remove([1]);
+
+    $rows = iterator_to_array($this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT category_id, priority FROM lp_categories ORDER BY category_id')
+        ->execute());
+
+    expect(count($rows))->toBe(2)
+        ->and($rows[0]['priority'])->toBe(0)
+        ->and($rows[1]['priority'])->toBe(1);
 });

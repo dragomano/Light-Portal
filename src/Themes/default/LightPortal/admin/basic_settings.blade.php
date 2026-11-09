@@ -18,8 +18,7 @@
 	method="post"
 	accept-charset="{{ $context['character_set'] }}"
 	onsubmit="submitonce(this);"
-	x-data="{ frontpage_mode: '{{ $modSettings['lp_frontpage_mode'] ?? FrontPageMode::DEFAULT->value }}' }"
-	@change-mode.window="frontpage_mode = $event.detail.front"
+	data-signals="{ frontpage_mode: '{{ $modSettings['lp_frontpage_mode'] ?? FrontPageMode::DEFAULT->value }}' }"
 >
 	@php $message = $context['settings_message'] ?? ''; @endphp
 
@@ -72,7 +71,7 @@
 					'icon'  => 'meteor',
 					'title' => $txt['lp_standalone_mode_title'],
 					'type'  => BasicConfig::TAB_STANDALONE,
-					'show'  => "! ['" . FrontPageMode::DEFAULT->value . "', '" . FrontPageMode::CHOSEN_PAGE->value . "'].includes(frontpage_mode)",
+					'show'  => "! ['" . FrontPageMode::DEFAULT->value . "', '" . FrontPageMode::CHOSEN_PAGE->value . "'].includes(\$frontpage_mode)",
 				],
 				[
 					'id'    => BasicConfig::TAB_PERMISSIONS,
